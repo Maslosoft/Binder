@@ -26,7 +26,7 @@ and open the template in the editor.
 	</head>
 	<body>
 		<div>Sortable: <span data-bind="htmlValue: app.model.Content.AssetCollection.name"></span></div>
-		<div data-bind="sortable: app.model.Content.AssetCollection.items">
+		<div data-bind="sortable: {data: app.model.Content.AssetCollection.items, connectClass: 'AssetGroup', options: {distance: 10, cancel: ':input,button,[contenteditable]'}}">
 			<div>
 				<input data-bind="textInput: title"/>
 				<span data-bind="htmlValue: title"></span>

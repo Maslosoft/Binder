@@ -15,11 +15,11 @@
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var handler;
-      element.contenteditable = true;
+      element.setAttribute('contenteditable', true);
       handler = function() {
         var allBindings, elementValue, modelValue;
         modelValue = valueAccessor();
-        elementValue = $.trim(element.innerHTML);
+        elementValue = element.innerHTML;
         if (ko.isWriteableObservable(modelValue)) {
           modelValue(elementValue);
         } else {

@@ -6,10 +6,10 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 # FIXME: htmlValue is messed up if combined with observable es 5 arrays!
 #
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		element.contenteditable = true
+		element.setAttribute('contenteditable', true)
 		handler = ->
 			modelValue = valueAccessor()
-			elementValue = $.trim(element.innerHTML)
+			elementValue = element.innerHTML
 			if ko.isWriteableObservable(modelValue)
 				modelValue(elementValue)
 			else #handle non-observable one-way binding
