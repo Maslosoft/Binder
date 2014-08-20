@@ -1,0 +1,26 @@
+{
+  "name": "KoBalin",
+  "version": "0.0.0",
+  "authors": [
+    "Peter Maselkowski <pmaselkowski@gmail.com>"
+  ],
+  "description": "Binding handlers for knockut js",
+  "main": "KoBalin.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "knockout",
+    "knockoutjs",
+    "mvvc"
+  ],
+  "license": "MIT",
+  "homepage": "http://maslosoft.com/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
