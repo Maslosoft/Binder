@@ -1,7 +1,7 @@
 #
 # Base class for Maslosoft binding handlers
 #
-@Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.Base
 
 	#
 	# @var @Maslosoft.Ko.Balin.Options
@@ -11,12 +11,12 @@
 	# Class constructor
 	# @param options @Maslosoft.Ko.Balin.Options
 	#
-	constructor: (@options) ->
+	constructor: (@options = {}) ->
 
 	#
 	# Get value from model
 	#
-	getValue: (valueAccessor) ->
+	getValue: (valueAccessor) =>
 		value = ko.unwrap(valueAccessor())
 		if @options.valueField
 			if @options.ec5

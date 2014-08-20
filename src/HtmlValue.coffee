@@ -3,9 +3,10 @@
 #
 class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 #
-# FIXME: htmlValue is messed up if combined with observable arrays!
+# FIXME: htmlValue is messed up if combined with observable es 5 arrays!
 #
-	init: (element, valueAccessor, allBindingsAccessor, context) ->
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+		element.contenteditable = true
 		handler = ->
 			modelValue = valueAccessor()
 			elementValue = $.trim(element.innerHTML)
@@ -25,9 +26,8 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		$(document).on "click", handler
 		return
 
-	update: (element, valueAccessor) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		$element = jQuery(element)
-		if $element.html() isnt value
-			$element.html(value)
+	update: (element, valueAccessor) =>
+		value = @getValue(valueAccessor) or ''
+		if element.innerHTML isnt value
+			element.innerHTML = value
 		return
