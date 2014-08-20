@@ -1,11 +1,11 @@
 {
-  "name": "KoBalin",
+  "name": "maslosoft-ko-balin",
   "version": "0.0.0",
   "authors": [
     "Peter Maselkowski <pmaselkowski@gmail.com>"
   ],
   "description": "Binding handlers for knockut js",
-  "main": "KoBalin.js",
+  "main": "ko.balin.js",
   "moduleType": [
     "globals"
   ],
