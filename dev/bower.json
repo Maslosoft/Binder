@@ -1,24 +1,12 @@
 {
-	"name": "maslosoft-ko-balin",
+	"name": "sortable",
 	"version": "0.0.0",
 	"authors": [
 		"Peter Maselkowski <pmaselkowski@gmail.com>"
 	],
-	"description": "Binding handlers for knockut js",
-	"main": "ko.balin.js",
-	"moduleType": [
-		"globals"
-	],
-	"keywords": [
-		"knockout",
-		"knockoutjs",
-		"mvvc"
-	],
 	"license": "MIT",
-	"homepage": "http://maslosoft.com/",
 	"ignore": [
 		"**/.*",
-		"dev",
 		"node_modules",
 		"bower_components",
 		"test",

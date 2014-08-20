@@ -8,10 +8,11 @@
 	args = Array.prototype.slice.call(arguments, 2)
 	ns = name.split "."
 	func = context
+	part = []
 	for n, i in ns
 		part.push n
 		if typeof func[n] is 'undefined'
-			throw new Error "Namespace #{name} not found on part #{n}"
+			throw new Error "Name part `#{part.join('.')}` not found while accesing #{name}"
 		func = func[n]
 	return func
 
@@ -24,12 +25,12 @@ class @Maslosoft.Ko.Track
 		# Check if has prototype
 		if data._class
 			className = data._class.replace(/\\/g, '.')
-			ref = @Maslosoft.Ko.objByName(className)
+			ref = Maslosoft.Ko.objByName(className)
 			if ref
 				return new ref(data)
 			else
-				console.error("Class #{className} not found, using default object")
-				console.warn(data)
+				console.warn("Class `#{className}` not found, using default object")
+				console.debug(data)
 
 		# Track generic object
 		if typeof data is 'object'
@@ -43,14 +44,14 @@ class @Maslosoft.Ko.Track
 
 ko.tracker = new @Maslosoft.Ko.Track
 
-class @Maslosoft.Ko.TrackTest extends @Maslosoft.Components.Model
-	name: ''
-	nested: null
-
-	_class: 'Maslosoft\\Ko\\TrackTest'
-	rawI18N: null
-	parentId: null
-
-class @Maslosoft.Ko.TrackTestNest extends @Maslosoft.Components.Model
-	_class: 'Maslosoft\\Ko\\TrackTestNest'
-	name: ''
+#class @Maslosoft.Ko.TrackTest extends @Maslosoft.Components.Model
+#	name: ''
+#	nested: null
+#
+#	_class: 'Maslosoft\\Ko\\TrackTest'
+#	rawI18N: null
+#	parentId: null
+#
+#class @Maslosoft.Ko.TrackTestNest extends @Maslosoft.Components.Model
+#	_class: 'Maslosoft\\Ko\\TrackTestNest'
+#	name: ''
