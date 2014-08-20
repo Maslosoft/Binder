@@ -14,7 +14,7 @@
 	constructor: (@options) ->
 
 	#
-	# Get value from value accessor
+	# Get value from model
 	#
 	getValue: (valueAccessor) ->
 		value = ko.unwrap(valueAccessor())
@@ -24,3 +24,9 @@
 			else
 				value = value[@options.valueField]()
 		return value
+		
+	#
+	# Set value back to model
+	#
+	setValue: (valueAccessor, value) ->
+		# TODO

@@ -5,12 +5,15 @@
 	return typeof x
 
 @Maslosoft.Ko.objByName = (name, context = window) ->
-			args = Array.prototype.slice.call(arguments, 2)
-			ns = name.split "."
-			func = context
-			for n, i in ns
-				func = func[n]
-			return func
+	args = Array.prototype.slice.call(arguments, 2)
+	ns = name.split "."
+	func = context
+	for n, i in ns
+		part.push n
+		if typeof func[n] is 'undefined'
+			throw new Error "Namespace #{name} not found on part #{n}"
+		func = func[n]
+	return func
 
 class @Maslosoft.Ko.Track
 	
