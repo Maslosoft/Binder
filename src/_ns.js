@@ -12,13 +12,4 @@
     this.Maslosoft.Ko.Balin = {};
   }
 
-  this.Maslosoft.Ko.Balin.register = function(name, handler) {
-    ko.bindingHandlers[name] = handler;
-    if (handler.writable) {
-      return ko.expressionRewriting.twoWayBindings[name] = true;
-    }
-  };
-
-  this.Maslosoft.Ko.Balin.registerDefaults = function() {};
-
 }).call(this);

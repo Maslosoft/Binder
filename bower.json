@@ -1,36 +1,36 @@
 {
-	"name": "maslosoft-ko-balin",
-	"version": "0.0.0",
-	"authors": [
-		"Peter Maselkowski <pmaselkowski@gmail.com>"
-	],
-	"description": "Binding handlers for knockut js",
-	"main": "ko.balin.js",
-	"moduleType": [
-		"globals"
-	],
-	"keywords": [
-		"knockout",
-		"knockoutjs",
-		"mvvc"
-	],
-	"license": "MIT",
-	"homepage": "http://maslosoft.com/",
-	"ignore": [
-		"**/.*",
-		"dev",
-		"node_modules",
-		"bower_components",
-		"test",
-		"tests"
-	],
-	"dependencies": {
-		"knockout": "~3.2.0"
-	},
-	"devDependencies": {
-		"jquery-ui": "~1.11.1",
-		"jquery": "~2.1.1",
-		"knockout-sortable": "~0.8.8",
-		"knockout-es5": "*"
-	}
+  "name": "maslosoft-ko-balin",
+  "version": "0.0.0",
+  "authors": [
+    "Peter Maselkowski <pmaselkowski@gmail.com>"
+  ],
+  "description": "Binding handlers for knockut js",
+  "main": "ko.balin.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "knockout",
+    "knockoutjs",
+    "mvvc"
+  ],
+  "license": "MIT",
+  "homepage": "http://maslosoft.com/",
+  "ignore": [
+    "**/.*",
+    "dev",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "knockout": "~3.2.0"
+  },
+  "devDependencies": {
+    "jquery-ui": "~1.11.1",
+    "jquery": "~2.1.1",
+    "knockout-sortable": "~0.8.8",
+    "knockout-es5": "*"
+  }
 }

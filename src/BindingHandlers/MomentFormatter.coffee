@@ -1,7 +1,7 @@
 ###
 One-way date/time formatter
 ###
-class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Moment
+class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 	
 	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		moment.lang @options.lang

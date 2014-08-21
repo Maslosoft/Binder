@@ -1,0 +1,29 @@
+{
+  "name": "maslosoft-ko-balin",
+  "version": "0.0.0",
+  "description": "Binding handlers for knockut js",
+  "main": "ko.balin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Maslosoft/KoBalin.git"
+  },
+  "keywords": [
+    "knockout",
+    "knockoutjs",
+    "mvvm"
+  ],
+  "author": "Peter Maselkowski <pmaselkowski@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Maslosoft/KoBalin/issues"
+  },
+  "devDependencies": {
+    "grunt-contrib-coffee": "~0.11.1",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "~0.5.0"
+  }
+}

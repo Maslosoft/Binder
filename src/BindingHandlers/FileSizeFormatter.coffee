@@ -1,13 +1,12 @@
 #
 # One-way file size formatter
 #
-class @Maslosoft.Ko.Balin.FileSizeFormatter
+class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		value = value.sec
+		value = @getValue(valueAccessor)
 		format = (bytes) ->
 			i = -1
 			units = [
