@@ -5,7 +5,7 @@
     "Peter Maselkowski <pmaselkowski@gmail.com>"
   ],
   "description": "Binding handlers for knockut js",
-  "main": "ko.balin.js",
+  "main": "dist/ko.balin.js",
   "moduleType": [
     "globals"
   ],
