@@ -5,6 +5,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   this.Maslosoft.Ko.Balin.HtmlValue = (function(_super) {
+    var idCounter;
+
     __extends(HtmlValue, _super);
 
     function HtmlValue() {
@@ -13,30 +15,41 @@
       return HtmlValue.__super__.constructor.apply(this, arguments);
     }
 
+    idCounter = 0;
+
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var handler;
       element.setAttribute('contenteditable', true);
-      handler = function() {
-        var allBindings, elementValue, modelValue;
-        modelValue = valueAccessor();
-        elementValue = element.innerHTML;
-        if (ko.isWriteableObservable(modelValue)) {
-          modelValue(elementValue);
-        } else {
-          allBindings = allBindingsAccessor();
-          if (allBindings["_ko_property_writers"] && allBindings["_ko_property_writers"].htmlValue) {
-            allBindings["_ko_property_writers"].htmlValue(elementValue);
+      if (!element.id) {
+        element.id = "Maslosoft-Ko-Balin-HtmlValue-" + (idCounter++);
+      }
+      handler = (function(_this) {
+        return function(e) {
+          var accessor, elementValue, modelValue;
+          if (!element) {
+            return;
           }
-        }
-      };
-      ko.utils.registerEventHandler(element, "keyup", handler);
-      ko.utils.registerEventHandler(document, "change.content", handler);
-      $(document).on("click", handler);
+          element = document.getElementById(element.id);
+          if (!element) {
+            return;
+          }
+          accessor = valueAccessor();
+          modelValue = _this.getValue(valueAccessor);
+          elementValue = element.innerHTML;
+          if (ko.isWriteableObservable(accessor)) {
+            if (modelValue !== elementValue) {
+              return accessor(elementValue);
+            }
+          }
+        };
+      })(this);
+      ko.utils.registerEventHandler(element, "keyup, input", handler);
+      $(document).on("mouseup", handler);
     };
 
     HtmlValue.prototype.update = function(element, valueAccessor) {
       var value;
-      value = this.getValue(valueAccessor) || '';
+      value = this.getValue(valueAccessor);
       if (element.innerHTML !== value) {
         element.innerHTML = value;
       }

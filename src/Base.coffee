@@ -4,6 +4,12 @@
 class @Maslosoft.Ko.Balin.Base
 
 	#
+	# Whenever to register binding handler as writable
+	# @var boolean
+	#
+	writable: true
+
+	#
 	# @var @Maslosoft.Ko.Balin.Options
 	#
 	options: null
@@ -16,14 +22,14 @@ class @Maslosoft.Ko.Balin.Base
 	#
 	# Get value from model
 	#
-	getValue: (valueAccessor) =>
+	getValue: (valueAccessor, defaults = '') =>
 		value = ko.unwrap(valueAccessor())
 		if @options.valueField
 			if @options.ec5
 				value = value[@options.valueField]
 			else
 				value = value[@options.valueField]()
-		return value
+		return value or defaults
 		
 	#
 	# Set value back to model

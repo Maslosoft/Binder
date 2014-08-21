@@ -3,6 +3,8 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   this.Maslosoft.Ko.Balin.Base = (function() {
+    Base.prototype.writable = true;
+
     Base.prototype.options = null;
 
     function Base(options) {
@@ -10,8 +12,11 @@
       this.getValue = __bind(this.getValue, this);
     }
 
-    Base.prototype.getValue = function(valueAccessor) {
+    Base.prototype.getValue = function(valueAccessor, defaults) {
       var value;
+      if (defaults == null) {
+        defaults = '';
+      }
       value = ko.unwrap(valueAccessor());
       if (this.options.valueField) {
         if (this.options.ec5) {
@@ -20,7 +25,7 @@
           value = value[this.options.valueField]();
         }
       }
-      return value;
+      return value || defaults;
     };
 
     Base.prototype.setValue = function(valueAccessor, value) {};

@@ -20,13 +20,19 @@ and open the template in the editor.
 		<script src="../src/HtmlValue.js"></script>
 		<script src="./src/Model.js"></script>
 		<script src="./src/init.js"></script>
+		<style>
+			.ui-selected{
+				background: darkorange;
+			}
+		</style>
 		<script>
-			ko.bindingHandlers.htmlValue = new Maslosoft.Ko.Balin.HtmlValue;
+			Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue);
+			app.model.Content.AssetCollection.items = app.model.Content.AssetCollection.items.slice(0, 2);
 		</script>
 	</head>
 	<body>
-		<div>Sortable: <span data-bind="htmlValue: app.model.Content.AssetCollection.name"></span></div>
-		<div data-bind="sortable: {data: app.model.Content.AssetCollection.items, connectClass: 'AssetGroup', options: {distance: 10, cancel: ':input,button,[contenteditable]'}}">
+		<div>Sortable: <input data-bind="textInput: app.model.Content.AssetCollection.title"/> <span data-bind="htmlValue: app.model.Content.AssetCollection.title"></span></div>
+		<div id="dev" data-bind="sortable: {data: app.model.Content.AssetCollection.items, connectClass: 'AssetGroup', options: {distance: 10, cancel: ':input,button,[contenteditable]'}}">
 			<div>
 				<input data-bind="textInput: title"/>
 				<span data-bind="htmlValue: title"></span>
@@ -42,6 +48,8 @@ and open the template in the editor.
 		<script>
 			jQuery(document).ready(function(){
 				ko.applyBindings({model: app.model});
+				// See http://stackoverflow.com/questions/3390786/jquery-ui-sortable-selectable
+//				jQuery('#dev').selectable();
 			});
 		</script>
 	</body>
