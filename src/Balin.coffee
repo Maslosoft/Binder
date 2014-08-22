@@ -24,5 +24,4 @@
 			Maslosoft.Ko.Balin.register(value, new config[value])
 	else
 		for index, value of config
-			console.log value
 			Maslosoft.Ko.Balin.register(index, new value)

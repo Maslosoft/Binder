@@ -37,7 +37,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		ko.utils.registerEventHandler element, "keyup, input", handler
 
 		# This is to allow interation with tools which could modify content, also to work with drag and drop
-		$(document).on "mouseup", handler
+		ko.utils.registerEventHandler document, "mouseup", handler
 		return
 
 	update: (element, valueAccessor) =>

@@ -7,6 +7,7 @@
 	<div>
 		<input data-bind="textInput: title"/>
 		<span data-bind="htmlValue: title"></span>
+		<span data-bind="textValue: title"></span>
 	</div>
 </div>
 <div>Foreach:</div>
@@ -14,6 +15,7 @@
 	<div>
 		<input data-bind="textInput: title"/>
 		<span data-bind="htmlValue: title"></span>
+		<span data-bind="textValue: title"></span>
 	</div>
 </div>
 <script>
