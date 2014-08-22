@@ -13,12 +13,16 @@
 #
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	config = {
+		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
+		href: Maslosoft.Ko.Balin.Href,
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue,
-		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
+		src: Maslosoft.Ko.Balin.Src
+		textValue: Maslosoft.Ko.Balin.TextValue
 	}
-	if handlers
-		for index, value in handlers
-			Maslosoft.Ko.Balin.register(value, config[value])
+	if handlers isnt null
+		for index, value of handlers
+			Maslosoft.Ko.Balin.register(value, new config[value])
 	else
-		for index, value in config
-			Maslosoft.Ko.Balin.register(index, value)
+		for index, value of config
+			console.log value
+			Maslosoft.Ko.Balin.register(index, new value)

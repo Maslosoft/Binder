@@ -2,15 +2,23 @@
 # Href binding handler
 #
 class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
-
+	
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-#		TODO Implement this as bindingValue `stopPropagation = true/false` or as defined from options
-#		if <stopPropagation>...
-#			<attach-event-handler>... (e) ->
-#				document.location = e.target.href
-#				e.stopPropagation()
+		if not element.href
+			element.setAttribute('href', '')
+		if element.tagName.toLowerCase() isnt 'a'
+			console.warn('href binding should be used only on `a` tags')
 
-	update: (element, valueAccessor) =>
+		# Stop propagation handling
+		stopPropagation = allBindingsAccessor.get('stopPropagation') or false
+		if stopPropagation
+			ko.utils.registerEventHandler element, "click", (e) ->
+				e.stopPropagation()
+
+	update: (element, valueAccessor, allBindings) =>
 		href = @getValue(valueAccessor)
+		target = allBindings.get('target') or ''
 		if element.href isnt href
 			element.href = href
+		if element.target isnt target
+			element.target = target

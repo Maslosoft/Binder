@@ -1,9 +1,4 @@
 <?php require './_header.php'; ?>
-<style>
-	.ui-selected{
-		background: darkorange;
-	}
-</style>
 <script>
 	app.model.Content.AssetCollection.items = app.model.Content.AssetCollection.items.slice(0, 2);
 </script>

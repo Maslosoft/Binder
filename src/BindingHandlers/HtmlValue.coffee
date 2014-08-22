@@ -1,6 +1,7 @@
 #
 # Html value binding
-# TODO Check if sortable is active, and if active, add `[contenteditable]` to `cancel` option
+# WARNING This MUST have parent context, or will not work
+# TODO Check if sortable is available, and if active, add `[contenteditable]` to `cancel` option
 #
 class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
