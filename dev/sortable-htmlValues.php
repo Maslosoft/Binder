@@ -5,7 +5,6 @@
 	}
 </style>
 <script>
-	Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue);
 	app.model.Content.AssetCollection.items = app.model.Content.AssetCollection.items.slice(0, 2);
 </script>
 <div>Sortable: <input data-bind="textInput: app.model.Content.AssetCollection.title"/> <span data-bind="htmlValue: app.model.Content.AssetCollection.title"></span></div>

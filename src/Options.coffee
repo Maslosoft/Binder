@@ -11,6 +11,8 @@ class @Maslosoft.Ko.Balin.Options
 	#
 	ec5: null
 
+	afterUpdate: null
+
 	constructor: (values = {}) ->
 
 		for index, value of values
@@ -18,4 +20,8 @@ class @Maslosoft.Ko.Balin.Options
 
 		if @ec5 is null
 			@ec5 = !!ko.track
+
+		if @afterUpdate is null
+			@afterUpdate = (element, value) ->
+				
 

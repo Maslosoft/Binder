@@ -3,17 +3,20 @@
 #
 class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
 
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
+	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		value = @getValue(valueAccessor)
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		value = @getValue(valueAccessor) or 0
+		if bytes < 1024
+			return bytes + ' B'
 		format = (bytes) ->
+			bytes = parseInt(bytes)
 			i = -1
 			units = [
-				" kB"
-				" MB"
-				" GB"
-				" TB"
+				"kB"
+				"MB"
+				"GB"
+				"TB"
 				"PB"
 				"EB"
 				"ZB"
@@ -23,7 +26,9 @@ class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
 				bytes = bytes / 1024
 				i++
 				break unless bytes > 1024
-			Math.max(bytes, 0.1).toFixed(1) + units[i]
+			if units[i]
+				Math.max(bytes, 0.1).toFixed(1) + ' ' + units[i]
+			else
+				Math.max(bytes, 0.1).toFixed(1) + ' ~~B'
 
 		element.innerHTML = format(value)
-		return

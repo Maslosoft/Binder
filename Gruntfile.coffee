@@ -24,7 +24,7 @@ module.exports = (grunt) ->
 					'dist/ko.balin.min.js' : ['dist/ko.balin.js']
 		watch:
 			compile:
-				files: 'src/*.coffee'
+				files: ['src/*.coffee', 'src/BindingHandlers/*.coffee']
 				tasks: ['coffee:compile']
 
 	# These plugins provide necessary tasks.

@@ -9,8 +9,16 @@
 		ko.expressionRewriting.twoWayBindings[name] = true
 
 #
-# Register default set of binding handlers
+# Register default set of binding handlers, or part of default set
 #
-@Maslosoft.Ko.Balin.registerDefaults = () ->
-	Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue)
-	
+@Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
+	config = {
+		htmlValue: Maslosoft.Ko.Balin.HtmlValue,
+		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
+	}
+	if handlers
+		for index, value in handlers
+			Maslosoft.Ko.Balin.register(value, config[value])
+	else
+		for index, value in config
+			Maslosoft.Ko.Balin.register(index, value)

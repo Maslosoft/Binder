@@ -25,7 +25,8 @@
     "tests"
   ],
   "dependencies": {
-    "knockout": "~3.2.0"
+    "knockout": "~3.2.0",
+    "moment": "~2.8.1"
   },
   "devDependencies": {
     "jquery-ui": "~1.11.1",

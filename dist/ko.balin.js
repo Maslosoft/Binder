@@ -23,7 +23,8 @@
   };
 
   this.Maslosoft.Ko.Balin.registerDefaults = function() {
-    return Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue);
+    Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue);
+    return Maslosoft.Ko.Balin.register('fileSizeFormatter', new Maslosoft.Ko.Balin.FileSizeFormatter);
   };
 
   this.Maslosoft.Ko.Balin.Base = (function() {

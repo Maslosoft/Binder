@@ -20,7 +20,7 @@ if not @Maslosoft.Ko.Balin
 #
 @Maslosoft.Ko.Balin.registerDefaults = () ->
 	Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue)
-	
+	Maslosoft.Ko.Balin.register('fileSizeFormatter', new Maslosoft.Ko.Balin.FileSizeFormatter)
 #
 # Base class for Maslosoft binding handlers
 #
