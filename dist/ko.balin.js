@@ -22,9 +22,33 @@
     }
   };
 
-  this.Maslosoft.Ko.Balin.registerDefaults = function() {
-    Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue);
-    return Maslosoft.Ko.Balin.register('fileSizeFormatter', new Maslosoft.Ko.Balin.FileSizeFormatter);
+  this.Maslosoft.Ko.Balin.registerDefaults = function(handlers) {
+    var config, index, value, _results, _results1;
+    if (handlers == null) {
+      handlers = null;
+    }
+    config = {
+      fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
+      href: Maslosoft.Ko.Balin.Href,
+      htmlValue: Maslosoft.Ko.Balin.HtmlValue,
+      src: Maslosoft.Ko.Balin.Src,
+      textValue: Maslosoft.Ko.Balin.TextValue
+    };
+    if (handlers !== null) {
+      _results = [];
+      for (index in handlers) {
+        value = handlers[index];
+        _results.push(Maslosoft.Ko.Balin.register(value, new config[value]));
+      }
+      return _results;
+    } else {
+      _results1 = [];
+      for (index in config) {
+        value = config[index];
+        _results1.push(Maslosoft.Ko.Balin.register(index, new value));
+      }
+      return _results1;
+    }
   };
 
   this.Maslosoft.Ko.Balin.Base = (function() {
@@ -64,6 +88,8 @@
 
     Options.prototype.ec5 = null;
 
+    Options.prototype.afterUpdate = null;
+
     function Options(values) {
       var index, value;
       if (values == null) {
@@ -75,6 +101,9 @@
       }
       if (this.ec5 === null) {
         this.ec5 = !!ko.track;
+      }
+      if (this.afterUpdate === null) {
+        this.afterUpdate = function(element, value) {};
       }
     }
 
@@ -93,48 +122,136 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
-  this.Maslosoft.Ko.Balin.DateTimeOptions = (function(_super) {
-    __extends(DateTimeOptions, _super);
 
-    function DateTimeOptions() {
-      return DateTimeOptions.__super__.constructor.apply(this, arguments);
+  /*
+  One-way date/time formatter
+   */
+
+  this.Maslosoft.Ko.Balin.MomentFormatter = (function(_super) {
+    __extends(MomentFormatter, _super);
+
+    function MomentFormatter() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return MomentFormatter.__super__.constructor.apply(this, arguments);
     }
 
-    DateTimeOptions.prototype.displayFormat = 'YYYY-MM-DD';
+    MomentFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      moment.lang(this.options.lang);
+    };
 
-    return DateTimeOptions;
+    MomentFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var value;
+      value = this.getValue(valueAccessor);
+      element.innerHTML = moment[this.sourceformat](value).format(this.displayformat);
+    };
 
-  })(this.Maslosoft.Ko.Balin.Options);
+    return MomentFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.FileSizeFormatter = (function(_super) {
     __extends(FileSizeFormatter, _super);
 
     function FileSizeFormatter() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
       return FileSizeFormatter.__super__.constructor.apply(this, arguments);
     }
+
+    FileSizeFormatter.prototype.units = {
+      binary: ["kiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"],
+      decimal: ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    };
+
+    FileSizeFormatter.prototype.binary = true;
 
     FileSizeFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {};
 
     FileSizeFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var format, value;
-      value = this.getValue(valueAccessor);
-      format = function(bytes) {
-        var i, units;
-        i = -1;
-        units = [" kB", " MB", " GB", " TB", "PB", "EB", "ZB", "YB"];
-        while (true) {
-          bytes = bytes / 1024;
-          i++;
-          if (!(bytes > 1024)) {
-            break;
+      var binary, decimal, format, step, value;
+      value = this.getValue(valueAccessor) || 0;
+      binary = this.binary;
+      decimal = !this.binary;
+      if (binary) {
+        step = 1024;
+      }
+      if (decimal) {
+        step = 1000;
+      }
+      format = (function(_this) {
+        return function(bytes) {
+          var i, units;
+          bytes = parseInt(bytes);
+          if (bytes < step) {
+            return bytes + ' B';
           }
-        }
-        return Math.max(bytes, 0.1).toFixed(1) + units[i];
-      };
-      element.innerHTML = format(value);
+          i = -1;
+          if (binary) {
+            units = _this.units.binary;
+          }
+          if (decimal) {
+            units = _this.units.decimal;
+          }
+          while (true) {
+            bytes = bytes / step;
+            i++;
+            if (!(bytes > step)) {
+              break;
+            }
+          }
+          if (units[i]) {
+            return Math.max(bytes, 0.1).toFixed(1) + ' ' + units[i];
+          } else {
+            return Math.max(bytes, 0.1).toFixed(1) + (" ~*" + (i * step) + " * " + step + " B");
+          }
+        };
+      })(this);
+      return element.innerHTML = format(value);
     };
 
     return FileSizeFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Href = (function(_super) {
+    __extends(Href, _super);
+
+    function Href() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return Href.__super__.constructor.apply(this, arguments);
+    }
+
+    Href.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      var stopPropagation;
+      if (!element.href) {
+        element.setAttribute('href', '');
+      }
+      if (element.tagName.toLowerCase() !== 'a') {
+        console.warn('href binding should be used only on `a` tags');
+      }
+      stopPropagation = allBindingsAccessor.get('stopPropagation') || false;
+      if (stopPropagation) {
+        return ko.utils.registerEventHandler(element, "click", function(e) {
+          return e.stopPropagation();
+        });
+      }
+    };
+
+    Href.prototype.update = function(element, valueAccessor, allBindings) {
+      var href, target;
+      href = this.getValue(valueAccessor);
+      target = allBindings.get('target') || '';
+      if (element.href !== href) {
+        element.href = href;
+      }
+      if (element.target !== target) {
+        return element.target = target;
+      }
+    };
+
+    return Href;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
@@ -178,7 +295,7 @@
         };
       })(this);
       ko.utils.registerEventHandler(element, "keyup, input", handler);
-      $(document).on("mouseup", handler);
+      ko.utils.registerEventHandler(document, "mouseup", handler);
     };
 
     HtmlValue.prototype.update = function(element, valueAccessor) {
@@ -193,48 +310,95 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.Src = (function(_super) {
+    __extends(Src, _super);
 
-  /*
-  One-way date/time formatter
-   */
-
-  this.Maslosoft.Ko.Balin.MomentFormatter = (function(_super) {
-    __extends(MomentFormatter, _super);
-
-    function MomentFormatter() {
+    function Src() {
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
-      return MomentFormatter.__super__.constructor.apply(this, arguments);
+      return Src.__super__.constructor.apply(this, arguments);
     }
 
-    MomentFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      moment.lang(this.options.lang);
+    Src.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+
+    Src.prototype.update = function(element, valueAccessor) {
+      var src;
+      src = this.getValue(valueAccessor);
+      if (element.src !== src) {
+        return element.src = src;
+      }
     };
 
-    MomentFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var value;
-      value = this.getValue(valueAccessor);
-      element.innerHTML = moment[this.sourceformat](value).format(this.displayformat);
-    };
-
-    return MomentFormatter;
+    return Src;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
-  this.Maslosoft.Ko.Balin.MomentOptions = (function(_super) {
-    __extends(MomentOptions, _super);
+  this.Maslosoft.Ko.Balin.TextValue = (function(_super) {
+    var idCounter;
 
-    function MomentOptions() {
-      return MomentOptions.__super__.constructor.apply(this, arguments);
+    __extends(TextValue, _super);
+
+    function TextValue() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      this.getText = __bind(this.getText, this);
+      return TextValue.__super__.constructor.apply(this, arguments);
     }
 
-    MomentOptions.prototype.sourceFormat = 'unix';
+    idCounter = 0;
 
-    MomentOptions.prototype.displayFormat = null;
+    TextValue.prototype.getText = function(element) {
+      return element.textContent || element.innerText || "";
+    };
 
-    return MomentOptions;
+    TextValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      var handler;
+      element.setAttribute('contenteditable', true);
+      if (!element.id) {
+        element.id = "Maslosoft-Ko-Balin-TextValue-" + (idCounter++);
+      }
+      handler = (function(_this) {
+        return function(e) {
+          var accessor, elementValue, modelValue;
+          if (!element) {
+            return;
+          }
+          element = document.getElementById(element.id);
+          if (!element) {
+            return;
+          }
+          accessor = valueAccessor();
+          modelValue = _this.getValue(valueAccessor);
+          elementValue = element.textContent || element.innerText || "";
+          if (ko.isWriteableObservable(accessor)) {
+            if (modelValue !== elementValue) {
+              return accessor(elementValue);
+            }
+          }
+        };
+      })(this);
+      ko.utils.registerEventHandler(element, "keyup, input", handler);
+      ko.utils.registerEventHandler(document, "mouseup", handler);
+    };
 
-  })(this.Maslosoft.Ko.Balin.Options);
+    TextValue.prototype.update = function(element, valueAccessor) {
+      var value;
+      value = this.getValue(valueAccessor);
+      if (typeof element.textContent !== 'undefined') {
+        if (element.textContent !== value) {
+          element.textContent = value;
+        }
+      }
+      if (typeof element.innerText !== 'undefined') {
+        if (element.innerText !== value) {
+          element.innerText = value;
+        }
+      }
+    };
+
+    return TextValue;
+
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.getType = function(type) {
     if (x && typeof x === 'object') {

@@ -46,11 +46,11 @@ class @Maslosoft.Ko.Balin.TextValue extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
+		if typeof element.textContent isnt 'undefined'
+			if element.textContent isnt value
+				element.textContent = value
 		if typeof element.innerText isnt 'undefined'
 			if element.innerText isnt value
 				element.innerText = value
-		if typeof element.textContext isnt 'undefined'
-			if element.textContext isnt value
-				element.textContext = value
 
 		return

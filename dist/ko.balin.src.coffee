@@ -16,11 +16,22 @@ if not @Maslosoft.Ko.Balin
 		ko.expressionRewriting.twoWayBindings[name] = true
 
 #
-# Register default set of binding handlers
+# Register default set of binding handlers, or part of default set
 #
-@Maslosoft.Ko.Balin.registerDefaults = () ->
-	Maslosoft.Ko.Balin.register('htmlValue', new Maslosoft.Ko.Balin.HtmlValue)
-	Maslosoft.Ko.Balin.register('fileSizeFormatter', new Maslosoft.Ko.Balin.FileSizeFormatter)
+@Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
+	config = {
+		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
+		href: Maslosoft.Ko.Balin.Href,
+		htmlValue: Maslosoft.Ko.Balin.HtmlValue,
+		src: Maslosoft.Ko.Balin.Src
+		textValue: Maslosoft.Ko.Balin.TextValue
+	}
+	if handlers isnt null
+		for index, value of handlers
+			Maslosoft.Ko.Balin.register(value, new config[value])
+	else
+		for index, value of config
+			Maslosoft.Ko.Balin.register(index, new value)
 #
 # Base class for Maslosoft binding handlers
 #
@@ -72,6 +83,8 @@ class @Maslosoft.Ko.Balin.Options
 	#
 	ec5: null
 
+	afterUpdate: null
+
 	constructor: (values = {}) ->
 
 		for index, value of values
@@ -80,49 +93,116 @@ class @Maslosoft.Ko.Balin.Options
 		if @ec5 is null
 			@ec5 = !!ko.track
 
+		if @afterUpdate is null
+			@afterUpdate = (element, value) ->
+				
+
 
 class @Maslosoft.Ko.Balin.DateTime extends @Maslosoft.Ko.Balin.Base
 
 	constructor: (options) ->
 		@options = new @Maslosoft.Ko.Balin.DateTimeOptions(options)
 
-class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
+###
+One-way date/time formatter
+###
+class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
+	
+	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		moment.lang @options.lang
+		return
 
-	# Time/Date display format
-	# @var string
-	#
-	displayFormat: 'YYYY-MM-DD'
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		value = @getValue(valueAccessor)
+		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
+		return
 #
 # One-way file size formatter
 #
 class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
 
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		value = @getValue(valueAccessor)
-		format = (bytes) ->
-			i = -1
-			units = [
-				" kB"
-				" MB"
-				" GB"
-				" TB"
+	units: {
+		binary: [
+				"kiB"
+				"MiB"
+				"GiB"
+				"TiB"
+				"PiB"
+				"EiB"
+				"ZiB"
+				"YiB"
+			],
+		decimal: [
+				"kB"
+				"MB"
+				"GB"
+				"TB"
 				"PB"
 				"EB"
 				"ZB"
 				"YB"
-			]
+		]
+	}
+
+	binary: true
+
+	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		value = @getValue(valueAccessor) or 0
+		#
+		# TODO This should also be configurable via at binding
+		#
+		binary = @binary
+		decimal = !@binary
+		
+		step = 1024 if binary
+		step = 1000 if decimal
+		format = (bytes) =>
+			bytes = parseInt(bytes)
+			if bytes < step
+				return bytes + ' B'
+			i = -1
+			units = @units.binary if binary
+			units = @units.decimal if decimal
 			loop
-				bytes = bytes / 1024
+				bytes = bytes / step
 				i++
-				break unless bytes > 1024
-			Math.max(bytes, 0.1).toFixed(1) + units[i]
+				break unless bytes > step
+			if units[i]
+				Math.max(bytes, 0.1).toFixed(1) + ' ' + units[i]
+			else
+				Math.max(bytes, 0.1).toFixed(1) + " ~*#{i * step} * #{step} B"
 
 		element.innerHTML = format(value)
-		return
+#
+# Href binding handler
+#
+class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
+	
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+		if not element.href
+			element.setAttribute('href', '')
+		if element.tagName.toLowerCase() isnt 'a'
+			console.warn('href binding should be used only on `a` tags')
+
+		# Stop propagation handling
+		stopPropagation = allBindingsAccessor.get('stopPropagation') or false
+		if stopPropagation
+			ko.utils.registerEventHandler element, "click", (e) ->
+				e.stopPropagation()
+
+	update: (element, valueAccessor, allBindings) =>
+		href = @getValue(valueAccessor)
+		target = allBindings.get('target') or ''
+		if element.href isnt href
+			element.href = href
+		if element.target isnt target
+			element.target = target
 #
 # Html value binding
+# WARNING This MUST have parent context, or will not work
+# TODO Check if sortable is available, and if active, add `[contenteditable]` to `cancel` option
 #
 class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
@@ -158,7 +238,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		ko.utils.registerEventHandler element, "keyup, input", handler
 
 		# This is to allow interation with tools which could modify content, also to work with drag and drop
-		$(document).on "mouseup", handler
+		ko.utils.registerEventHandler document, "mouseup", handler
 		return
 
 	update: (element, valueAccessor) =>
@@ -167,33 +247,73 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 #			console.log "Update: #{element.innerHTML} = #{value}"
 			element.innerHTML = value
 		return
-###
-One-way date/time formatter
-###
-class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
-	
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		moment.lang @options.lang
+#
+# Src binding handler
+#
+class @Maslosoft.Ko.Balin.Src extends @Maslosoft.Ko.Balin.Base
+
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+
+	update: (element, valueAccessor) =>
+		src = @getValue(valueAccessor)
+		if element.src isnt src
+			element.src = src
+#
+# Html value binding
+# WARNING This MUST have parent context, or will not work
+# TODO Check if sortable is available, and if active, add `[contenteditable]` to `cancel` option
+# TODO Refactor this, to inherit from HtmlValue
+#
+class @Maslosoft.Ko.Balin.TextValue extends @Maslosoft.Ko.Balin.Base
+
+	# Counter for id generator
+	idCounter = 0
+
+	getText: (element) =>
+		element.textContent || element.innerText || ""
+
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+		element.setAttribute('contenteditable', true)
+
+		# Generate some id if not set, see notes below why
+		if not element.id
+			element.id = "Maslosoft-Ko-Balin-TextValue-#{idCounter++}"
+
+		handler = (e) =>
+
+			# On some situations element might be null (sorting), ignore this case
+			if not element then return
+
+			# This is required in some scenarios, specifically when sorting htmlValue elements
+			element = document.getElementById(element.id)
+			if not element then return
+
+			accessor = valueAccessor()
+			modelValue = @getValue(valueAccessor)
+			elementValue = element.textContent || element.innerText || ""
+			if ko.isWriteableObservable(accessor)
+				# Update only if changed
+				if modelValue isnt elementValue
+#					console.log "Write: #{modelValue} = #{elementValue}"
+					accessor(elementValue)
+
+		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
+		ko.utils.registerEventHandler element, "keyup, input", handler
+
+		# This is to allow interation with tools which could modify content, also to work with drag and drop
+		ko.utils.registerEventHandler document, "mouseup", handler
 		return
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
-		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
+		if typeof element.textContent isnt 'undefined'
+			if element.textContent isnt value
+				element.textContent = value
+		if typeof element.innerText isnt 'undefined'
+			if element.innerText isnt value
+				element.innerText = value
+
 		return
-#
-# Base configuration class
-#
-class @Maslosoft.Ko.Balin.MomentOptions extends @Maslosoft.Ko.Balin.Options
-
-	# Time/Date source format
-	# @var string
-	#
-	sourceFormat: 'unix'
-
-	# Time/Date display format
-	# @var string
-	#
-	displayFormat: null
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'
