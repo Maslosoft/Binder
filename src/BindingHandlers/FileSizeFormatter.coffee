@@ -29,6 +29,6 @@ class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
 			if units[i]
 				Math.max(bytes, 0.1).toFixed(1) + ' ' + units[i]
 			else
-				Math.max(bytes, 0.1).toFixed(1) + ' ~~B'
+				Math.max(bytes, 0.1).toFixed(1) + " ~*#{i * 1024} B"
 
 		element.innerHTML = format(value)
