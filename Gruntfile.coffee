@@ -15,7 +15,8 @@ module.exports = (grunt) ->
 						'src/Base.coffee',
 						'src/Options.coffee',
 						'src/BindingHandlers/*.coffee',
-						'src/Tracker.coffee'
+						'src/Tracker.coffee',
+						'src/Model.coffee'
 					]
 				]
 		uglify:

@@ -34,6 +34,7 @@
     "jquery": "~2.1.1",
     "knockout-sortable": "~0.8.8",
     "knockout-es5": "*",
-    "highlightjs": "~8.0.0"
+    "highlightjs": "~8.0.0",
+    "bootstrap": "~3.2.0"
   }
 }

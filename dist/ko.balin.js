@@ -164,7 +164,11 @@
 
     Fancytree.prototype.element = null;
 
-    Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+    Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      return jQuery(element).fancytree({
+        source: []
+      });
+    };
 
     Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
       var handler, options;
@@ -510,6 +514,26 @@
   })();
 
   ko.tracker = new this.Maslosoft.Ko.Track;
+
+  this.Maslosoft.Ko.Balin.Model = (function() {
+    function Model(data) {
+      var name, value;
+      if (data == null) {
+        data = null;
+      }
+      for (name in data) {
+        value = data[name];
+        if (typeof this[name] === 'undefined') {
+          continue;
+        }
+        this[name] = ko.tracker.factory(value);
+      }
+      ko.track(this);
+    }
+
+    return Model;
+
+  })();
 
 }).call(this);
 

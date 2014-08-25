@@ -35,7 +35,7 @@
 			]
 		};
 		app.model.Tree = {};
-		app.model.Tree.children = [new Maslosoft.KoBalinDev.Models.TreeItem(data)];
+		app.model.Tree.children = [new Maslosoft.Ko.BalinDev.Models.TreeItem(data)];
 		ko.applyBindings({model: app.model});
 	});
 </script>

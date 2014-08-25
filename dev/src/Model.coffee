@@ -12,21 +12,13 @@ if not @Maslosoft.Mangan
 	@Maslosoft.Mangan = {}
 if not @Maslosoft.Mangan.Model
 	@Maslosoft.Mangan.Model = {}
-if not @Maslosoft.KoBalinDev
-	@Maslosoft.KoBalinDev = {}
-if not @Maslosoft.KoBalinDev.Models
-	@Maslosoft.KoBalinDev.Models = {}
-
-class @Maslosoft.Components.Model
-
-	constructor: (data = null) ->
-		for name, value of data
-			if typeof @[name] is 'undefined' then continue
-			@[name] = ko.tracker.factory(value)
-		ko.track(@)
+if not @Maslosoft.Ko.BalinDev
+	@Maslosoft.Ko.BalinDev = {}
+if not @Maslosoft.Ko.BalinDev.Models
+	@Maslosoft.Ko.BalinDev.Models = {}
 
 # Auto generated model for php class Maslosoft\Mangan\Model\Image do not modify
-class @Maslosoft.Mangan.Model.Image_Base extends @Maslosoft.Components.Model
+class @Maslosoft.Mangan.Model.Image_Base extends @Maslosoft.Ko.Balin.Model
 	width: 0
 	height: 0
 	id: null
@@ -41,7 +33,7 @@ class @Maslosoft.Mangan.Model.Image_Base extends @Maslosoft.Components.Model
 
 class @Maslosoft.Mangan.Model.Image extends @Maslosoft.Mangan.Model.Image_Base
 
-class @Maslosoft.Menulis.Content.Models.AssetCollection_Base extends @Maslosoft.Components.Model
+class @Maslosoft.Menulis.Content.Models.AssetCollection_Base extends @Maslosoft.Ko.Balin.Model
 	items: []
 	title: ''
 	description: ''
@@ -60,7 +52,7 @@ class @Maslosoft.Menulis.Content.Models.AssetCollection_Base extends @Maslosoft.
 class @Maslosoft.Menulis.Content.Models.AssetCollection extends @Maslosoft.Menulis.Content.Models.AssetCollection_Base
 
 # Auto generated model for php class Maslosoft\Menulis\Content\Models\AssetGroup do not modify
-class @Maslosoft.Menulis.Content.Models.AssetGroup_Base extends @Maslosoft.Components.Model
+class @Maslosoft.Menulis.Content.Models.AssetGroup_Base extends @Maslosoft.Ko.Balin.Model
 	title: ''
 	description: ''
 	order: 1000000
@@ -80,7 +72,7 @@ class @Maslosoft.Menulis.Content.Models.AssetGroup_Base extends @Maslosoft.Compo
 class @Maslosoft.Menulis.Content.Models.AssetGroup extends @Maslosoft.Menulis.Content.Models.AssetGroup_Base
 
 # Auto generated model for php class Maslosoft\Menulis\Content\Models\PageAsset do not modify
-class @Maslosoft.Menulis.Content.Models.PageAsset_Base extends @Maslosoft.Components.Model
+class @Maslosoft.Menulis.Content.Models.PageAsset_Base extends @Maslosoft.Ko.Balin.Model
 	filename: ''
 	file: ''
 	basename: ''
@@ -107,11 +99,11 @@ class @Maslosoft.Menulis.Content.Models.PageAsset_Base extends @Maslosoft.Compon
 
 class @Maslosoft.Menulis.Content.Models.PageAsset extends @Maslosoft.Menulis.Content.Models.PageAsset_Base
 
-class @Maslosoft.KoBalinDev.Models.TreeItem extends @Maslosoft.Components.Model
-	_class: "Maslosoft.KoBalinDev.Models.TreeItem"
+class @Maslosoft.Ko.BalinDev.Models.TreeItem extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.TreeItem"
 	title: ''
 	children: []
 
-class @Maslosoft.KoBalinDev.Models.Intro extends @Maslosoft.Components.Model
-	_class: "Maslosoft.KoBalinDev.Models.Intro"
+class @Maslosoft.Ko.BalinDev.Models.Intro extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Intro"
 	text: ''

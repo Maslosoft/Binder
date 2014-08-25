@@ -19,6 +19,7 @@ if not @Maslosoft.Ko.Balin
 # Register default set of binding handlers, or part of default set
 #
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
+	# In alphabetical order
 	config = {
 		fancytree: Maslosoft.Ko.Balin.Fancytree,
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
@@ -123,7 +124,9 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 	element: null
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		
+		jQuery(element).fancytree({
+			source: []
+		});
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		options = {
@@ -400,3 +403,13 @@ ko.tracker = new @Maslosoft.Ko.Track
 #class @Maslosoft.Ko.TrackTestNest extends @Maslosoft.Components.Model
 #	_class: 'Maslosoft\\Ko\\TrackTestNest'
 #	name: ''
+#
+# Model class with automatically applied knockout bindings
+#
+class @Maslosoft.Ko.Balin.Model
+	
+	constructor: (data = null) ->
+		for name, value of data
+			if typeof @[name] is 'undefined' then continue
+			@[name] = ko.tracker.factory(value)
+		ko.track(@)

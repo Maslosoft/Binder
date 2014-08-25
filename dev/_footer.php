@@ -3,6 +3,7 @@ $text = ob_get_flush();
 ?>
 <h4>Relevant code used to create above result:</h4>
 <pre><?= htmlspecialchars($text)?></pre>
+</div>
 <script>
 	jQuery(document).ready(function() {
 		var entityMap = {

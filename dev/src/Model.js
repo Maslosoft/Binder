@@ -31,33 +31,13 @@
     this.Maslosoft.Mangan.Model = {};
   }
 
-  if (!this.Maslosoft.KoBalinDev) {
-    this.Maslosoft.KoBalinDev = {};
+  if (!this.Maslosoft.Ko.BalinDev) {
+    this.Maslosoft.Ko.BalinDev = {};
   }
 
-  if (!this.Maslosoft.KoBalinDev.Models) {
-    this.Maslosoft.KoBalinDev.Models = {};
+  if (!this.Maslosoft.Ko.BalinDev.Models) {
+    this.Maslosoft.Ko.BalinDev.Models = {};
   }
-
-  this.Maslosoft.Components.Model = (function() {
-    function Model(data) {
-      var name, value;
-      if (data == null) {
-        data = null;
-      }
-      for (name in data) {
-        value = data[name];
-        if (typeof this[name] === 'undefined') {
-          continue;
-        }
-        this[name] = ko.tracker.factory(value);
-      }
-      ko.track(this);
-    }
-
-    return Model;
-
-  })();
 
   this.Maslosoft.Mangan.Model.Image_Base = (function(_super) {
     __extends(Image_Base, _super);
@@ -90,7 +70,7 @@
 
     return Image_Base;
 
-  })(this.Maslosoft.Components.Model);
+  })(this.Maslosoft.Ko.Balin.Model);
 
   this.Maslosoft.Mangan.Model.Image = (function(_super) {
     __extends(Image, _super);
@@ -140,7 +120,7 @@
 
     return AssetCollection_Base;
 
-  })(this.Maslosoft.Components.Model);
+  })(this.Maslosoft.Ko.Balin.Model);
 
   this.Maslosoft.Menulis.Content.Models.AssetCollection = (function(_super) {
     __extends(AssetCollection, _super);
@@ -192,7 +172,7 @@
 
     return AssetGroup_Base;
 
-  })(this.Maslosoft.Components.Model);
+  })(this.Maslosoft.Ko.Balin.Model);
 
   this.Maslosoft.Menulis.Content.Models.AssetGroup = (function(_super) {
     __extends(AssetGroup, _super);
@@ -260,7 +240,7 @@
 
     return PageAsset_Base;
 
-  })(this.Maslosoft.Components.Model);
+  })(this.Maslosoft.Ko.Balin.Model);
 
   this.Maslosoft.Menulis.Content.Models.PageAsset = (function(_super) {
     __extends(PageAsset, _super);
@@ -273,14 +253,14 @@
 
   })(this.Maslosoft.Menulis.Content.Models.PageAsset_Base);
 
-  this.Maslosoft.KoBalinDev.Models.TreeItem = (function(_super) {
+  this.Maslosoft.Ko.BalinDev.Models.TreeItem = (function(_super) {
     __extends(TreeItem, _super);
 
     function TreeItem() {
       return TreeItem.__super__.constructor.apply(this, arguments);
     }
 
-    TreeItem.prototype._class = "Maslosoft.KoBalinDev.Models.TreeItem";
+    TreeItem.prototype._class = "Maslosoft.Ko.BalinDev.Models.TreeItem";
 
     TreeItem.prototype.title = '';
 
@@ -288,21 +268,21 @@
 
     return TreeItem;
 
-  })(this.Maslosoft.Components.Model);
+  })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.KoBalinDev.Models.Intro = (function(_super) {
+  this.Maslosoft.Ko.BalinDev.Models.Intro = (function(_super) {
     __extends(Intro, _super);
 
     function Intro() {
       return Intro.__super__.constructor.apply(this, arguments);
     }
 
-    Intro.prototype._class = "Maslosoft.KoBalinDev.Models.Intro";
+    Intro.prototype._class = "Maslosoft.Ko.BalinDev.Models.Intro";
 
     Intro.prototype.text = '';
 
     return Intro;
 
-  })(this.Maslosoft.Components.Model);
+  })(this.Maslosoft.Ko.Balin.Model);
 
 }).call(this);

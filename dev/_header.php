@@ -18,6 +18,7 @@
 
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
+		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
 		<style>
 			body{
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -45,33 +46,68 @@
 			}
 			nav ul li{
 				display: inline-block;
+				color: white;
 			}
-			nav ul li a{
+			nav ul li a, nav ul li a:hover{
 				color: white;
 			}
 		</style>
 		<script>
 			Maslosoft.Ko.Balin.registerDefaults();
 		</script>
+		<?php
+		foreach (new DirectoryIterator(__DIR__) as $file)
+		{
+			if (strpos($file->getFilename(), '_') === 0)
+			{
+				continue;
+			}
+			if ($file->getFilename() === 'index.php')
+			{
+				continue;
+			}
+			if ($file->getExtension() != 'php')
+			{
+				continue;
+			}
+			if (strstr($file->getFilename(), '-'))
+			{
+				$combined[$file->getFilename()] = substr($file->getFilename(), 0, -4);
+			}
+			else
+			{
+				$simple[$file->getFilename()] = substr($file->getFilename(), 0, -4);
+			}
+		}
+		?>
 	</head>
 	<body>
-		<nav>
-			<h1><?= basename($_SERVER['SCRIPT_FILENAME'], '.php') ?></h1>
-			<ul>
-				<li class="link">
-					<a href="./index.php">Index</a>
-				</li>
-				<?php foreach (new DirectoryIterator(__DIR__) as $file): ?>
-					<?php if (strpos($file->getFilename(), '_') === 0) continue; ?>
-					<?php if ($file->getFilename() === 'index.php') continue; ?>
-					<?php if ($file->getExtension() != 'php') continue; ?>
+		<div class="container-fluid">
+			<nav>
+				<h1><?= basename($_SERVER['SCRIPT_FILENAME'], '.php') ?></h1>
+				<ul>
 					<li class="link">
-						<a href="./<?= $file->getFilename(); ?>"><?= substr($file->getFilename(), 0, -4); ?></a>
+						<a href="./index.php">Index</a>
 					</li>
-				<?php endforeach; ?>
-			</ul>
-		</nav>
-		<hr />
-		<?php
-		ob_start()
-		?>
+					<li class="link">
+						|
+					</li>
+					<?php foreach ($simple as $file => $name): ?>
+						<li class="link">
+							<a href="./<?= $file; ?>"><?= $name; ?></a>
+						</li>
+					<?php endforeach; ?>
+					<li class="link">
+						|
+					</li>
+					<?php foreach ($combined as $file => $name): ?>
+						<li class="link">
+							<a href="./<?= $file; ?>"><?= $name; ?></a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</nav>
+			<hr />
+			<?php
+			ob_start()
+			?>
