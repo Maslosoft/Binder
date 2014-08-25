@@ -12,7 +12,10 @@ if not @Maslosoft.Mangan
 	@Maslosoft.Mangan = {}
 if not @Maslosoft.Mangan.Model
 	@Maslosoft.Mangan.Model = {}
-
+if not @Maslosoft.KoBalinDev
+	@Maslosoft.KoBalinDev = {}
+if not @Maslosoft.KoBalinDev.Models
+	@Maslosoft.KoBalinDev.Models = {}
 
 class @Maslosoft.Components.Model
 
@@ -103,3 +106,12 @@ class @Maslosoft.Menulis.Content.Models.PageAsset_Base extends @Maslosoft.Compon
 	parentId: null
 
 class @Maslosoft.Menulis.Content.Models.PageAsset extends @Maslosoft.Menulis.Content.Models.PageAsset_Base
+
+class @Maslosoft.KoBalinDev.Models.TreeItem extends @Maslosoft.Components.Model
+	_class: "Maslosoft.KoBalinDev.Models.TreeItem"
+	title: ''
+	children: []
+
+class @Maslosoft.KoBalinDev.Models.Intro extends @Maslosoft.Components.Model
+	_class: "Maslosoft.KoBalinDev.Models.Intro"
+	text: ''

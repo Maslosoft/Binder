@@ -4,7 +4,9 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 	element: null
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		
+		jQuery(element).fancytree({
+			source: []
+		});
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		options = {

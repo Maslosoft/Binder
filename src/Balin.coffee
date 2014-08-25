@@ -12,6 +12,7 @@
 # Register default set of binding handlers, or part of default set
 #
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
+	# In alphabetical order
 	config = {
 		fancytree: Maslosoft.Ko.Balin.Fancytree,
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,

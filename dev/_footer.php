@@ -22,6 +22,7 @@ $text = ob_get_flush();
 //		var body = jQuery(jQuery('body').html());
 //		var text = body.find('script:last').remove().find('div:first').remove();
 //		body.append('<pre><code>' + escapeHtml(text).replace(/\t/g, '  ') + '</code></pre>');
+		hljs.configure({languages:['html']});
 		hljs.highlightBlock(document.getElementsByTagName('pre')[0]);
 	});
 

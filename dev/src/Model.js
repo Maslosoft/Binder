@@ -31,6 +31,14 @@
     this.Maslosoft.Mangan.Model = {};
   }
 
+  if (!this.Maslosoft.KoBalinDev) {
+    this.Maslosoft.KoBalinDev = {};
+  }
+
+  if (!this.Maslosoft.KoBalinDev.Models) {
+    this.Maslosoft.KoBalinDev.Models = {};
+  }
+
   this.Maslosoft.Components.Model = (function() {
     function Model(data) {
       var name, value;
@@ -264,5 +272,37 @@
     return PageAsset;
 
   })(this.Maslosoft.Menulis.Content.Models.PageAsset_Base);
+
+  this.Maslosoft.KoBalinDev.Models.TreeItem = (function(_super) {
+    __extends(TreeItem, _super);
+
+    function TreeItem() {
+      return TreeItem.__super__.constructor.apply(this, arguments);
+    }
+
+    TreeItem.prototype._class = "Maslosoft.KoBalinDev.Models.TreeItem";
+
+    TreeItem.prototype.title = '';
+
+    TreeItem.prototype.children = [];
+
+    return TreeItem;
+
+  })(this.Maslosoft.Components.Model);
+
+  this.Maslosoft.KoBalinDev.Models.Intro = (function(_super) {
+    __extends(Intro, _super);
+
+    function Intro() {
+      return Intro.__super__.constructor.apply(this, arguments);
+    }
+
+    Intro.prototype._class = "Maslosoft.KoBalinDev.Models.Intro";
+
+    Intro.prototype.text = '';
+
+    return Intro;
+
+  })(this.Maslosoft.Components.Model);
 
 }).call(this);

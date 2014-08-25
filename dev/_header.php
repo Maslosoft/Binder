@@ -10,13 +10,21 @@
 		<script src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
 		<script src="../bower_components/moment/min/moment-with-locales.min.js"></script>
 		<script src="../bower_components/highlightjs/highlight.pack.js"></script>
+		<script src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
 		<script src="./src/_ns.js"></script>
 		<script src="../dist/ko.balin.js"></script>
 		<script src="./src/Model.js"></script>
 		<script src="./src/init.js"></script>
 
-		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css">
+		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
+		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
 		<style>
+			body{
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				font-size: 14px;
+				line-height: 20px;
+				color: #333333;
+			}
 			pre
 			{
 				-moz-tab-size: 4;
@@ -26,22 +34,43 @@
 			.ui-selected{
 				background: darkorange;
 			}
+			nav ul, nav ul li{
+				list-style: none;
+				margin: 0px 2px;
+				padding: 2px;
+			}
+			nav ul{
+				background: url('./images/menuBg.jpg') no-repeat;
+				background-size: cover;
+			}
+			nav ul li{
+				display: inline-block;
+			}
+			nav ul li a{
+				color: white;
+			}
 		</style>
 		<script>
 			Maslosoft.Ko.Balin.registerDefaults();
 		</script>
 	</head>
 	<body>
-		<div>
+		<nav>
 			<h1><?= basename($_SERVER['SCRIPT_FILENAME'], '.php') ?></h1>
-			<?php foreach (new DirectoryIterator(__DIR__) as $file): ?>
-				<?php if (strpos($file->getFilename(), '_') === 0) continue; ?>
-				<?php if ($file->getExtension() != 'php') continue; ?>
-				<span class="link">
-					<a href="./<?= $file->getFilename(); ?>"><?= substr($file->getFilename(), 0, -4); ?></a>
-				</span>
-			<?php endforeach; ?>
-		</div>
+			<ul>
+				<li class="link">
+					<a href="./index.php">Index</a>
+				</li>
+				<?php foreach (new DirectoryIterator(__DIR__) as $file): ?>
+					<?php if (strpos($file->getFilename(), '_') === 0) continue; ?>
+					<?php if ($file->getFilename() === 'index.php') continue; ?>
+					<?php if ($file->getExtension() != 'php') continue; ?>
+					<li class="link">
+						<a href="./<?= $file->getFilename(); ?>"><?= substr($file->getFilename(), 0, -4); ?></a>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</nav>
 		<hr />
 		<?php
 		ob_start()
