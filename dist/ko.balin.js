@@ -28,6 +28,7 @@
       handlers = null;
     }
     config = {
+      fancytree: Maslosoft.Ko.Balin.Fancytree,
       fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
       href: Maslosoft.Ko.Balin.Href,
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
@@ -147,6 +148,48 @@
     };
 
     return MomentFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Fancytree = (function(_super) {
+    __extends(Fancytree, _super);
+
+    function Fancytree() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return Fancytree.__super__.constructor.apply(this, arguments);
+    }
+
+    Fancytree.prototype.tree = null;
+
+    Fancytree.prototype.element = null;
+
+    Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+
+    Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var handler, options;
+      options = {
+        autoExpand: true
+      };
+      element = jQuery(element);
+      handler = (function(_this) {
+        return function() {
+          if (element.find('.ui-fancytree').length === 0) {
+            return;
+          }
+          element.fancytree('option', 'source', valueAccessor());
+          if (options.autoExpand) {
+            element.fancytree('getRootNode').visit(function(node) {
+              return node.setExpanded(true);
+            });
+          }
+          return element.focus();
+        };
+      })(this);
+      return setTimeout(handler, 0);
+    };
+
+    return Fancytree;
 
   })(this.Maslosoft.Ko.Balin.Base);
 

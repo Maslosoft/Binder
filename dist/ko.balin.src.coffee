@@ -20,6 +20,7 @@ if not @Maslosoft.Ko.Balin
 #
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	config = {
+		fancytree: Maslosoft.Ko.Balin.Fancytree,
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
 		href: Maslosoft.Ko.Balin.Href,
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue,
@@ -116,6 +117,34 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
 		return
+class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
+
+	tree: null
+	element: null
+
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+		
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		options = {
+			autoExpand: true
+		}
+		element = jQuery element
+
+		handler = () =>
+
+			if element.find('.ui-fancytree').length == 0
+				return
+
+			element.fancytree 'option', 'source', valueAccessor()
+#				element.fancytree('getTree').getTree()
+#				element.fancytree('getTree').reload(dp)
+			#element.fancytree('getTree').init()
+			if options.autoExpand
+				element.fancytree('getRootNode').visit (node) ->
+					node.setExpanded true
+			element.focus()
+		setTimeout handler, 0
 #
 # One-way file size formatter
 #

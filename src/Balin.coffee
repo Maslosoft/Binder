@@ -13,6 +13,7 @@
 #
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	config = {
+		fancytree: Maslosoft.Ko.Balin.Fancytree,
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
 		href: Maslosoft.Ko.Balin.Href,
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue,
