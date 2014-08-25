@@ -1,7 +1,7 @@
 <?php require './_header.php'; ?>
 <b>WARNING: This binding <i>require</i> parent context, like here with `with` binding</b>
 <div data-bind="with: app.model.Mangan.Image">
-	Input: <input data-bind="textInput: filename" style="width:50%;"/> <br />
+	Standard input field: <input data-bind="textInput: filename" style="width:50%;"/> <br />
 	This should be editable and ignore any html from above input: <span data-bind="textValue: filename"></span> <br />
 </div>
 

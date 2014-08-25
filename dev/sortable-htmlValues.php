@@ -2,20 +2,22 @@
 <script>
 	app.model.Content.AssetCollection.items = app.model.Content.AssetCollection.items.slice(0, 2);
 </script>
-<div>Sortable: <input data-bind="textInput: app.model.Content.AssetCollection.title"/> <span data-bind="htmlValue: app.model.Content.AssetCollection.title"></span></div>
-<div id="dev" data-bind="sortable: {data: app.model.Content.AssetCollection.items, connectClass: 'AssetGroup', options: {distance: 10, cancel: ':input,button,[contenteditable]'}}">
-	<div>
-		<input data-bind="textInput: title"/>
-		<span data-bind="htmlValue: title"></span>
-		<span data-bind="textValue: title"></span>
+<div data-bind="with: app.model.Content.AssetCollection">
+	<div>Sortable: <input data-bind="textInput: title"/> <span data-bind="htmlValue: title"></span></div>
+	<div id="dev" data-bind="sortable: {data: items, connectClass: 'AssetGroup', options: {distance: 10, cancel: ':input,button,[contenteditable]'}}">
+		<div>
+			<input data-bind="textInput: title"/>
+			<span data-bind="htmlValue: title"></span>
+			<span data-bind="textValue: title"></span>
+		</div>
 	</div>
-</div>
-<div>Foreach:</div>
-<div data-bind="foreach: app.model.Content.AssetCollection.items">
-	<div>
-		<input data-bind="textInput: title"/>
-		<span data-bind="htmlValue: title"></span>
-		<span data-bind="textValue: title"></span>
+	<div>Foreach:</div>
+	<div data-bind="foreach: items">
+		<div>
+			<input data-bind="textInput: title"/>
+			<span data-bind="htmlValue: title"></span>
+			<span data-bind="textValue: title"></span>
+		</div>
 	</div>
 </div>
 <script>
