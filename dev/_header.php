@@ -3,22 +3,6 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
-		<script src="../bower_components/jquery/dist/jquery.min.js"></script>
-		<script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
-		<script src="../bower_components/knockout/dist/knockout.debug.js"></script>
-		<script src="./src/knockout-es5.js"></script>
-		<script src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
-		<script src="../bower_components/moment/min/moment-with-locales.min.js"></script>
-		<script src="../bower_components/highlightjs/highlight.pack.js"></script>
-		<script src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
-		<script src="./src/_ns.js"></script>
-		<script src="../dist/ko.balin.js"></script>
-		<script src="./src/Model.js"></script>
-		<script src="./src/init.js"></script>
-
-		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
-		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
-		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
 		<style>
 			body{
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -52,6 +36,25 @@
 				color: white;
 			}
 		</style>
+		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
+		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
+		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+		
+		
+		
+		<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
+		<script src="../bower_components/knockout/dist/knockout.debug.js"></script>
+		<script src="./src/knockout-es5.js"></script>
+		<script src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
+		<script src="../bower_components/moment/min/moment-with-locales.min.js"></script>
+		<script src="../bower_components/highlightjs/highlight.pack.js"></script>
+		<script src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
+		<script src="./src/_ns.js"></script>
+		<script src="../dist/ko.balin.js"></script>
+		<script src="./src/Model.js"></script>
+		<script src="./src/init.js"></script>
+		
 		<script>
 			Maslosoft.Ko.Balin.registerDefaults();
 		</script>
