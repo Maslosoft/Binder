@@ -1,12 +1,23 @@
 #
 # Html value binding
 # WARNING This MUST have parent context, or will not work
-# TODO Check if sortable is available, and if active, add `[contenteditable]` to `cancel` option
 #
 class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
 	# Counter for id generator
 	idCounter = 0
+	
+	constructor: (options) ->
+		super(options)
+		if ko.bindingHandlers.sortable and ko.bindingHandlers.sortable.options
+			# Allow `contenteditable` to get focus
+			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
+
+	getElementValue: (element) ->
+		return element.innerHTML
+
+	setElementValue: (element, value) ->
+		element.innerHTML = value
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		element.setAttribute('contenteditable', true)
@@ -26,7 +37,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 			
 			accessor = valueAccessor()
 			modelValue = @getValue(valueAccessor)
-			elementValue = element.innerHTML
+			elementValue = @getElementValue(element)
 			if ko.isWriteableObservable(accessor)
 				# Update only if changed
 				if modelValue isnt elementValue
@@ -42,7 +53,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
-		if element.innerHTML isnt value
+		if @getElementValue(element) isnt value
 #			console.log "Update: #{element.innerHTML} = #{value}"
-			element.innerHTML = value
+			@setElementValue(element, value)
 		return

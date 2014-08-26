@@ -1,7 +1,7 @@
 <?php
 $text = ob_get_flush();
 ?>
-<h4>Relevant code used to create above result:</h4>
+<h4><a href="javascript:jQuery('pre').slideToggle();">Relevant code used to create above result:</a></h4>
 <pre><?= htmlspecialchars($text)?></pre>
 </div>
 <script>

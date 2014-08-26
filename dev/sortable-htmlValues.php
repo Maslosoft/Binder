@@ -4,7 +4,7 @@
 </script>
 <div data-bind="with: app.model.Content.AssetCollection">
 	<div>Sortable: <input data-bind="textInput: title"/> <span data-bind="htmlValue: title"></span></div>
-	<div id="dev" data-bind="sortable: {data: items, connectClass: 'AssetGroup', options: {distance: 10, cancel: ':input,button,[contenteditable]'}}">
+	<div id="dev" data-bind="sortable: {data: items, connectClass: 'AssetGroup', options: {distance: 10}}">
 		<div>
 			<input data-bind="textInput: title"/>
 			<span data-bind="htmlValue: title"></span>
