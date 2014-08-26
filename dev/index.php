@@ -19,7 +19,6 @@ $text = implode('<br />', $textLines);
 	</div>
 	<hr />
 	<div data-bind="html: text"></div>
-	<a href="javascript:debugger;">blah</a>
 </div>
 <script>
 	jQuery(document).ready(function(){
