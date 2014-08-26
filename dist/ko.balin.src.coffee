@@ -118,35 +118,51 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
 		return
+#
+# Fancytree binding
+# TODO Allow sytaxes:
+# data-bind="fancytree: data"
+# data-bind="fancytree: {data: data}"
+# data-bind="fancytree: {data: data, options: <fancyTree-options>, autoExpand: true|false}"
+# TODO When using two or more trees from same data, only first one works properly
+#
 class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 
 	tree: null
 	element: null
 
+	getData: (valueAccessor) ->
+		# Verbose syntax, at least {data: data}
+		value = @getValue(valueAccessor) or []
+		if value.data
+			return value.data
+		return value
+
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		jQuery(element).fancytree({
-			source: []
-		});
+
+		# Tree options
+		options = valueAccessor().options or {}
+		options.source = @getData(valueAccessor)
+
+		jQuery(element).fancytree(options);
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		options = {
-			autoExpand: true
-		}
+		config = @getValue(valueAccessor)
 		element = jQuery element
 
 		handler = () =>
 
-			if element.find('.ui-fancytree').length == 0
-				return
+			if not element.find('.ui-fancytree').length then return
+			
+			element.fancytree 'option', 'source', @getData(valueAccessor)
 
-			element.fancytree 'option', 'source', valueAccessor()
-#				element.fancytree('getTree').getTree()
-#				element.fancytree('getTree').reload(dp)
-			#element.fancytree('getTree').init()
-			if options.autoExpand
+			# Autoexpand handling
+			if config.autoExpand
 				element.fancytree('getRootNode').visit (node) ->
 					node.setExpanded true
 			element.focus()
+
+		# Put rendering to end of queue to ensure bindings are evaluated
 		setTimeout handler, 0
 #
 # One-way file size formatter
@@ -234,12 +250,23 @@ class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
 #
 # Html value binding
 # WARNING This MUST have parent context, or will not work
-# TODO Check if sortable is available, and if active, add `[contenteditable]` to `cancel` option
 #
 class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
 	# Counter for id generator
 	idCounter = 0
+	
+	constructor: (options) ->
+		super(options)
+		if ko.bindingHandlers.sortable and ko.bindingHandlers.sortable.options
+			# Allow `contenteditable` to get focus
+			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
+
+	getElementValue: (element) ->
+		return element.innerHTML
+
+	setElementValue: (element, value) ->
+		element.innerHTML = value
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		element.setAttribute('contenteditable', true)
@@ -259,7 +286,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 			
 			accessor = valueAccessor()
 			modelValue = @getValue(valueAccessor)
-			elementValue = element.innerHTML
+			elementValue = @getElementValue(element)
 			if ko.isWriteableObservable(accessor)
 				# Update only if changed
 				if modelValue isnt elementValue
@@ -275,9 +302,9 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
-		if element.innerHTML isnt value
+		if @getElementValue(element) isnt value
 #			console.log "Update: #{element.innerHTML} = #{value}"
-			element.innerHTML = value
+			@setElementValue(element, value)
 		return
 #
 # Src binding handler
@@ -291,61 +318,19 @@ class @Maslosoft.Ko.Balin.Src extends @Maslosoft.Ko.Balin.Base
 		if element.src isnt src
 			element.src = src
 #
-# Html value binding
+# Html text value binding
 # WARNING This MUST have parent context, or will not work
-# TODO Check if sortable is available, and if active, add `[contenteditable]` to `cancel` option
-# TODO Refactor this, to inherit from HtmlValue
 #
-class @Maslosoft.Ko.Balin.TextValue extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.TextValue extends @Maslosoft.Ko.Balin.HtmlValue
 
-	# Counter for id generator
-	idCounter = 0
+	getElementValue: (element) ->
+		return element.textContent || element.innerText || ""
 
-	getText: (element) =>
-		element.textContent || element.innerText || ""
-
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		element.setAttribute('contenteditable', true)
-
-		# Generate some id if not set, see notes below why
-		if not element.id
-			element.id = "Maslosoft-Ko-Balin-TextValue-#{idCounter++}"
-
-		handler = (e) =>
-
-			# On some situations element might be null (sorting), ignore this case
-			if not element then return
-
-			# This is required in some scenarios, specifically when sorting htmlValue elements
-			element = document.getElementById(element.id)
-			if not element then return
-
-			accessor = valueAccessor()
-			modelValue = @getValue(valueAccessor)
-			elementValue = element.textContent || element.innerText || ""
-			if ko.isWriteableObservable(accessor)
-				# Update only if changed
-				if modelValue isnt elementValue
-#					console.log "Write: #{modelValue} = #{elementValue}"
-					accessor(elementValue)
-
-		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
-		ko.utils.registerEventHandler element, "keyup, input", handler
-
-		# This is to allow interation with tools which could modify content, also to work with drag and drop
-		ko.utils.registerEventHandler document, "mouseup", handler
-		return
-
-	update: (element, valueAccessor) =>
-		value = @getValue(valueAccessor)
+	setElementValue: (element, value) ->
 		if typeof element.textContent isnt 'undefined'
-			if element.textContent isnt value
-				element.textContent = value
+			element.textContent = value
 		if typeof element.innerText isnt 'undefined'
-			if element.innerText isnt value
-				element.innerText = value
-
-		return
+			element.innerText = value
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

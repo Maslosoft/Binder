@@ -164,25 +164,33 @@
 
     Fancytree.prototype.element = null;
 
+    Fancytree.prototype.getData = function(valueAccessor) {
+      var value;
+      value = this.getValue(valueAccessor) || [];
+      if (value.data) {
+        return value.data;
+      }
+      return value;
+    };
+
     Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      return jQuery(element).fancytree({
-        source: []
-      });
+      var options;
+      options = valueAccessor().options || {};
+      options.source = this.getData(valueAccessor);
+      return jQuery(element).fancytree(options);
     };
 
     Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var handler, options;
-      options = {
-        autoExpand: true
-      };
+      var config, handler;
+      config = this.getValue(valueAccessor);
       element = jQuery(element);
       handler = (function(_this) {
         return function() {
-          if (element.find('.ui-fancytree').length === 0) {
+          if (!element.find('.ui-fancytree').length) {
             return;
           }
-          element.fancytree('option', 'source', valueAccessor());
-          if (options.autoExpand) {
+          element.fancytree('option', 'source', _this.getData(valueAccessor));
+          if (config.autoExpand) {
             element.fancytree('getRootNode').visit(function(node) {
               return node.setExpanded(true);
             });
@@ -307,13 +315,24 @@
 
     __extends(HtmlValue, _super);
 
-    function HtmlValue() {
+    idCounter = 0;
+
+    function HtmlValue(options) {
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
-      return HtmlValue.__super__.constructor.apply(this, arguments);
+      HtmlValue.__super__.constructor.call(this, options);
+      if (ko.bindingHandlers.sortable && ko.bindingHandlers.sortable.options) {
+        ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]';
+      }
     }
 
-    idCounter = 0;
+    HtmlValue.prototype.getElementValue = function(element) {
+      return element.innerHTML;
+    };
+
+    HtmlValue.prototype.setElementValue = function(element, value) {
+      return element.innerHTML = value;
+    };
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var handler;
@@ -333,7 +352,7 @@
           }
           accessor = valueAccessor();
           modelValue = _this.getValue(valueAccessor);
-          elementValue = element.innerHTML;
+          elementValue = _this.getElementValue(element);
           if (ko.isWriteableObservable(accessor)) {
             if (modelValue !== elementValue) {
               return accessor(elementValue);
@@ -348,8 +367,8 @@
     HtmlValue.prototype.update = function(element, valueAccessor) {
       var value;
       value = this.getValue(valueAccessor);
-      if (element.innerHTML !== value) {
-        element.innerHTML = value;
+      if (this.getElementValue(element) !== value) {
+        this.setElementValue(element, value);
       }
     };
 
@@ -381,71 +400,28 @@
   })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.TextValue = (function(_super) {
-    var idCounter;
-
     __extends(TextValue, _super);
 
     function TextValue() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      this.getText = __bind(this.getText, this);
       return TextValue.__super__.constructor.apply(this, arguments);
     }
 
-    idCounter = 0;
-
-    TextValue.prototype.getText = function(element) {
+    TextValue.prototype.getElementValue = function(element) {
       return element.textContent || element.innerText || "";
     };
 
-    TextValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var handler;
-      element.setAttribute('contenteditable', true);
-      if (!element.id) {
-        element.id = "Maslosoft-Ko-Balin-TextValue-" + (idCounter++);
-      }
-      handler = (function(_this) {
-        return function(e) {
-          var accessor, elementValue, modelValue;
-          if (!element) {
-            return;
-          }
-          element = document.getElementById(element.id);
-          if (!element) {
-            return;
-          }
-          accessor = valueAccessor();
-          modelValue = _this.getValue(valueAccessor);
-          elementValue = element.textContent || element.innerText || "";
-          if (ko.isWriteableObservable(accessor)) {
-            if (modelValue !== elementValue) {
-              return accessor(elementValue);
-            }
-          }
-        };
-      })(this);
-      ko.utils.registerEventHandler(element, "keyup, input", handler);
-      ko.utils.registerEventHandler(document, "mouseup", handler);
-    };
-
-    TextValue.prototype.update = function(element, valueAccessor) {
-      var value;
-      value = this.getValue(valueAccessor);
+    TextValue.prototype.setElementValue = function(element, value) {
       if (typeof element.textContent !== 'undefined') {
-        if (element.textContent !== value) {
-          element.textContent = value;
-        }
+        element.textContent = value;
       }
       if (typeof element.innerText !== 'undefined') {
-        if (element.innerText !== value) {
-          element.innerText = value;
-        }
+        return element.innerText = value;
       }
     };
 
     return TextValue;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Ko.Balin.HtmlValue);
 
   this.Maslosoft.Ko.getType = function(type) {
     if (x && typeof x === 'object') {
