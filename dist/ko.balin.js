@@ -52,6 +52,49 @@
     }
   };
 
+  this.Maslosoft.Ko.Balin.registerEvents = function(handlers) {
+    var config, index, value, _results, _results1;
+    if (handlers == null) {
+      handlers = null;
+    }
+    config = {
+      'mousedown': 'mousedown',
+      'mouseup': 'mouseup',
+      'mouseover': 'mouseover',
+      'mouseout': 'mouseout'
+    };
+    if (handlers !== null) {
+      _results = [];
+      for (index in handlers) {
+        value = handlers[index];
+        _results.push(Maslosoft.Ko.Balin.makeEventHandlerShortcut(value));
+      }
+      return _results;
+    } else {
+      _results1 = [];
+      for (index in config) {
+        value = config[index];
+        _results1.push(Maslosoft.Ko.Balin.makeEventHandlerShortcut(value));
+      }
+      return _results1;
+    }
+  };
+
+  this.Maslosoft.Ko.Balin.makeEventHandlerShortcut = function(eventName) {
+    ko.bindingHandlers[eventName] = {
+      init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var newValueAccessor;
+        newValueAccessor = function() {
+          var result;
+          result = {};
+          result[eventName] = valueAccessor();
+          return result;
+        };
+        return ko.bindingHandlers["event"]["init"].call(this, element, newValueAccessor, allBindings, viewModel, bindingContext);
+      }
+    };
+  };
+
   this.Maslosoft.Ko.Balin.Base = (function() {
     Base.prototype.writable = true;
 
@@ -369,6 +412,30 @@
       value = this.getValue(valueAccessor);
       if (this.getElementValue(element) !== value) {
         this.setElementValue(element, value);
+      }
+    };
+
+    return HtmlValue;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.HtmlValue = (function(_super) {
+    __extends(HtmlValue, _super);
+
+    function HtmlValue() {
+      this.update = __bind(this.update, this);
+      return HtmlValue.__super__.constructor.apply(this, arguments);
+    }
+
+    HtmlValue.prototype.className = 'selected';
+
+    HtmlValue.prototype.update = function(element, valueAccessor) {
+      var value;
+      value = this.getValue(valueAccessor);
+      if (value) {
+        ko.utils.toggleDomNodeCssClass(element, this.className, true);
+      } else {
+        ko.utils.toggleDomNodeCssClass(element, this.className, false);
       }
     };
 

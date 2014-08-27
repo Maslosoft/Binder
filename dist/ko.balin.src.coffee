@@ -34,6 +34,34 @@ if not @Maslosoft.Ko.Balin
 	else
 		for index, value of config
 			Maslosoft.Ko.Balin.register(index, new value)
+
+#
+# Register default set of event handlers, or part of default set
+#
+@Maslosoft.Ko.Balin.registerEvents = (handlers = null) ->
+	config = {
+		'mousedown',
+		'mouseup',
+		'mouseover',
+		'mouseout',
+	}
+	if handlers isnt null
+		for index, value of handlers
+			Maslosoft.Ko.Balin.makeEventHandlerShortcut(value)
+	else
+		for index, value of config
+			Maslosoft.Ko.Balin.makeEventHandlerShortcut(value)
+
+@Maslosoft.Ko.Balin.makeEventHandlerShortcut = (eventName) ->
+	ko.bindingHandlers[eventName] = init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
+		newValueAccessor = ->
+			result = {}
+			result[eventName] = valueAccessor()
+			result
+
+		ko.bindingHandlers["event"]["init"].call this, element, newValueAccessor, allBindings, viewModel, bindingContext
+
+	return
 #
 # Base class for Maslosoft binding handlers
 #
@@ -305,6 +333,23 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		if @getElementValue(element) isnt value
 #			console.log "Update: #{element.innerHTML} = #{value}"
 			@setElementValue(element, value)
+		return
+
+
+#
+# Selected binding
+# This adds class from options if value is true
+#
+class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
+
+	className: 'selected'
+
+	update: (element, valueAccessor) =>
+		value = @getValue(valueAccessor)
+		if value
+			ko.utils.toggleDomNodeCssClass(element, @className, true);
+		else
+			ko.utils.toggleDomNodeCssClass(element, @className, false);
 		return
 #
 # Src binding handler

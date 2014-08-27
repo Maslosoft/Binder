@@ -27,3 +27,31 @@
 	else
 		for index, value of config
 			Maslosoft.Ko.Balin.register(index, new value)
+
+#
+# Register default set of event handlers, or part of default set
+#
+@Maslosoft.Ko.Balin.registerEvents = (handlers = null) ->
+	config = {
+		'mousedown',
+		'mouseup',
+		'mouseover',
+		'mouseout',
+	}
+	if handlers isnt null
+		for index, value of handlers
+			Maslosoft.Ko.Balin.makeEventHandlerShortcut(value)
+	else
+		for index, value of config
+			Maslosoft.Ko.Balin.makeEventHandlerShortcut(value)
+
+@Maslosoft.Ko.Balin.makeEventHandlerShortcut = (eventName) ->
+	ko.bindingHandlers[eventName] = init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
+		newValueAccessor = ->
+			result = {}
+			result[eventName] = valueAccessor()
+			result
+
+		ko.bindingHandlers["event"]["init"].call this, element, newValueAccessor, allBindings, viewModel, bindingContext
+
+	return
