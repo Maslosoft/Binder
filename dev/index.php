@@ -1,15 +1,20 @@
 <?php require './_header.php'; ?>
 <?php
 $textLines = [
-	'These are demos for various binding handlers.',
-	'This text for example is editable, and is automatically updated in javascript view model.',
-	'Hit ctrl + one of <b>b</b>, <i>i</i>, <u>u</u> for <b>bold</b>, <i>italic</i>, <u>underline</u>, or try your other known formatting shortcuts, try drag and drop, paste.',
-	'You can access this text via JavaScript:',
-	'Open a console',
-	'Type `app.model.intro.text` and press enter. Then change something and try again.',
-	'This text should apear also below second time, but without editing.'
+	'These are demos for various binding handlers.<br />',
+	'This text for example is editable, and is automatically updated in javascript view model.<br />',
+	'Hit ctrl + one of <b>b</b>, <i>i</i>, <u>u</u> for <b>bold</b>, <i>italic</i>, <u>underline</u>, or try your other known formatting shortcuts, try drag and drop, paste.<br />',
+	'You can access this text via JavaScript:<br />',
+	'<ol>',
+	'<li>Open a console</li>',
+	'<li>Type `app.model.intro.text` and press enter. Then change something and try again.</li>',
+	'<li>This text should apear also below second time, but without editing mode.</li>',
+	'</ol>'
 ];
-$text = implode('<br />', $textLines);
+$text = implode("\n\t\t", $textLines);
+array_walk($textLines, function(&$value, $index){
+	$value = json_encode($value);
+});
 ?>
 <div data-bind="with: app.model.intro">
 	<div data-bind="htmlValue: text">
@@ -22,7 +27,11 @@ $text = implode('<br />', $textLines);
 </div>
 <script>
 	jQuery(document).ready(function(){
-		app.model.intro = new Maslosoft.Ko.BalinDev.Models.Intro({text: <?= json_encode($text); ?>});
+		app.model.intro = new Maslosoft.Ko.BalinDev.Models.Intro({
+			text: [
+				<?= implode(",\n\t\t\t\t", $textLines) . "\n"; ?>
+			].join('')
+		});
 		ko.applyBindings({model: app.model});
 	});
 </script>
