@@ -5,6 +5,7 @@
 #
 @Maslosoft.Ko.Balin.register = (name, handler) ->
 	ko.bindingHandlers[name] = handler
+	
 	if handler.writable
 		ko.expressionRewriting.twoWayBindings[name] = true
 
@@ -21,6 +22,7 @@
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 	}
+	
 	if handlers isnt null
 		for index, value of handlers
 			Maslosoft.Ko.Balin.register(value, new config[value])

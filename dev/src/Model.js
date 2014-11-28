@@ -7,30 +7,6 @@
     this.Maslosoft = {};
   }
 
-  if (!this.Maslosoft.Components) {
-    this.Maslosoft.Components = {};
-  }
-
-  if (!this.Maslosoft.Menulis) {
-    this.Maslosoft.Menulis = {};
-  }
-
-  if (!this.Maslosoft.Menulis.Content) {
-    this.Maslosoft.Menulis.Content = {};
-  }
-
-  if (!this.Maslosoft.Menulis.Content.Models) {
-    this.Maslosoft.Menulis.Content.Models = {};
-  }
-
-  if (!this.Maslosoft.Mangan) {
-    this.Maslosoft.Mangan = {};
-  }
-
-  if (!this.Maslosoft.Mangan.Model) {
-    this.Maslosoft.Mangan.Model = {};
-  }
-
   if (!this.Maslosoft.Ko.BalinDev) {
     this.Maslosoft.Ko.BalinDev = {};
   }
@@ -38,220 +14,6 @@
   if (!this.Maslosoft.Ko.BalinDev.Models) {
     this.Maslosoft.Ko.BalinDev.Models = {};
   }
-
-  this.Maslosoft.Mangan.Model.Image_Base = (function(_super) {
-    __extends(Image_Base, _super);
-
-    function Image_Base() {
-      return Image_Base.__super__.constructor.apply(this, arguments);
-    }
-
-    Image_Base.prototype.width = 0;
-
-    Image_Base.prototype.height = 0;
-
-    Image_Base.prototype.id = null;
-
-    Image_Base.prototype.filename = '';
-
-    Image_Base.prototype.size = 0;
-
-    Image_Base.prototype.rootClass = '';
-
-    Image_Base.prototype.rootId = '';
-
-    Image_Base.prototype.contentType = '';
-
-    Image_Base.prototype._key = '';
-
-    Image_Base.prototype._class = 'Maslosoft\\Mangan\\Model\\Image';
-
-    Image_Base.prototype.rawI18N = null;
-
-    return Image_Base;
-
-  })(this.Maslosoft.Ko.Balin.Model);
-
-  this.Maslosoft.Mangan.Model.Image = (function(_super) {
-    __extends(Image, _super);
-
-    function Image() {
-      return Image.__super__.constructor.apply(this, arguments);
-    }
-
-    return Image;
-
-  })(this.Maslosoft.Mangan.Model.Image_Base);
-
-  this.Maslosoft.Menulis.Content.Models.AssetCollection_Base = (function(_super) {
-    __extends(AssetCollection_Base, _super);
-
-    function AssetCollection_Base() {
-      return AssetCollection_Base.__super__.constructor.apply(this, arguments);
-    }
-
-    AssetCollection_Base.prototype.items = [];
-
-    AssetCollection_Base.prototype.title = '';
-
-    AssetCollection_Base.prototype.description = '';
-
-    AssetCollection_Base.prototype.groupCount = 0;
-
-    AssetCollection_Base.prototype.assetsCount = 0;
-
-    AssetCollection_Base.prototype.createUser = null;
-
-    AssetCollection_Base.prototype.createDate = null;
-
-    AssetCollection_Base.prototype.updateUser = null;
-
-    AssetCollection_Base.prototype.updateDate = null;
-
-    AssetCollection_Base.prototype._id = null;
-
-    AssetCollection_Base.prototype.id = null;
-
-    AssetCollection_Base.prototype._key = '53f374fdc79fda38578b4568';
-
-    AssetCollection_Base.prototype._class = 'Maslosoft\\Menulis\\Content\\Models\\AssetCollection';
-
-    AssetCollection_Base.prototype.rawI18N = null;
-
-    return AssetCollection_Base;
-
-  })(this.Maslosoft.Ko.Balin.Model);
-
-  this.Maslosoft.Menulis.Content.Models.AssetCollection = (function(_super) {
-    __extends(AssetCollection, _super);
-
-    function AssetCollection() {
-      return AssetCollection.__super__.constructor.apply(this, arguments);
-    }
-
-    return AssetCollection;
-
-  })(this.Maslosoft.Menulis.Content.Models.AssetCollection_Base);
-
-  this.Maslosoft.Menulis.Content.Models.AssetGroup_Base = (function(_super) {
-    __extends(AssetGroup_Base, _super);
-
-    function AssetGroup_Base() {
-      return AssetGroup_Base.__super__.constructor.apply(this, arguments);
-    }
-
-    AssetGroup_Base.prototype.title = '';
-
-    AssetGroup_Base.prototype.description = '';
-
-    AssetGroup_Base.prototype.order = 1000000;
-
-    AssetGroup_Base.prototype.items = [];
-
-    AssetGroup_Base.prototype.assetsCount = 0;
-
-    AssetGroup_Base.prototype.createUser = null;
-
-    AssetGroup_Base.prototype.createDate = null;
-
-    AssetGroup_Base.prototype.updateUser = null;
-
-    AssetGroup_Base.prototype.updateDate = null;
-
-    AssetGroup_Base.prototype._id = null;
-
-    AssetGroup_Base.prototype.id = null;
-
-    AssetGroup_Base.prototype._key = '53f374fec79fda38578b456b';
-
-    AssetGroup_Base.prototype._class = 'Maslosoft\\Menulis\\Content\\Models\\AssetGroup';
-
-    AssetGroup_Base.prototype.rawI18N = null;
-
-    AssetGroup_Base.prototype.parentId = null;
-
-    return AssetGroup_Base;
-
-  })(this.Maslosoft.Ko.Balin.Model);
-
-  this.Maslosoft.Menulis.Content.Models.AssetGroup = (function(_super) {
-    __extends(AssetGroup, _super);
-
-    function AssetGroup() {
-      return AssetGroup.__super__.constructor.apply(this, arguments);
-    }
-
-    return AssetGroup;
-
-  })(this.Maslosoft.Menulis.Content.Models.AssetGroup_Base);
-
-  this.Maslosoft.Menulis.Content.Models.PageAsset_Base = (function(_super) {
-    __extends(PageAsset_Base, _super);
-
-    function PageAsset_Base() {
-      return PageAsset_Base.__super__.constructor.apply(this, arguments);
-    }
-
-    PageAsset_Base.prototype.filename = '';
-
-    PageAsset_Base.prototype.file = '';
-
-    PageAsset_Base.prototype.basename = '';
-
-    PageAsset_Base.prototype.relativeName = '';
-
-    PageAsset_Base.prototype.icon = '';
-
-    PageAsset_Base.prototype.isImage = false;
-
-    PageAsset_Base.prototype.iconSize = 512;
-
-    PageAsset_Base.prototype.path = '';
-
-    PageAsset_Base.prototype.url = '';
-
-    PageAsset_Base.prototype.type = '';
-
-    PageAsset_Base.prototype.deleted = false;
-
-    PageAsset_Base.prototype.title = '';
-
-    PageAsset_Base.prototype.description = '';
-
-    PageAsset_Base.prototype.createUser = null;
-
-    PageAsset_Base.prototype.createDate = null;
-
-    PageAsset_Base.prototype.updateUser = null;
-
-    PageAsset_Base.prototype.updateDate = null;
-
-    PageAsset_Base.prototype._id = null;
-
-    PageAsset_Base.prototype.id = null;
-
-    PageAsset_Base.prototype._key = '53f374fec79fda38578b456c';
-
-    PageAsset_Base.prototype._class = 'Maslosoft\\Menulis\\Content\\Models\\PageAsset';
-
-    PageAsset_Base.prototype.rawI18N = null;
-
-    PageAsset_Base.prototype.parentId = null;
-
-    return PageAsset_Base;
-
-  })(this.Maslosoft.Ko.Balin.Model);
-
-  this.Maslosoft.Menulis.Content.Models.PageAsset = (function(_super) {
-    __extends(PageAsset, _super);
-
-    function PageAsset() {
-      return PageAsset.__super__.constructor.apply(this, arguments);
-    }
-
-    return PageAsset;
-
-  })(this.Maslosoft.Menulis.Content.Models.PageAsset_Base);
 
   this.Maslosoft.Ko.BalinDev.Models.TreeItem = (function(_super) {
     __extends(TreeItem, _super);
@@ -282,6 +44,98 @@
     Intro.prototype.text = '';
 
     return Intro;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.FileSizeFormatter = (function(_super) {
+    __extends(FileSizeFormatter, _super);
+
+    function FileSizeFormatter() {
+      return FileSizeFormatter.__super__.constructor.apply(this, arguments);
+    }
+
+    FileSizeFormatter.prototype._class = "Maslosoft.Ko.BalinDev.Models.FileSizeFormatter";
+
+    FileSizeFormatter.prototype.size = 0;
+
+    return FileSizeFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.Href = (function(_super) {
+    __extends(Href, _super);
+
+    function Href() {
+      return Href.__super__.constructor.apply(this, arguments);
+    }
+
+    Href.prototype._class = "Maslosoft.Ko.BalinDev.Models.Href";
+
+    Href.prototype.filename = '';
+
+    return Href;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.Src = (function(_super) {
+    __extends(Src, _super);
+
+    function Src() {
+      return Src.__super__.constructor.apply(this, arguments);
+    }
+
+    Src.prototype._class = "Maslosoft.Ko.BalinDev.Models.Src";
+
+    Src.prototype.filename = '';
+
+    return Src;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.HtmlValue = (function(_super) {
+    __extends(HtmlValue, _super);
+
+    function HtmlValue() {
+      return HtmlValue.__super__.constructor.apply(this, arguments);
+    }
+
+    HtmlValue.prototype._class = "Maslosoft.Ko.BalinDev.Models.HtmlValue";
+
+    HtmlValue.prototype.text = '';
+
+    return HtmlValue;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.TextValue = (function(_super) {
+    __extends(TextValue, _super);
+
+    function TextValue() {
+      return TextValue.__super__.constructor.apply(this, arguments);
+    }
+
+    TextValue.prototype._class = "Maslosoft.Ko.BalinDev.Models.TextValue";
+
+    TextValue.prototype.text = '';
+
+    return TextValue;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.SortableHtmlValues = (function(_super) {
+    __extends(SortableHtmlValues, _super);
+
+    function SortableHtmlValues() {
+      return SortableHtmlValues.__super__.constructor.apply(this, arguments);
+    }
+
+    SortableHtmlValues.prototype._class = "Maslosoft.Ko.BalinDev.Models.SortableHtmlValues";
+
+    SortableHtmlValues.prototype.title = '';
+
+    SortableHtmlValues.prototype.items = [];
+
+    return SortableHtmlValues;
 
   })(this.Maslosoft.Ko.Balin.Model);
 

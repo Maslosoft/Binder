@@ -35,6 +35,9 @@
 			nav ul li a, nav ul li a:hover{
 				color: white;
 			}
+			b.warn {
+				color: #cc0000;
+			}
 		</style>
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
@@ -50,12 +53,12 @@
 		<script src="../bower_components/moment/min/moment-with-locales.min.js"></script>
 		<script src="../bower_components/highlightjs/highlight.pack.js"></script>
 		<script src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
-		<script src="./src/_ns.js"></script>
 		<script src="../dist/ko.balin.js"></script>
 		<script src="./src/Model.js"></script>
-		<script src="./src/init.js"></script>
 		
 		<script>
+			window.app = {};
+			window.app.model = {};
 			Maslosoft.Ko.Balin.registerDefaults();
 		</script>
 		<?php
@@ -97,7 +100,7 @@
 					</li>
 					<?php foreach ($simple as $file => $name): ?>
 						<li class="link">
-							<a href="./<?= $file; ?>"><?= $name; ?></a>
+							<a href="./<?= $file; ?>"><?= ucfirst($name); ?></a>
 						</li>
 					<?php endforeach; ?>
 					<li class="link">
@@ -105,7 +108,7 @@
 					</li>
 					<?php foreach ($combined as $file => $name): ?>
 						<li class="link">
-							<a href="./<?= $file; ?>"><?= $name; ?></a>
+							<a href="./<?= $file; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
 						</li>
 					<?php endforeach; ?>
 				</ul>

@@ -361,9 +361,13 @@
     idCounter = 0;
 
     function HtmlValue(options) {
+      if (options == null) {
+        options = {};
+      }
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
       HtmlValue.__super__.constructor.call(this, options);
+      console.log('constructor');
       if (ko.bindingHandlers.sortable && ko.bindingHandlers.sortable.options) {
         ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]';
       }
@@ -379,6 +383,7 @@
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var handler;
+      console.log('init');
       element.setAttribute('contenteditable', true);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Balin-HtmlValue-" + (idCounter++);
@@ -411,6 +416,7 @@
       var value;
       value = this.getValue(valueAccessor);
       if (this.getElementValue(element) !== value) {
+        console.log("Update: " + element.innerHTML + " = " + value);
         this.setElementValue(element, value);
       }
     };

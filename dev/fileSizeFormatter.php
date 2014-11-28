@@ -1,13 +1,12 @@
 <?php require './_header.php'; ?>
 <div>
-	Size: <input data-bind="textInput: app.model.Mangan.Image.size"/> <br />
-	Formatted: <span data-bind="fileSizeFormatter: app.model.Mangan.Image.size"></span>
+	Size: <input data-bind="textInput: app.model.FileSizeFormatter.size"/> (in bytes) <br />
+	Formatted: <span data-bind="fileSizeFormatter: app.model.FileSizeFormatter.size"></span>
 </div>
 
 <script>
 	jQuery(document).ready(function(){
-		app.model.Mangan = {};
-		app.model.Mangan.Image = new Maslosoft.Mangan.Model.Image({size: 123456});
+		app.model.FileSizeFormatter = new Maslosoft.Ko.BalinDev.Models.FileSizeFormatter({size: 123456});
 		ko.applyBindings({model: app.model});
 	});
 </script>
