@@ -21,7 +21,7 @@ class @Maslosoft.Ko.Track
 	factory: (data) =>
 		# Return if falsey value
 		if not data then return data
-
+		
 		# Check if has prototype
 		if data._class
 			className = data._class.replace(/\\/g, '.')
@@ -43,15 +43,3 @@ class @Maslosoft.Ko.Track
 		
 
 ko.tracker = new @Maslosoft.Ko.Track
-
-#class @Maslosoft.Ko.TrackTest extends @Maslosoft.Components.Model
-#	name: ''
-#	nested: null
-#
-#	_class: 'Maslosoft\\Ko\\TrackTest'
-#	rawI18N: null
-#	parentId: null
-#
-#class @Maslosoft.Ko.TrackTestNest extends @Maslosoft.Components.Model
-#	_class: 'Maslosoft\\Ko\\TrackTestNest'
-#	name: ''

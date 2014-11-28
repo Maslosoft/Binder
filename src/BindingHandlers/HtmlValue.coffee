@@ -9,7 +9,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 	
 	constructor: (options = {}) ->
 		super(options)
-		console.log 'constructor'
+		
 		if ko.bindingHandlers.sortable and ko.bindingHandlers.sortable.options
 			# Allow `contenteditable` to get focus
 			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
@@ -21,7 +21,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		element.innerHTML = value
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		console.log 'init'
+		
 		element.setAttribute('contenteditable', true)
 
 		# Generate some id if not set, see notes below why
@@ -56,6 +56,5 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
 		if @getElementValue(element) isnt value
-			console.log "Update: #{element.innerHTML} = #{value}"
 			@setElementValue(element, value)
 		return

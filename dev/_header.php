@@ -16,8 +16,9 @@
 				-o-tab-size:   4;
 				tab-size:      4;
 			}
-			.ui-selected{
+			.ui-selected, .selected{
 				background: darkorange;
+				color:white;
 			}
 			nav ul, nav ul li{
 				list-style: none;
@@ -45,18 +46,18 @@
 		
 		
 		
-		<script src="../bower_components/jquery/dist/jquery.min.js"></script>
-		<script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
-		<script src="../bower_components/knockout/dist/knockout.debug.js"></script>
-		<script src="./src/knockout-es5.js"></script>
-		<script src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
-		<script src="../bower_components/moment/min/moment-with-locales.min.js"></script>
-		<script src="../bower_components/highlightjs/highlight.pack.js"></script>
-		<script src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
-		<script src="../dist/ko.balin.js"></script>
-		<script src="./src/Model.js"></script>
+		<script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="../bower_components/knockout/dist/knockout.debug.js"></script>
+		<script type="text/javascript" src="./src/knockout-es5.js"></script>
+		<script type="text/javascript" src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
+		<script type="text/javascript" src="../bower_components/moment/min/moment-with-locales.min.js"></script>
+		<script type="text/javascript" src="../bower_components/highlightjs/highlight.pack.js"></script>
+		<script type="text/javascript" src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
+		<script type="text/javascript" src="../dist/ko.balin.js"></script>
+		<script type="text/javascript" src="./src/Model.js"></script>
 		
-		<script>
+		<script type="text/javascript">
 			window.app = {};
 			window.app.model = {};
 			Maslosoft.Ko.Balin.registerDefaults();

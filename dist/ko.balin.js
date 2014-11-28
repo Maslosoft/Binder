@@ -33,7 +33,8 @@
       href: Maslosoft.Ko.Balin.Href,
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
       src: Maslosoft.Ko.Balin.Src,
-      textValue: Maslosoft.Ko.Balin.TextValue
+      textValue: Maslosoft.Ko.Balin.TextValue,
+      selected: Maslosoft.Ko.Balin.Selected
     };
     if (handlers !== null) {
       _results = [];
@@ -154,6 +155,51 @@
     return Options;
 
   })();
+
+  this.Maslosoft.Ko.Balin.DateOptions = (function(_super) {
+    __extends(DateOptions, _super);
+
+    function DateOptions() {
+      return DateOptions.__super__.constructor.apply(this, arguments);
+    }
+
+    DateOptions.prototype.sourceFormat = 'unix';
+
+    DateOptions.prototype.displayFormat = 'YYYY-MM-DD';
+
+    return DateOptions;
+
+  })(this.Maslosoft.Ko.Balin.Options);
+
+  this.Maslosoft.Ko.Balin.DateTimeOptions = (function(_super) {
+    __extends(DateTimeOptions, _super);
+
+    function DateTimeOptions() {
+      return DateTimeOptions.__super__.constructor.apply(this, arguments);
+    }
+
+    DateTimeOptions.prototype.sourceFormat = 'unix';
+
+    DateTimeOptions.prototype.displayFormat = 'YYYY-MM-DD hh:mm';
+
+    return DateTimeOptions;
+
+  })(this.Maslosoft.Ko.Balin.Options);
+
+  this.Maslosoft.Ko.Balin.TimeOptions = (function(_super) {
+    __extends(TimeOptions, _super);
+
+    function TimeOptions() {
+      return TimeOptions.__super__.constructor.apply(this, arguments);
+    }
+
+    TimeOptions.prototype.sourceFormat = 'unix';
+
+    TimeOptions.prototype.displayFormat = 'hh:mm';
+
+    return TimeOptions;
+
+  })(this.Maslosoft.Ko.Balin.Options);
 
   this.Maslosoft.Ko.Balin.DateTime = (function(_super) {
     __extends(DateTime, _super);
@@ -367,7 +413,6 @@
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
       HtmlValue.__super__.constructor.call(this, options);
-      console.log('constructor');
       if (ko.bindingHandlers.sortable && ko.bindingHandlers.sortable.options) {
         ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]';
       }
@@ -383,7 +428,6 @@
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var handler;
-      console.log('init');
       element.setAttribute('contenteditable', true);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Balin-HtmlValue-" + (idCounter++);
@@ -416,7 +460,6 @@
       var value;
       value = this.getValue(valueAccessor);
       if (this.getElementValue(element) !== value) {
-        console.log("Update: " + element.innerHTML + " = " + value);
         this.setElementValue(element, value);
       }
     };
@@ -425,17 +468,19 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
-  this.Maslosoft.Ko.Balin.HtmlValue = (function(_super) {
-    __extends(HtmlValue, _super);
+  this.Maslosoft.Ko.Balin.Selected = (function(_super) {
+    __extends(Selected, _super);
 
-    function HtmlValue() {
+    function Selected() {
       this.update = __bind(this.update, this);
-      return HtmlValue.__super__.constructor.apply(this, arguments);
+      return Selected.__super__.constructor.apply(this, arguments);
     }
 
-    HtmlValue.prototype.className = 'selected';
+    Selected.prototype.writable = false;
 
-    HtmlValue.prototype.update = function(element, valueAccessor) {
+    Selected.prototype.className = 'selected';
+
+    Selected.prototype.update = function(element, valueAccessor) {
       var value;
       value = this.getValue(valueAccessor);
       if (value) {
@@ -445,7 +490,7 @@
       }
     };
 
-    return HtmlValue;
+    return Selected;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
@@ -570,12 +615,13 @@
       if (data == null) {
         data = null;
       }
-      for (name in data) {
-        value = data[name];
-        if (typeof this[name] === 'undefined') {
-          continue;
+      for (name in this) {
+        value = this[name];
+        if (data && typeof data[name] !== 'undefined') {
+          this[name] = ko.tracker.factory(data[name]);
+        } else {
+          this[name] = ko.tracker.factory(value);
         }
-        this[name] = ko.tracker.factory(value);
       }
       ko.track(this);
     }

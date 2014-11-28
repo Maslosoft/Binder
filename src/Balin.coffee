@@ -15,12 +15,13 @@
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
-		fancytree: Maslosoft.Ko.Balin.Fancytree,
-		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
-		href: Maslosoft.Ko.Balin.Href,
-		htmlValue: Maslosoft.Ko.Balin.HtmlValue,
+		fancytree: Maslosoft.Ko.Balin.Fancytree
+		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
+		href: Maslosoft.Ko.Balin.Href
+		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
+		selected: Maslosoft.Ko.Balin.Selected
 	}
 	
 	if handlers isnt null

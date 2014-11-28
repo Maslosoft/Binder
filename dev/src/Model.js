@@ -139,4 +139,19 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
+  this.Maslosoft.Ko.BalinDev.Models.Selected = (function(_super) {
+    __extends(Selected, _super);
+
+    function Selected() {
+      return Selected.__super__.constructor.apply(this, arguments);
+    }
+
+    Selected.prototype._class = "Maslosoft.Ko.BalinDev.Models.Selected";
+
+    Selected.prototype.isSelected = false;
+
+    return Selected;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
 }).call(this);

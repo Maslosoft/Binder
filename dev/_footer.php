@@ -4,7 +4,7 @@ $text = ob_get_flush();
 <h4><a href="#" onclick="javascript:jQuery('pre').slideToggle();">Relevant code used to create above result:</a></h4>
 <pre><?= htmlspecialchars($text)?></pre>
 </div>
-<script>
+<script type="text/javascript" >
 	jQuery(document).ready(function() {
 		var entityMap = {
 			"&": "&amp;",

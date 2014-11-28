@@ -22,12 +22,13 @@ if not @Maslosoft.Ko.Balin
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
-		fancytree: Maslosoft.Ko.Balin.Fancytree,
-		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
-		href: Maslosoft.Ko.Balin.Href,
-		htmlValue: Maslosoft.Ko.Balin.HtmlValue,
+		fancytree: Maslosoft.Ko.Balin.Fancytree
+		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
+		href: Maslosoft.Ko.Balin.Href
+		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
+		selected: Maslosoft.Ko.Balin.Selected
 	}
 	
 	if handlers isnt null
@@ -130,6 +131,48 @@ class @Maslosoft.Ko.Balin.Options
 				
 
 
+#
+# Configuration class for date bindings
+#
+class @Maslosoft.Ko.Balin.DateOptions extends @Maslosoft.Ko.Balin.Options
+
+	# Date source format
+	# @var string
+	#
+	sourceFormat: 'unix'
+
+	# Date display format
+	# @var string
+	#
+	displayFormat: 'YYYY-MM-DD'
+#
+# Configuration class for datetime bindings
+#
+class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
+
+	# DateTime source format
+	# @var string
+	#
+	sourceFormat: 'unix'
+
+	# DateTime display format
+	# @var string
+	#
+	displayFormat: 'YYYY-MM-DD hh:mm'
+#
+# Configuration class for time bindings
+#
+class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
+
+	# Time source format
+	# @var string
+	#
+	sourceFormat: 'unix'
+
+	# Time display format
+	# @var string
+	#
+	displayFormat: 'hh:mm'
 class @Maslosoft.Ko.Balin.DateTime extends @Maslosoft.Ko.Balin.Base
 
 	constructor: (options) ->
@@ -288,7 +331,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 	
 	constructor: (options = {}) ->
 		super(options)
-		console.log 'constructor'
+		
 		if ko.bindingHandlers.sortable and ko.bindingHandlers.sortable.options
 			# Allow `contenteditable` to get focus
 			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
@@ -300,7 +343,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		element.innerHTML = value
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		console.log 'init'
+		
 		element.setAttribute('contenteditable', true)
 
 		# Generate some id if not set, see notes below why
@@ -335,14 +378,15 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
 		if @getElementValue(element) isnt value
-			console.log "Update: #{element.innerHTML} = #{value}"
 			@setElementValue(element, value)
 		return
 #
 # Selected binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.Selected extends @Maslosoft.Ko.Balin.Base
+
+	writable: false
 
 	className: 'selected'
 
@@ -401,7 +445,7 @@ class @Maslosoft.Ko.Track
 	factory: (data) =>
 		# Return if falsey value
 		if not data then return data
-
+		
 		# Check if has prototype
 		if data._class
 			className = data._class.replace(/\\/g, '.')
@@ -423,25 +467,18 @@ class @Maslosoft.Ko.Track
 		
 
 ko.tracker = new @Maslosoft.Ko.Track
-
-#class @Maslosoft.Ko.TrackTest extends @Maslosoft.Components.Model
-#	name: ''
-#	nested: null
-#
-#	_class: 'Maslosoft\\Ko\\TrackTest'
-#	rawI18N: null
-#	parentId: null
-#
-#class @Maslosoft.Ko.TrackTestNest extends @Maslosoft.Components.Model
-#	_class: 'Maslosoft\\Ko\\TrackTestNest'
-#	name: ''
 #
 # Model class with automatically applied knockout bindings
 #
 class @Maslosoft.Ko.Balin.Model
 	
 	constructor: (data = null) ->
-		for name, value of data
-			if typeof @[name] is 'undefined' then continue
-			@[name] = ko.tracker.factory(value)
+
+		# Reassign here is required - when using model with values from class prototype only
+		for name, value of @
+			if data and typeof data[name] isnt 'undefined'
+				@[name] = ko.tracker.factory(data[name])
+			else
+				@[name] = ko.tracker.factory(value)
+
 		ko.track(@)

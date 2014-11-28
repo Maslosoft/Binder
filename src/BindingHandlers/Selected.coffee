@@ -2,7 +2,9 @@
 # Selected binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.Selected extends @Maslosoft.Ko.Balin.Base
+
+	writable: false
 
 	className: 'selected'
 
