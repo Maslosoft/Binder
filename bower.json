@@ -25,9 +25,9 @@
     "tests"
   ],
   "dependencies": {
-    "knockout": "~3.2.0",
-    "moment": "~2.8.1",
-    "fancytree": "~2.5.0"
+    "knockout": "~3.3.0",
+    "moment": "~2.10.3",
+    "fancytree": "~2.9.0"
   },
   "devDependencies": {
     "jquery-ui": "~1.11.1",
