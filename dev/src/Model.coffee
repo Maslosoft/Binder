@@ -42,3 +42,8 @@ class @Maslosoft.Ko.BalinDev.Models.SortableHtmlValues extends @Maslosoft.Ko.Bal
 class @Maslosoft.Ko.BalinDev.Models.Selected extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Selected"
 	isSelected: false
+
+class @Maslosoft.Ko.BalinDev.Models.Enum extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Enum"
+	status: 0
+

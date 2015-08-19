@@ -14,7 +14,8 @@ if not @Maslosoft.Ko.Balin
 	ko.bindingHandlers[name] = handler
 	
 	if handler.writable
-		ko.expressionRewriting.twoWayBindings[name] = true
+		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
+			ko.expressionRewriting.twoWayBindings[name] = true
 
 #
 # Register default set of binding handlers, or part of default set
@@ -29,6 +30,8 @@ if not @Maslosoft.Ko.Balin
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		selected: Maslosoft.Ko.Balin.Selected
+		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
+		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 	}
 	
 	if handlers isnt null
@@ -65,6 +68,7 @@ if not @Maslosoft.Ko.Balin
 		ko.bindingHandlers["event"]["init"].call this, element, newValueAccessor, allBindings, viewModel, bindingContext
 
 	return
+
 #
 # Base class for Maslosoft binding handlers
 #
@@ -191,9 +195,35 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
 		return
-class @Maslosoft.Ko.Balin.EnumFormatter
+#
+# Enum css class handler
+#
+class @Maslosoft.Ko.Balin.EnumCssClassFormatter extends @Maslosoft.Ko.Balin.Base
 
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		config = @getValue valueAccessor
+		console.log 'enum css'
+		console.log config
+		console.log config.values[config.data]
+		
+		# Remove previosly set classes
+		for name in config.values
+			re = new RegExp("(?:^|\\s)#{name}(?!\\S)", 'g')
+			console.log re
+			element.className = element.className.replace(re, '')
 
+		element.className += ' ' + config.values[config.data]
+		return
+
+#
+# Enum binding handler
+#
+class @Maslosoft.Ko.Balin.EnumFormatter extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		config = @getValue valueAccessor
+		element.innerHTML = config.values[config.data]
+		return
 
 #
 # Fancytree binding
@@ -502,3 +532,4 @@ class @Maslosoft.Ko.Balin.Model
 				@[name] = ko.tracker.factory(value)
 
 		ko.track(@)
+@Maslosoft.Ko.Balin.registerDefaults()

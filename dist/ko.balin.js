@@ -18,7 +18,9 @@
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
     ko.bindingHandlers[name] = handler;
     if (handler.writable) {
-      return ko.expressionRewriting.twoWayBindings[name] = true;
+      if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
+        return ko.expressionRewriting.twoWayBindings[name] = true;
+      }
     }
   };
 
@@ -34,7 +36,9 @@
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
-      selected: Maslosoft.Ko.Balin.Selected
+      selected: Maslosoft.Ko.Balin.Selected,
+      enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
+      enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
     };
     if (handlers !== null) {
       _results = [];
@@ -240,12 +244,51 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
-  this.Maslosoft.Ko.Balin.EnumFormatter = (function() {
-    function EnumFormatter() {}
+  this.Maslosoft.Ko.Balin.EnumCssClassFormatter = (function(_super) {
+    __extends(EnumCssClassFormatter, _super);
+
+    function EnumCssClassFormatter() {
+      this.update = __bind(this.update, this);
+      return EnumCssClassFormatter.__super__.constructor.apply(this, arguments);
+    }
+
+    EnumCssClassFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var config, name, re, _i, _len, _ref;
+      config = this.getValue(valueAccessor);
+      console.log('enum css');
+      console.log(config);
+      console.log(config.values[config.data]);
+      _ref = config.values;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        re = new RegExp("(?:^|\\s)" + name + "(?!\\S)", 'g');
+        console.log(re);
+        element.className = element.className.replace(re, '');
+      }
+      element.className += ' ' + config.values[config.data];
+    };
+
+    return EnumCssClassFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.EnumFormatter = (function(_super) {
+    __extends(EnumFormatter, _super);
+
+    function EnumFormatter() {
+      this.update = __bind(this.update, this);
+      return EnumFormatter.__super__.constructor.apply(this, arguments);
+    }
+
+    EnumFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var config;
+      config = this.getValue(valueAccessor);
+      element.innerHTML = config.values[config.data];
+    };
 
     return EnumFormatter;
 
-  })();
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.Fancytree = (function(_super) {
     __extends(Fancytree, _super);
@@ -656,6 +699,8 @@
     return Model;
 
   })();
+
+  this.Maslosoft.Ko.Balin.registerDefaults();
 
 }).call(this);
 

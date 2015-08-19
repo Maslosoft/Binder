@@ -23,6 +23,8 @@
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		selected: Maslosoft.Ko.Balin.Selected
+		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
+		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 	}
 	
 	if handlers isnt null
