@@ -1,21 +1,22 @@
 {
   "name": "maslosoft-ko-balin",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "authors": [
     "Peter Maselkowski <pmaselkowski@gmail.com>"
   ],
   "description": "Binding handlers for knockut js",
-  "main": "dist/ko.balin.js",
+  "main": "dist/ko.balin.min.js",
   "moduleType": [
     "globals"
   ],
   "keywords": [
     "knockout",
     "knockoutjs",
-    "mvvc"
+    "mvvc",
+	 "binding-handlers"
   ],
   "license": "MIT",
-  "homepage": "http://maslosoft.com/",
+  "homepage": "http://maslosoft.com/balin/",
   "ignore": [
     "**/.*",
     "dev",
@@ -25,16 +26,16 @@
     "tests"
   ],
   "dependencies": {
-    "knockout": "~3.3.0",
-    "moment": "~2.10.3",
-    "fancytree": "~2.9.0"
+    "knockout": "~3",
+    "moment": "~2",
+    "fancytree": "~2"
   },
   "devDependencies": {
     "jquery-ui": "~1.11.1",
     "jquery": "~2.1.1",
     "knockout-sortable": "~0.8.8",
     "knockout-es5": "*",
-    "highlightjs": "~8.0.0",
-    "bootstrap": "~3.2.0"
+    "highlightjs": "~8",
+    "bootstrap": "~3"
   }
 }

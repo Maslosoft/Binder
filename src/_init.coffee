@@ -1,0 +1,1 @@
+@Maslosoft.Ko.Balin.registerDefaults()

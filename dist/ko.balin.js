@@ -240,6 +240,13 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.EnumFormatter = (function() {
+    function EnumFormatter() {}
+
+    return EnumFormatter;
+
+  })();
+
   this.Maslosoft.Ko.Balin.Fancytree = (function(_super) {
     __extends(Fancytree, _super);
 
@@ -355,6 +362,26 @@
     };
 
     return FileSizeFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.GMap = (function(_super) {
+    __extends(GMap, _super);
+
+    function GMap() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return GMap.__super__.constructor.apply(this, arguments);
+    }
+
+    GMap.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {};
+
+    GMap.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var value;
+      return value = this.getValue(valueAccessor);
+    };
+
+    return GMap;
 
   })(this.Maslosoft.Ko.Balin.Base);
 

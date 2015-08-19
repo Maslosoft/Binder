@@ -7,7 +7,8 @@
 	ko.bindingHandlers[name] = handler
 	
 	if handler.writable
-		ko.expressionRewriting.twoWayBindings[name] = true
+		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
+			ko.expressionRewriting.twoWayBindings[name] = true
 
 #
 # Register default set of binding handlers, or part of default set

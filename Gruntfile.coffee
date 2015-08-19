@@ -6,17 +6,12 @@ balin = [
 	'src/Options/DateOptions.coffee',
 	'src/Options/DateTimeOptions.coffee',
 	'src/Options/TimeOptions.coffee',
-	'src/BindingHandlers/DateTime.coffee',
-	'src/BindingHandlers/DateTimeFormatter.coffee',
-	'src/BindingHandlers/Fancytree.coffee',
-	'src/BindingHandlers/FileSizeFormatter.coffee',
-	'src/BindingHandlers/Href.coffee',
-	'src/BindingHandlers/HtmlValue.coffee',
-	'src/BindingHandlers/Selected.coffee',
-	'src/BindingHandlers/Src.coffee',
-	'src/BindingHandlers/TextValue.coffee',
+
+	'src/BindingHandlers/*',
+
 	'src/Tracker.coffee',
-	'src/Model.coffee'
+	'src/Model.coffee',
+	'src/_init.coffee'
 ]
 
 module.exports = (grunt) ->

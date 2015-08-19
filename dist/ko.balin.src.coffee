@@ -191,6 +191,10 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
 		return
+class @Maslosoft.Ko.Balin.EnumFormatter
+
+
+
 #
 # Fancytree binding
 # TODO Allow sytaxes:
@@ -296,6 +300,22 @@ class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
 				Math.max(bytes, 0.1).toFixed(1) + " ~*#{i * step} * #{step} B"
 
 		element.innerHTML = format(value)
+#
+# GMap3 binding
+# TODO Allow syntax:
+# data-bind="gmap: config"
+# TODO When using two or more trees from same data, only first one works properly
+#
+class @Maslosoft.Ko.Balin.GMap extends @Maslosoft.Ko.Balin.Base
+
+  init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+
+  update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+
+    value = @getValue(valueAccessor);
+
+
+
 #
 # Href binding handler
 #
