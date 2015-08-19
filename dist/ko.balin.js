@@ -30,15 +30,17 @@
       handlers = null;
     }
     config = {
+      enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter,
+      enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
       fancytree: Maslosoft.Ko.Balin.Fancytree,
       fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
+      hidden: Maslosoft.Ko.Balin.Hidden,
       href: Maslosoft.Ko.Balin.Href,
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
+      icon: Maslosoft.Ko.Balin.Icon,
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
-      selected: Maslosoft.Ko.Balin.Selected,
-      enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
-      enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
+      selected: Maslosoft.Ko.Balin.Selected
     };
     if (handlers !== null) {
       _results = [];
@@ -428,6 +430,26 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.Hidden = (function(_super) {
+    __extends(Hidden, _super);
+
+    function Hidden() {
+      this.update = __bind(this.update, this);
+      return Hidden.__super__.constructor.apply(this, arguments);
+    }
+
+    Hidden.prototype.update = function(element, valueAccessor) {
+      var value;
+      value = !this.getValue(valueAccessor);
+      return ko.bindingHandlers.visible.update(element, function() {
+        return value;
+      });
+    };
+
+    return Hidden;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.Href = (function(_super) {
     __extends(Href, _super);
 
@@ -535,6 +557,68 @@
     };
 
     return HtmlValue;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Icon = (function(_super) {
+    __extends(Icon, _super);
+
+    function Icon() {
+      this.update = __bind(this.update, this);
+      return Icon.__super__.constructor.apply(this, arguments);
+    }
+
+    Icon.prototype.update = function(element, valueAccessor, allBindings) {
+      var $element, defaultSize, fixedSize, iconField, isImage, model, regex, size, src;
+      $element = $(element);
+      model = this.getValue(valueAccessor);
+      iconField = allBindings.get("iconField") || 'icon';
+      src = model[iconField];
+      if (typeof model.iconSize === 'undefined') {
+        defaultSize = 16;
+      } else {
+        defaultSize = model.iconSize;
+      }
+      size = allBindings.get("iconSize") || defaultSize;
+      regex = new RegExp("/" + defaultSize + "/", "g");
+      if (typeof model.isImage === 'undefined') {
+        isImage = true;
+      } else {
+        isImage = model.isImage;
+      }
+      if (isImage) {
+        if (!src.match(new RegExp("/$"))) {
+          src = src + '/';
+        }
+        if (src.match(new RegExp("/w/", "g"))) {
+          src = src.replace(regex, "/" + size + "/");
+        } else {
+          src = src + ("w/" + size + "/h/" + size + "/p/0/");
+        }
+        src = src + model.updateDate.sec;
+      } else {
+        fixedSize = 16;
+        if (size > 16) {
+          fixedSize = 32;
+        }
+        if (size > 32) {
+          fixedSize = 48;
+        }
+        if (size > 48) {
+          fixedSize = 512;
+        }
+        src = src.replace(regex, "/" + fixedSize + "/");
+      }
+      if ($element.attr("src") !== src) {
+        $element.attr("src", src);
+      }
+      $element.css({
+        maxWidth: size,
+        maxHeight: size
+      });
+    };
+
+    return Icon;
 
   })(this.Maslosoft.Ko.Balin.Base);
 

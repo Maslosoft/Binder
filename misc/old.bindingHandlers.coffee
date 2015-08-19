@@ -160,19 +160,6 @@ ko.bindingHandlers.icon =
 
 	init: (element, valueAccessor) ->
 
-###
-Link href binding
-###
-ko.bindingHandlers.href =
-	init: (element, valueAccessor) ->
-#		$(element).click (e) ->
-#			document.location = e.target.href
-#			e.stopPropagation()
-
-	update: (element, valueAccessor) ->
-		href = ko.unwrap valueAccessor()
-		$(element).attr "href", href
-		return
 
 ###
 Tooltip binding
@@ -221,14 +208,9 @@ ko.bindingHandlers.asset =
 			$element.attr "src", src
 		return
 
-
-###
-Opposite to visible binding
-###
-ko.bindingHandlers.hidden = update: (element, valueAccessor) ->
-	ko.bindingHandlers.visible.update element, ->
-		not ko.unwrap valueAccessor
-
+#
+# TODO As far as i know this is no longer nessesary, as template binding allows observable template name
+#
 ko.bindingHandlers.widget =
 	init: (element, valueAccessor) ->
 		controlsDescendantBindings: true
@@ -301,22 +283,6 @@ ko.bindingHandlers.timeAgoFormatter =
 		value = ko.unwrap(valueAccessor()) or ""
 		value = value.sec
 		element.innerHTML = moment.unix(value).fromNow()
-		return
-
-ko.bindingHandlers.enumFormatter =
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		config = ko.unwrap valueAccessor()
-		key = ko.unwrap config.data
-		values = ko.unwrap config.values
-		element.innerHTML = values[key]
-		return
-
-ko.bindingHandlers.enumCssClassFormatter =
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		config = ko.unwrap valueAccessor()
-		key = ko.unwrap config.data
-		values = ko.unwrap config.values
-		element.class = values[key]
 		return
 
 
@@ -433,36 +399,6 @@ do ->
 			return
 
 
-
-###
-File size formatter
-###
-ko.bindingHandlers.fileSizeFormatter =
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		format = (bytes) ->
-			i = -1
-			units = [
-				" kB"
-				" MB"
-				" GB"
-				" TB"
-				"PB"
-				"EB"
-				"ZB"
-				"YB"
-			]
-			loop
-				bytes = bytes / 1024
-				i++
-				break unless bytes > 1024
-			Math.max(bytes, 0.1).toFixed(1) + units[i]
-
-		element.innerHTML = format(value)
-		return
-
 # See http://jsfiddle.net/jJ3e9/2/
 # Example usage <div data-bind="on: { click: 'a', invoke: countClicks }">
 ko.bindingHandlers.on =
@@ -474,37 +410,3 @@ ko.bindingHandlers.on =
 		for event in config
 			if config.hasOwnProperty(event)
 				domNode.on(event, config[event], handler);
-
-###
-Fancytree binding handler
-###
-do ->
-	class Fancytree
-
-		tree: null
-		element: null
-
-		init: (element, valueAccessor, allBindingsAccessor, context) =>
-
-		update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-			options = {
-				autoExpand: true
-			}
-			element = jQuery element
-
-			handler = () =>
-
-				if element.find('.ui-fancytree').length == 0
-					return
-
-				element.fancytree 'option', 'source', valueAccessor()
-#				element.fancytree('getTree').getTree()
-#				element.fancytree('getTree').reload(dp)
-				#element.fancytree('getTree').init()
-				if options.autoExpand
-					element.fancytree('getRootNode').visit (node) ->
-						node.setExpanded true
-				element.focus()
-			setTimeout handler, 0
-
-	ko.bindingHandlers.fancytree = new Fancytree

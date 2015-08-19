@@ -23,15 +23,17 @@ if not @Maslosoft.Ko.Balin
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
+		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
+		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
 		fancytree: Maslosoft.Ko.Balin.Fancytree
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
+		hidden: Maslosoft.Ko.Balin.Hidden
 		href: Maslosoft.Ko.Balin.Href
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
+		icon: Maslosoft.Ko.Balin.Icon
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		selected: Maslosoft.Ko.Balin.Selected
-		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
-		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 	}
 	
 	if handlers isnt null
@@ -347,6 +349,16 @@ class @Maslosoft.Ko.Balin.GMap extends @Maslosoft.Ko.Balin.Base
 
 
 #
+# Hidden binding handler, opposite to visible
+#
+class @Maslosoft.Ko.Balin.Hidden extends @Maslosoft.Ko.Balin.Base
+	
+	update: (element, valueAccessor) =>
+		value = not @getValue(valueAccessor)
+		ko.bindingHandlers.visible.update element, ->
+			value
+
+#
 # Href binding handler
 #
 class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
@@ -430,6 +442,71 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		if @getElementValue(element) isnt value
 			@setElementValue(element, value)
 		return
+#
+# Icon binding handler
+# This is to select proper icon or scaled image thumbnail
+#
+class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
+	
+	update: (element, valueAccessor, allBindings) =>
+		$element = $(element)
+		model = @getValue(valueAccessor)
+
+		iconField = allBindings.get("iconField") or 'icon'
+		src = model[iconField]
+
+		# Get icon size
+		# TODO This should be configurable with options
+		if typeof model.iconSize is 'undefined'
+			defaultSize = 16
+		else
+			defaultSize = model.iconSize
+
+		size = allBindings.get("iconSize") or defaultSize
+		regex = new RegExp("/" + defaultSize + "/", "g")
+
+		# Check if it's image
+		# TODO This should be configurable with options
+		if typeof model.isImage is 'undefined'
+			isImage = true
+		else
+			isImage = model.isImage
+
+		# TODO This must be configurable with options
+		if isImage
+			# Get image thumbnail
+			# End with /
+			if not src.match(new RegExp("/$"))
+				src = src + '/'
+			# Dimentions are set
+			if src.match(new RegExp("/w/", "g"))
+				src = src.replace(regex, "/" + size + "/")
+			# Dimentions are not set, set it here
+			else
+				src = src + "w/#{size}/h/#{size}/p/0/"
+			src = src + model.updateDate.sec
+		else
+			# Calculate size steps for normal icons
+			fixedSize = 16
+			if size > 16
+				fixedSize = 32
+			if size > 32
+				fixedSize = 48
+			if size > 48
+				fixedSize = 512
+			src = src.replace(regex, "/" + fixedSize + "/")
+
+		# Update src only if changed
+		if $element.attr("src") != src
+			$element.attr "src", src
+
+		# Set max image dimentions
+		$element.css
+			maxWidth: size
+			maxHeight: size
+
+		return
+
 #
 # Selected binding
 # This adds class from options if value is true

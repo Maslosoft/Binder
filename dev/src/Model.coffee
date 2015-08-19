@@ -47,3 +47,16 @@ class @Maslosoft.Ko.BalinDev.Models.Enum extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Enum"
 	status: 0
 
+class @Maslosoft.Ko.BalinDev.Models.Hidden extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Hidden"
+	show: true
+
+class @Maslosoft.Ko.BalinDev.Models.Icon extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Hidden"
+	icon: ''
+	isImage: true
+	iconSize: 64
+	updateDate: {
+		sec: 21232323
+	}
+

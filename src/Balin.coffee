@@ -16,15 +16,17 @@
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
+		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
+		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
 		fancytree: Maslosoft.Ko.Balin.Fancytree
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
+		hidden: Maslosoft.Ko.Balin.Hidden
 		href: Maslosoft.Ko.Balin.Href
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
+		icon: Maslosoft.Ko.Balin.Icon
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		selected: Maslosoft.Ko.Balin.Selected
-		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
-		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 	}
 	
 	if handlers isnt null

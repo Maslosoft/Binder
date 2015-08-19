@@ -1,0 +1,33 @@
+<?php
+
+use Maslosoft\Ilmatar\Widgets\Form\ActiveForm;
+use Maslosoft\Ilmatar\Components\Controller;
+?>
+<?php
+/* @var $this Controller */
+/* @var $form ActiveForm */
+?>
+
+<?php require './_header.php'; ?>
+<div>
+	Note: src atrtibute will be broken
+	<img data-bind="icon: app.model.Icon" />
+
+	<br />
+	<div data-bind="text: app.model.Icon.icon"></div>
+	<div data-bind="text: app.model.Icon.isImage"></div>
+	<div data-bind="text: app.model.Icon.iconSize"></div>
+
+</div>
+
+<script>
+	jQuery(document).ready(function(){
+		app.model.Icon = new Maslosoft.Ko.BalinDev.Models.Icon({
+			icon: 'images/maslosoft.png',
+			isImage: true,
+			iconSize: 64
+		});
+		ko.applyBindings({model: app.model});
+	});
+</script>
+<?php require './_footer.php'; ?>

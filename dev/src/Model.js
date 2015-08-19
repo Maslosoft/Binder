@@ -179,4 +179,44 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
+  this.Maslosoft.Ko.BalinDev.Models.Hidden = (function(_super) {
+
+    __extends(Hidden, _super);
+
+    function Hidden() {
+      return Hidden.__super__.constructor.apply(this, arguments);
+    }
+
+    Hidden.prototype._class = "Maslosoft.Ko.BalinDev.Models.Hidden";
+
+    Hidden.prototype.show = true;
+
+    return Hidden;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.Icon = (function(_super) {
+
+    __extends(Icon, _super);
+
+    function Icon() {
+      return Icon.__super__.constructor.apply(this, arguments);
+    }
+
+    Icon.prototype._class = "Maslosoft.Ko.BalinDev.Models.Hidden";
+
+    Icon.prototype.icon = '';
+
+    Icon.prototype.isImage = true;
+
+    Icon.prototype.iconSize = 64;
+
+    Icon.prototype.updateDate = {
+      sec: 21232323
+    };
+
+    return Icon;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
 }).call(this);
