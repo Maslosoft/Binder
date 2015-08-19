@@ -26,6 +26,7 @@
 		icon: Maslosoft.Ko.Balin.Icon
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
+		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
 		selected: Maslosoft.Ko.Balin.Selected
 	}
 	

@@ -33,6 +33,7 @@ if not @Maslosoft.Ko.Balin
 		icon: Maslosoft.Ko.Balin.Icon
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
+		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
 		selected: Maslosoft.Ko.Balin.Selected
 	}
 	
@@ -549,6 +550,26 @@ class @Maslosoft.Ko.Balin.TextValue extends @Maslosoft.Ko.Balin.HtmlValue
 			element.textContent = value
 		if typeof element.innerText isnt 'undefined'
 			element.innerText = value
+
+#
+# Html text value binding
+# WARNING This MUST have parent context, or will not work
+#
+class @Maslosoft.Ko.Balin.TextValueHLJS extends @Maslosoft.Ko.Balin.HtmlValue
+
+	getElementValue: (element) ->
+		return element.textContent || element.innerText || ""
+
+	setElementValue: (element, value) ->
+		if typeof element.textContent isnt 'undefined'
+			element.textContent = value
+			if hljs
+				hljs.highlightBlock(element)
+		if typeof element.innerText isnt 'undefined'
+			element.innerText = value
+			if hljs
+				hljs.highlightBlock(element)
+
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

@@ -40,6 +40,7 @@
       icon: Maslosoft.Ko.Balin.Icon,
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
+      textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
       selected: Maslosoft.Ko.Balin.Selected
     };
     if (handlers !== null) {
@@ -692,6 +693,36 @@
     };
 
     return TextValue;
+
+  })(this.Maslosoft.Ko.Balin.HtmlValue);
+
+  this.Maslosoft.Ko.Balin.TextValueHLJS = (function(_super) {
+    __extends(TextValueHLJS, _super);
+
+    function TextValueHLJS() {
+      return TextValueHLJS.__super__.constructor.apply(this, arguments);
+    }
+
+    TextValueHLJS.prototype.getElementValue = function(element) {
+      return element.textContent || element.innerText || "";
+    };
+
+    TextValueHLJS.prototype.setElementValue = function(element, value) {
+      if (typeof element.textContent !== 'undefined') {
+        element.textContent = value;
+        if (hljs) {
+          hljs.highlightBlock(element);
+        }
+      }
+      if (typeof element.innerText !== 'undefined') {
+        element.innerText = value;
+        if (hljs) {
+          return hljs.highlightBlock(element);
+        }
+      }
+    };
+
+    return TextValueHLJS;
 
   })(this.Maslosoft.Ko.Balin.HtmlValue);
 

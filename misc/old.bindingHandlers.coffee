@@ -2,11 +2,11 @@
 
 # Knockout stuff
 #
-# TODO Add model attribute binding, to bind to model, but update only if id (and language if i18n field!) from binding and model are the same
+# TODO ? Add model attribute binding, to bind to model, but update only if id (and language if i18n field!) from binding and model are the same
 # Example: data-bind="model:app.model.Page, field:'title', id:50885d0a06cffcac0e000000"
 # In yii: MHtml::bindField($model, 'title')
 #
-# TODO Add link binding with params:
+# TODO ? Add link binding with params:
 # text = for link text
 # html = for link html, exclusive with 'text'
 # href = for link href
@@ -30,82 +30,6 @@
 #
 #
 "use strict"
-#
-# FIXME: htmlValue is messed up if combined with observable arrays!
-#
-ko.bindingHandlers.htmlValue =
-	init: (element, valueAccessor, allBindingsAccessor, context) ->
-		handler = ->
-			modelValue = valueAccessor()
-			elementValue = $.trim(element.innerHTML)
-			if ko.isWriteableObservable(modelValue)
-				modelValue(elementValue)
-			else #handle non-observable one-way binding
-				allBindings = allBindingsAccessor()
-				allBindings["_ko_property_writers"].htmlValue elementValue	if allBindings["_ko_property_writers"] and allBindings["_ko_property_writers"].htmlValue
-			return
-
-
-		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
-		ko.utils.registerEventHandler element, "keyup", handler
-		ko.utils.registerEventHandler document, "change.content", handler
-
-		# This is to allow interation with tools which could modify content
-		$(document).on "click", handler
-		return
-
-	update: (element, valueAccessor) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		$element = jQuery(element)
-		if $element.html() isnt value
-			$element.html(value)
-		return
-
-
-ko.bindingHandlers.textValue =
-	init: (element, valueAccessor, allBindingsAccessor, context) ->
-		handler = ->
-			modelValue = valueAccessor()
-			elementValue = $(element).text()
-			if ko.isWriteableObservable(modelValue)
-				modelValue elementValue
-			else #handle non-observable one-way binding
-				allBindings = allBindingsAccessor()
-				allBindings["_ko_property_writers"].textValue elementValue	if allBindings["_ko_property_writers"] and allBindings["_ko_property_writers"].textValue
-			return
-
-
-		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
-		ko.utils.registerEventHandler element, "keyup", handler
-		ko.utils.registerEventHandler document, "change.content", handler
-
-		# This is to allow interation with tools which could modify content
-		$("body").on "click", handler
-		return
-
-	update: (element, valueAccessor) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		$element = jQuery(element)
-		if $element.text() isnt value
-			$element.text(value)
-			if hljs
-				hljs.highlightBlock(element)
-		return
-
-
-###
-Image src binding
-###
-ko.bindingHandlers.src =
-	update: (element, valueAccessor) ->
-		src = ko.unwrap(valueAccessor())
-		$element = $(element)
-		if $element.attr("src") != src
-			$element.attr "src", src
-		return
-
-	init: (element, valueAccessor) ->
-
 
 ###
 Icon binding for models with icon
