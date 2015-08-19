@@ -10,21 +10,29 @@ use Maslosoft\Ilmatar\Components\Controller;
 
 <?php require './_header.php'; ?>
 <div>
-	Note: src atrtibute will be broken
+	Note: src atrtibute will be broken in this example<br />
+	<img data-bind="icon: app.model.Image" /><br />
+
+	Size: <input data-bind="textInput: app.model.Icon.iconSize" /><br />
 	<img data-bind="icon: app.model.Icon" />
 
 	<br />
-	<div data-bind="text: app.model.Icon.icon"></div>
-	<div data-bind="text: app.model.Icon.isImage"></div>
-	<div data-bind="text: app.model.Icon.iconSize"></div>
+	<div data-bind="text: app.model.Image.icon"></div>
+	<div data-bind="text: app.model.Image.isImage"></div>
+	<div data-bind="text: app.model.Image.iconSize"></div>
 
 </div>
 
 <script>
 	jQuery(document).ready(function(){
-		app.model.Icon = new Maslosoft.Ko.BalinDev.Models.Icon({
+		app.model.Image = new Maslosoft.Ko.BalinDev.Models.Icon({
 			icon: 'images/maslosoft.png',
 			isImage: true,
+			iconSize: 64
+		});
+		app.model.Icon = new Maslosoft.Ko.BalinDev.Models.Icon({
+			icon: 'images/maslosoft.png',
+			isImage: false,
 			iconSize: 64
 		});
 		ko.applyBindings({model: app.model});
