@@ -1,10 +1,6 @@
 {
-    "name": "maslosoft/ko-balin",
-    "description": "Binding handlers for knockout js",
-	"license": [
-		"AGPL",
-		"Commercial"
-	],
+    "name": "maslosoft/balin",
+    "description": "Knockout binding handlers",
     "authors": [
         {
             "name": "Peter Maselkowski",
