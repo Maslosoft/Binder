@@ -225,8 +225,10 @@
       height = allBindings.get('h' || allBindings.get('height' || null));
       proportional = allBindings.get('p' || allBindings.get('proportional' || null));
       model = this.getValue(valueAccessor);
-      date = model.updateDate;
-      sec = date.sec;
+      if (model.updateDate) {
+        date = model.updateDate;
+        sec = date.sec;
+      }
       url = model.url;
       src = [];
       src.push(url);
@@ -239,7 +241,9 @@
       if (proportional === false) {
         src.push("p/0");
       }
-      src.push(sec);
+      if (sec) {
+        src.push(sec);
+      }
       src = src.join('/');
       if ($element.attr("src") !== src) {
         $element.attr("src", src);
@@ -616,6 +620,12 @@
       $element = $(element);
       model = this.getValue(valueAccessor);
       iconField = allBindings.get("iconField") || 'icon';
+      if (!model) {
+        if (console) {
+          console.warn('Binding value for `icon` binding not defined, skipping');
+        }
+        return;
+      }
       src = model[iconField];
       if (typeof model.iconSize === 'undefined') {
         defaultSize = 16;
@@ -638,7 +648,9 @@
         } else {
           src = src + ("w/" + size + "/h/" + size + "/p/0/");
         }
-        src = src + model.updateDate.sec;
+        if (model.updateDate) {
+          src = src + model.updateDate.sec;
+        }
       } else {
         fixedSize = 16;
         if (size > 16) {

@@ -109,9 +109,11 @@ class @Maslosoft.Ko.Balin.Base
 		
 	#
 	# Set value back to model
+	# TODO Is this even nessesary?
 	#
 	setValue: (valueAccessor, value) ->
 		# TODO
+
 class @Maslosoft.Ko.Balin.Options
 
 	# Set this if need to access complex date objects
@@ -198,8 +200,11 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 		proportional = allBindings.get 'p' or allBindings.get 'proportional' or null
 
 		model = @getValue(valueAccessor)
-		date = model.updateDate
-		sec = date.sec
+
+		# Try to get timestamp
+		if model.updateDate
+			date = model.updateDate
+			sec = date.sec
 		url = model.url
 
 		# Create new url including width, height and if it should cropped proportionally
@@ -221,7 +226,8 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 			src.push "p/0"
 
 		# Add timestamp
-		src.push sec
+		if sec
+			src.push sec
 
 		# Join parts of url
 		src = src.join '/'
@@ -504,6 +510,10 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 		model = @getValue(valueAccessor)
 
 		iconField = allBindings.get("iconField") or 'icon'
+		if not model
+			if console
+				console.warn 'Binding value for `icon` binding not defined, skipping'
+			return
 		src = model[iconField]
 
 		# Get icon size
@@ -535,7 +545,10 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 			# Dimentions are not set, set it here
 			else
 				src = src + "w/#{size}/h/#{size}/p/0/"
-			src = src + model.updateDate.sec
+				
+			# Add timestamp if set
+			if model.updateDate
+				src = src + model.updateDate.sec
 		else
 			# Calculate size steps for normal icons
 			fixedSize = 16

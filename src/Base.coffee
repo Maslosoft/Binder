@@ -33,6 +33,7 @@ class @Maslosoft.Ko.Balin.Base
 		
 	#
 	# Set value back to model
+	# TODO Is this even nessesary?
 	#
 	setValue: (valueAccessor, value) ->
 		# TODO

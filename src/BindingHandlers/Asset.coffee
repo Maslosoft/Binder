@@ -14,8 +14,11 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 		proportional = allBindings.get 'p' or allBindings.get 'proportional' or null
 
 		model = @getValue(valueAccessor)
-		date = model.updateDate
-		sec = date.sec
+
+		# Try to get timestamp
+		if model.updateDate
+			date = model.updateDate
+			sec = date.sec
 		url = model.url
 
 		# Create new url including width, height and if it should cropped proportionally
@@ -37,7 +40,8 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 			src.push "p/0"
 
 		# Add timestamp
-		src.push sec
+		if sec
+			src.push sec
 
 		# Join parts of url
 		src = src.join '/'

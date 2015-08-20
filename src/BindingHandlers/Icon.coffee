@@ -9,6 +9,10 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 		model = @getValue(valueAccessor)
 
 		iconField = allBindings.get("iconField") or 'icon'
+		if not model
+			if console
+				console.warn 'Binding value for `icon` binding not defined, skipping'
+			return
 		src = model[iconField]
 
 		# Get icon size
@@ -40,7 +44,10 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 			# Dimentions are not set, set it here
 			else
 				src = src + "w/#{size}/h/#{size}/p/0/"
-			src = src + model.updateDate.sec
+				
+			# Add timestamp if set
+			if model.updateDate
+				src = src + model.updateDate.sec
 		else
 			# Calculate size steps for normal icons
 			fixedSize = 16
