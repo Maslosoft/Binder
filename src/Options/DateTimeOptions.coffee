@@ -3,6 +3,12 @@
 #
 class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
 
+	#
+	# Language for locale formatting
+	# @var string
+	#
+	lang: 'en'
+
 	# DateTime source format
 	# @var string
 	#

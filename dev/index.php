@@ -8,11 +8,12 @@ $textLines = [
 	'<ol>',
 	'<li>Open a console</li>',
 	'<li>Type `app.model.intro.text` and press enter. Then change something and try again.</li>',
-	'<li>This text should apear also below second time, but without editing mode.</li>',
+	'<li>This text should appear also below second time, but without editing mode.</li>',
 	'</ol>'
 ];
 $text = implode("\n\t\t", $textLines);
-array_walk($textLines, function(&$value, $index){
+array_walk($textLines, function(&$value, $index)
+{
 	$value = json_encode($value);
 });
 ?>
@@ -26,11 +27,11 @@ array_walk($textLines, function(&$value, $index){
 	<div data-bind="html: text"></div>
 </div>
 <script>
-	jQuery(document).ready(function(){
+	jQuery(document).ready(function () {
 		app.model.intro = new Maslosoft.Ko.BalinDev.Models.Intro({
 			text: [
-				<?= implode(",\n\t\t\t\t", $textLines) . "\n"; ?>
-			].join('')
+<?= implode(",\n\t\t\t\t", $textLines) . "\n"; ?>
+			].join("\n")
 		});
 		ko.applyBindings({model: app.model});
 	});

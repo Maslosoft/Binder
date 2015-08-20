@@ -17,6 +17,8 @@
 	# In alphabetical order
 	config = {
 		asset: Maslosoft.Ko.Balin.Asset
+		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
+		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
 		fancytree: Maslosoft.Ko.Balin.Fancytree

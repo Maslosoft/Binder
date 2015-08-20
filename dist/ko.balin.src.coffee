@@ -24,6 +24,8 @@ if not @Maslosoft.Ko.Balin
 	# In alphabetical order
 	config = {
 		asset: Maslosoft.Ko.Balin.Asset
+		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
+		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
 		fancytree: Maslosoft.Ko.Balin.Fancytree
@@ -93,7 +95,10 @@ class @Maslosoft.Ko.Balin.Base
 	# Class constructor
 	# @param options @Maslosoft.Ko.Balin.Options
 	#
-	constructor: (@options = {}) ->
+	constructor: (options = {}) ->
+		@options = {}
+		for name, value of options
+			@options[name] = value
 
 	#
 	# Get value from model
@@ -106,13 +111,6 @@ class @Maslosoft.Ko.Balin.Base
 			else
 				value = value[@options.valueField]()
 		return value or defaults
-		
-	#
-	# Set value back to model
-	# TODO Is this even nessesary?
-	#
-	setValue: (valueAccessor, value) ->
-		# TODO
 
 class @Maslosoft.Ko.Balin.Options
 
@@ -147,6 +145,12 @@ class @Maslosoft.Ko.Balin.Options
 #
 class @Maslosoft.Ko.Balin.DateOptions extends @Maslosoft.Ko.Balin.Options
 
+	#
+	# Language for locale formatting
+	# @var string
+	#
+	lang: 'en'
+
 	# Date source format
 	# @var string
 	#
@@ -156,10 +160,17 @@ class @Maslosoft.Ko.Balin.DateOptions extends @Maslosoft.Ko.Balin.Options
 	# @var string
 	#
 	displayFormat: 'YYYY-MM-DD'
+
 #
 # Configuration class for datetime bindings
 #
 class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
+
+	#
+	# Language for locale formatting
+	# @var string
+	#
+	lang: 'en'
 
 	# DateTime source format
 	# @var string
@@ -170,10 +181,17 @@ class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
 	# @var string
 	#
 	displayFormat: 'YYYY-MM-DD hh:mm'
+
 #
 # Configuration class for time bindings
 #
 class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
+
+	#
+	# Language for locale formatting
+	# @var string
+	#
+	lang: 'en'
 
 	# Time source format
 	# @var string
@@ -184,6 +202,21 @@ class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
 	# @var string
 	#
 	displayFormat: 'hh:mm'
+
+#
+# Moment formatter class
+#
+class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
+
+	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		moment.locale @options.lang
+		return
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		value = @getValue(valueAccessor)
+		element.innerHTML = moment[@options.sourceFormat](value).format(@options.displayFormat)
+		return
+
 #
 # Asset binding handler
 #
@@ -236,24 +269,24 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 			$element.attr "src", src
 		return
 
-class @Maslosoft.Ko.Balin.DateTime extends @Maslosoft.Ko.Balin.Base
+#
+# Date formatter
+#
+class @Maslosoft.Ko.Balin.DateFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
 
 	constructor: (options) ->
-		@options = new @Maslosoft.Ko.Balin.DateTimeOptions(options)
+		super new Maslosoft.Ko.Balin.DateOptions(options)
+
 
 ###
 One-way date/time formatter
 ###
-class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
-	
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		moment.lang @options.lang
-		return
+class @Maslosoft.Ko.Balin.DateTimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		value = @getValue(valueAccessor)
-		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
-		return
+	constructor: (options) ->
+		super new Maslosoft.Ko.Balin.DateTimeOptions(options)
+
+
 #
 # Enum css class handler
 #
@@ -632,6 +665,22 @@ class @Maslosoft.Ko.Balin.TextValueHLJS extends @Maslosoft.Ko.Balin.HtmlValue
 			element.innerText = value
 			if hljs
 				hljs.highlightBlock(element)
+
+
+class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		value = @getValue(valueAccessor)
+		element.innerHTML = moment[@sourceformat](value).fromNow()
+		return
+
+#
+# Date formatter
+#
+class @Maslosoft.Ko.Balin.TimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+
+	constructor: (options) ->
+		super Maslosoft.Ko.Balin.TimeOptions(options)
 
 #
 # Tooltip binding handler

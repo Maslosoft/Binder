@@ -70,3 +70,8 @@ class @Maslosoft.Ko.BalinDev.Models.Asset extends @Maslosoft.Ko.Balin.Model
 	updateDate: {
 		sec: 21232323
 	}
+
+class @Maslosoft.Ko.BalinDev.Models.DateTime extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Asset"
+	url: ''
+	date: 21232323

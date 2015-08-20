@@ -255,4 +255,22 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
+  this.Maslosoft.Ko.BalinDev.Models.DateTime = (function(_super) {
+
+    __extends(DateTime, _super);
+
+    function DateTime() {
+      return DateTime.__super__.constructor.apply(this, arguments);
+    }
+
+    DateTime.prototype._class = "Maslosoft.Ko.BalinDev.Models.Asset";
+
+    DateTime.prototype.url = '';
+
+    DateTime.prototype.date = 21232323;
+
+    return DateTime;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
 }).call(this);

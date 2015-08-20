@@ -1,13 +1,8 @@
 ###
 One-way date/time formatter
 ###
-class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
-	
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		moment.lang @options.lang
-		return
+class @Maslosoft.Ko.Balin.DateTimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		value = @getValue(valueAccessor)
-		element.innerHTML = moment[@sourceformat](value).format(@displayformat)
-		return
+	constructor: (options) ->
+		super new Maslosoft.Ko.Balin.DateTimeOptions(options)
+

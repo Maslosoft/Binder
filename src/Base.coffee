@@ -17,7 +17,10 @@ class @Maslosoft.Ko.Balin.Base
 	# Class constructor
 	# @param options @Maslosoft.Ko.Balin.Options
 	#
-	constructor: (@options = {}) ->
+	constructor: (options = {}) ->
+		@options = {}
+		for name, value of options
+			@options[name] = value
 
 	#
 	# Get value from model
@@ -30,10 +33,3 @@ class @Maslosoft.Ko.Balin.Base
 			else
 				value = value[@options.valueField]()
 		return value or defaults
-		
-	#
-	# Set value back to model
-	# TODO Is this even nessesary?
-	#
-	setValue: (valueAccessor, value) ->
-		# TODO

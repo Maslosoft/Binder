@@ -31,6 +31,8 @@
     }
     config = {
       asset: Maslosoft.Ko.Balin.Asset,
+      dateFormatter: Maslosoft.Ko.Balin.DateFormatter,
+      dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter,
       enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter,
       enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
       fancytree: Maslosoft.Ko.Balin.Fancytree,
@@ -111,8 +113,16 @@
     Base.prototype.options = null;
 
     function Base(options) {
-      this.options = options != null ? options : {};
+      var name, value;
+      if (options == null) {
+        options = {};
+      }
       this.getValue = __bind(this.getValue, this);
+      this.options = {};
+      for (name in options) {
+        value = options[name];
+        this.options[name] = value;
+      }
     }
 
     Base.prototype.getValue = function(valueAccessor, defaults) {
@@ -130,8 +140,6 @@
       }
       return value || defaults;
     };
-
-    Base.prototype.setValue = function(valueAccessor, value) {};
 
     return Base;
 
@@ -172,6 +180,8 @@
       return DateOptions.__super__.constructor.apply(this, arguments);
     }
 
+    DateOptions.prototype.lang = 'en';
+
     DateOptions.prototype.sourceFormat = 'unix';
 
     DateOptions.prototype.displayFormat = 'YYYY-MM-DD';
@@ -186,6 +196,8 @@
     function DateTimeOptions() {
       return DateTimeOptions.__super__.constructor.apply(this, arguments);
     }
+
+    DateTimeOptions.prototype.lang = 'en';
 
     DateTimeOptions.prototype.sourceFormat = 'unix';
 
@@ -202,6 +214,8 @@
       return TimeOptions.__super__.constructor.apply(this, arguments);
     }
 
+    TimeOptions.prototype.lang = 'en';
+
     TimeOptions.prototype.sourceFormat = 'unix';
 
     TimeOptions.prototype.displayFormat = 'hh:mm';
@@ -209,6 +223,29 @@
     return TimeOptions;
 
   })(this.Maslosoft.Ko.Balin.Options);
+
+  this.Maslosoft.Ko.Balin.MomentFormatter = (function(_super) {
+    __extends(MomentFormatter, _super);
+
+    function MomentFormatter() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return MomentFormatter.__super__.constructor.apply(this, arguments);
+    }
+
+    MomentFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      moment.locale(this.options.lang);
+    };
+
+    MomentFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var value;
+      value = this.getValue(valueAccessor);
+      element.innerHTML = moment[this.options.sourceFormat](value).format(this.options.displayFormat);
+    };
+
+    return MomentFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.Asset = (function(_super) {
     __extends(Asset, _super);
@@ -254,44 +291,32 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
-  this.Maslosoft.Ko.Balin.DateTime = (function(_super) {
-    __extends(DateTime, _super);
+  this.Maslosoft.Ko.Balin.DateFormatter = (function(_super) {
+    __extends(DateFormatter, _super);
 
-    function DateTime(options) {
-      this.options = new this.Maslosoft.Ko.Balin.DateTimeOptions(options);
+    function DateFormatter(options) {
+      DateFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateOptions(options));
     }
 
-    return DateTime;
+    return DateFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Ko.Balin.MomentFormatter);
 
 
   /*
   One-way date/time formatter
    */
 
-  this.Maslosoft.Ko.Balin.MomentFormatter = (function(_super) {
-    __extends(MomentFormatter, _super);
+  this.Maslosoft.Ko.Balin.DateTimeFormatter = (function(_super) {
+    __extends(DateTimeFormatter, _super);
 
-    function MomentFormatter() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return MomentFormatter.__super__.constructor.apply(this, arguments);
+    function DateTimeFormatter(options) {
+      DateTimeFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateTimeOptions(options));
     }
 
-    MomentFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      moment.lang(this.options.lang);
-    };
+    return DateTimeFormatter;
 
-    MomentFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var value;
-      value = this.getValue(valueAccessor);
-      element.innerHTML = moment[this.sourceformat](value).format(this.displayformat);
-    };
-
-    return MomentFormatter;
-
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Ko.Balin.MomentFormatter);
 
   this.Maslosoft.Ko.Balin.EnumCssClassFormatter = (function(_super) {
     __extends(EnumCssClassFormatter, _super);
@@ -779,6 +804,35 @@
     return TextValueHLJS;
 
   })(this.Maslosoft.Ko.Balin.HtmlValue);
+
+  this.Maslosoft.Ko.Balin.TimeAgoFormatter = (function(_super) {
+    __extends(TimeAgoFormatter, _super);
+
+    function TimeAgoFormatter() {
+      this.update = __bind(this.update, this);
+      return TimeAgoFormatter.__super__.constructor.apply(this, arguments);
+    }
+
+    TimeAgoFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var value;
+      value = this.getValue(valueAccessor);
+      element.innerHTML = moment[this.sourceformat](value).fromNow();
+    };
+
+    return TimeAgoFormatter;
+
+  })(this.Maslosoft.Ko.Balin.MomentFormatter);
+
+  this.Maslosoft.Ko.Balin.TimeFormatter = (function(_super) {
+    __extends(TimeFormatter, _super);
+
+    function TimeFormatter(options) {
+      TimeFormatter.__super__.constructor.call(this, Maslosoft.Ko.Balin.TimeOptions(options));
+    }
+
+    return TimeFormatter;
+
+  })(this.Maslosoft.Ko.Balin.MomentFormatter);
 
   this.Maslosoft.Ko.Balin.Tooltip = (function(_super) {
     __extends(Tooltip, _super);

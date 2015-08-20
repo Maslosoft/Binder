@@ -6,7 +6,7 @@ balin = [
 	'src/Options/DateOptions.coffee',
 	'src/Options/DateTimeOptions.coffee',
 	'src/Options/TimeOptions.coffee',
-
+	'src/Base/*'
 	'src/BindingHandlers/*',
 
 	'src/Tracker.coffee',

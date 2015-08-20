@@ -1,13 +1,3 @@
-<?php
-
-use Maslosoft\Ilmatar\Widgets\Form\ActiveForm;
-use Maslosoft\Ilmatar\Components\Controller;
-?>
-<?php
-/* @var $this Controller */
-/* @var $form ActiveForm */
-?>
-
 <?php require './_header.php'; ?>
 <div>
 	Status: <input data-bind="textInput: app.model.Enum.status"/> (0, 1, 2, 3) <br />
