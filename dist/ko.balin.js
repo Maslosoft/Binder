@@ -30,6 +30,7 @@
       handlers = null;
     }
     config = {
+      asset: Maslosoft.Ko.Balin.Asset,
       enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter,
       enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
       fancytree: Maslosoft.Ko.Balin.Fancytree,
@@ -41,6 +42,7 @@
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
       textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
+      tooltip: Maslosoft.Ko.Balin.Tooltip,
       selected: Maslosoft.Ko.Balin.Selected
     };
     if (handlers !== null) {
@@ -207,6 +209,46 @@
     return TimeOptions;
 
   })(this.Maslosoft.Ko.Balin.Options);
+
+  this.Maslosoft.Ko.Balin.Asset = (function(_super) {
+    __extends(Asset, _super);
+
+    function Asset() {
+      this.update = __bind(this.update, this);
+      return Asset.__super__.constructor.apply(this, arguments);
+    }
+
+    Asset.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      var $element, date, height, model, proportional, sec, src, url, width;
+      $element = $(element);
+      width = allBindings.get('w' || allBindings.get('width' || null));
+      height = allBindings.get('h' || allBindings.get('height' || null));
+      proportional = allBindings.get('p' || allBindings.get('proportional' || null));
+      model = this.getValue(valueAccessor);
+      date = model.updateDate;
+      sec = date.sec;
+      url = model.url;
+      src = [];
+      src.push(url);
+      if (width) {
+        src.push("w/" + width);
+      }
+      if (height) {
+        src.push("h/" + height);
+      }
+      if (proportional === false) {
+        src.push("p/0");
+      }
+      src.push(sec);
+      src = src.join('/');
+      if ($element.attr("src") !== src) {
+        $element.attr("src", src);
+      }
+    };
+
+    return Asset;
+
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.DateTime = (function(_super) {
     __extends(DateTime, _super);
@@ -725,6 +767,25 @@
     return TextValueHLJS;
 
   })(this.Maslosoft.Ko.Balin.HtmlValue);
+
+  this.Maslosoft.Ko.Balin.Tooltip = (function(_super) {
+    __extends(Tooltip, _super);
+
+    function Tooltip() {
+      this.update = __bind(this.update, this);
+      return Tooltip.__super__.constructor.apply(this, arguments);
+    }
+
+    Tooltip.prototype.update = function(element, valueAccessor) {
+      var title;
+      title = this.getValue(valueAccessor);
+      $(element).attr("title", title);
+      $(element).attr("rel", "tooltip");
+    };
+
+    return Tooltip;
+
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.getType = function(type) {
     if (x && typeof x === 'object') {

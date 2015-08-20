@@ -52,7 +52,7 @@ class @Maslosoft.Ko.BalinDev.Models.Hidden extends @Maslosoft.Ko.Balin.Model
 	show: true
 
 class @Maslosoft.Ko.BalinDev.Models.Icon extends @Maslosoft.Ko.Balin.Model
-	_class: "Maslosoft.Ko.BalinDev.Models.Hidden"
+	_class: "Maslosoft.Ko.BalinDev.Models.Icon"
 	icon: ''
 	isImage: true
 	iconSize: 64
@@ -60,3 +60,13 @@ class @Maslosoft.Ko.BalinDev.Models.Icon extends @Maslosoft.Ko.Balin.Model
 		sec: 21232323
 	}
 
+class @Maslosoft.Ko.BalinDev.Models.Tooltip extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Tooltip"
+	title: ''
+
+class @Maslosoft.Ko.BalinDev.Models.Asset extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Asset"
+	url: ''
+	updateDate: {
+		sec: 21232323
+	}

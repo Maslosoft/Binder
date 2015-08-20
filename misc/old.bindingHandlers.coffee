@@ -86,19 +86,6 @@ ko.bindingHandlers.icon =
 
 
 ###
-Tooltip binding
-###
-ko.bindingHandlers.tooltip =
-	init: (element, valueAccessor) ->
-
-	update: (element, valueAccessor) ->
-		title = ko.unwrap valueAccessor()
-		$(element).attr "title", title
-		$(element).attr "rel", "tooltip"
-		return
-
-
-###
 Asset binding, for easy binding of images with optional w[idth], h[eight] and p[roportional]
 ###
 ko.bindingHandlers.asset =

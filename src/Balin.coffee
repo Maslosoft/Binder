@@ -16,6 +16,7 @@
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
+		asset: Maslosoft.Ko.Balin.Asset
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
 		fancytree: Maslosoft.Ko.Balin.Fancytree
@@ -27,6 +28,7 @@
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
+		tooltip: Maslosoft.Ko.Balin.Tooltip
 		selected: Maslosoft.Ko.Balin.Selected
 	}
 	

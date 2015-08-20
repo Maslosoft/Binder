@@ -23,6 +23,7 @@ if not @Maslosoft.Ko.Balin
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
+		asset: Maslosoft.Ko.Balin.Asset
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
 		fancytree: Maslosoft.Ko.Balin.Fancytree
@@ -34,6 +35,7 @@ if not @Maslosoft.Ko.Balin
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
+		tooltip: Maslosoft.Ko.Balin.Tooltip
 		selected: Maslosoft.Ko.Balin.Selected
 	}
 	
@@ -180,6 +182,54 @@ class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
 	# @var string
 	#
 	displayFormat: 'hh:mm'
+#
+# Asset binding handler
+#
+class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
+		$element = $(element)
+
+		# Get dimensions defined by other bindings
+		width = allBindings.get 'w' or allBindings.get 'width' or null
+		height = allBindings.get 'h' or allBindings.get 'height' or null
+
+		# Get propotional flag if set
+		proportional = allBindings.get 'p' or allBindings.get 'proportional' or null
+
+		model = @getValue(valueAccessor)
+		date = model.updateDate
+		sec = date.sec
+		url = model.url
+
+		# Create new url including width, height and if it should cropped proportionally
+		src = []
+
+		# Add base url of asset
+		src.push url
+
+		# Add width
+		if width
+			src.push "w/#{width}"
+
+		# Add height
+		if height
+			src.push "h/#{height}"
+
+		# Crop to provided dimensions if not proportional
+		if proportional is false
+			src.push "p/0"
+
+		# Add timestamp
+		src.push sec
+
+		# Join parts of url
+		src = src.join '/'
+
+		if $element.attr("src") != src
+			$element.attr "src", src
+		return
+
 class @Maslosoft.Ko.Balin.DateTime extends @Maslosoft.Ko.Balin.Base
 
 	constructor: (options) ->
@@ -569,6 +619,17 @@ class @Maslosoft.Ko.Balin.TextValueHLJS extends @Maslosoft.Ko.Balin.HtmlValue
 			element.innerText = value
 			if hljs
 				hljs.highlightBlock(element)
+
+#
+# Tooltip binding handler
+#
+class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor) =>
+		title = @getValue(valueAccessor)
+		$(element).attr "title", title
+		$(element).attr "rel", "tooltip"
+		return
 
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'

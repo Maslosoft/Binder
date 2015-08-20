@@ -1,13 +1,3 @@
-<?php
-
-use Maslosoft\Ilmatar\Widgets\Form\ActiveForm;
-use Maslosoft\Ilmatar\Components\Controller;
-?>
-<?php
-/* @var $this Controller */
-/* @var $form ActiveForm */
-?>
-
 <?php require './_header.php'; ?>
 <div>
 	<label>

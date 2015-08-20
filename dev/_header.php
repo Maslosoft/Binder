@@ -54,6 +54,7 @@
 		<script type="text/javascript" src="../bower_components/moment/min/moment-with-locales.min.js"></script>
 		<script type="text/javascript" src="../bower_components/highlightjs/highlight.pack.js"></script>
 		<script type="text/javascript" src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
+		<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
 		<script type="text/javascript" src="../dist/ko.balin.js"></script>
 		<script type="text/javascript" src="./src/Model.js"></script>
 

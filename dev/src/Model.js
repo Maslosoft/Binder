@@ -203,7 +203,7 @@
       return Icon.__super__.constructor.apply(this, arguments);
     }
 
-    Icon.prototype._class = "Maslosoft.Ko.BalinDev.Models.Hidden";
+    Icon.prototype._class = "Maslosoft.Ko.BalinDev.Models.Icon";
 
     Icon.prototype.icon = '';
 
@@ -216,6 +216,42 @@
     };
 
     return Icon;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.Tooltip = (function(_super) {
+
+    __extends(Tooltip, _super);
+
+    function Tooltip() {
+      return Tooltip.__super__.constructor.apply(this, arguments);
+    }
+
+    Tooltip.prototype._class = "Maslosoft.Ko.BalinDev.Models.Tooltip";
+
+    Tooltip.prototype.title = '';
+
+    return Tooltip;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.Asset = (function(_super) {
+
+    __extends(Asset, _super);
+
+    function Asset() {
+      return Asset.__super__.constructor.apply(this, arguments);
+    }
+
+    Asset.prototype._class = "Maslosoft.Ko.BalinDev.Models.Asset";
+
+    Asset.prototype.url = '';
+
+    Asset.prototype.updateDate = {
+      sec: 21232323
+    };
+
+    return Asset;
 
   })(this.Maslosoft.Ko.Balin.Model);
 
