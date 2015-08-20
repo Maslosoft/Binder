@@ -17,6 +17,7 @@
 
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
     ko.bindingHandlers[name] = handler;
+    ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options));
     if (handler.writable) {
       if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
         return ko.expressionRewriting.twoWayBindings[name] = true;
@@ -45,6 +46,8 @@
       textValue: Maslosoft.Ko.Balin.TextValue,
       textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
       tooltip: Maslosoft.Ko.Balin.Tooltip,
+      timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter,
+      timeFormatter: Maslosoft.Ko.Balin.TimeFormatter,
       selected: Maslosoft.Ko.Balin.Selected
     };
     if (handlers !== null) {
@@ -110,7 +113,7 @@
   this.Maslosoft.Ko.Balin.Base = (function() {
     Base.prototype.writable = true;
 
-    Base.prototype.options = null;
+    Base.prototype.options = {};
 
     function Base(options) {
       var name, value;
@@ -118,7 +121,6 @@
         options = {};
       }
       this.getValue = __bind(this.getValue, this);
-      this.options = {};
       for (name in options) {
         value = options[name];
         this.options[name] = value;
@@ -329,14 +331,10 @@
     EnumCssClassFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
       var config, name, re, _i, _len, _ref;
       config = this.getValue(valueAccessor);
-      console.log('enum css');
-      console.log(config);
-      console.log(config.values[config.data]);
       _ref = config.values;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
         re = new RegExp("(?:^|\\s)" + name + "(?!\\S)", 'g');
-        console.log(re);
         element.className = element.className.replace(re, '');
       }
       element.className += ' ' + config.values[config.data];
@@ -816,7 +814,7 @@
     TimeAgoFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
       var value;
       value = this.getValue(valueAccessor);
-      element.innerHTML = moment[this.sourceformat](value).fromNow();
+      element.innerHTML = moment[this.options.sourceFormat](value).fromNow();
     };
 
     return TimeAgoFormatter;
@@ -827,7 +825,7 @@
     __extends(TimeFormatter, _super);
 
     function TimeFormatter(options) {
-      TimeFormatter.__super__.constructor.call(this, Maslosoft.Ko.Balin.TimeOptions(options));
+      TimeFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.TimeOptions(options));
     }
 
     return TimeFormatter;

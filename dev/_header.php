@@ -61,7 +61,7 @@
 		<script type="text/javascript">
 			window.app = {};
 			window.app.model = {};
-			Maslosoft.Ko.Balin.registerDefaults();
+//			Maslosoft.Ko.Balin.registerDefaults();
 		</script>
 		<?php
 		foreach (new DirectoryIterator(__DIR__) as $file)

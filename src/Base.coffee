@@ -12,13 +12,12 @@ class @Maslosoft.Ko.Balin.Base
 	#
 	# @var @Maslosoft.Ko.Balin.Options
 	#
-	options: null
+	options: {}
 
 	# Class constructor
 	# @param options @Maslosoft.Ko.Balin.Options
 	#
 	constructor: (options = {}) ->
-		@options = {}
 		for name, value of options
 			@options[name] = value
 

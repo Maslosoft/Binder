@@ -4,8 +4,13 @@
 # @params Maslosoft.Ko.Balin.Base handler
 #
 @Maslosoft.Ko.Balin.register = (name, handler) ->
+
 	ko.bindingHandlers[name] = handler
+
+	#Reassign options
+	ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
 	
+	# Assign two way. Not sure if nessesary in current ko
 	if handler.writable
 		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
 			ko.expressionRewriting.twoWayBindings[name] = true
@@ -31,6 +36,8 @@
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
 		tooltip: Maslosoft.Ko.Balin.Tooltip
+		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
+		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		selected: Maslosoft.Ko.Balin.Selected
 	}
 	

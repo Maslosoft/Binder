@@ -11,8 +11,13 @@ if not @Maslosoft.Ko.Balin
 # @params Maslosoft.Ko.Balin.Base handler
 #
 @Maslosoft.Ko.Balin.register = (name, handler) ->
+
 	ko.bindingHandlers[name] = handler
+
+	#Reassign options
+	ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
 	
+	# Assign two way. Not sure if nessesary in current ko
 	if handler.writable
 		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
 			ko.expressionRewriting.twoWayBindings[name] = true
@@ -38,6 +43,8 @@ if not @Maslosoft.Ko.Balin
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
 		tooltip: Maslosoft.Ko.Balin.Tooltip
+		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
+		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		selected: Maslosoft.Ko.Balin.Selected
 	}
 	
@@ -90,13 +97,12 @@ class @Maslosoft.Ko.Balin.Base
 	#
 	# @var @Maslosoft.Ko.Balin.Options
 	#
-	options: null
+	options: {}
 
 	# Class constructor
 	# @param options @Maslosoft.Ko.Balin.Options
 	#
 	constructor: (options = {}) ->
-		@options = {}
 		for name, value of options
 			@options[name] = value
 
@@ -294,14 +300,10 @@ class @Maslosoft.Ko.Balin.EnumCssClassFormatter extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		config = @getValue valueAccessor
-		console.log 'enum css'
-		console.log config
-		console.log config.values[config.data]
 		
 		# Remove previosly set classes
 		for name in config.values
 			re = new RegExp("(?:^|\\s)#{name}(?!\\S)", 'g')
-			console.log re
 			element.className = element.className.replace(re, '')
 
 		element.className += ' ' + config.values[config.data]
@@ -671,7 +673,7 @@ class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFor
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		value = @getValue(valueAccessor)
-		element.innerHTML = moment[@sourceformat](value).fromNow()
+		element.innerHTML = moment[this.options.sourceFormat](value).fromNow()
 		return
 
 #
@@ -680,7 +682,7 @@ class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFor
 class @Maslosoft.Ko.Balin.TimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
 
 	constructor: (options) ->
-		super Maslosoft.Ko.Balin.TimeOptions(options)
+		super new Maslosoft.Ko.Balin.TimeOptions(options)
 
 #
 # Tooltip binding handler

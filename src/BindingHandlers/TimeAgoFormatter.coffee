@@ -3,5 +3,5 @@ class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFor
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		value = @getValue(valueAccessor)
-		element.innerHTML = moment[@sourceformat](value).fromNow()
+		element.innerHTML = moment[this.options.sourceFormat](value).fromNow()
 		return

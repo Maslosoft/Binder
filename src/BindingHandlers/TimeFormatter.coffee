@@ -4,4 +4,4 @@
 class @Maslosoft.Ko.Balin.TimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
 
 	constructor: (options) ->
-		super Maslosoft.Ko.Balin.TimeOptions(options)
+		super new Maslosoft.Ko.Balin.TimeOptions(options)
