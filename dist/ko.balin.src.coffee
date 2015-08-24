@@ -28,9 +28,11 @@ if not @Maslosoft.Ko.Balin
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
+		active: Maslosoft.Ko.Balin.Active
 		asset: Maslosoft.Ko.Balin.Asset
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
+		disabled: Maslosoft.Ko.Balin.Disabled
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
 		fancytree: Maslosoft.Ko.Balin.Fancytree
@@ -147,6 +149,13 @@ class @Maslosoft.Ko.Balin.Options
 
 
 #
+# Configuration class for css bindings
+#
+class @Maslosoft.Ko.Balin.CssOptions extends @Maslosoft.Ko.Balin.Options
+	
+	className: 'active'
+
+#
 # Configuration class for date bindings
 #
 class @Maslosoft.Ko.Balin.DateOptions extends @Maslosoft.Ko.Balin.Options
@@ -210,6 +219,22 @@ class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
 	displayFormat: 'hh:mm'
 
 #
+# CSS class binding
+# This adds class from options if value is true
+#
+class @Maslosoft.Ko.Balin.CssClass extends @Maslosoft.Ko.Balin.Base
+
+	writable: false
+
+	update: (element, valueAccessor) =>
+		value = @getValue(valueAccessor)
+		if value
+			ko.utils.toggleDomNodeCssClass(element, @options.className, true);
+		else
+			ko.utils.toggleDomNodeCssClass(element, @options.className, false);
+		return
+
+#
 # Moment formatter class
 #
 class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
@@ -222,6 +247,15 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@options.sourceFormat](value).format(@options.displayFormat)
 		return
+
+#
+# Disabled binding
+# This adds class from options if value is true
+#
+class @Maslosoft.Ko.Balin.Active extends @Maslosoft.Ko.Balin.CssClass
+
+	constructor: (options) ->
+		super new Maslosoft.Ko.Balin.CssOptions({className: 'active'})
 
 #
 # Asset binding handler
@@ -292,6 +326,15 @@ class @Maslosoft.Ko.Balin.DateTimeFormatter extends @Maslosoft.Ko.Balin.MomentFo
 	constructor: (options) ->
 		super new Maslosoft.Ko.Balin.DateTimeOptions(options)
 
+
+#
+# Disabled binding
+# This adds class from options if value is true
+#
+class @Maslosoft.Ko.Balin.Disabled extends @Maslosoft.Ko.Balin.CssClass
+
+	constructor: (options) ->
+		super new Maslosoft.Ko.Balin.CssOptions({className: 'disabled'})
 
 #
 # Enum css class handler
@@ -610,19 +653,11 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 # Selected binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.Selected extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.Selected extends@Maslosoft.Ko.Balin.CssClass
 
-	writable: false
+	constructor: (options) ->
+		super new Maslosoft.Ko.Balin.CssOptions({className: 'selected'})
 
-	className: 'selected'
-
-	update: (element, valueAccessor) =>
-		value = @getValue(valueAccessor)
-		if value
-			ko.utils.toggleDomNodeCssClass(element, @className, true);
-		else
-			ko.utils.toggleDomNodeCssClass(element, @className, false);
-		return
 #
 # Src binding handler
 #

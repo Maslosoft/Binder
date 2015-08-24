@@ -31,9 +31,11 @@
       handlers = null;
     }
     config = {
+      active: Maslosoft.Ko.Balin.Active,
       asset: Maslosoft.Ko.Balin.Asset,
       dateFormatter: Maslosoft.Ko.Balin.DateFormatter,
       dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter,
+      disabled: Maslosoft.Ko.Balin.Disabled,
       enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter,
       enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
       fancytree: Maslosoft.Ko.Balin.Fancytree,
@@ -175,6 +177,19 @@
 
   })();
 
+  this.Maslosoft.Ko.Balin.CssOptions = (function(_super) {
+    __extends(CssOptions, _super);
+
+    function CssOptions() {
+      return CssOptions.__super__.constructor.apply(this, arguments);
+    }
+
+    CssOptions.prototype.className = 'active';
+
+    return CssOptions;
+
+  })(this.Maslosoft.Ko.Balin.Options);
+
   this.Maslosoft.Ko.Balin.DateOptions = (function(_super) {
     __extends(DateOptions, _super);
 
@@ -226,6 +241,30 @@
 
   })(this.Maslosoft.Ko.Balin.Options);
 
+  this.Maslosoft.Ko.Balin.CssClass = (function(_super) {
+    __extends(CssClass, _super);
+
+    function CssClass() {
+      this.update = __bind(this.update, this);
+      return CssClass.__super__.constructor.apply(this, arguments);
+    }
+
+    CssClass.prototype.writable = false;
+
+    CssClass.prototype.update = function(element, valueAccessor) {
+      var value;
+      value = this.getValue(valueAccessor);
+      if (value) {
+        ko.utils.toggleDomNodeCssClass(element, this.options.className, true);
+      } else {
+        ko.utils.toggleDomNodeCssClass(element, this.options.className, false);
+      }
+    };
+
+    return CssClass;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.MomentFormatter = (function(_super) {
     __extends(MomentFormatter, _super);
 
@@ -248,6 +287,19 @@
     return MomentFormatter;
 
   })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Active = (function(_super) {
+    __extends(Active, _super);
+
+    function Active(options) {
+      Active.__super__.constructor.call(this, new Maslosoft.Ko.Balin.CssOptions({
+        className: 'active'
+      }));
+    }
+
+    return Active;
+
+  })(this.Maslosoft.Ko.Balin.CssClass);
 
   this.Maslosoft.Ko.Balin.Asset = (function(_super) {
     __extends(Asset, _super);
@@ -319,6 +371,19 @@
     return DateTimeFormatter;
 
   })(this.Maslosoft.Ko.Balin.MomentFormatter);
+
+  this.Maslosoft.Ko.Balin.Disabled = (function(_super) {
+    __extends(Disabled, _super);
+
+    function Disabled(options) {
+      Disabled.__super__.constructor.call(this, new Maslosoft.Ko.Balin.CssOptions({
+        className: 'disabled'
+      }));
+    }
+
+    return Disabled;
+
+  })(this.Maslosoft.Ko.Balin.CssClass);
 
   this.Maslosoft.Ko.Balin.EnumCssClassFormatter = (function(_super) {
     __extends(EnumCssClassFormatter, _super);
@@ -703,28 +768,15 @@
   this.Maslosoft.Ko.Balin.Selected = (function(_super) {
     __extends(Selected, _super);
 
-    function Selected() {
-      this.update = __bind(this.update, this);
-      return Selected.__super__.constructor.apply(this, arguments);
+    function Selected(options) {
+      Selected.__super__.constructor.call(this, new Maslosoft.Ko.Balin.CssOptions({
+        className: 'selected'
+      }));
     }
-
-    Selected.prototype.writable = false;
-
-    Selected.prototype.className = 'selected';
-
-    Selected.prototype.update = function(element, valueAccessor) {
-      var value;
-      value = this.getValue(valueAccessor);
-      if (value) {
-        ko.utils.toggleDomNodeCssClass(element, this.className, true);
-      } else {
-        ko.utils.toggleDomNodeCssClass(element, this.className, false);
-      }
-    };
 
     return Selected;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Ko.Balin.CssClass);
 
   this.Maslosoft.Ko.Balin.Src = (function(_super) {
     __extends(Src, _super);

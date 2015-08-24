@@ -16,9 +16,23 @@
 				-o-tab-size:   4;
 				tab-size:      4;
 			}
+			.pad-sides{
+				padding-left:3px;
+				padding-right:3px;
+			}
 			.ui-selected, .selected{
 				background: darkorange;
 				color:white;
+			}
+			.active{
+				background: lightgreen;
+			}
+			.disabled{
+				color: silver;
+			}
+			.custom{
+				color: white;
+				background:black;
 			}
 			nav ul, nav ul li{
 				list-style: none;

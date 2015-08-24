@@ -3,9 +3,7 @@ balin = [
 	'src/Balin.coffee',
 	'src/Base.coffee',
 	'src/Options.coffee',
-	'src/Options/DateOptions.coffee',
-	'src/Options/DateTimeOptions.coffee',
-	'src/Options/TimeOptions.coffee',
+	'src/Options/*',
 	'src/Base/*'
 	'src/BindingHandlers/*',
 
