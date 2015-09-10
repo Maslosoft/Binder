@@ -590,7 +590,9 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 		iconField = allBindings.get("iconField") or 'icon'
 		if not model
 			if console
-				console.warn 'Binding value for `icon` binding not defined, skipping' + "\n" + (new Error).stack
+				console.warn 'Binding value for `icon` binding not defined, skipping. Element:'
+				console.warn element
+				console.warn (new Error).stack
 			return
 		src = model[iconField]
 
