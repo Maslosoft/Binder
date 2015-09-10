@@ -710,7 +710,7 @@
       iconField = allBindings.get("iconField") || 'icon';
       if (!model) {
         if (console) {
-          console.warn('Binding value for `icon` binding not defined, skipping');
+          console.warn('Binding value for `icon` binding not defined, skipping' + "\n" + (new Error).stack);
         }
         return;
       }
