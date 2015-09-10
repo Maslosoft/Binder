@@ -18,6 +18,8 @@ class @Maslosoft.Ko.Balin.Base
 	# @param options @Maslosoft.Ko.Balin.Options
 	#
 	constructor: (options = {}) ->
+		#	Set ref to current object, not prototype
+		@options = {}
 		for name, value of options
 			@options[name] = value
 
