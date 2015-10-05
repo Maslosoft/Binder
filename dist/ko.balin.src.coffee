@@ -105,6 +105,8 @@ class @Maslosoft.Ko.Balin.Base
 	# @param options @Maslosoft.Ko.Balin.Options
 	#
 	constructor: (options = {}) ->
+		#	Set ref to current object, not prototype
+		@options = {}
 		for name, value of options
 			@options[name] = value
 
@@ -759,7 +761,11 @@ class @Maslosoft.Ko.Track
 		# Check if has prototype
 		if data._class
 			className = data._class.replace(/\\/g, '.')
-			ref = Maslosoft.Ko.objByName(className)
+			try
+				ref = Maslosoft.Ko.objByName(className)
+			catch Error
+				console.warn("Could not resolve class name `#{className}`")
+			
 			if ref
 				return new ref(data)
 			else

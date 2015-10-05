@@ -263,13 +263,29 @@
       return DateTime.__super__.constructor.apply(this, arguments);
     }
 
-    DateTime.prototype._class = "Maslosoft.Ko.BalinDev.Models.Asset";
+    DateTime.prototype._class = "Maslosoft.Ko.BalinDev.Models.DateTime";
 
     DateTime.prototype.url = '';
 
     DateTime.prototype.date = 21232323;
 
     return DateTime;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.Nested = (function(_super) {
+
+    __extends(Nested, _super);
+
+    function Nested() {
+      return Nested.__super__.constructor.apply(this, arguments);
+    }
+
+    Nested.prototype._class = "Maslosoft.Ko.BalinDev.Models.Nested";
+
+    Nested.prototype.rawI18N = '';
+
+    return Nested;
 
   })(this.Maslosoft.Ko.Balin.Model);
 

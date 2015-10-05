@@ -123,6 +123,7 @@
         options = {};
       }
       this.getValue = __bind(this.getValue, this);
+      this.options = {};
       for (name in options) {
         value = options[name];
         this.options[name] = value;
@@ -943,13 +944,18 @@
     }
 
     Track.prototype.factory = function(data) {
-      var className, name, ref, value;
+      var Error, className, name, ref, value;
       if (!data) {
         return data;
       }
       if (data._class) {
         className = data._class.replace(/\\/g, '.');
-        ref = Maslosoft.Ko.objByName(className);
+        try {
+          ref = Maslosoft.Ko.objByName(className);
+        } catch (_error) {
+          Error = _error;
+          console.warn("Could not resolve class name `" + className + "`");
+        }
         if (ref) {
           return new ref(data);
         } else {

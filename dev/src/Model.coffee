@@ -72,6 +72,10 @@ class @Maslosoft.Ko.BalinDev.Models.Asset extends @Maslosoft.Ko.Balin.Model
 	}
 
 class @Maslosoft.Ko.BalinDev.Models.DateTime extends @Maslosoft.Ko.Balin.Model
-	_class: "Maslosoft.Ko.BalinDev.Models.Asset"
+	_class: "Maslosoft.Ko.BalinDev.Models.DateTime"
 	url: ''
 	date: 21232323
+
+class @Maslosoft.Ko.BalinDev.Models.Nested extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Nested"
+	rawI18N: ''

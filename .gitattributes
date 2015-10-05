@@ -1,0 +1,6 @@
+*.php text eol=lf
+*.phps text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.coffee text eol=lf
+*.js text eol=lf
