@@ -225,6 +225,23 @@
 
   })(this.Maslosoft.Ko.Balin.Options);
 
+  this.Maslosoft.Ko.Balin.TimeAgoOptions = (function(_super) {
+    __extends(TimeAgoOptions, _super);
+
+    function TimeAgoOptions() {
+      return TimeAgoOptions.__super__.constructor.apply(this, arguments);
+    }
+
+    TimeAgoOptions.prototype.lang = 'en';
+
+    TimeAgoOptions.prototype.sourceFormat = 'unix';
+
+    TimeAgoOptions.prototype.displayFormat = 'hh:mm';
+
+    return TimeAgoOptions;
+
+  })(this.Maslosoft.Ko.Balin.Options);
+
   this.Maslosoft.Ko.Balin.TimeOptions = (function(_super) {
     __extends(TimeOptions, _super);
 
@@ -861,9 +878,9 @@
   this.Maslosoft.Ko.Balin.TimeAgoFormatter = (function(_super) {
     __extends(TimeAgoFormatter, _super);
 
-    function TimeAgoFormatter() {
+    function TimeAgoFormatter(options) {
       this.update = __bind(this.update, this);
-      return TimeAgoFormatter.__super__.constructor.apply(this, arguments);
+      TimeAgoFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.TimeAgoOptions(options));
     }
 
     TimeAgoFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {

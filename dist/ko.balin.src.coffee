@@ -202,6 +202,27 @@ class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
 #
 # Configuration class for time bindings
 #
+class @Maslosoft.Ko.Balin.TimeAgoOptions extends @Maslosoft.Ko.Balin.Options
+
+	#
+	# Language for locale formatting
+	# @var string
+	#
+	lang: 'en'
+
+	# Time source format
+	# @var string
+	#
+	sourceFormat: 'unix'
+
+	# Time display format
+	# @var string
+	#
+	displayFormat: 'hh:mm'
+
+#
+# Configuration class for time bindings
+#
 class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
 
 	#
@@ -710,9 +731,12 @@ class @Maslosoft.Ko.Balin.TextValueHLJS extends @Maslosoft.Ko.Balin.HtmlValue
 
 class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
 
+	constructor: (options) ->
+		super new Maslosoft.Ko.Balin.TimeAgoOptions(options)
+
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		value = @getValue(valueAccessor)
-		element.innerHTML = moment[this.options.sourceFormat](value).fromNow()
+		element.innerHTML = moment[@options.sourceFormat](value).fromNow()
 		return
 
 #

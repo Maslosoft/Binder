@@ -6,6 +6,7 @@
 			<input data-bind="textInput: text"/>
 			<span data-bind="htmlValue: text"></span>
 			<span data-bind="textValue: text"></span>
+			<span style="cursor:ns-resize;">&#x2195;</span>
 		</div>
 	</div>
 	<hr />
