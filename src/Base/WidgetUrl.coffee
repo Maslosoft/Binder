@@ -22,11 +22,11 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 		
 		args = [];
 		if typeof(params) is 'string' or typeof(params) is 'number'
-			args.push params
+			args.push "" + params
 		else
 			for name, value of params
-				name = encodeURIComponent(name)
-				value = encodeURIComponent(value)
+				name = encodeURIComponent("" + name)
+				value = encodeURIComponent("" + value)
 				args.push "#{name}:#{value}"
 		
 		href = "#{terminator}#{widgetId}.#{action}";
