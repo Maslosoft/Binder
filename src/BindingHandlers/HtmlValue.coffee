@@ -23,7 +23,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		
 		element.setAttribute('contenteditable', true)
-
+		
 		# Generate some id if not set, see notes below why
 		if not element.id
 			element.id = "Maslosoft-Ko-Balin-HtmlValue-#{idCounter++}"
@@ -53,7 +53,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		ko.utils.registerEventHandler document, "mouseup", handler
 		return
 
-	update: (element, valueAccessor) =>
+	update: (element, valueAccessor, allBindings) =>
 		value = @getValue(valueAccessor)
 		if @getElementValue(element) isnt value
 			@setElementValue(element, value)

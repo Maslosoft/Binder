@@ -65,51 +65,6 @@ ko.bindingHandlers.widget =
 
 
 ###
-One-way date mongo formatter
-###
-ko.bindingHandlers.dateFormatter =
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		moment.lang app.config.lang
-		return
-
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		value = value.sec
-		element.innerHTML = moment.unix(value).format(app.config.format.dateLc)
-		return
-
-
-###
-One-way date time mongo formatter
-###
-ko.bindingHandlers.dateTimeFormatter =
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		moment.lang app.config.lang
-		return
-
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		value = value.sec
-		element.innerHTML = moment.unix(value).format(app.config.format.dateTimeLc)
-		return
-
-
-###
-One-way time a go mongo date formatter
-###
-ko.bindingHandlers.timeAgoFormatter =
-	init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		moment.lang app.config.lang
-		return
-
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-		value = ko.unwrap(valueAccessor()) or ""
-		value = value.sec
-		element.innerHTML = moment.unix(value).fromNow()
-		return
-
-
-###
 One-way duration mongo date formatter
 ###
 ko.bindingHandlers.duration =

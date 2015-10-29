@@ -29,6 +29,8 @@ if not @Maslosoft.Ko.Balin
 	# In alphabetical order
 	config = {
 		active: Maslosoft.Ko.Balin.Active
+		action: Maslosoft.Ko.Balin.WidgetAction
+		activity: Maslosoft.Ko.Balin.WidgetActivity
 		asset: Maslosoft.Ko.Balin.Asset
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
@@ -271,6 +273,43 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 		element.innerHTML = moment[@options.sourceFormat](value).format(@options.displayFormat)
 		return
 
+
+class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
+
+	getData: (element, valueAccessor, allBindings, bindingName) ->
+		src = @getValue(valueAccessor)
+
+		data = {}
+		data.id = allBindings.get('widgetId') or src.id
+
+		if allBindings.get('widget')
+			data.id = allBindings.get('widget').id
+
+		data[bindingName] = allBindings.get(bindingName) or src[bindingName]
+		data.params = allBindings.get('params') or src.params
+
+		if typeof(src) is 'string'
+			data[bindingName] = src
+		
+		return data
+
+	createUrl: (widgetId, action, params, terminator) =>
+		
+		args = [];
+		if typeof(params) is 'string' or typeof(params) is 'number'
+			args.push params
+		else
+			for name, value of params
+				name = encodeURIComponent(name)
+				value = encodeURIComponent(value)
+				args.push "#{name}:#{value}"
+		
+		href = "#{terminator}#{widgetId}.#{action}";
+		if args.length is 0
+			return href;
+		else
+			args = args.join(',', args)
+			return "#{href}=#{args}"
 #
 # Disabled binding
 # This adds class from options if value is true
@@ -565,7 +604,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		
 		element.setAttribute('contenteditable', true)
-
+		
 		# Generate some id if not set, see notes below why
 		if not element.id
 			element.id = "Maslosoft-Ko-Balin-HtmlValue-#{idCounter++}"
@@ -595,7 +634,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		ko.utils.registerEventHandler document, "mouseup", handler
 		return
 
-	update: (element, valueAccessor) =>
+	update: (element, valueAccessor, allBindings) =>
 		value = @getValue(valueAccessor)
 		if @getElementValue(element) isnt value
 			@setElementValue(element, value)
@@ -758,6 +797,24 @@ class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
 		$(element).attr "rel", "tooltip"
 		return
 
+
+class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
+
+	update: (element, valueAccessor, allBindings) =>
+
+		data = @getData(element, valueAccessor, allBindings, 'action')
+		href = @createUrl(data.id, data.action, data.params, '?')
+
+		element.href = href
+
+class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
+
+	update: (element, valueAccessor, allBindings) =>
+		
+		data = @getData(element, valueAccessor, allBindings, 'activity')
+		href = @createUrl(data.id, data.activity, data.params, '#')
+
+		element.href = href
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

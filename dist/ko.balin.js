@@ -32,6 +32,8 @@
     }
     config = {
       active: Maslosoft.Ko.Balin.Active,
+      action: Maslosoft.Ko.Balin.WidgetAction,
+      activity: Maslosoft.Ko.Balin.WidgetActivity,
       asset: Maslosoft.Ko.Balin.Asset,
       dateFormatter: Maslosoft.Ko.Balin.DateFormatter,
       dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter,
@@ -303,6 +305,56 @@
     };
 
     return MomentFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.WidgetUrl = (function(_super) {
+    __extends(WidgetUrl, _super);
+
+    function WidgetUrl() {
+      this.createUrl = __bind(this.createUrl, this);
+      return WidgetUrl.__super__.constructor.apply(this, arguments);
+    }
+
+    WidgetUrl.prototype.getData = function(element, valueAccessor, allBindings, bindingName) {
+      var data, src;
+      src = this.getValue(valueAccessor);
+      data = {};
+      data.id = allBindings.get('widgetId') || src.id;
+      if (allBindings.get('widget')) {
+        data.id = allBindings.get('widget').id;
+      }
+      data[bindingName] = allBindings.get(bindingName) || src[bindingName];
+      data.params = allBindings.get('params') || src.params;
+      if (typeof src === 'string') {
+        data[bindingName] = src;
+      }
+      return data;
+    };
+
+    WidgetUrl.prototype.createUrl = function(widgetId, action, params, terminator) {
+      var args, href, name, value;
+      args = [];
+      if (typeof params === 'string' || typeof params === 'number') {
+        args.push(params);
+      } else {
+        for (name in params) {
+          value = params[name];
+          name = encodeURIComponent(name);
+          value = encodeURIComponent(value);
+          args.push("" + name + ":" + value);
+        }
+      }
+      href = "" + terminator + widgetId + "." + action;
+      if (args.length === 0) {
+        return href;
+      } else {
+        args = args.join(',', args);
+        return "" + href + "=" + args;
+      }
+    };
+
+    return WidgetUrl;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
@@ -701,7 +753,7 @@
       ko.utils.registerEventHandler(document, "mouseup", handler);
     };
 
-    HtmlValue.prototype.update = function(element, valueAccessor) {
+    HtmlValue.prototype.update = function(element, valueAccessor, allBindings) {
       var value;
       value = this.getValue(valueAccessor);
       if (this.getElementValue(element) !== value) {
@@ -922,6 +974,44 @@
     return Tooltip;
 
   })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.WidgetAction = (function(_super) {
+    __extends(WidgetAction, _super);
+
+    function WidgetAction() {
+      this.update = __bind(this.update, this);
+      return WidgetAction.__super__.constructor.apply(this, arguments);
+    }
+
+    WidgetAction.prototype.update = function(element, valueAccessor, allBindings) {
+      var data, href;
+      data = this.getData(element, valueAccessor, allBindings, 'action');
+      href = this.createUrl(data.id, data.action, data.params, '?');
+      return element.href = href;
+    };
+
+    return WidgetAction;
+
+  })(this.Maslosoft.Ko.Balin.WidgetUrl);
+
+  this.Maslosoft.Ko.Balin.WidgetActivity = (function(_super) {
+    __extends(WidgetActivity, _super);
+
+    function WidgetActivity() {
+      this.update = __bind(this.update, this);
+      return WidgetActivity.__super__.constructor.apply(this, arguments);
+    }
+
+    WidgetActivity.prototype.update = function(element, valueAccessor, allBindings) {
+      var data, href;
+      data = this.getData(element, valueAccessor, allBindings, 'activity');
+      href = this.createUrl(data.id, data.activity, data.params, '#');
+      return element.href = href;
+    };
+
+    return WidgetActivity;
+
+  })(this.Maslosoft.Ko.Balin.WidgetUrl);
 
   this.Maslosoft.Ko.getType = function(type) {
     if (x && typeof x === 'object') {

@@ -22,6 +22,8 @@
 	# In alphabetical order
 	config = {
 		active: Maslosoft.Ko.Balin.Active
+		action: Maslosoft.Ko.Balin.WidgetAction
+		activity: Maslosoft.Ko.Balin.WidgetActivity
 		asset: Maslosoft.Ko.Balin.Asset
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
