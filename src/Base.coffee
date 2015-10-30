@@ -27,7 +27,10 @@ class @Maslosoft.Ko.Balin.Base
 	# Get value from model
 	#
 	getValue: (valueAccessor, defaults = '') =>
-		value = ko.unwrap(valueAccessor())
+		if typeof(valueAccessor) is 'function'
+			value = ko.unwrap(valueAccessor())
+		else
+			value = ko.unwrap(valueAccessor)
 		if @options.valueField
 			if @options.ec5
 				value = value[@options.valueField]

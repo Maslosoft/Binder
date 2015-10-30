@@ -13,6 +13,8 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 		data[bindingName] = allBindings.get(bindingName) or src[bindingName]
 		data.params = allBindings.get('params') or src.params
 
+		data.params = @getValue(data.params)
+		
 		if typeof(src) is 'string'
 			data[bindingName] = src
 		

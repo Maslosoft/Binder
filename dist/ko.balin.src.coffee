@@ -116,7 +116,10 @@ class @Maslosoft.Ko.Balin.Base
 	# Get value from model
 	#
 	getValue: (valueAccessor, defaults = '') =>
-		value = ko.unwrap(valueAccessor())
+		if typeof(valueAccessor) is 'function'
+			value = ko.unwrap(valueAccessor())
+		else
+			value = ko.unwrap(valueAccessor)
 		if @options.valueField
 			if @options.ec5
 				value = value[@options.valueField]
@@ -288,6 +291,8 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 		data[bindingName] = allBindings.get(bindingName) or src[bindingName]
 		data.params = allBindings.get('params') or src.params
 
+		data.params = @getValue(data.params)
+		
 		if typeof(src) is 'string'
 			data[bindingName] = src
 		
@@ -297,11 +302,11 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 		
 		args = [];
 		if typeof(params) is 'string' or typeof(params) is 'number'
-			args.push params
+			args.push "" + params
 		else
 			for name, value of params
-				name = encodeURIComponent(name)
-				value = encodeURIComponent(value)
+				name = encodeURIComponent("" + name)
+				value = encodeURIComponent("" + value)
 				args.push "#{name}:#{value}"
 		
 		href = "#{terminator}#{widgetId}.#{action}";
@@ -805,7 +810,9 @@ class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
 		data = @getData(element, valueAccessor, allBindings, 'action')
 		href = @createUrl(data.id, data.action, data.params, '?')
 
-		element.href = href
+		element.setAttribute('href', href)
+		element.setAttribute('rel', 'virtual')
+
 
 class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
 
@@ -814,7 +821,8 @@ class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
 		data = @getData(element, valueAccessor, allBindings, 'activity')
 		href = @createUrl(data.id, data.activity, data.params, '#')
 
-		element.href = href
+		element.setAttribute('href', href)
+		element.setAttribute('rel', 'virtual')
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

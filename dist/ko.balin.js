@@ -137,7 +137,11 @@
       if (defaults == null) {
         defaults = '';
       }
-      value = ko.unwrap(valueAccessor());
+      if (typeof valueAccessor === 'function') {
+        value = ko.unwrap(valueAccessor());
+      } else {
+        value = ko.unwrap(valueAccessor);
+      }
       if (this.options.valueField) {
         if (this.options.ec5) {
           value = value[this.options.valueField];
@@ -326,6 +330,7 @@
       }
       data[bindingName] = allBindings.get(bindingName) || src[bindingName];
       data.params = allBindings.get('params') || src.params;
+      data.params = this.getValue(data.params);
       if (typeof src === 'string') {
         data[bindingName] = src;
       }
@@ -336,12 +341,12 @@
       var args, href, name, value;
       args = [];
       if (typeof params === 'string' || typeof params === 'number') {
-        args.push(params);
+        args.push("" + params);
       } else {
         for (name in params) {
           value = params[name];
-          name = encodeURIComponent(name);
-          value = encodeURIComponent(value);
+          name = encodeURIComponent("" + name);
+          value = encodeURIComponent("" + value);
           args.push("" + name + ":" + value);
         }
       }
@@ -987,7 +992,8 @@
       var data, href;
       data = this.getData(element, valueAccessor, allBindings, 'action');
       href = this.createUrl(data.id, data.action, data.params, '?');
-      return element.href = href;
+      element.setAttribute('href', href);
+      return element.setAttribute('rel', 'virtual');
     };
 
     return WidgetAction;
@@ -1006,7 +1012,8 @@
       var data, href;
       data = this.getData(element, valueAccessor, allBindings, 'activity');
       href = this.createUrl(data.id, data.activity, data.params, '#');
-      return element.href = href;
+      element.setAttribute('href', href);
+      return element.setAttribute('rel', 'virtual');
     };
 
     return WidgetActivity;

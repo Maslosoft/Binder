@@ -6,4 +6,5 @@ class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
 		data = @getData(element, valueAccessor, allBindings, 'action')
 		href = @createUrl(data.id, data.action, data.params, '?')
 
-		element.href = href
+		element.setAttribute('href', href)
+		element.setAttribute('rel', 'virtual')
