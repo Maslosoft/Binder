@@ -1,11 +1,11 @@
 {
-    "name": "maslosoft/balin",
-    "description": "Knockout binding handlers",
-    "authors": [
-        {
-            "name": "Peter Maselkowski",
-            "email": "pmaselkowski@gmail.com"
-        }
-    ],
-    "require": {}
+	"name": "maslosoft/balin",
+	"description": "Knockout binding handlers",
+	"authors": [
+		{
+			"name": "Peter Maselkowski",
+			"email": "pmaselkowski@gmail.com"
+		}
+	],
+	"require": {}
 }
