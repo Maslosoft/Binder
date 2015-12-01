@@ -11,26 +11,28 @@
     this.Maslosoft.Ko.BalinDev = {};
   }
 
-  this.Maslosoft.Ko.BalinDev.Validator = (function(superClass) {
-    extend(Validator, superClass);
+  this.Maslosoft.Ko.BalinDev.RegExpValidator = (function(superClass) {
+    extend(RegExpValidator, superClass);
 
-    function Validator() {
-      return Validator.__super__.constructor.apply(this, arguments);
+    function RegExpValidator() {
+      return RegExpValidator.__super__.constructor.apply(this, arguments);
     }
 
-    Validator.prototype.pattern = '';
+    RegExpValidator.prototype.pattern = '';
 
-    Validator.prototype.flags = '';
+    RegExpValidator.prototype.flags = '';
 
-    Validator.prototype.getErrors = function() {};
+    RegExpValidator.prototype.getErrors = function() {
+      return ["Should match " + this.pattern];
+    };
 
-    Validator.prototype.isValid = function(value) {
+    RegExpValidator.prototype.isValid = function(value) {
       var regexp;
       regexp = new RegExp(this.pattern, this.flags);
       return regexp.test(value);
     };
 
-    return Validator;
+    return RegExpValidator;
 
   })(this.Maslosoft.Ko.Balin.BaseValidator);
 

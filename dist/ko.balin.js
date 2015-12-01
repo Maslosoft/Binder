@@ -1037,12 +1037,39 @@
     };
 
     Validator.prototype.validate = function(validator, element, value) {
+      var parent;
+      parent = element.parentElement;
       if (validator.isValid(value)) {
-        ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
-        return ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
+        if (this.options.inputError) {
+          ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
+        }
+        if (this.options.inputSuccess) {
+          ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
+        }
+        if (parent) {
+          if (this.options.parentError) {
+            ko.utils.toggleDomNodeCssClass(parent, this.options.parentError, false);
+          }
+          if (this.options.parentSuccess) {
+            return ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
+          }
+        }
       } else {
-        ko.utils.toggleDomNodeCssClass(element, this.options.inputError, true);
-        return ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
+        console.log(validator.getErrors());
+        if (this.options.inputError) {
+          ko.utils.toggleDomNodeCssClass(element, this.options.inputError, true);
+        }
+        if (this.options.inputSuccess) {
+          ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
+        }
+        if (parent) {
+          if (this.options.parentError) {
+            ko.utils.toggleDomNodeCssClass(parent, this.options.parentError, true);
+          }
+          if (this.options.parentSuccess) {
+            return ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
+          }
+        }
       }
     };
 

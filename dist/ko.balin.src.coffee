@@ -842,12 +842,37 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		return element.textContent || element.innerText || ""
 
 	validate: (validator, element, value) =>
+		parent = element.parentElement
+		
 		if validator.isValid(value)
-			ko.utils.toggleDomNodeCssClass(element, @options.inputError, false);
-			ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, true);
+			# Apply input error styles as needed
+			if @options.inputError
+				ko.utils.toggleDomNodeCssClass(element, @options.inputError, false);
+			if @options.inputSuccess
+				ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, true);
+
+			# Apply parent styles as needed
+			if parent
+				if @options.parentError
+					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, false);
+				if @options.parentSuccess
+					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, true);
 		else
-			ko.utils.toggleDomNodeCssClass(element, @options.inputError, true);
-			ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, false);
+			# Errors...
+			console.log validator.getErrors()
+
+			# Apply input error styles as needed
+			if @options.inputError
+				ko.utils.toggleDomNodeCssClass(element, @options.inputError, true);
+			if @options.inputSuccess
+				ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, false);
+
+			# Apply parent styles as needed
+			if parent
+				if @options.parentError
+					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, true);
+				if @options.parentSuccess
+					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
 
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>

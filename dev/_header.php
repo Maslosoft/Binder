@@ -53,11 +53,11 @@
 			b.warn {
 				color: #cc0000;
 			}
-			.error, .has-error{
-				color:red;
+			.error{
+				color:#a94442 !important;
 			}
-			.success, .has-success{
-				color:green;
+			.success{
+				color:#3c763d !important;
 			}
 		</style>
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
@@ -77,7 +77,7 @@
 		<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
 		<script type="text/javascript" src="../dist/ko.balin.js"></script>
 		<script type="text/javascript" src="./src/Model.js"></script>
-		<script type="text/javascript" src="./src/Validator.js"></script>
+		<script type="text/javascript" src="./src/RegExpValidator.js"></script>
 
 		<script type="text/javascript">
 			window.app = {};
