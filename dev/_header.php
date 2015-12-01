@@ -53,6 +53,12 @@
 			b.warn {
 				color: #cc0000;
 			}
+			.error, .has-error{
+				color:red;
+			}
+			.success, .has-success{
+				color:green;
+			}
 		</style>
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
@@ -71,11 +77,11 @@
 		<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
 		<script type="text/javascript" src="../dist/ko.balin.js"></script>
 		<script type="text/javascript" src="./src/Model.js"></script>
+		<script type="text/javascript" src="./src/Validator.js"></script>
 
 		<script type="text/javascript">
 			window.app = {};
 			window.app.model = {};
-//			Maslosoft.Ko.Balin.registerDefaults();
 		</script>
 		<?php
 		foreach (new DirectoryIterator(__DIR__) as $file)

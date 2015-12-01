@@ -8,7 +8,7 @@
 	ko.bindingHandlers[name] = handler
 
 	#Reassign options
-	ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
+	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
 	
 	# Assign two way. Not sure if nessesary in current ko
 	if handler.writable
@@ -43,6 +43,7 @@
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
 		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		selected: Maslosoft.Ko.Balin.Selected
+		validator: Maslosoft.Ko.Balin.Validator
 	}
 	
 	if handlers isnt null

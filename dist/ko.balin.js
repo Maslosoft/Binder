@@ -17,7 +17,6 @@
 
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
     ko.bindingHandlers[name] = handler;
-    ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options));
     if (handler.writable) {
       if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
         return ko.expressionRewriting.twoWayBindings[name] = true;
@@ -52,7 +51,8 @@
       tooltip: Maslosoft.Ko.Balin.Tooltip,
       timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter,
       timeFormatter: Maslosoft.Ko.Balin.TimeFormatter,
-      selected: Maslosoft.Ko.Balin.Selected
+      selected: Maslosoft.Ko.Balin.Selected,
+      validator: Maslosoft.Ko.Balin.Validator
     };
     if (handlers !== null) {
       _results = [];
@@ -264,6 +264,38 @@
     return TimeOptions;
 
   })(this.Maslosoft.Ko.Balin.Options);
+
+  this.Maslosoft.Ko.Balin.ValidatorOptions = (function(_super) {
+    __extends(ValidatorOptions, _super);
+
+    function ValidatorOptions() {
+      return ValidatorOptions.__super__.constructor.apply(this, arguments);
+    }
+
+    ValidatorOptions.prototype.inputError = 'error';
+
+    ValidatorOptions.prototype.parentError = 'has-error';
+
+    ValidatorOptions.prototype.inputSuccess = 'success';
+
+    ValidatorOptions.prototype.parentSuccess = 'has-success';
+
+    return ValidatorOptions;
+
+  })(this.Maslosoft.Ko.Balin.Options);
+
+  this.Maslosoft.Ko.Balin.BaseValidator = (function() {
+    function BaseValidator(config) {
+      var index, value;
+      for (index in config) {
+        value = config[index];
+        this[index] = value;
+      }
+    }
+
+    return BaseValidator;
+
+  })();
 
   this.Maslosoft.Ko.Balin.CssClass = (function(_super) {
     __extends(CssClass, _super);
@@ -977,6 +1009,77 @@
     };
 
     return Tooltip;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Validator = (function(_super) {
+    var idCounter;
+
+    __extends(Validator, _super);
+
+    idCounter = 0;
+
+    function Validator(options) {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      this.validate = __bind(this.validate, this);
+      Validator.__super__.constructor.call(this, new Maslosoft.Ko.Balin.ValidatorOptions());
+    }
+
+    Validator.prototype.getElementValue = function(element) {
+      if (element.tagName.toLowerCase() === 'input') {
+        return element.value;
+      }
+      if (element.tagName.toLowerCase() === 'textarea') {
+        return element.value;
+      }
+      return element.textContent || element.innerText || "";
+    };
+
+    Validator.prototype.validate = function(validator, element, value) {
+      if (validator.isValid(value)) {
+        ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
+        return ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
+      } else {
+        ko.utils.toggleDomNodeCssClass(element, this.options.inputError, true);
+        return ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
+      }
+    };
+
+    Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      var className, config, handler, initialVal, validator;
+      config = this.getValue(valueAccessor);
+      className = config["class"];
+      delete config["class"];
+      validator = new className(config);
+      if (!element.id) {
+        element.id = "Maslosoft-Ko-Balin-Validator-" + (idCounter++);
+      }
+      initialVal = this.getElementValue(element);
+      handler = (function(_this) {
+        return function(e) {
+          var elementValue;
+          if (!element) {
+            return;
+          }
+          element = document.getElementById(element.id);
+          if (!element) {
+            return;
+          }
+          elementValue = _this.getElementValue(element);
+          if (initialVal !== elementValue) {
+            initialVal = elementValue;
+            return _this.validate(validator, element, elementValue);
+          }
+        };
+      })(this);
+      ko.utils.registerEventHandler(element, "keyup, input", handler);
+      return ko.utils.registerEventHandler(document, "mouseup", handler);
+    };
+
+    Validator.prototype.update = function(element, valueAccessor, allBindings) {};
+
+    return Validator;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
