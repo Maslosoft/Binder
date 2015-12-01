@@ -1,4 +1,4 @@
-balin = [
+balinBare = [
 	'src/_ns.coffee',
 	'src/Balin.coffee',
 	'src/Base.coffee',
@@ -9,8 +9,11 @@ balin = [
 
 	'src/Tracker.coffee',
 	'src/Model.coffee',
-	'src/_init.coffee'
 ]
+
+# Shallow clone array with slice
+balin = balinBare.slice 0
+balin.push 'src/_init.coffee'
 
 module.exports = (grunt) ->
 
@@ -25,10 +28,23 @@ module.exports = (grunt) ->
 				files: [
 					'dist/ko.balin.js': balin
 				]
+			noinit:
+				options:
+					sourceMap: true
+					join: true
+					expand: true
+				files: [
+					'dist/ko.balin-noinit.js': balinBare
+				]
+
 		uglify:
 			compile:
 				files:
 					'dist/ko.balin.min.js' : ['dist/ko.balin.js']
+			noinit:
+				files:
+					'dist/ko.balin-noinit.min.js' : ['dist/ko.balin-noinit.js']
+
 		watch:
 			compile:
 				files: balin
@@ -41,3 +57,4 @@ module.exports = (grunt) ->
 
 	# Default task.
 	grunt.registerTask 'default', ['coffee']
+	grunt.registerTask 'release', ['coffee', 'uglify']
