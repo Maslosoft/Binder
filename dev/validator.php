@@ -22,7 +22,7 @@
 <div data-bind="with: app.model.txt3" class="form-group">
 	<label class="control-label" for="txt4">Validate contenteditable if it's not empty and valid email:</label>
 	<!--<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: {valids: [{class: Maslosoft.Ko.BalinDev.RequiredValidator}, {class: Maslosoft.Ko.BalinDev.EmailValidator}]}" style="width:50%;"></div> <br />-->
-	<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: [{'class': 'Maslosoft.Ko.BalinDev.RequiredValidator'}, {'class': 'Maslosoft.Ko.BalinDev.EmailValidator'}]" style="width:50%;"></div> <br />
+	<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: [{class: Maslosoft.Ko.BalinDev.RequiredValidator}, {class: Maslosoft.Ko.BalinDev.EmailValidator}]" style="width:50%;"></div> <br />
 	<!--<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: {class: Maslosoft.Ko.BalinDev.EmailValidator}" style="width:50%;"></div> <br />-->
 </div>
 <div data-bind="with: app.model.txt3" class="form-group">
