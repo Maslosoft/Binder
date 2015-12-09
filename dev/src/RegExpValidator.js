@@ -22,12 +22,17 @@
 
     RegExpValidator.prototype.flags = '';
 
+    RegExpValidator.prototype.allowEmpty = true;
+
     RegExpValidator.prototype.getErrors = function() {
       return ["Should match " + this.pattern];
     };
 
     RegExpValidator.prototype.isValid = function(value) {
       var regexp;
+      if (this.allowEmpty && !value) {
+        return true;
+      }
       regexp = new RegExp(this.pattern, this.flags);
       return regexp.test(value);
     };

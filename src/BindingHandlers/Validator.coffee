@@ -56,7 +56,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		config = @getValue(valueAccessor)
-
+		console.log config
+		return
 		# Store class name first
 		className = config.class
 

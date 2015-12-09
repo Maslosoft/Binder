@@ -1076,6 +1076,8 @@
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var className, config, handler, initialVal, validator;
       config = this.getValue(valueAccessor);
+      console.log(config);
+      return;
       className = config["class"];
       delete config["class"];
       validator = new className(config);

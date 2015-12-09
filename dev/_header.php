@@ -78,6 +78,9 @@
 		<script type="text/javascript" src="../dist/ko.balin.js"></script>
 		<script type="text/javascript" src="./src/Model.js"></script>
 		<script type="text/javascript" src="./src/RegExpValidator.js"></script>
+		<script type="text/javascript" src="./src/RequiredValidator.js"></script>
+		<script type="text/javascript" src="./src/EmailValidator.js"></script>
+		
 
 		<script type="text/javascript">
 			window.app = {};

@@ -14,6 +14,9 @@ if not @Maslosoft.Ko.Balin
 
 	ko.bindingHandlers[name] = handler
 
+	#Reassign options
+	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
+	
 	# Assign two way. Not sure if nessesary in current ko
 	if handler.writable
 		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
@@ -874,7 +877,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		config = @getValue(valueAccessor)
-
+		console.log config
+		return
 		# Store class name first
 		className = config.class
 
