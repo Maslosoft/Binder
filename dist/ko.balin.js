@@ -1051,9 +1051,10 @@
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentError, false);
           }
           if (this.options.parentSuccess) {
-            return ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
+            ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
           }
         }
+        return true;
       } else {
         console.log(validator.getErrors());
         if (this.options.inputError) {
@@ -1067,27 +1068,45 @@
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentError, true);
           }
           if (this.options.parentSuccess) {
-            return ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
+            ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
           }
         }
+        return false;
       }
     };
 
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var className, config, handler, initialVal, validator;
-      config = this.getValue(valueAccessor);
-      console.log(config);
-      return;
-      className = config["class"];
-      delete config["class"];
-      validator = new className(config);
+      var cfg, className, config, configuration, handler, initialVal, validators, _i, _len;
+      configuration = this.getValue(valueAccessor);
+      validators = new Array;
+      if (configuration.constructor === Array) {
+        cfg = configuration;
+      } else {
+        cfg = [configuration];
+      }
+      for (_i = 0, _len = cfg.length; _i < _len; _i++) {
+        config = cfg[_i];
+        if (!config["class"]) {
+          console.error("Parameter `class` must be defined for validator on element:");
+          console.error(element);
+          continue;
+        }
+        if (typeof config["class"] !== 'function') {
+          console.error("Parameter `class` must be compatible function, binding defined on element:");
+          console.error(element);
+          continue;
+        }
+        className = config["class"];
+        delete config["class"];
+        validators.push(new className(config));
+      }
       if (!element.id) {
         element.id = "Maslosoft-Ko-Balin-Validator-" + (idCounter++);
       }
       initialVal = this.getElementValue(element);
       handler = (function(_this) {
         return function(e) {
-          var elementValue;
+          var elementValue, validator, _j, _len1;
           if (!element) {
             return;
           }
@@ -1098,7 +1117,12 @@
           elementValue = _this.getElementValue(element);
           if (initialVal !== elementValue) {
             initialVal = elementValue;
-            return _this.validate(validator, element, elementValue);
+            for (_j = 0, _len1 = validators.length; _j < _len1; _j++) {
+              validator = validators[_j];
+              if (!_this.validate(validator, element, elementValue)) {
+                return;
+              }
+            }
           }
         };
       })(this);

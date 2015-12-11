@@ -857,6 +857,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, false);
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, true);
+			return true
 		else
 			# Errors...
 			console.log validator.getErrors()
@@ -873,19 +874,39 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, true);
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
+			return false
 
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		config = @getValue(valueAccessor)
+		configuration = @getValue(valueAccessor)
+		validators = new Array
 
-		# Store class name first
-		className = config.class
+		if configuration.constructor is Array
+			cfg = configuration
+		else
+			cfg = [configuration]
+		
+		for config in cfg
+#			console.log config
 
-		# Remove class key
-		delete(config.class)
+			if not config.class
+				console.error "Parameter `class` must be defined for validator on element:"
+				console.error element
+				continue
 
-		# Instantiate validator
-		validator = new className(config)
+			if typeof(config.class) isnt 'function'
+				console.error "Parameter `class` must be compatible function, binding defined on element:"
+				console.error element
+				continue
+
+			# Store class name first
+			className = config.class
+
+			# Remove class key
+			delete(config.class)
+
+			# Instantiate validator
+			validators.push new className(config)
 
 		# Generate some id if not set, see notes below why
 		if not element.id
@@ -907,7 +928,9 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 			# Update only if changed
 			if initialVal isnt elementValue
 				initialVal = elementValue
-				@validate(validator, element, elementValue)
+				for validator in validators
+					if not @validate(validator, element, elementValue)
+						return
 
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
 		ko.utils.registerEventHandler element, "keyup, input", handler

@@ -6,10 +6,17 @@
 <p>
 	<b>Note:</b> Used validators are for demo purpose, not recommended for production environment
 </p>
+
 <div data-bind="with: app.model.txt1" class="form-group">
 	<label class="control-label" for="txt1">Validate input if it's only a-z:</label>
 	<input class="form-control" id="txt1" data-bind="textInput: text, validator: {class: Maslosoft.Ko.BalinDev.RegExpValidator, pattern: '^[a-z]+$', allowEmpty: false}" style="width:50%;"/> <br />
 </div>
+
+<div data-bind="with: app.model.txt1a" class="form-group">
+	<label class="control-label" for="txt1a">Validate input if it's only a-z:</label>
+	<input class="form-control" id="txt1a" data-bind="textInput: text, validator: [{class: Maslosoft.Ko.BalinDev.RequiredValidator}, {class: Maslosoft.Ko.BalinDev.EmailValidator}]" style="width:50%;"/> <br />
+</div>
+
 <div data-bind="with: app.model.txt2" class="form-group">
 	<label class="control-label" for="txt2">Validate (empty) textarea if it's only a-z:</label>
 	<textarea class="form-control" id="txt2" data-bind="textInput: text, validator: {class: Maslosoft.Ko.BalinDev.RegExpValidator, pattern: '^[a-z]+$', allowEmpty: false}" style="width:50%;"></textarea> <br />
@@ -19,17 +26,17 @@
 	<label class="control-label" for="txt3">Validate contenteditable if it's only a-z:</label>
 	<div class="form-control" id="txt3" data-bind="htmlValue: text, validator: {class: Maslosoft.Ko.BalinDev.RegExpValidator, pattern: '^[a-z]+$', allowEmpty: false}" style="width:50%;"></div> <br />
 </div>
+
 <div data-bind="with: app.model.txt3" class="form-group">
 	<label class="control-label" for="txt4">Validate contenteditable if it's not empty and valid email:</label>
-	<!--<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: {valids: [{class: Maslosoft.Ko.BalinDev.RequiredValidator}, {class: Maslosoft.Ko.BalinDev.EmailValidator}]}" style="width:50%;"></div> <br />-->
 	<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: [{class: Maslosoft.Ko.BalinDev.RequiredValidator}, {class: Maslosoft.Ko.BalinDev.EmailValidator}]" style="width:50%;"></div> <br />
-	<!--<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: {class: Maslosoft.Ko.BalinDev.EmailValidator}" style="width:50%;"></div> <br />-->
 </div>
 <div data-bind="with: app.model.txt3" class="form-group">
 	<label class="control-label" for="txt5">Validate contenteditable - required:</label>
 	<div class="form-control" id="txt5" data-bind="htmlValue: text, validator: {class: Maslosoft.Ko.BalinDev.RequiredValidator}" style="width:50%;"></div> <br />
 </div>
 
+<!--<div class="form-control" id="txt5" data-bind="htmlValue: app.model.txt3.text, validator: [{class: Maslosoft.Ko.BalinDev.RequiredValidator}, {class: Maslosoft.Ko.BalinDev.EmailValidator}]" style="width:50%;"></div> <br />-->
 <script>
 	jQuery(document).ready(function () {
 		var data1 = {
