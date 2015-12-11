@@ -480,7 +480,7 @@
        function processKeyValue(key, val) {
          if(val.match(/^\[/)){
            // Will work but read only observable
-           resultStrings.push(key + ':ko.getObservable($data,"' + val + '")');
+			  resultStrings.push(key + ':' + val);
          }else{
            resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
          }
