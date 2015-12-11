@@ -15,6 +15,19 @@ balinBare = [
 balin = balinBare.slice 0
 balin.push 'src/_init.coffee'
 
+# Bundle setup
+bundle = [
+	'bower_components/knockout/dist/knockout.js'
+	'src/knockout-es5.js'
+	'bower_components/knockout-sortable/build/knockout-sortable.min.js'
+]
+
+balinBundle = bundle.slice 0
+balinBundle.push 'dist/ko.balin.min.js'
+
+balinBundleNoinit = bundle.slice 0
+balinBundleNoinit.push 'dist/ko.balin-noinit.min.js'
+
 module.exports = (grunt) ->
 
 	# Project configuration.
@@ -44,7 +57,13 @@ module.exports = (grunt) ->
 			noinit:
 				files:
 					'dist/ko.balin-noinit.min.js' : ['dist/ko.balin-noinit.js']
-
+		concat:
+			bundle:
+				src: balinBundle
+				dest: 'dist/ko.balin.bundle.min.js'
+			bundleNoinit:
+				src: balinBundleNoinit
+				dest: 'dist/ko.balin.bundle-noinit.min.js'	
 		watch:
 			compile:
 				files: balin
@@ -54,7 +73,8 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks 'grunt-contrib-coffee'
 	grunt.loadNpmTasks 'grunt-contrib-watch'
 	grunt.loadNpmTasks 'grunt-contrib-uglify'
+	grunt.loadNpmTasks 'grunt-contrib-concat'
 
 	# Default task.
 	grunt.registerTask 'default', ['coffee']
-	grunt.registerTask 'release', ['coffee', 'uglify']
+	grunt.registerTask 'release', ['coffee', 'uglify', 'concat']
