@@ -21,7 +21,10 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		return element.textContent || element.innerText || ""
 
 	validate: (validator, element, value) =>
+		
 		parent = element.parentElement
+
+		errors = parent.querySelector @options.errorMessages
 		
 		if validator.isValid(value)
 			# Apply input error styles as needed
@@ -36,10 +39,12 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, false);
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, true);
+				if errors
+					errors.innerHTML = ''
 			return true
 		else
 			# Errors...
-			console.log validator.getErrors()
+			messages = validator.getErrors()
 
 			# Apply input error styles as needed
 			if @options.inputError
@@ -53,6 +58,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, true);
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
+				if errors and messages
+					errors.innerHTML = messages.join '<br />'
 			return false
 
 

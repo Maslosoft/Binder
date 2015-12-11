@@ -280,6 +280,8 @@
 
     ValidatorOptions.prototype.parentSuccess = 'has-success';
 
+    ValidatorOptions.prototype.errorMessages = '.error-messages';
+
     return ValidatorOptions;
 
   })(this.Maslosoft.Ko.Balin.Options);
@@ -1037,8 +1039,9 @@
     };
 
     Validator.prototype.validate = function(validator, element, value) {
-      var parent;
+      var errors, messages, parent;
       parent = element.parentElement;
+      errors = parent.querySelector(this.options.errorMessages);
       if (validator.isValid(value)) {
         if (this.options.inputError) {
           ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
@@ -1053,10 +1056,13 @@
           if (this.options.parentSuccess) {
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
           }
+          if (errors) {
+            errors.innerHTML = '';
+          }
         }
         return true;
       } else {
-        console.log(validator.getErrors());
+        messages = validator.getErrors();
         if (this.options.inputError) {
           ko.utils.toggleDomNodeCssClass(element, this.options.inputError, true);
         }
@@ -1069,6 +1075,9 @@
           }
           if (this.options.parentSuccess) {
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
+          }
+          if (errors && messages) {
+            errors.innerHTML = messages.join('<br />');
           }
         }
         return false;

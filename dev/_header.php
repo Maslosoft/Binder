@@ -59,6 +59,13 @@
 			.success{
 				color:#3c763d !important;
 			}
+			.error-messages{
+				color:#a94442 !important;
+				font-size: .8em;
+				font-weight: bold;
+				font-style: italic;
+				margin: .5em;
+			}
 		</style>
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
