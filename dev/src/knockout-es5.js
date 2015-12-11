@@ -339,7 +339,13 @@
             bindingOptions = bindingOptions || {};
 
             function processKeyValue(key, val) {
-                resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
+					// Check if top value is array
+					if(val.match(/^\[/)){
+						// Will work but read only observable
+						resultStrings.push(key + ':ko.getObservable($data,"' + val + '")');
+					}else{
+						resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
+					}
             }
 
             var resultStrings = [],
@@ -362,6 +368,7 @@
             var rewrittenBindings = preProcessBindings(bindingsString, options),
                 functionBody = 'with($context){with($data||{}){return{' + rewrittenBindings + '}}}';
              /* jshint -W054 */
+			  console.log(new Function('$context', '$element', functionBody));
             return new Function('$context', '$element', functionBody);
         }
 
