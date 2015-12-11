@@ -251,12 +251,40 @@ class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
 # Configuration class for css bindings
 #
 class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
-	
+
+	#
+	# Failed validation class name.
+	# This class will be added to input if validation fails.
+	# @var string
+	#
 	inputError: 'error'
+
+	#
+	# Failed validation parent class name.
+	# This class will be added to parent of input if validation fails.
+	# @var string
+	#
 	parentError: 'has-error'
+
+	#
+	# Succeed validation class name.
+	# This class will be added to input if validation succeds.
+	# @var string
+	#
 	inputSuccess: 'success'
+
+	#
+	# Succeed validation parent class name.
+	# This class will be added to parent of input if validation succeds.
+	# @var string
+	#
 	parentSuccess: 'has-success'
 
+	#
+	# Selector for error messages. Will scope from input parent.
+	# @var string
+	#
+	errorMessages: '.error-messages'
 
 class @Maslosoft.Ko.Balin.BaseValidator
 
@@ -842,7 +870,10 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		return element.textContent || element.innerText || ""
 
 	validate: (validator, element, value) =>
+		
 		parent = element.parentElement
+
+		errors = parent.querySelector @options.errorMessages
 		
 		if validator.isValid(value)
 			# Apply input error styles as needed
@@ -857,10 +888,12 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, false);
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, true);
+				if errors
+					errors.innerHTML = ''
 			return true
 		else
 			# Errors...
-			console.log validator.getErrors()
+			messages = validator.getErrors()
 
 			# Apply input error styles as needed
 			if @options.inputError
@@ -874,6 +907,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, true);
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
+				if errors and messages
+					errors.innerHTML = messages.join '<br />'
 			return false
 
 
