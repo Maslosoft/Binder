@@ -9,20 +9,6 @@ $text = str_replace('}', '<!---->}', $text);
 </div>
 <script type="text/javascript" >
 	jQuery(document).ready(function() {
-		var entityMap = {
-			"&": "&amp;",
-			"<": "&lt;",
-			">": "&gt;",
-			'"': '&quot;',
-			"'": '&#39;',
-			"/": '&#x2F;'
-		};
-
-		function escapeHtml(string) {
-			return String(string).replace(/[&<>"'\/]/g, function(s) {
-				return entityMap[s];
-			});
-		}
 		hljs.configure({languages:['html']});
 		hljs.highlightBlock(document.getElementsByTagName('pre')[0]);
 	});
