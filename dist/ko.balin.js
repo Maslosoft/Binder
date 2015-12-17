@@ -272,6 +272,8 @@
       return ValidatorOptions.__super__.constructor.apply(this, arguments);
     }
 
+    ValidatorOptions.prototype.classField = '_class';
+
     ValidatorOptions.prototype.inputError = 'error';
 
     ValidatorOptions.prototype.parentError = 'has-error';
@@ -1085,9 +1087,10 @@
     };
 
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var cfg, className, config, configuration, handler, initialVal, validators, _i, _len;
+      var cfg, classField, className, config, configuration, handler, initialVal, validators, _i, _len;
       configuration = this.getValue(valueAccessor);
       validators = new Array;
+      classField = this.options.classField;
       if (configuration.constructor === Array) {
         cfg = configuration;
       } else {
@@ -1095,18 +1098,18 @@
       }
       for (_i = 0, _len = cfg.length; _i < _len; _i++) {
         config = cfg[_i];
-        if (!config["class"]) {
-          console.error("Parameter `class` must be defined for validator on element:");
+        if (!config[classField]) {
+          console.error("Parameter `" + classField + "` must be defined for validator on element:");
           console.error(element);
           continue;
         }
-        if (typeof config["class"] !== 'function') {
-          console.error("Parameter `class` must be compatible function, binding defined on element:");
+        if (typeof config[classField] !== 'function') {
+          console.error("Parameter `" + classField + "` must be compatible function, binding defined on element:");
           console.error(element);
           continue;
         }
-        className = config["class"];
-        delete config["class"];
+        className = config[classField];
+        delete config[classField];
         validators.push(new className(config));
       }
       if (!element.id) {

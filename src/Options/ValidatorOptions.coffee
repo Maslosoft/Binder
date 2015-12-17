@@ -4,6 +4,12 @@
 class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 
 	#
+	# Field for class name
+	# @var string
+	#
+	classField: '_class'
+
+	#
 	# Failed validation class name.
 	# This class will be added to input if validation fails.
 	# @var string

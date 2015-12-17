@@ -253,6 +253,12 @@ class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
 class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 
 	#
+	# Field for class name
+	# @var string
+	#
+	classField: '_class'
+
+	#
 	# Failed validation class name.
 	# This class will be added to input if validation fails.
 	# @var string
@@ -285,6 +291,7 @@ class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 	# @var string
 	#
 	errorMessages: '.error-messages'
+
 
 class @Maslosoft.Ko.Balin.BaseValidator
 
@@ -870,11 +877,11 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		return element.textContent || element.innerText || ""
 
 	validate: (validator, element, value) =>
-		
+
 		parent = element.parentElement
 
 		errors = parent.querySelector @options.errorMessages
-		
+
 		if validator.isValid(value)
 			# Apply input error styles as needed
 			if @options.inputError
@@ -915,30 +922,30 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		configuration = @getValue(valueAccessor)
 		validators = new Array
-
+		classField = @options.classField
 		if configuration.constructor is Array
 			cfg = configuration
 		else
 			cfg = [configuration]
-		
+
 		for config in cfg
 #			console.log config
 
-			if not config.class
-				console.error "Parameter `class` must be defined for validator on element:"
+			if not config[classField]
+				console.error "Parameter `#{classField}` must be defined for validator on element:"
 				console.error element
 				continue
 
-			if typeof(config.class) isnt 'function'
-				console.error "Parameter `class` must be compatible function, binding defined on element:"
+			if typeof(config[classField]) isnt 'function'
+				console.error "Parameter `#{classField}` must be compatible function, binding defined on element:"
 				console.error element
 				continue
 
 			# Store class name first
-			className = config.class
+			className = config[classField]
 
 			# Remove class key
-			delete(config.class)
+			delete(config[classField])
 
 			# Instantiate validator
 			validators.push new className(config)
@@ -958,7 +965,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 			# This is required in some scenarios, specifically when sorting htmlValue elements
 			element = document.getElementById(element.id)
 			if not element then return
-			
+
 			elementValue = @getElementValue(element)
 			# Update only if changed
 			if initialVal isnt elementValue
@@ -975,6 +982,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 
 	update: (element, valueAccessor, allBindings) =>
+
 
 class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
 
