@@ -1,8 +1,11 @@
 <?php
-$text = ob_get_flush();
+$text = htmlspecialchars(ob_get_flush());
+// Avoid parsing punches
+$text = str_replace('{', '{&shy;', $text);
+$text = str_replace('}', '&shy;}', $text);
 ?>
 <h4><a href="#" onclick="javascript:jQuery('pre').slideToggle();">Relevant code used to create above result:</a></h4>
-<pre><?= htmlspecialchars($text)?></pre>
+<pre><?= $text?></pre>
 </div>
 <script type="text/javascript" >
 	jQuery(document).ready(function() {
@@ -20,9 +23,6 @@ $text = ob_get_flush();
 				return entityMap[s];
 			});
 		}
-//		var body = jQuery(jQuery('body').html());
-//		var text = body.find('script:last').remove().find('div:first').remove();
-//		body.append('<pre><code>' + escapeHtml(text).replace(/\t/g, '  ') + '</code></pre>');
 		hljs.configure({languages:['html']});
 		hljs.highlightBlock(document.getElementsByTagName('pre')[0]);
 	});
