@@ -6,7 +6,7 @@
 <p>
 	<div data-bind="model: app.model.txt1">This div should have data-model with all fields</div>
 	<div data-bind="model: app.model.txt2, fields: ['text']">This div should have data-model with text field</div>
-	<div data-bind="model: app.model.txt2, fields: ['text', 'bogus']">This div should have data-model with text field and ignore `bogus` field</div>
+	<div data-bind="model: app.model.txt2, fields: ['text', 'bogus']">This div should have data-model with text field and ignore `bogus` field (should console warn)</div>
 </p>
 
 <script>

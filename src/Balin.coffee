@@ -37,7 +37,7 @@
 		href: Maslosoft.Ko.Balin.Href
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
-		model: Maslosoft.Ko.Balin.Model
+		model: Maslosoft.Ko.Balin.DataModel
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS

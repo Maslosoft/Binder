@@ -2,10 +2,10 @@
 # Model binding handler
 # This is to bind selected model properties to data-model field
 #
-class @Maslosoft.Ko.Balin.Model extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.DataModel extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings) =>
-
+		
 		# Setup binding
 		model = @getValue(valueAccessor)
 		fields = allBindings.get("fields") or null
@@ -20,7 +20,7 @@ class @Maslosoft.Ko.Balin.Model extends @Maslosoft.Ko.Balin.Base
 		for field in fields
 			# Filter out undefined model fields
 			if typeof(model[field]) is 'undefined'
-				warn "Model field `field` is undefined on element:", element
+				warn "Model field `#{field}` is undefined on element:", element
 			else
 				modelStub[field] = model[field]
 

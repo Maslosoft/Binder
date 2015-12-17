@@ -64,7 +64,7 @@ if not @Maslosoft.Ko.Balin
 		href: Maslosoft.Ko.Balin.Href
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
-		model: Maslosoft.Ko.Balin.Model
+		model: Maslosoft.Ko.Balin.DataModel
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
@@ -465,6 +465,43 @@ class @Maslosoft.Ko.Balin.Data extends @Maslosoft.Ko.Balin.Base
 			}
 
 #
+# Model binding handler
+# This is to bind selected model properties to data-model field
+#
+class @Maslosoft.Ko.Balin.DataModel extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor, allBindings) =>
+		
+		# Setup binding
+		model = @getValue(valueAccessor)
+		fields = allBindings.get("fields") or null
+
+		# Bind all fields if not set `fields` binding
+		if fields is null
+			@bindModel(element, model)
+			return
+
+		# Bind only selected fields
+		modelStub = {}
+		for field in fields
+			# Filter out undefined model fields
+			if typeof(model[field]) is 'undefined'
+				warn "Model field `#{field}` is undefined on element:", element
+			else
+				modelStub[field] = model[field]
+
+			@bindModel(element, modelStub)
+
+
+	bindModel: (element, model) ->
+
+		# Do not stringify scalars
+		if typeof(value) not in ['string', 'number']
+			modelString = JSON.stringify(model)
+
+		element.setAttribute('data-model', modelString)
+
+#
 # Date formatter
 #
 class @Maslosoft.Ko.Balin.DateFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
@@ -805,43 +842,6 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 			maxHeight: size
 
 		return
-
-#
-# Model binding handler
-# This is to bind selected model properties to data-model field
-#
-class @Maslosoft.Ko.Balin.Model extends @Maslosoft.Ko.Balin.Base
-
-	update: (element, valueAccessor, allBindings) =>
-
-		# Setup binding
-		model = @getValue(valueAccessor)
-		fields = allBindings.get("fields") or null
-
-		# Bind all fields if not set `fields` binding
-		if fields is null
-			@bindModel(element, model)
-			return
-
-		# Bind only selected fields
-		modelStub = {}
-		for field in fields
-			# Filter out undefined model fields
-			if typeof(model[field]) is 'undefined'
-				warn "Model field `field` is undefined on element:", element
-			else
-				modelStub[field] = model[field]
-
-			@bindModel(element, modelStub)
-
-
-	bindModel: (element, model) ->
-
-		# Do not stringify scalars
-		if typeof(value) not in ['string', 'number']
-			modelString = JSON.stringify(model)
-
-		element.setAttribute('data-model', modelString)
 
 #
 # Selected binding

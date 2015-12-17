@@ -84,7 +84,7 @@
       href: Maslosoft.Ko.Balin.Href,
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
       icon: Maslosoft.Ko.Balin.Icon,
-      model: Maslosoft.Ko.Balin.Model,
+      model: Maslosoft.Ko.Balin.DataModel,
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
       textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
@@ -522,6 +522,48 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.DataModel = (function(_super) {
+    __extends(DataModel, _super);
+
+    function DataModel() {
+      this.update = __bind(this.update, this);
+      return DataModel.__super__.constructor.apply(this, arguments);
+    }
+
+    DataModel.prototype.update = function(element, valueAccessor, allBindings) {
+      var field, fields, model, modelStub, _i, _len, _results;
+      model = this.getValue(valueAccessor);
+      fields = allBindings.get("fields") || null;
+      if (fields === null) {
+        this.bindModel(element, model);
+        return;
+      }
+      modelStub = {};
+      _results = [];
+      for (_i = 0, _len = fields.length; _i < _len; _i++) {
+        field = fields[_i];
+        if (typeof model[field] === 'undefined') {
+          warn("Model field `" + field + "` is undefined on element:", element);
+        } else {
+          modelStub[field] = model[field];
+        }
+        _results.push(this.bindModel(element, modelStub));
+      }
+      return _results;
+    };
+
+    DataModel.prototype.bindModel = function(element, model) {
+      var modelString, _ref;
+      if ((_ref = typeof value) !== 'string' && _ref !== 'number') {
+        modelString = JSON.stringify(model);
+      }
+      return element.setAttribute('data-model', modelString);
+    };
+
+    return DataModel;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.DateFormatter = (function(_super) {
     __extends(DateFormatter, _super);
 
@@ -941,48 +983,6 @@
     };
 
     return Icon;
-
-  })(this.Maslosoft.Ko.Balin.Base);
-
-  this.Maslosoft.Ko.Balin.Model = (function(_super) {
-    __extends(Model, _super);
-
-    function Model() {
-      this.update = __bind(this.update, this);
-      return Model.__super__.constructor.apply(this, arguments);
-    }
-
-    Model.prototype.update = function(element, valueAccessor, allBindings) {
-      var field, fields, model, modelStub, _i, _len, _results;
-      model = this.getValue(valueAccessor);
-      fields = allBindings.get("fields") || null;
-      if (fields === null) {
-        this.bindModel(element, model);
-        return;
-      }
-      modelStub = {};
-      _results = [];
-      for (_i = 0, _len = fields.length; _i < _len; _i++) {
-        field = fields[_i];
-        if (typeof model[field] === 'undefined') {
-          warn("Model field `field` is undefined on element:", element);
-        } else {
-          modelStub[field] = model[field];
-        }
-        _results.push(this.bindModel(element, modelStub));
-      }
-      return _results;
-    };
-
-    Model.prototype.bindModel = function(element, model) {
-      var modelString, _ref;
-      if ((_ref = typeof value) !== 'string' && _ref !== 'number') {
-        modelString = JSON.stringify(model);
-      }
-      return element.setAttribute('data-model', modelString);
-    };
-
-    return Model;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
