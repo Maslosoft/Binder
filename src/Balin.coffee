@@ -9,11 +9,11 @@
 
 	#Reassign options
 	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
-	
+
 	# Assign two way. Not sure if nessesary in current ko
-	if handler.writable
-		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
-			ko.expressionRewriting.twoWayBindings[name] = true
+	#if handler.writable
+	#	if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
+	#		ko.expressionRewriting.twoWayBindings[name] = true
 
 #
 # Register default set of binding handlers, or part of default set
@@ -25,6 +25,7 @@
 		action: Maslosoft.Ko.Balin.WidgetAction
 		activity: Maslosoft.Ko.Balin.WidgetActivity
 		asset: Maslosoft.Ko.Balin.Asset
+		data: Maslosoft.Ko.Balin.Data
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
 		disabled: Maslosoft.Ko.Balin.Disabled
@@ -36,6 +37,7 @@
 		href: Maslosoft.Ko.Balin.Href
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
+		model: Maslosoft.Ko.Balin.Model
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
@@ -45,7 +47,7 @@
 		selected: Maslosoft.Ko.Balin.Selected
 		validator: Maslosoft.Ko.Balin.Validator
 	}
-	
+
 	if handlers isnt null
 		for index, value of handlers
 			Maslosoft.Ko.Balin.register(value, new config[value])

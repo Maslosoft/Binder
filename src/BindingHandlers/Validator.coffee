@@ -76,13 +76,11 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 #			console.log config
 
 			if not config[classField]
-				console.error "Parameter `#{classField}` must be defined for validator on element:"
-				console.error element
+				error "Parameter `#{classField}` must be defined for validator on element:", element
 				continue
 
 			if typeof(config[classField]) isnt 'function'
-				console.error "Parameter `#{classField}` must be compatible function, binding defined on element:"
-				console.error element
+				error "Parameter `#{classField}` must be validator compatible function, binding defined on element:", element
 				continue
 
 			# Store class name first

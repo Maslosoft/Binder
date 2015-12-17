@@ -1,3 +1,23 @@
+assert = (expr) ->
+	if not console then return
+	console.assert expr
+
+log = (expr) ->
+	if not console then return
+	console.log expr
+
+warn = (expr, element = null) ->
+	if not console then return
+	console.warn expr
+	if element is null then return
+	console.warn element
+
+error = (expr, element = null) ->
+	if not console then return
+	console.error expr
+	if element is null then return
+	console.error element
+
 if not @Maslosoft
 	@Maslosoft = {}
 if not @Maslosoft.Ko
@@ -16,11 +36,11 @@ if not @Maslosoft.Ko.Balin
 
 	#Reassign options
 	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
-	
+
 	# Assign two way. Not sure if nessesary in current ko
-	if handler.writable
-		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
-			ko.expressionRewriting.twoWayBindings[name] = true
+	#if handler.writable
+	#	if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
+	#		ko.expressionRewriting.twoWayBindings[name] = true
 
 #
 # Register default set of binding handlers, or part of default set
@@ -32,6 +52,7 @@ if not @Maslosoft.Ko.Balin
 		action: Maslosoft.Ko.Balin.WidgetAction
 		activity: Maslosoft.Ko.Balin.WidgetActivity
 		asset: Maslosoft.Ko.Balin.Asset
+		data: Maslosoft.Ko.Balin.Data
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
 		disabled: Maslosoft.Ko.Balin.Disabled
@@ -43,6 +64,7 @@ if not @Maslosoft.Ko.Balin
 		href: Maslosoft.Ko.Balin.Href
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
+		model: Maslosoft.Ko.Balin.Model
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
@@ -52,7 +74,7 @@ if not @Maslosoft.Ko.Balin
 		selected: Maslosoft.Ko.Balin.Selected
 		validator: Maslosoft.Ko.Balin.Validator
 	}
-	
+
 	if handlers isnt null
 		for index, value of handlers
 			Maslosoft.Ko.Balin.register(value, new config[value])
@@ -429,6 +451,20 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 		return
 
 #
+# Data binding handler
+#
+class @Maslosoft.Ko.Balin.Data extends @Maslosoft.Ko.Balin.Base
+
+	getNamespacedHandler: (binding) ->
+		return {
+			update: (element, valueAccessor) =>
+				value = @getValue(valueAccessor)
+				if typeof(value) not in ['string', 'number']
+					value = JSON.stringify(value)
+				element.setAttribute('data-' + binding, value)
+			}
+
+#
 # Date formatter
 #
 class @Maslosoft.Ko.Balin.DateFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
@@ -771,6 +807,43 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 		return
 
 #
+# Model binding handler
+# This is to bind selected model properties to data-model field
+#
+class @Maslosoft.Ko.Balin.Model extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor, allBindings) =>
+
+		# Setup binding
+		model = @getValue(valueAccessor)
+		fields = allBindings.get("fields") or null
+
+		# Bind all fields if not set `fields` binding
+		if fields is null
+			@bindModel(element, model)
+			return
+
+		# Bind only selected fields
+		modelStub = {}
+		for field in fields
+			# Filter out undefined model fields
+			if typeof(model[field]) is 'undefined'
+				warn "Model field `field` is undefined on element:", element
+			else
+				modelStub[field] = model[field]
+
+			@bindModel(element, modelStub)
+
+
+	bindModel: (element, model) ->
+
+		# Do not stringify scalars
+		if typeof(value) not in ['string', 'number']
+			modelString = JSON.stringify(model)
+
+		element.setAttribute('data-model', modelString)
+
+#
 # Selected binding
 # This adds class from options if value is true
 #
@@ -932,13 +1005,11 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 #			console.log config
 
 			if not config[classField]
-				console.error "Parameter `#{classField}` must be defined for validator on element:"
-				console.error element
+				error "Parameter `#{classField}` must be defined for validator on element:", element
 				continue
 
 			if typeof(config[classField]) isnt 'function'
-				console.error "Parameter `#{classField}` must be compatible function, binding defined on element:"
-				console.error element
+				error "Parameter `#{classField}` must be validator compatible function, binding defined on element:", element
 				continue
 
 			# Store class name first

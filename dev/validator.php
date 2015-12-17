@@ -40,6 +40,11 @@
 	<div class="form-control" id="txt5" data-bind="htmlValue: text, validator: {_class: Maslosoft.Ko.BalinDev.RequiredValidator}" style="width:50%;"></div>
 	<div class="error-messages"></div>
 </div>
+<div data-bind="with: app.model.txt6" class="form-group">
+	<label class="control-label" for="txt6">This should raise errors, but continue to work with proper validator (required):</label>
+	<div class="form-control" id="txt6" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RequiredValidator}, {foo:'bar'}, {_class:'DoesNotExists'}]" style="width:50%;"></div>
+	<div class="error-messages"></div>
+</div>
 <script>
 	jQuery(document).ready(function () {
 		var data1 = {
@@ -52,9 +57,14 @@
 			text: 'Not valid value'
 		};
 
+		var data6 = {
+			text: 'Partially bogus validators config'
+		};
+
 		app.model.txt1 = new Maslosoft.Ko.BalinDev.Models.TextValue(data1);
 		app.model.txt2 = new Maslosoft.Ko.BalinDev.Models.TextValue(data2);
 		app.model.txt3 = new Maslosoft.Ko.BalinDev.Models.TextValue(data3);
+		app.model.txt6 = new Maslosoft.Ko.BalinDev.Models.TextValue(data6);
 
 		ko.applyBindings({model: app.model});
 	});

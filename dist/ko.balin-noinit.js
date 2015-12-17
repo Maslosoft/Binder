@@ -1,7 +1,50 @@
 (function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  var assert, error, log, warn,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  assert = function(expr) {
+    if (!console) {
+      return;
+    }
+    return console.assert(expr);
+  };
+
+  log = function(expr) {
+    if (!console) {
+      return;
+    }
+    return console.log(expr);
+  };
+
+  warn = function(expr, element) {
+    if (element == null) {
+      element = null;
+    }
+    if (!console) {
+      return;
+    }
+    console.warn(expr);
+    if (element === null) {
+      return;
+    }
+    return console.warn(element);
+  };
+
+  error = function(expr, element) {
+    if (element == null) {
+      element = null;
+    }
+    if (!console) {
+      return;
+    }
+    console.error(expr);
+    if (element === null) {
+      return;
+    }
+    return console.error(element);
+  };
 
   if (!this.Maslosoft) {
     this.Maslosoft = {};
@@ -16,12 +59,7 @@
   }
 
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
-    ko.bindingHandlers[name] = handler;
-    if (handler.writable) {
-      if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
-        return ko.expressionRewriting.twoWayBindings[name] = true;
-      }
-    }
+    return ko.bindingHandlers[name] = handler;
   };
 
   this.Maslosoft.Ko.Balin.registerDefaults = function(handlers) {
@@ -34,6 +72,7 @@
       action: Maslosoft.Ko.Balin.WidgetAction,
       activity: Maslosoft.Ko.Balin.WidgetActivity,
       asset: Maslosoft.Ko.Balin.Asset,
+      data: Maslosoft.Ko.Balin.Data,
       dateFormatter: Maslosoft.Ko.Balin.DateFormatter,
       dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter,
       disabled: Maslosoft.Ko.Balin.Disabled,
@@ -45,6 +84,7 @@
       href: Maslosoft.Ko.Balin.Href,
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
       icon: Maslosoft.Ko.Balin.Icon,
+      model: Maslosoft.Ko.Balin.Model,
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
       textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
@@ -453,6 +493,32 @@
     };
 
     return Asset;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Data = (function(_super) {
+    __extends(Data, _super);
+
+    function Data() {
+      return Data.__super__.constructor.apply(this, arguments);
+    }
+
+    Data.prototype.getNamespacedHandler = function(binding) {
+      return {
+        update: (function(_this) {
+          return function(element, valueAccessor) {
+            var value, _ref;
+            value = _this.getValue(valueAccessor);
+            if ((_ref = typeof value) !== 'string' && _ref !== 'number') {
+              value = JSON.stringify(value);
+            }
+            return element.setAttribute('data-' + binding, value);
+          };
+        })(this)
+      };
+    };
+
+    return Data;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
@@ -878,6 +944,48 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.Model = (function(_super) {
+    __extends(Model, _super);
+
+    function Model() {
+      this.update = __bind(this.update, this);
+      return Model.__super__.constructor.apply(this, arguments);
+    }
+
+    Model.prototype.update = function(element, valueAccessor, allBindings) {
+      var field, fields, model, modelStub, _i, _len, _results;
+      model = this.getValue(valueAccessor);
+      fields = allBindings.get("fields") || null;
+      if (fields === null) {
+        this.bindModel(element, model);
+        return;
+      }
+      modelStub = {};
+      _results = [];
+      for (_i = 0, _len = fields.length; _i < _len; _i++) {
+        field = fields[_i];
+        if (typeof model[field] === 'undefined') {
+          warn("Model field `field` is undefined on element:", element);
+        } else {
+          modelStub[field] = model[field];
+        }
+        _results.push(this.bindModel(element, modelStub));
+      }
+      return _results;
+    };
+
+    Model.prototype.bindModel = function(element, model) {
+      var modelString, _ref;
+      if ((_ref = typeof value) !== 'string' && _ref !== 'number') {
+        modelString = JSON.stringify(model);
+      }
+      return element.setAttribute('data-model', modelString);
+    };
+
+    return Model;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.Selected = (function(_super) {
     __extends(Selected, _super);
 
@@ -1099,13 +1207,11 @@
       for (_i = 0, _len = cfg.length; _i < _len; _i++) {
         config = cfg[_i];
         if (!config[classField]) {
-          console.error("Parameter `" + classField + "` must be defined for validator on element:");
-          console.error(element);
+          error("Parameter `" + classField + "` must be defined for validator on element:", element);
           continue;
         }
         if (typeof config[classField] !== 'function') {
-          console.error("Parameter `" + classField + "` must be compatible function, binding defined on element:");
-          console.error(element);
+          error("Parameter `" + classField + "` must be validator compatible function, binding defined on element:", element);
           continue;
         }
         className = config[classField];

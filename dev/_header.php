@@ -79,7 +79,8 @@
 		<!--ko-->
 		<script type="text/javascript" src="../bower_components/knockout/dist/knockout.debug.js"></script>
 		<script type="text/javascript" src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
-		<script type="text/javascript" src="./src/knockout-es5.js"></script>
+		<script type="text/javascript" src="../bower_components/knockout-es5/dist/knockout-es5.min.js"></script>
+		<script type="text/javascript" src="../bower_components/knockout.punches/knockout.punches.min.js"></script>
 		<script type="text/javascript" src="../dist/ko.balin.js"></script>
 
 		<!--other libs-->

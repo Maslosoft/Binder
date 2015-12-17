@@ -1,4 +1,5 @@
 balinBare = [
+	'src/_functions.coffee',
 	'src/_ns.coffee',
 	'src/Balin.coffee',
 	'src/Base.coffee',
@@ -18,8 +19,9 @@ balin.push 'src/_init.coffee'
 # Bundle setup
 bundle = [
 	'bower_components/knockout/dist/knockout.js'
-	'src/knockout-es5.js'
+	'bower_components/knockout-es5/dist/knockout-es5.min.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.min.js'
+	'bower_components/knockout.punches/knockout.punches.min.js'
 ]
 
 balinBundle = bundle.slice 0
@@ -63,7 +65,7 @@ module.exports = (grunt) ->
 				dest: 'dist/ko.balin.bundle.min.js'
 			bundleNoinit:
 				src: balinBundleNoinit
-				dest: 'dist/ko.balin.bundle-noinit.min.js'	
+				dest: 'dist/ko.balin.bundle-noinit.min.js'
 		watch:
 			compile:
 				files: balin
