@@ -5,8 +5,12 @@ if not @Maslosoft.Ko.BalinDev
 
 class @Maslosoft.Ko.BalinDev.RequiredValidator extends @Maslosoft.Ko.Balin.BaseValidator
 
-	getErrors: () ->
-		return ["This is required"]
 
 	isValid: (value) ->
-		return !!value
+		valid = !!value
+		if not valid
+			if @label
+				@addError "{attribute} is required", {attribute: @label}
+			else
+				@addError "This field is required"
+		return valid

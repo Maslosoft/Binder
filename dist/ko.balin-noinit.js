@@ -59,7 +59,12 @@
   }
 
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
-    return ko.bindingHandlers[name] = handler;
+    ko.bindingHandlers[name] = handler;
+    if (handler.writable) {
+      if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
+        return ko.expressionRewriting.twoWayBindings[name] = true;
+      }
+    }
   };
 
   this.Maslosoft.Ko.Balin.registerDefaults = function(handlers) {
@@ -329,13 +334,41 @@
   })(this.Maslosoft.Ko.Balin.Options);
 
   this.Maslosoft.Ko.Balin.BaseValidator = (function() {
+    BaseValidator.prototype.label = '';
+
+    BaseValidator.prototype.model = null;
+
+    BaseValidator.prototype.messages = [];
+
+    BaseValidator.prototype.rawMessages = [];
+
     function BaseValidator(config) {
       var index, value;
+      this.messages = new Array;
+      this.rawMessages = new Object;
       for (index in config) {
         value = config[index];
+        this[index] = null;
         this[index] = value;
       }
     }
+
+    BaseValidator.prototype.getErrors = function() {
+      return this.messages;
+    };
+
+    BaseValidator.prototype.addError = function(errorMessage, params) {
+      var name, rawMessage, value;
+      rawMessage = errorMessage;
+      for (name in params) {
+        value = params[name];
+        errorMessage = errorMessage.replace("{" + name + "}", value);
+      }
+      if (!this.rawMessages[rawMessage]) {
+        this.messages.push(errorMessage);
+        return this.rawMessages[rawMessage] = true;
+      }
+    };
 
     return BaseValidator;
 
@@ -1152,6 +1185,7 @@
       var errors, messages, parent;
       parent = element.parentElement;
       errors = parent.querySelector(this.options.errorMessages);
+      messages = new Array;
       if (validator.isValid(value)) {
         if (this.options.inputError) {
           ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
@@ -1225,6 +1259,9 @@
       handler = (function(_this) {
         return function(e) {
           var elementValue, validator, _j, _len1;
+          if (e.type === 'update') {
+            console.log('update..');
+          }
           if (!element) {
             return;
           }
@@ -1233,6 +1270,9 @@
             return;
           }
           elementValue = _this.getElementValue(element);
+          if (e.type === 'update') {
+            console.log(elementValue);
+          }
           if (initialVal !== elementValue) {
             initialVal = elementValue;
             for (_j = 0, _len1 = validators.length; _j < _len1; _j++) {

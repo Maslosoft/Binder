@@ -11,9 +11,9 @@
 	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
 
 	# Assign two way. Not sure if nessesary in current ko
-	#if handler.writable
-	#	if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
-	#		ko.expressionRewriting.twoWayBindings[name] = true
+	if handler.writable
+		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
+			ko.expressionRewriting.twoWayBindings[name] = true
 
 #
 # Register default set of binding handlers, or part of default set

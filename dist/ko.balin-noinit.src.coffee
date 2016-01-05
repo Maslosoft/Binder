@@ -38,9 +38,9 @@ if not @Maslosoft.Ko.Balin
 	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
 
 	# Assign two way. Not sure if nessesary in current ko
-	#if handler.writable
-	#	if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
-	#		ko.expressionRewriting.twoWayBindings[name] = true
+	if handler.writable
+		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
+			ko.expressionRewriting.twoWayBindings[name] = true
 
 #
 # Register default set of binding handlers, or part of default set
@@ -317,9 +317,33 @@ class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 
 class @Maslosoft.Ko.Balin.BaseValidator
 
+	label: ''
+
+	model: null
+
+	messages: []
+
+	rawMessages: []
+
 	constructor: (config) ->
+		# Dereference
+		@messages = new Array
+		@rawMessages = new Object
 		for index, value of config
+			@[index] = null
 			@[index] = value
+
+	getErrors: () ->
+		return @messages
+
+	addError: (errorMessage, params) ->
+		rawMessage = errorMessage
+		for name, value of params
+			errorMessage = errorMessage.replace "{#{name}}", value
+		if not @rawMessages[rawMessage]
+			@messages.push errorMessage
+			@rawMessages[rawMessage] = true
+
 #
 # CSS class binding
 # This adds class from options if value is true
@@ -954,7 +978,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		parent = element.parentElement
 
 		errors = parent.querySelector @options.errorMessages
-
+		messages = new Array
 		if validator.isValid(value)
 			# Apply input error styles as needed
 			if @options.inputError
@@ -1029,7 +1053,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		initialVal = @getElementValue(element)
 
 		handler = (e) =>
-
+			if e.type is 'update'
+				console.log 'update..'
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 
@@ -1038,6 +1063,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 			if not element then return
 
 			elementValue = @getElementValue(element)
+			if e.type is 'update'
+				console.log elementValue
 			# Update only if changed
 			if initialVal isnt elementValue
 				initialVal = elementValue
@@ -1053,6 +1080,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 
 	update: (element, valueAccessor, allBindings) =>
+		# NOTE: Will not trigger on value change, as it is not directly observing value.
+		# Will trigger only on init
 
 
 class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl

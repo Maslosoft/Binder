@@ -9,13 +9,12 @@ class @Maslosoft.Ko.BalinDev.EmailValidator extends @Maslosoft.Ko.Balin.BaseVali
 
 	allowEmpty: true
 
-	getErrors: () ->
-		return ["Please enter valid email"]
-
 	isValid: (value) ->
-		console.log value
 		if @allowEmpty and not value
 			return true
-		
+
 		regexp = new RegExp @pattern, @flags
-		return regexp.test(value)
+		valid = regexp.test(value)
+		if not valid
+			@addError "Please enter valid e-mail"
+		return valid

@@ -18,12 +18,19 @@
       return RequiredValidator.__super__.constructor.apply(this, arguments);
     }
 
-    RequiredValidator.prototype.getErrors = function() {
-      return ["This is required"];
-    };
-
     RequiredValidator.prototype.isValid = function(value) {
-      return !!value;
+      var valid;
+      valid = !!value;
+      if (!valid) {
+        if (this.label) {
+          this.addError("{attribute} is required", {
+            attribute: this.label
+          });
+        } else {
+          this.addError("This field is required");
+        }
+      }
+      return valid;
     };
 
     return RequiredValidator;

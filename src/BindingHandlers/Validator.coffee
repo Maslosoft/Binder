@@ -25,7 +25,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		parent = element.parentElement
 
 		errors = parent.querySelector @options.errorMessages
-
+		messages = new Array
 		if validator.isValid(value)
 			# Apply input error styles as needed
 			if @options.inputError
@@ -100,7 +100,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		initialVal = @getElementValue(element)
 
 		handler = (e) =>
-
+			if e.type is 'update'
+				console.log 'update..'
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 
@@ -109,6 +110,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 			if not element then return
 
 			elementValue = @getElementValue(element)
+			if e.type is 'update'
+				console.log elementValue
 			# Update only if changed
 			if initialVal isnt elementValue
 				initialVal = elementValue
@@ -124,3 +127,5 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 
 	update: (element, valueAccessor, allBindings) =>
+		# NOTE: Will not trigger on value change, as it is not directly observing value.
+		# Will trigger only on init

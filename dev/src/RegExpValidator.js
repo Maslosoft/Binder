@@ -24,17 +24,17 @@
 
     RegExpValidator.prototype.allowEmpty = true;
 
-    RegExpValidator.prototype.getErrors = function() {
-      return ["Should match " + this.pattern];
-    };
-
     RegExpValidator.prototype.isValid = function(value) {
-      var regexp;
+      var regexp, valid;
       if (this.allowEmpty && !value) {
         return true;
       }
       regexp = new RegExp(this.pattern, this.flags);
-      return regexp.test(value);
+      valid = regexp.test(value);
+      if (!valid) {
+        this.addError("Should match " + this.pattern);
+      }
+      return valid;
     };
 
     return RegExpValidator;

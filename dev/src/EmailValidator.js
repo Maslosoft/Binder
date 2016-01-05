@@ -22,18 +22,17 @@
 
     EmailValidator.prototype.allowEmpty = true;
 
-    EmailValidator.prototype.getErrors = function() {
-      return ["Please enter valid email"];
-    };
-
     EmailValidator.prototype.isValid = function(value) {
-      var regexp;
-      console.log(value);
+      var regexp, valid;
       if (this.allowEmpty && !value) {
         return true;
       }
       regexp = new RegExp(this.pattern, this.flags);
-      return regexp.test(value);
+      valid = regexp.test(value);
+      if (!valid) {
+        this.addError("Please enter valid e-mail");
+      }
+      return valid;
     };
 
     return EmailValidator;

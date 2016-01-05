@@ -8,14 +8,14 @@ class @Maslosoft.Ko.BalinDev.RegExpValidator extends @Maslosoft.Ko.Balin.BaseVal
 	pattern: ''
 
 	flags: ''
-	
-	allowEmpty: true
 
-	getErrors: () ->
-		return ["Should match #{@pattern}"]
+	allowEmpty: true
 
 	isValid: (value) ->
 		if @allowEmpty and not value
 			return true
 		regexp = new RegExp @pattern, @flags
-		return regexp.test(value)
+		valid = regexp.test(value)
+		if not valid
+			@addError "Should match #{@pattern}"
+		return valid
