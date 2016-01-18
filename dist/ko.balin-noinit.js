@@ -689,6 +689,7 @@
 
     function Fancytree() {
       this.update = __bind(this.update, this);
+      this.handle = __bind(this.handle, this);
       this.init = __bind(this.init, this);
       return Fancytree.__super__.constructor.apply(this, arguments);
     }
@@ -710,6 +711,7 @@
       var dnd, options, tree;
       tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
+      options.toggleEffect = false;
       options.source = tree.children;
       options.extensions = [];
       dnd = valueAccessor().dnd || false;
@@ -726,27 +728,26 @@
           dragEnter: function(node, data) {
             return true;
           },
-          dragDrop: function(node, data) {
-            var current, parent, target, targetParent;
-            parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id);
-            current = TreeDnd.findNode(tree, data.otherNode.data.id);
-            target = TreeDnd.findNode(tree, node.data.id);
-            targetParent = TreeDnd.findNode(tree, node.parent.data.id);
-            TreeDnd.moveTo(parent, current, target, targetParent, data.hitMode);
-            console.log(node.children);
-            data.otherNode.moveTo(node, data.hitMode);
-            return console.log(node.children);
-          }
+          dragDrop: (function(_this) {
+            return function(node, data) {
+              var current, parent, target, targetParent;
+              parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id);
+              current = TreeDnd.findNode(tree, data.otherNode.data.id);
+              target = TreeDnd.findNode(tree, node.data.id);
+              targetParent = TreeDnd.findNode(tree, node.parent.data.id);
+              TreeDnd.moveTo(parent, current, target, targetParent, data.hitMode);
+              return data.otherNode.moveTo(node, data.hitMode);
+            };
+          })(this)
         };
       }
       return jQuery(element).fancytree(options);
     };
 
-    Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    Fancytree.prototype.handle = function(element, valueAccessor, allBindingsAccessor) {
       var config, handler;
       config = this.getValue(valueAccessor);
       element = jQuery(element);
-      console.log('update...');
       handler = (function(_this) {
         return function() {
           if (!element.find('.ui-fancytree').length) {
@@ -762,6 +763,10 @@
         };
       })(this);
       return setTimeout(handler, 0);
+    };
+
+    Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      return this.handle(element, valueAccessor, allBindingsAccessor);
     };
 
     return Fancytree;
@@ -922,13 +927,10 @@
     }
 
     HtmlTree.drawNode = function(data) {
-      var child, childWrapper, node, title, wrapper, _i, _len, _ref;
-      wrapper = document.createElement('ul');
+      var child, childWrapper, node, title, _i, _len, _ref;
       title = document.createElement('li');
       title.innerHTML = data.title;
-      wrapper.appendChild(title);
       if (data.children && data.children.length > 0) {
-        console.log(data);
         childWrapper = document.createElement('ul');
         _ref = data.children;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -936,9 +938,9 @@
           child = HtmlTree.drawNode(node);
           childWrapper.appendChild(child);
         }
-        wrapper.appendChild(childWrapper);
+        title.appendChild(childWrapper);
       }
-      return wrapper;
+      return title;
     };
 
     HtmlTree.prototype.getData = function(valueAccessor) {
@@ -953,7 +955,7 @@
     HtmlTree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
       var data, handler;
       data = this.getValue(valueAccessor);
-      console.log('htmltree..');
+      warn("HtmlTree is experimental, do not use");
       handler = (function(_this) {
         return function() {
           var nodes;
@@ -1448,43 +1450,40 @@
 
     TreeDnd.moveTo = function(parent, current, target, targetParent, hitMode) {
       var index;
-      console.log("Length: " + parent.children.length);
+      index = targetParent.children.indexOf(target);
       parent.children.remove(current);
       if (hitMode === 'over') {
         target.children.push(current);
         TreeDnd.log(target);
+        return true;
       }
       if (hitMode === 'before') {
         index = targetParent.children.indexOf(target);
-        targetParent.children.splice(index, current);
+        targetParent.children.splice(index, 0, current);
         TreeDnd.log(targetParent);
-        console.log("indexOf: " + index + " (before)");
+        return true;
       }
       if (hitMode === 'after') {
         targetParent.children.push(current);
         TreeDnd.log(targetParent);
+        return true;
       }
-      console.log("Parent: " + parent.title);
-      console.log("Current: " + current.title);
-      console.log("Target: " + target.title);
-      console.log("TargetParent: " + targetParent.title);
-      return console.log(hitMode);
     };
 
-    TreeDnd.log(node)(function() {
-      var childNode, _i, _len, _ref, _results;
+    TreeDnd.log = function(node) {
+      var childNode, children, _i, _len, _ref;
+      return;
       log("Node: " + node.title);
-      log("Children:");
+      children = [];
       if (node.children && node.children.length > 0) {
         _ref = node.children;
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           childNode = _ref[_i];
-          _results.push(TreeDnd.log(childNode));
+          children.push(childNode.title);
         }
-        return _results;
+        return log("Children: " + (children.join(',')));
       }
-    });
+    };
 
     return TreeDnd;
 

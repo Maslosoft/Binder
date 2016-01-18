@@ -689,6 +689,7 @@
 
     function Fancytree() {
       this.update = __bind(this.update, this);
+      this.handle = __bind(this.handle, this);
       this.init = __bind(this.init, this);
       return Fancytree.__super__.constructor.apply(this, arguments);
     }
@@ -710,6 +711,7 @@
       var dnd, options, tree;
       tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
+      options.toggleEffect = false;
       options.source = tree.children;
       options.extensions = [];
       dnd = valueAccessor().dnd || false;
@@ -726,28 +728,26 @@
           dragEnter: function(node, data) {
             return true;
           },
-          dragDrop: function(node, data) {
-            var current, handler, parent, target, targetParent;
-            parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id);
-            current = TreeDnd.findNode(tree, data.otherNode.data.id);
-            target = TreeDnd.findNode(tree, node.data.id);
-            targetParent = TreeDnd.findNode(tree, node.parent.data.id);
-            TreeDnd.moveTo(parent, current, target, targetParent, data.hitMode);
-            handler = function() {
-              return jQuery(element).fancytree('option', 'source', tree.children);
+          dragDrop: (function(_this) {
+            return function(node, data) {
+              var current, parent, target, targetParent;
+              parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id);
+              current = TreeDnd.findNode(tree, data.otherNode.data.id);
+              target = TreeDnd.findNode(tree, node.data.id);
+              targetParent = TreeDnd.findNode(tree, node.parent.data.id);
+              TreeDnd.moveTo(parent, current, target, targetParent, data.hitMode);
+              return data.otherNode.moveTo(node, data.hitMode);
             };
-            return setTimeout(handler, 0);
-          }
+          })(this)
         };
       }
       return jQuery(element).fancytree(options);
     };
 
-    Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    Fancytree.prototype.handle = function(element, valueAccessor, allBindingsAccessor) {
       var config, handler;
       config = this.getValue(valueAccessor);
       element = jQuery(element);
-      console.log('update...');
       handler = (function(_this) {
         return function() {
           if (!element.find('.ui-fancytree').length) {
@@ -763,6 +763,10 @@
         };
       })(this);
       return setTimeout(handler, 0);
+    };
+
+    Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      return this.handle(element, valueAccessor, allBindingsAccessor);
     };
 
     return Fancytree;
@@ -1446,19 +1450,23 @@
 
     TreeDnd.moveTo = function(parent, current, target, targetParent, hitMode) {
       var index;
+      index = targetParent.children.indexOf(target);
       parent.children.remove(current);
       if (hitMode === 'over') {
         target.children.push(current);
         TreeDnd.log(target);
+        return true;
       }
       if (hitMode === 'before') {
         index = targetParent.children.indexOf(target);
         targetParent.children.splice(index, 0, current);
         TreeDnd.log(targetParent);
+        return true;
       }
       if (hitMode === 'after') {
         targetParent.children.push(current);
-        return TreeDnd.log(targetParent);
+        TreeDnd.log(targetParent);
+        return true;
       }
     };
 

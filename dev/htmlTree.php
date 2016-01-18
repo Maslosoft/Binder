@@ -1,7 +1,8 @@
 <?php require './_header.php'; ?>
-Fancy tree drag'n'drop example. <br />
-<div data-bind="fancytree: {data: app.model.Tree, dnd: true, autoExpand: true, options: app.model.options}">
-</div>
+HTML tree example. <br />
+It builds nested HTML list out of tree structure.
+<ul data-bind="htmlTree: app.model.Tree">
+</ul>
 
 <script>
 	jQuery(document).ready(function() {

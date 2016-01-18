@@ -17,12 +17,15 @@ class TreeDnd
 	@moveTo: (parent, current, target, targetParent, hitMode) ->
 
 		# Remove current element first
+		index = targetParent.children.indexOf target
+		
 		parent.children.remove current
 
 		# Just push at target end
 		if hitMode is 'over'
 			target.children.push current
 			TreeDnd.log target
+			return true
 
 		# Insert before target - at target parent
 		if hitMode is 'before'
@@ -30,11 +33,13 @@ class TreeDnd
 			targetParent.children.splice index, 0, current
 			TreeDnd.log targetParent
 			# console.log "indexOf: #{index} (before)"
+			return true
 
 		# Simply push at the end - but at targetParent
 		if hitMode is 'after'
 			targetParent.children.push current
 			TreeDnd.log targetParent
+			return true
 
 		# console.log "Parent: #{parent.title}"
 		# console.log "Current: #{current.title}"

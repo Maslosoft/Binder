@@ -605,6 +605,9 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		tree = @getData(valueAccessor)
 		# Tree options
 		options = valueAccessor().options or {}
+
+		# Effects makes updates flickering, disable
+		options.toggleEffect = false
 		options.source = tree.children
 		options.extensions = []
 
@@ -622,26 +625,30 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 
 					dragEnter: (node, data) ->
 						return true
-					dragDrop: (node, data) ->
-						# NOTE here could be implemented view model change, but there is no reference to current node
+					dragDrop: (node, data) =>
+						
 						parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id)
 						current = TreeDnd.findNode(tree, data.otherNode.data.id)
 						target = TreeDnd.findNode(tree, node.data.id)
 						targetParent = TreeDnd.findNode(tree, node.parent.data.id)
+
+						# Update view model
 						TreeDnd.moveTo parent, current, target, targetParent, data.hitMode
-						console.log(node.children)
+
+						# NOTE: This could possibly work, but it doesn't.
+						# This would update while tree with new data.
+						# @handle element, valueAccessor, allBindingsAccessor
+
+						# Move node separatelly
 						data.otherNode.moveTo(node, data.hitMode)
-						console.log(node.children)
-						# jQuery(element).fancytree 'option', 'source', data.children
-						# TODO Update view model *after* moveTo, so all will be calculated as needed
+
 			}
 
 		jQuery(element).fancytree(options);
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	handle: (element, valueAccessor, allBindingsAccessor) =>
 		config = @getValue(valueAccessor)
 		element = jQuery element
-		console.log 'update...'
 		handler = () =>
 
 			if not element.find('.ui-fancytree').length then return
@@ -656,6 +663,9 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 
 		# Put rendering to end of queue to ensure bindings are evaluated
 		setTimeout handler, 0
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		@handle element, valueAccessor, allBindingsAccessor
 
 #
 # One-way file size formatter
@@ -776,18 +786,17 @@ class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
 class @Maslosoft.Ko.Balin.HtmlTree extends @Maslosoft.Ko.Balin.Base
 
 	@drawNode: (data) ->
-		wrapper = document.createElement 'ul'
+		# wrapper = document.createElement 'ul'
 		title = document.createElement 'li'
 		title.innerHTML = data.title
-		wrapper.appendChild title
+		# wrapper.appendChild title
 		if data.children and data.children.length > 0
-			console.log data
 			childWrapper = document.createElement 'ul'
 			for node in data.children
 				child = HtmlTree.drawNode(node)
 				childWrapper.appendChild child
-			wrapper.appendChild childWrapper
-		return wrapper
+			title.appendChild childWrapper
+		return title
 
 
 	getData: (valueAccessor) ->
@@ -799,7 +808,7 @@ class @Maslosoft.Ko.Balin.HtmlTree extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		data = @getValue(valueAccessor)
-		console.log 'htmltree..'
+		warn "HtmlTree is experimental, do not use"
 		handler = () =>
 			nodes = HtmlTree.drawNode data
 			element.innerHTML = ''
@@ -1197,45 +1206,45 @@ class TreeDnd
 
 	@moveTo: (parent, current, target, targetParent, hitMode) ->
 
-		console.log "Length: #{parent.children.length}"
-		# index = parent.children.indexOf current
-		# console.log index
-		# Prevent removing last element if index not found
-		# if index > -1
-			# parent.children.splice index, 1
-
 		# Remove current element first
+		index = targetParent.children.indexOf target
+		
 		parent.children.remove current
 
 		# Just push at target end
 		if hitMode is 'over'
 			target.children.push current
 			TreeDnd.log target
+			return true
 
 		# Insert before target - at target parent
 		if hitMode is 'before'
 			index = targetParent.children.indexOf target
-			targetParent.children.splice index, current
+			targetParent.children.splice index, 0, current
 			TreeDnd.log targetParent
-			console.log "indexOf: #{index} (before)"
+			# console.log "indexOf: #{index} (before)"
+			return true
 
 		# Simply push at the end - but at targetParent
 		if hitMode is 'after'
 			targetParent.children.push current
 			TreeDnd.log targetParent
+			return true
 
-		console.log "Parent: #{parent.title}"
-		console.log "Current: #{current.title}"
-		console.log "Target: #{target.title}"
-		console.log "TargetParent: #{targetParent.title}"
-		console.log hitMode
+		# console.log "Parent: #{parent.title}"
+		# console.log "Current: #{current.title}"
+		# console.log "Target: #{target.title}"
+		# console.log "TargetParent: #{targetParent.title}"
+		# console.log hitMode
 
-	@log(node) ->
+	@log: (node) ->
+		return # Comment to log
 		log "Node: #{node.title}"
-		log "Children:"
+		children = []
 		if node.children and node.children.length > 0
 			for childNode in node.children
-				TreeDnd.log childNode
+				children.push childNode.title
+			log "Children: #{children.join(',')}"
 
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'

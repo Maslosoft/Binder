@@ -605,6 +605,9 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		tree = @getData(valueAccessor)
 		# Tree options
 		options = valueAccessor().options or {}
+
+		# Effects makes updates flickering, disable
+		options.toggleEffect = false
 		options.source = tree.children
 		options.extensions = []
 
@@ -622,27 +625,30 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 
 					dragEnter: (node, data) ->
 						return true
-					dragDrop: (node, data) ->
-						# NOTE here could be implemented view model change, but there is no reference to current node
+					dragDrop: (node, data) =>
+						
 						parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id)
 						current = TreeDnd.findNode(tree, data.otherNode.data.id)
 						target = TreeDnd.findNode(tree, node.data.id)
 						targetParent = TreeDnd.findNode(tree, node.parent.data.id)
+
+						# Update view model
 						TreeDnd.moveTo parent, current, target, targetParent, data.hitMode
 
-						# data.otherNode.moveTo(node, data.hitMode)
-						handler = () ->
-							jQuery(element).fancytree 'option', 'source', tree.children
-						setTimeout handler, 0
+						# NOTE: This could possibly work, but it doesn't.
+						# This would update while tree with new data.
+						# @handle element, valueAccessor, allBindingsAccessor
+
+						# Move node separatelly
+						data.otherNode.moveTo(node, data.hitMode)
 
 			}
 
 		jQuery(element).fancytree(options);
-	
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+
+	handle: (element, valueAccessor, allBindingsAccessor) =>
 		config = @getValue(valueAccessor)
 		element = jQuery element
-		console.log 'update...'
 		handler = () =>
 
 			if not element.find('.ui-fancytree').length then return
@@ -657,6 +663,9 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 
 		# Put rendering to end of queue to ensure bindings are evaluated
 		setTimeout handler, 0
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		@handle element, valueAccessor, allBindingsAccessor
 
 #
 # One-way file size formatter
@@ -1198,12 +1207,15 @@ class TreeDnd
 	@moveTo: (parent, current, target, targetParent, hitMode) ->
 
 		# Remove current element first
+		index = targetParent.children.indexOf target
+		
 		parent.children.remove current
 
 		# Just push at target end
 		if hitMode is 'over'
 			target.children.push current
 			TreeDnd.log target
+			return true
 
 		# Insert before target - at target parent
 		if hitMode is 'before'
@@ -1211,11 +1223,13 @@ class TreeDnd
 			targetParent.children.splice index, 0, current
 			TreeDnd.log targetParent
 			# console.log "indexOf: #{index} (before)"
+			return true
 
 		# Simply push at the end - but at targetParent
 		if hitMode is 'after'
 			targetParent.children.push current
 			TreeDnd.log targetParent
+			return true
 
 		# console.log "Parent: #{parent.title}"
 		# console.log "Current: #{current.title}"
