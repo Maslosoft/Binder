@@ -6,9 +6,16 @@ if not @Maslosoft.Ko.BalinDev.Models
 	@Maslosoft.Ko.BalinDev.Models = {}
 
 class @Maslosoft.Ko.BalinDev.Models.TreeItem extends @Maslosoft.Ko.Balin.Model
+	@idCounter = 0
 	_class: "Maslosoft.Ko.BalinDev.Models.TreeItem"
+	id: 0
 	title: ''
 	children: []
+
+	constructor: (data = null) ->
+		super data
+		@id = TreeItem.idCounter++
+
 
 class @Maslosoft.Ko.BalinDev.Models.Intro extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Intro"

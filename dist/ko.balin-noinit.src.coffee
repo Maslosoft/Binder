@@ -24,6 +24,8 @@ if not @Maslosoft.Ko
 	@Maslosoft.Ko = {}
 if not @Maslosoft.Ko.Balin
 	@Maslosoft.Ko.Balin = {}
+if not @Maslosoft.Ko.Balin.Helpers
+	@Maslosoft.Ko.Balin.Helpers = {}
 
 #
 # Register binding handler
@@ -62,6 +64,7 @@ if not @Maslosoft.Ko.Balin
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
 		hidden: Maslosoft.Ko.Balin.Hidden
 		href: Maslosoft.Ko.Balin.Href
+		htmlTree: Maslosoft.Ko.Balin.HtmlTree
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
 		model: Maslosoft.Ko.Balin.DataModel
@@ -599,22 +602,51 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		return value
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-
+		tree = @getData(valueAccessor)
 		# Tree options
 		options = valueAccessor().options or {}
-		options.source = @getData(valueAccessor)
+		options.source = tree.children
+		options.extensions = []
+
+		# DND
+		dnd = valueAccessor().dnd or false
+		if dnd
+			options.extensions.push 'dnd'
+			options.dnd = {
+					autoExpandMS: 400,
+					focusOnClick: true,
+					preventVoidMoves: true,
+					preventRecursiveMoves: true,
+					dragStart: (node, data) ->
+						return true
+
+					dragEnter: (node, data) ->
+						return true
+					dragDrop: (node, data) ->
+						# NOTE here could be implemented view model change, but there is no reference to current node
+						parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id)
+						current = TreeDnd.findNode(tree, data.otherNode.data.id)
+						target = TreeDnd.findNode(tree, node.data.id)
+						targetParent = TreeDnd.findNode(tree, node.parent.data.id)
+						TreeDnd.moveTo parent, current, target, targetParent, data.hitMode
+						console.log(node.children)
+						data.otherNode.moveTo(node, data.hitMode)
+						console.log(node.children)
+						# jQuery(element).fancytree 'option', 'source', data.children
+						# TODO Update view model *after* moveTo, so all will be calculated as needed
+			}
 
 		jQuery(element).fancytree(options);
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		config = @getValue(valueAccessor)
 		element = jQuery element
-
+		console.log 'update...'
 		handler = () =>
 
 			if not element.find('.ui-fancytree').length then return
-			
-			element.fancytree 'option', 'source', @getData(valueAccessor)
+
+			element.fancytree 'option', 'source', @getData(valueAccessor).children
 
 			# Autoexpand handling
 			if config.autoExpand
@@ -624,6 +656,7 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 
 		# Put rendering to end of queue to ensure bindings are evaluated
 		setTimeout handler, 0
+
 #
 # One-way file size formatter
 #
@@ -733,6 +766,48 @@ class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
 			element.href = href
 		if element.target isnt target
 			element.target = target
+#
+# Html tree binding
+#
+# This simpy builds a nested ul>li struct
+#
+# data-bind="htmlTree: data"
+#
+class @Maslosoft.Ko.Balin.HtmlTree extends @Maslosoft.Ko.Balin.Base
+
+	@drawNode: (data) ->
+		wrapper = document.createElement 'ul'
+		title = document.createElement 'li'
+		title.innerHTML = data.title
+		wrapper.appendChild title
+		if data.children and data.children.length > 0
+			console.log data
+			childWrapper = document.createElement 'ul'
+			for node in data.children
+				child = HtmlTree.drawNode(node)
+				childWrapper.appendChild child
+			wrapper.appendChild childWrapper
+		return wrapper
+
+
+	getData: (valueAccessor) ->
+		# Verbose syntax, at least {data: data}
+		value = @getValue(valueAccessor) or []
+		if value.data
+			return @getValue(value.data) or []
+		return value
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		data = @getValue(valueAccessor)
+		console.log 'htmltree..'
+		handler = () =>
+			nodes = HtmlTree.drawNode data
+			element.innerHTML = ''
+			element.appendChild nodes
+
+		# Put rendering to end of queue to ensure bindings are evaluated
+		setTimeout handler, 0
+
 #
 # Html value binding
 # WARNING This MUST have parent context, or will not work
@@ -1104,6 +1179,64 @@ class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
 
 		element.setAttribute('href', href)
 		element.setAttribute('rel', 'virtual')
+#
+# Tree drag and drop helper
+# @internal
+#
+class TreeDnd
+
+	@findNode: (startNode, id) ->
+		if startNode.id is id or startNode._id is id
+			return startNode
+		if startNode.children and startNode.children.length > 0
+			for childNode in startNode.children
+				foundNode = TreeDnd.findNode(childNode, id)
+				if foundNode isnt false
+					return foundNode
+		return false
+
+	@moveTo: (parent, current, target, targetParent, hitMode) ->
+
+		console.log "Length: #{parent.children.length}"
+		# index = parent.children.indexOf current
+		# console.log index
+		# Prevent removing last element if index not found
+		# if index > -1
+			# parent.children.splice index, 1
+
+		# Remove current element first
+		parent.children.remove current
+
+		# Just push at target end
+		if hitMode is 'over'
+			target.children.push current
+			TreeDnd.log target
+
+		# Insert before target - at target parent
+		if hitMode is 'before'
+			index = targetParent.children.indexOf target
+			targetParent.children.splice index, current
+			TreeDnd.log targetParent
+			console.log "indexOf: #{index} (before)"
+
+		# Simply push at the end - but at targetParent
+		if hitMode is 'after'
+			targetParent.children.push current
+			TreeDnd.log targetParent
+
+		console.log "Parent: #{parent.title}"
+		console.log "Current: #{current.title}"
+		console.log "Target: #{target.title}"
+		console.log "TargetParent: #{targetParent.title}"
+		console.log hitMode
+
+	@log(node) ->
+		log "Node: #{node.title}"
+		log "Children:"
+		if node.children and node.children.length > 0
+			for childNode in node.children
+				TreeDnd.log childNode
+
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'
@@ -1123,19 +1256,20 @@ class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
 	return func
 
 class @Maslosoft.Ko.Track
-	
+
 	factory: (data) =>
 		# Return if falsey value
 		if not data then return data
-		
+
 		# Check if has prototype
 		if data._class
+			# Convert PHP class name to js class name
 			className = data._class.replace(/\\/g, '.')
 			try
 				ref = Maslosoft.Ko.objByName(className)
 			catch Error
 				console.warn("Could not resolve class name `#{className}`")
-			
+
 			if ref
 				return new ref(data)
 			else
@@ -1143,16 +1277,23 @@ class @Maslosoft.Ko.Track
 				console.debug(data)
 
 		# Track generic object
-		if typeof data is 'object'
-			for name, value of data
-				data[name] = @factory(value)
-			data = ko.track(data)
-			
+		if typeof(data) is 'object'
+			# Check if array (different loop used here)
+			if data.constructor is Array
+				for model, index in data
+					data[index] = @factory model
+				data = ko.track(data)
+			else
+				for name, value of data
+					data[name] = @factory(value)
+				data = ko.track(data)
+
 		return data
-		
-		
+
+
 
 ko.tracker = new @Maslosoft.Ko.Track
+
 #
 # Model class with automatically applied knockout bindings
 #

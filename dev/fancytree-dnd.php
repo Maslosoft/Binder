@@ -1,63 +1,50 @@
 <?php require './_header.php'; ?>
 Fancy tree drag'n'drop example. <br />
 NOTE: this does <b>not</b> update view model, it only rearange node visually.
-<div data-bind="fancytree: {data: app.model.Tree.children, autoExpand: true, options: app.model.options}">
+<div data-bind="fancytree: {data: app.model.Tree, dnd: true, autoExpand: true, options: app.model.options}">
 </div>
+<ul data-bind="htmlTree: app.model.Tree">
+</ul>
+
 <script>
 	jQuery(document).ready(function() {
 		data = {
+			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 			title: "Some container",
-			children: [{
+			children: [
+				{
+					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 					title: "One",
 					children: [
 						{
-							title: "Two",
-							children: []
-
+							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							title: "Two"
 						},
 						{
+							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 							title: "Three",
 							children: [
 								{
-									title: "Three-Two",
-									children: []
-
+									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									title: "Three-Two"
 								},
 								{
-									title: "Three-Three",
-									children: []
-
+									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									title: "Three-Three"
 								}
 							]
 
 						},
 						{
-							title: "Four",
-							children: []
+							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							title: "Four"
 						}
 					]
-				}]
+				}
+			]
 		};
 		app.model.Tree = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
-		app.model.options = {
-			extensions: ["dnd"],
-			dnd: {
-				autoExpandMS: 400,
-				focusOnClick: true,
-				preventVoidMoves: true,
-				preventRecursiveMoves: true,
-				dragStart: function(node, data) {
-					return true;
-				},
-				dragEnter: function(node, data) {
-					return true;
-				},
-				dragDrop: function(node, data) {
-					// NOTE here could be implemented view model change, but there is no reference to current node
-					data.otherNode.moveTo(node, data.hitMode);
-        }
-      }
-	};
+
 		ko.applyBindings({model: app.model});
 	});
 </script>

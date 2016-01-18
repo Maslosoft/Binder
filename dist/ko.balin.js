@@ -1,5 +1,5 @@
 (function() {
-  var assert, error, log, warn,
+  var TreeDnd, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -58,6 +58,10 @@
     this.Maslosoft.Ko.Balin = {};
   }
 
+  if (!this.Maslosoft.Ko.Balin.Helpers) {
+    this.Maslosoft.Ko.Balin.Helpers = {};
+  }
+
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
     ko.bindingHandlers[name] = handler;
     if (handler.writable) {
@@ -87,6 +91,7 @@
       fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
       hidden: Maslosoft.Ko.Balin.Hidden,
       href: Maslosoft.Ko.Balin.Href,
+      htmlTree: Maslosoft.Ko.Balin.HtmlTree,
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
       icon: Maslosoft.Ko.Balin.Icon,
       model: Maslosoft.Ko.Balin.DataModel,
@@ -702,9 +707,39 @@
     };
 
     Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var options;
+      var dnd, options, tree;
+      tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
-      options.source = this.getData(valueAccessor);
+      options.source = tree.children;
+      options.extensions = [];
+      dnd = valueAccessor().dnd || false;
+      if (dnd) {
+        options.extensions.push('dnd');
+        options.dnd = {
+          autoExpandMS: 400,
+          focusOnClick: true,
+          preventVoidMoves: true,
+          preventRecursiveMoves: true,
+          dragStart: function(node, data) {
+            return true;
+          },
+          dragEnter: function(node, data) {
+            return true;
+          },
+          dragDrop: function(node, data) {
+            var current, handler, parent, target, targetParent;
+            parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id);
+            current = TreeDnd.findNode(tree, data.otherNode.data.id);
+            target = TreeDnd.findNode(tree, node.data.id);
+            targetParent = TreeDnd.findNode(tree, node.parent.data.id);
+            TreeDnd.moveTo(parent, current, target, targetParent, data.hitMode);
+            handler = function() {
+              return jQuery(element).fancytree('option', 'source', tree.children);
+            };
+            return setTimeout(handler, 0);
+          }
+        };
+      }
       return jQuery(element).fancytree(options);
     };
 
@@ -712,12 +747,13 @@
       var config, handler;
       config = this.getValue(valueAccessor);
       element = jQuery(element);
+      console.log('update...');
       handler = (function(_this) {
         return function() {
           if (!element.find('.ui-fancytree').length) {
             return;
           }
-          element.fancytree('option', 'source', _this.getData(valueAccessor));
+          element.fancytree('option', 'source', _this.getData(valueAccessor).children);
           if (config.autoExpand) {
             element.fancytree('getRootNode').visit(function(node) {
               return node.setExpanded(true);
@@ -875,6 +911,59 @@
     };
 
     return Href;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.HtmlTree = (function(_super) {
+    __extends(HtmlTree, _super);
+
+    function HtmlTree() {
+      this.update = __bind(this.update, this);
+      return HtmlTree.__super__.constructor.apply(this, arguments);
+    }
+
+    HtmlTree.drawNode = function(data) {
+      var child, childWrapper, node, title, _i, _len, _ref;
+      title = document.createElement('li');
+      title.innerHTML = data.title;
+      if (data.children && data.children.length > 0) {
+        childWrapper = document.createElement('ul');
+        _ref = data.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          node = _ref[_i];
+          child = HtmlTree.drawNode(node);
+          childWrapper.appendChild(child);
+        }
+        title.appendChild(childWrapper);
+      }
+      return title;
+    };
+
+    HtmlTree.prototype.getData = function(valueAccessor) {
+      var value;
+      value = this.getValue(valueAccessor) || [];
+      if (value.data) {
+        return this.getValue(value.data) || [];
+      }
+      return value;
+    };
+
+    HtmlTree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var data, handler;
+      data = this.getValue(valueAccessor);
+      warn("HtmlTree is experimental, do not use");
+      handler = (function(_this) {
+        return function() {
+          var nodes;
+          nodes = HtmlTree.drawNode(data);
+          element.innerHTML = '';
+          return element.appendChild(nodes);
+        };
+      })(this);
+      return setTimeout(handler, 0);
+    };
+
+    return HtmlTree;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
@@ -1334,6 +1423,64 @@
 
   })(this.Maslosoft.Ko.Balin.WidgetUrl);
 
+  TreeDnd = (function() {
+    function TreeDnd() {}
+
+    TreeDnd.findNode = function(startNode, id) {
+      var childNode, foundNode, _i, _len, _ref;
+      if (startNode.id === id || startNode._id === id) {
+        return startNode;
+      }
+      if (startNode.children && startNode.children.length > 0) {
+        _ref = startNode.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          childNode = _ref[_i];
+          foundNode = TreeDnd.findNode(childNode, id);
+          if (foundNode !== false) {
+            return foundNode;
+          }
+        }
+      }
+      return false;
+    };
+
+    TreeDnd.moveTo = function(parent, current, target, targetParent, hitMode) {
+      var index;
+      parent.children.remove(current);
+      if (hitMode === 'over') {
+        target.children.push(current);
+        TreeDnd.log(target);
+      }
+      if (hitMode === 'before') {
+        index = targetParent.children.indexOf(target);
+        targetParent.children.splice(index, 0, current);
+        TreeDnd.log(targetParent);
+      }
+      if (hitMode === 'after') {
+        targetParent.children.push(current);
+        return TreeDnd.log(targetParent);
+      }
+    };
+
+    TreeDnd.log = function(node) {
+      var childNode, children, _i, _len, _ref;
+      return;
+      log("Node: " + node.title);
+      children = [];
+      if (node.children && node.children.length > 0) {
+        _ref = node.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          childNode = _ref[_i];
+          children.push(childNode.title);
+        }
+        return log("Children: " + (children.join(',')));
+      }
+    };
+
+    return TreeDnd;
+
+  })();
+
   this.Maslosoft.Ko.getType = function(type) {
     if (x && typeof x === 'object') {
       if (x.constructor === Date) {
@@ -1372,7 +1519,7 @@
     }
 
     Track.prototype.factory = function(data) {
-      var Error, className, name, ref, value;
+      var Error, className, index, model, name, ref, value, _i, _len;
       if (!data) {
         return data;
       }
@@ -1392,11 +1539,19 @@
         }
       }
       if (typeof data === 'object') {
-        for (name in data) {
-          value = data[name];
-          data[name] = this.factory(value);
+        if (data.constructor === Array) {
+          for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
+            model = data[index];
+            data[index] = this.factory(model);
+          }
+          data = ko.track(data);
+        } else {
+          for (name in data) {
+            value = data[name];
+            data[name] = this.factory(value);
+          }
+          data = ko.track(data);
         }
-        data = ko.track(data);
       }
       return data;
     };

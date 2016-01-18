@@ -17,19 +17,20 @@
 	return func
 
 class @Maslosoft.Ko.Track
-	
+
 	factory: (data) =>
 		# Return if falsey value
 		if not data then return data
-		
+
 		# Check if has prototype
 		if data._class
+			# Convert PHP class name to js class name
 			className = data._class.replace(/\\/g, '.')
 			try
 				ref = Maslosoft.Ko.objByName(className)
 			catch Error
 				console.warn("Could not resolve class name `#{className}`")
-			
+
 			if ref
 				return new ref(data)
 			else
@@ -37,13 +38,19 @@ class @Maslosoft.Ko.Track
 				console.debug(data)
 
 		# Track generic object
-		if typeof data is 'object'
-			for name, value of data
-				data[name] = @factory(value)
-			data = ko.track(data)
-			
+		if typeof(data) is 'object'
+			# Check if array (different loop used here)
+			if data.constructor is Array
+				for model, index in data
+					data[index] = @factory model
+				data = ko.track(data)
+			else
+				for name, value of data
+					data[name] = @factory(value)
+				data = ko.track(data)
+
 		return data
-		
-		
+
+
 
 ko.tracker = new @Maslosoft.Ko.Track

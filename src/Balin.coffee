@@ -35,6 +35,7 @@
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
 		hidden: Maslosoft.Ko.Balin.Hidden
 		href: Maslosoft.Ko.Balin.Href
+		htmlTree: Maslosoft.Ko.Balin.HtmlTree
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
 		model: Maslosoft.Ko.Balin.DataModel

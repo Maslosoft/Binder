@@ -39,7 +39,7 @@
 				margin: 0px 2px;
 				padding: 2px;
 			}
-			nav ul{
+			nav > ul{
 				background: url('./images/menuBg.jpg') no-repeat;
 				background-size: cover;
 			}

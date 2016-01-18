@@ -7,7 +7,7 @@ balinBare = [
 	'src/Options/*',
 	'src/Base/*'
 	'src/BindingHandlers/*',
-
+	'src/Helpers/*',
 	'src/Tracker.coffee',
 	'src/Model.coffee',
 ]

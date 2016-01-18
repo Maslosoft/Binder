@@ -18,15 +18,23 @@
   this.Maslosoft.Ko.BalinDev.Models.TreeItem = (function(superClass) {
     extend(TreeItem, superClass);
 
-    function TreeItem() {
-      return TreeItem.__super__.constructor.apply(this, arguments);
-    }
+    TreeItem.idCounter = 0;
 
     TreeItem.prototype._class = "Maslosoft.Ko.BalinDev.Models.TreeItem";
+
+    TreeItem.prototype.id = 0;
 
     TreeItem.prototype.title = '';
 
     TreeItem.prototype.children = [];
+
+    function TreeItem(data) {
+      if (data == null) {
+        data = null;
+      }
+      TreeItem.__super__.constructor.call(this, data);
+      this.id = TreeItem.idCounter++;
+    }
 
     return TreeItem;
 
