@@ -13,6 +13,7 @@ class @Maslosoft.Ko.BalinDev.Models.TreeItem extends @Maslosoft.Ko.Balin.Model
 	children: []
 
 	constructor: (data = null) ->
+		# Dereference 
 		@children = new Array
 		super data
 		@id = TreeItem.idCounter++

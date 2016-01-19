@@ -1,5 +1,6 @@
 <?php require './_header.php'; ?>
 Fancy tree drag'n'drop example. <br />
+<b>NOTE:</b> Make sure that `children` field of model is dereferences, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee
 <div data-bind="fancytree: {data: app.model.Tree, dnd: true, autoExpand: true, options: app.model.options}">
 </div>
 
@@ -11,7 +12,7 @@ Fancy tree drag'n'drop example. <br />
 			children: [
 				{
 					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
-					title: "Zero",	
+					title: "Zero",
 				},
 				{
 					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
