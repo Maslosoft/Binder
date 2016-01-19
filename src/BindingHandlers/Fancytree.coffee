@@ -32,34 +32,7 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		dnd = valueAccessor().dnd or false
 		if dnd
 			options.extensions.push 'dnd'
-			options.dnd = {
-					autoExpandMS: 400,
-					focusOnClick: true,
-					preventVoidMoves: true,
-					preventRecursiveMoves: true,
-					dragStart: (node, data) ->
-						return true
-
-					dragEnter: (node, data) ->
-						return true
-					dragDrop: (node, data) =>
-						
-						parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id)
-						current = TreeDnd.findNode(tree, data.otherNode.data.id)
-						target = TreeDnd.findNode(tree, node.data.id)
-						targetParent = TreeDnd.findNode(tree, node.parent.data.id)
-
-						# Update view model
-						TreeDnd.moveTo parent, current, target, targetParent, data.hitMode
-
-						# NOTE: This could possibly work, but it doesn't.
-						# This would update while tree with new data.
-						# @handle element, valueAccessor, allBindingsAccessor
-
-						# Move node separatelly
-						data.otherNode.moveTo(node, data.hitMode)
-
-			}
+			options.dnd = new TreeDnd tree, element
 
 		jQuery(element).fancytree(options);
 

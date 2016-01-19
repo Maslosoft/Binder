@@ -2,7 +2,7 @@
 # Model class with automatically applied knockout bindings
 #
 class @Maslosoft.Ko.Balin.Model
-	
+
 	constructor: (data = null) ->
 
 		# Reassign here is required - when using model with values from class prototype only

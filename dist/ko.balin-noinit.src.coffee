@@ -615,34 +615,7 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		dnd = valueAccessor().dnd or false
 		if dnd
 			options.extensions.push 'dnd'
-			options.dnd = {
-					autoExpandMS: 400,
-					focusOnClick: true,
-					preventVoidMoves: true,
-					preventRecursiveMoves: true,
-					dragStart: (node, data) ->
-						return true
-
-					dragEnter: (node, data) ->
-						return true
-					dragDrop: (node, data) =>
-						
-						parent = TreeDnd.findNode(tree, data.otherNode.parent.data.id)
-						current = TreeDnd.findNode(tree, data.otherNode.data.id)
-						target = TreeDnd.findNode(tree, node.data.id)
-						targetParent = TreeDnd.findNode(tree, node.parent.data.id)
-
-						# Update view model
-						TreeDnd.moveTo parent, current, target, targetParent, data.hitMode
-
-						# NOTE: This could possibly work, but it doesn't.
-						# This would update while tree with new data.
-						# @handle element, valueAccessor, allBindingsAccessor
-
-						# Move node separatelly
-						data.otherNode.moveTo(node, data.hitMode)
-
-			}
+			options.dnd = new TreeDnd tree, element
 
 		jQuery(element).fancytree(options);
 
@@ -1189,53 +1162,151 @@ class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
 		element.setAttribute('href', href)
 		element.setAttribute('rel', 'virtual')
 #
-# Tree drag and drop helper
+# Tree drag and drop helpers
 # @internal
 #
-class TreeDnd
+class TreeDndCache
+	nodes: {}
+	constructor: () ->
+		@nodes = {}
 
-	@findNode: (startNode, id) ->
-		if startNode.id is id or startNode._id is id
-			return startNode
-		if startNode.children and startNode.children.length > 0
-			for childNode in startNode.children
-				foundNode = TreeDnd.findNode(childNode, id)
+	get: (id) ->
+		if typeof(@nodes[id]) is 'undefined'
+			return false
+		return @nodes[id]
+
+	set: (id, val) ->
+		@nodes[id] = val
+
+class TreeNodeFinder
+	# Private
+	cache = null
+	tree = null
+	constructor: (initialTree) ->
+		cache = new TreeDndCache
+		tree = initialTree
+		console.log tree
+
+
+	findNode = (node, id) ->
+		if typeof(id) is 'undefined'
+			return false
+		if found = cache.get id
+			console.log "Cache hit: #{found.title}"
+			return found
+		if node.id is id
+			return node
+		if  node._id is id
+			return node
+
+		if node.children and node.children.length > 0
+			for child in node.children
+				foundNode = findNode(child, id)
 				if foundNode isnt false
+					cache.set id, foundNode
 					return foundNode
 		return false
 
-	@moveTo: (parent, current, target, targetParent, hitMode) ->
+	find: (id) ->
+		return findNode tree, id
 
+class TreeDnd
+	autoExpandMS: 400
+	focusOnClick: true
+	preventVoidMoves: true
+	preventRecursiveMoves: true
+	# Private
+	tree = null
+	finder = null
+	el = null
+	constructor: (initialTree, element) ->
+		tree = initialTree
+		finder = new TreeNodeFinder tree
+		el = jQuery element
+
+	dragStart: (node, data) ->
+		return true
+
+	dragEnter: (node, data) ->
+		return true
+
+	dragDrop: (node, data) =>
+
+		hitMode = data.hitMode
+		parent = finder.find(data.otherNode.parent.data.id)
+		current = finder.find(data.otherNode.data.id)
+		target = finder.find(node.data.id)
+		targetParent = finder.find(node.parent.data.id)
+
+
+		console.log "Parent: #{parent.title}"
+		console.log "Current: #{current.title}"
+		console.log "Target: #{target.title}"
+		console.log "TargetParent: #{targetParent.title}"
+		console.log hitMode
+
+
+		# Update view model
+		log hitMode
 		# Remove current element first
-		index = targetParent.children.indexOf target
-		
-		parent.children.remove current
+		if parent
+			parent.children.remove current
+		else
+			tree.children.remove current
+		if targetParent
+			targetParent.children.remove current
 
 		# Just push at target end
 		if hitMode is 'over'
+			log target
 			target.children.push current
 			TreeDnd.log target
 			return true
 
 		# Insert before target - at target parent
 		if hitMode is 'before'
-			index = targetParent.children.indexOf target
-			targetParent.children.splice index, 0, current
-			TreeDnd.log targetParent
+			if targetParent
+				# Move over some node
+				TreeDnd.log targetParent
+				index = targetParent.children.indexOf target
+				targetParent.children.splice index, 0, current
+			else
+				# Move over root node
+				TreeDnd.log tree
+				index = tree.children.indexOf target
+				tree.children.splice index, 0, current
 			# console.log "indexOf: #{index} (before)"
 			return true
 
 		# Simply push at the end - but at targetParent
 		if hitMode is 'after'
-			targetParent.children.push current
-			TreeDnd.log targetParent
+			if targetParent
+				targetParent.children.push current
+				TreeDnd.log targetParent
+			else
+				tree.children.push current
+				TreeDnd.log tree
 			return true
 
-		# console.log "Parent: #{parent.title}"
-		# console.log "Current: #{current.title}"
-		# console.log "Target: #{target.title}"
-		# console.log "TargetParent: #{targetParent.title}"
-		# console.log hitMode
+		# NOTE: This could possibly work, but it doesn't.
+		# This would update whole tree with new data. Some infinite recursion occurs.
+		# @handle element, valueAccessor, allBindingsAccessor
+		# el.fancytree 'option', 'source', tree.children
+
+		# handler = () ->
+			# Move fancytree node separatelly
+		# data.otherNode.moveTo(node, hitMode)
+
+			# Expand node as it looks better if it is expanded after drop
+		# node.setExpanded true
+
+		# setTimeout handler, 0
+		return true
+
+	@moveTo: (parent, current, target, targetParent, tree, hitMode) ->
+
+
+
 
 	@log: (node) ->
 		return # Comment to log

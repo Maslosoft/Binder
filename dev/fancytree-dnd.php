@@ -11,6 +11,10 @@ Fancy tree drag'n'drop example. <br />
 			children: [
 				{
 					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					title: "Zero",	
+				},
+				{
+					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 					title: "One",
 					children: [
 						{
