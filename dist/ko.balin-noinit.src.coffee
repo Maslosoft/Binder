@@ -339,10 +339,45 @@ class @Maslosoft.Ko.Balin.BaseValidator
 	getErrors: () ->
 		return @messages
 
+	#
+	# Add error message with optional substitution params.
+	#
+	# Simple example:
+	# ```coffee
+	# @addError('My error message')
+	#	```
+	#
+	# Automatic substitution with label example:
+	# ```coffee
+	# @addError('Attribute {attribute} message')
+	#	```
+	#
+	# Will add error message: 'Attribute My attribute message'
+	#
+	# Substitution with params example:
+	# ```coffee
+	# @addError('Attribute {name} message', {name: 'John'})
+	#	```
+	#
+	# Will add error message: 'Attribute John message'
+	#
 	addError: (errorMessage, params) ->
+
+		# Raw is required for uniquness, see method end
 		rawMessage = errorMessage
+
+		# Apply atribute label first
+		errorMessage = errorMessage.replace "{attribute}", @label
+
+		# Apply from params
 		for name, value of params
 			errorMessage = errorMessage.replace "{#{name}}", value
+
+		# Finally try to apply from model
+		for name, value of @model
+			errorMessage = errorMessage.replace "{#{name}}", value
+
+		# Ensure uniquness
 		if not @rawMessages[rawMessage]
 			@messages.push errorMessage
 			@rawMessages[rawMessage] = true
@@ -1185,8 +1220,6 @@ class TreeNodeFinder
 	constructor: (initialTree) ->
 		cache = new TreeDndCache
 		tree = initialTree
-		console.log tree
-
 
 	findNode = (node, id) ->
 		if typeof(id) is 'undefined'
@@ -1219,6 +1252,16 @@ class TreeDnd
 	tree = null
 	finder = null
 	el = null
+
+	t = (node) ->
+		return # Comment to log
+		log "Node: #{node.title}"
+		children = []
+		if node.children and node.children.length > 0
+			for childNode in node.children
+				children.push childNode.title
+			log "Children: #{children.join(',')}"
+
 	constructor: (initialTree, element) ->
 		tree = initialTree
 		finder = new TreeNodeFinder tree
@@ -1239,83 +1282,66 @@ class TreeDnd
 		targetParent = finder.find(node.parent.data.id)
 
 
-		console.log "Parent: #{parent.title}"
-		console.log "Current: #{current.title}"
-		console.log "Target: #{target.title}"
-		console.log "TargetParent: #{targetParent.title}"
-		console.log hitMode
+		# console.log "Parent: #{parent.title}"
+		# console.log "Current: #{current.title}"
+		# console.log "Target: #{target.title}"
+		# console.log "TargetParent: #{targetParent.title}"
+		# console.log hitMode
 
 
 		# Update view model
-		log hitMode
 		# Remove current element first
 		if parent
 			parent.children.remove current
-		else
-			tree.children.remove current
+		tree.children.remove current
+
 		if targetParent
 			targetParent.children.remove current
 
 		# Just push at target end
 		if hitMode is 'over'
-			log target
+			log hitMode
+			log "Target: #{target.title}"
+			log "Current: #{current.title}"
 			target.children.push current
-			TreeDnd.log target
-			return true
 
 		# Insert before target - at target parent
 		if hitMode is 'before'
 			if targetParent
 				# Move over some node
-				TreeDnd.log targetParent
 				index = targetParent.children.indexOf target
 				targetParent.children.splice index, 0, current
 			else
 				# Move over root node
-				TreeDnd.log tree
 				index = tree.children.indexOf target
 				tree.children.splice index, 0, current
 			# console.log "indexOf: #{index} (before)"
-			return true
 
 		# Simply push at the end - but at targetParent
 		if hitMode is 'after'
 			if targetParent
 				targetParent.children.push current
-				TreeDnd.log targetParent
 			else
 				tree.children.push current
-				TreeDnd.log tree
-			return true
 
 		# NOTE: This could possibly work, but it doesn't.
 		# This would update whole tree with new data. Some infinite recursion occurs.
 		# @handle element, valueAccessor, allBindingsAccessor
-		# el.fancytree 'option', 'source', tree.children
 
-		# handler = () ->
-			# Move fancytree node separatelly
+		handler = () =>
+			el.fancytree 'option', 'source', tree.children
+			el.fancytree('getRootNode').visit (node) ->
+				node.setExpanded true
+			el.focus()
+			log 'update tree..'
+
+		setTimeout handler, 0
+		# Move fancytree node separatelly
 		# data.otherNode.moveTo(node, hitMode)
 
 			# Expand node as it looks better if it is expanded after drop
-		# node.setExpanded true
 
-		# setTimeout handler, 0
 		return true
-
-	@moveTo: (parent, current, target, targetParent, tree, hitMode) ->
-
-
-
-
-	@log: (node) ->
-		return # Comment to log
-		log "Node: #{node.title}"
-		children = []
-		if node.children and node.children.length > 0
-			for childNode in node.children
-				children.push childNode.title
-			log "Children: #{children.join(',')}"
 
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
@@ -1358,15 +1384,14 @@ class @Maslosoft.Ko.Track
 
 		# Track generic object
 		if typeof(data) is 'object'
+			data = ko.track(data)
 			# Check if array (different loop used here)
 			if data.constructor is Array
 				for model, index in data
 					data[index] = @factory model
-				data = ko.track(data)
 			else
 				for name, value of data
 					data[name] = @factory(value)
-				data = ko.track(data)
 
 		return data
 
@@ -1378,7 +1403,7 @@ ko.tracker = new @Maslosoft.Ko.Track
 # Model class with automatically applied knockout bindings
 #
 class @Maslosoft.Ko.Balin.Model
-	
+
 	constructor: (data = null) ->
 
 		# Reassign here is required - when using model with values from class prototype only

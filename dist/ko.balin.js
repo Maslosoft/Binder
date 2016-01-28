@@ -363,10 +363,16 @@
     };
 
     BaseValidator.prototype.addError = function(errorMessage, params) {
-      var name, rawMessage, value;
+      var name, rawMessage, value, _ref;
       rawMessage = errorMessage;
+      errorMessage = errorMessage.replace("{attribute}", this.label);
       for (name in params) {
         value = params[name];
+        errorMessage = errorMessage.replace("{" + name + "}", value);
+      }
+      _ref = this.model;
+      for (name in _ref) {
+        value = _ref[name];
         errorMessage = errorMessage.replace("{" + name + "}", value);
       }
       if (!this.rawMessages[rawMessage]) {
@@ -1635,18 +1641,17 @@
         }
       }
       if (typeof data === 'object') {
+        data = ko.track(data);
         if (data.constructor === Array) {
           for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
             model = data[index];
             data[index] = this.factory(model);
           }
-          data = ko.track(data);
         } else {
           for (name in data) {
             value = data[name];
             data[name] = this.factory(value);
           }
-          data = ko.track(data);
         }
       }
       return data;

@@ -39,15 +39,14 @@ class @Maslosoft.Ko.Track
 
 		# Track generic object
 		if typeof(data) is 'object'
+			data = ko.track(data)
 			# Check if array (different loop used here)
 			if data.constructor is Array
 				for model, index in data
 					data[index] = @factory model
-				data = ko.track(data)
 			else
 				for name, value of data
 					data[name] = @factory(value)
-				data = ko.track(data)
 
 		return data
 

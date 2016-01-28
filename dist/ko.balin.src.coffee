@@ -339,10 +339,45 @@ class @Maslosoft.Ko.Balin.BaseValidator
 	getErrors: () ->
 		return @messages
 
+	#
+	# Add error message with optional substitution params.
+	#
+	# Simple example:
+	# ```coffee
+	# @addError('My error message')
+	#	```
+	#
+	# Automatic substitution with label example:
+	# ```coffee
+	# @addError('Attribute {attribute} message')
+	#	```
+	#
+	# Will add error message: 'Attribute My attribute message'
+	#
+	# Substitution with params example:
+	# ```coffee
+	# @addError('Attribute {name} message', {name: 'John'})
+	#	```
+	#
+	# Will add error message: 'Attribute John message'
+	#
 	addError: (errorMessage, params) ->
+
+		# Raw is required for uniquness, see method end
 		rawMessage = errorMessage
+
+		# Apply atribute label first
+		errorMessage = errorMessage.replace "{attribute}", @label
+
+		# Apply from params
 		for name, value of params
 			errorMessage = errorMessage.replace "{#{name}}", value
+
+		# Finally try to apply from model
+		for name, value of @model
+			errorMessage = errorMessage.replace "{#{name}}", value
+
+		# Ensure uniquness
 		if not @rawMessages[rawMessage]
 			@messages.push errorMessage
 			@rawMessages[rawMessage] = true
@@ -1349,15 +1384,14 @@ class @Maslosoft.Ko.Track
 
 		# Track generic object
 		if typeof(data) is 'object'
+			data = ko.track(data)
 			# Check if array (different loop used here)
 			if data.constructor is Array
 				for model, index in data
 					data[index] = @factory model
-				data = ko.track(data)
 			else
 				for name, value of data
 					data[name] = @factory(value)
-				data = ko.track(data)
 
 		return data
 

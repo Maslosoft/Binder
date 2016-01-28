@@ -1,11 +1,11 @@
 <?php require './_header.php'; ?>
 Fancy tree drag'n'drop example. <br />
-<b>NOTE:</b> Make sure that `children` field of model is dereferences, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee
+<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee
 <div data-bind="fancytree: {data: app.model.Tree, dnd: true, autoExpand: true, options: app.model.options}">
 </div>
 
 <script>
-	jQuery(document).ready(function() {
+	jQuery(document).ready(function () {
 		data = {
 			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 			title: "Some container",

@@ -363,10 +363,16 @@
     };
 
     BaseValidator.prototype.addError = function(errorMessage, params) {
-      var name, rawMessage, value;
+      var name, rawMessage, value, _ref;
       rawMessage = errorMessage;
+      errorMessage = errorMessage.replace("{attribute}", this.label);
       for (name in params) {
         value = params[name];
+        errorMessage = errorMessage.replace("{" + name + "}", value);
+      }
+      _ref = this.model;
+      for (name in _ref) {
+        value = _ref[name];
         errorMessage = errorMessage.replace("{" + name + "}", value);
       }
       if (!this.rawMessages[rawMessage]) {
@@ -1437,7 +1443,6 @@
     function TreeNodeFinder(initialTree) {
       cache = new TreeDndCache;
       tree = initialTree;
-      console.log(tree);
     }
 
     findNode = function(node, id) {
@@ -1478,7 +1483,7 @@
   })();
 
   TreeDnd = (function() {
-    var el, finder, tree;
+    var el, finder, t, tree;
 
     TreeDnd.prototype.autoExpandMS = 400;
 
@@ -1493,6 +1498,21 @@
     finder = null;
 
     el = null;
+
+    t = function(node) {
+      var childNode, children, _i, _len, _ref;
+      return;
+      log("Node: " + node.title);
+      children = [];
+      if (node.children && node.children.length > 0) {
+        _ref = node.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          childNode = _ref[_i];
+          children.push(childNode.title);
+        }
+        return log("Children: " + (children.join(',')));
+      }
+    };
 
     function TreeDnd(initialTree, element) {
       this.dragDrop = __bind(this.dragDrop, this);
@@ -1510,72 +1530,53 @@
     };
 
     TreeDnd.prototype.dragDrop = function(node, data) {
-      var current, hitMode, index, parent, target, targetParent;
+      var current, handler, hitMode, index, parent, target, targetParent;
       hitMode = data.hitMode;
       parent = finder.find(data.otherNode.parent.data.id);
       current = finder.find(data.otherNode.data.id);
       target = finder.find(node.data.id);
       targetParent = finder.find(node.parent.data.id);
-      console.log("Parent: " + parent.title);
-      console.log("Current: " + current.title);
-      console.log("Target: " + target.title);
-      console.log("TargetParent: " + targetParent.title);
-      console.log(hitMode);
-      log(hitMode);
       if (parent) {
         parent.children.remove(current);
-      } else {
-        tree.children.remove(current);
       }
+      tree.children.remove(current);
       if (targetParent) {
         targetParent.children.remove(current);
       }
       if (hitMode === 'over') {
-        log(target);
+        log(hitMode);
+        log("Target: " + target.title);
+        log("Current: " + current.title);
         target.children.push(current);
-        TreeDnd.log(target);
-        return true;
       }
       if (hitMode === 'before') {
         if (targetParent) {
-          TreeDnd.log(targetParent);
           index = targetParent.children.indexOf(target);
           targetParent.children.splice(index, 0, current);
         } else {
-          TreeDnd.log(tree);
           index = tree.children.indexOf(target);
           tree.children.splice(index, 0, current);
         }
-        return true;
       }
       if (hitMode === 'after') {
         if (targetParent) {
           targetParent.children.push(current);
-          TreeDnd.log(targetParent);
         } else {
           tree.children.push(current);
-          TreeDnd.log(tree);
         }
-        return true;
       }
+      handler = (function(_this) {
+        return function() {
+          el.fancytree('option', 'source', tree.children);
+          el.fancytree('getRootNode').visit(function(node) {
+            return node.setExpanded(true);
+          });
+          el.focus();
+          return log('update tree..');
+        };
+      })(this);
+      setTimeout(handler, 0);
       return true;
-    };
-
-    TreeDnd.moveTo = function(parent, current, target, targetParent, tree, hitMode) {};
-
-    TreeDnd.log = function(node) {
-      var childNode, children, _i, _len, _ref;
-      return;
-      log("Node: " + node.title);
-      children = [];
-      if (node.children && node.children.length > 0) {
-        _ref = node.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          childNode = _ref[_i];
-          children.push(childNode.title);
-        }
-        return log("Children: " + (children.join(',')));
-      }
     };
 
     return TreeDnd;
@@ -1640,18 +1641,17 @@
         }
       }
       if (typeof data === 'object') {
+        data = ko.track(data);
         if (data.constructor === Array) {
           for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
             model = data[index];
             data[index] = this.factory(model);
           }
-          data = ko.track(data);
         } else {
           for (name in data) {
             value = data[name];
             data[name] = this.factory(value);
           }
-          data = ko.track(data);
         }
       }
       return data;
