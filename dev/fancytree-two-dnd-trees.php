@@ -1,7 +1,8 @@
 <?php require './_header.php'; ?>
 <div>
 	Fancy tree drag'n'drop example. <br />
-	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee
+	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee <br />
+	<b class="error">NOTE: This is currently broken</b>
 </div>
 <div class="row">
 <div class="col-sm-6">
