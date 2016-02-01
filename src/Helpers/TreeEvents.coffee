@@ -1,10 +1,31 @@
 
 class TreeEvents
+	#
+	# Events defined by binding
+	#
+	events: null
+
+	#
+	# Fancy tree options
+	#
+	#
+	options: null
 
 	# Private
+
+	#
+	# Initial tree data
+	# @var TreeItem[]
+	#
 	tree = null
+
+	#
+	# Finder instance
+	# @var TreeNodeFinder
+	#
 	finder = null
 
+	# Check whether should handle event
 	doEvent = (data) ->
 
 		# For most events just do event it has no target
@@ -17,6 +38,7 @@ class TreeEvents
 		if data.targetType is 'icon'
 			return true
 
+	# Stop event propagation
 	stop = (event) ->
 		event.stopPropagation()
 
