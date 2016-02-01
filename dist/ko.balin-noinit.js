@@ -1591,6 +1591,10 @@
   TreeEvents = (function() {
     var doEvent, finder, stop, tree;
 
+    TreeEvents.prototype.events = null;
+
+    TreeEvents.prototype.options = null;
+
     tree = null;
 
     finder = null;

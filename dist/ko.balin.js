@@ -1492,7 +1492,7 @@
 
     TreeDnd.prototype.autoExpandMS = 400;
 
-    TreeDnd.prototype.focusOnClick = true;
+    TreeDnd.prototype.focusOnClick = false;
 
     TreeDnd.prototype.preventVoidMoves = true;
 
@@ -1590,6 +1590,10 @@
 
   TreeEvents = (function() {
     var doEvent, finder, stop, tree;
+
+    TreeEvents.prototype.events = null;
+
+    TreeEvents.prototype.options = null;
 
     tree = null;
 

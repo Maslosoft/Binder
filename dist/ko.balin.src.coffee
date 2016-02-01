@@ -1249,13 +1249,37 @@ class TreeNodeFinder
 		return findNode tree, id
 
 class TreeDnd
+
+	# Expand helps greatly when doing dnd
 	autoExpandMS: 400
-	focusOnClick: true
+
+	# Prevent focus on click
+	# When enabled will scroll to tree control on click, not really desirable
+	# Cons: breaks keyboard navigation
+	focusOnClick: false
+
+	# These two are required, or view model will loop
 	preventVoidMoves: true
 	preventRecursiveMoves: true
+
 	# Private
+
+	#
+	# Whole tree data
+	# @var TreeItem[]
+	#
 	tree = null
+
+	#
+	# Node finder instance
+	# @var TreeNodeFinder
+	#
 	finder = null
+
+	#
+	# Tree html element
+	#
+	#
 	el = null
 
 	t = (node) ->
@@ -1350,11 +1374,32 @@ class TreeDnd
 
 
 class TreeEvents
+	#
+	# Events defined by binding
+	#
+	events: null
+
+	#
+	# Fancy tree options
+	#
+	#
+	options: null
 
 	# Private
+
+	#
+	# Initial tree data
+	# @var TreeItem[]
+	#
 	tree = null
+
+	#
+	# Finder instance
+	# @var TreeNodeFinder
+	#
 	finder = null
 
+	# Check whether should handle event
 	doEvent = (data) ->
 
 		# For most events just do event it has no target
@@ -1367,6 +1412,7 @@ class TreeEvents
 		if data.targetType is 'icon'
 			return true
 
+	# Stop event propagation
 	stop = (event) ->
 		event.stopPropagation()
 
