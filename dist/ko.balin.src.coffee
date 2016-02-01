@@ -640,15 +640,20 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		tree = @getData(valueAccessor)
 		# Tree options
 		options = valueAccessor().options or {}
-
+		events = @getValue(valueAccessor).on or false
 		# Effects makes updates flickering, disable
 		options.toggleEffect = false
 		options.source = tree.children
 		options.extensions = []
 
+		# Events
+		if events
+			new TreeEvents tree, events, options
+
 		# DND
 		dnd = valueAccessor().dnd or false
 		if dnd
+			options.autoScroll = false
 			options.extensions.push 'dnd'
 			options.dnd = new TreeDnd tree, element
 
@@ -1201,17 +1206,17 @@ class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
 # @internal
 #
 class TreeDndCache
-	nodes: {}
+	nodes = {}
 	constructor: () ->
-		@nodes = {}
+		# nodes = {}
 
 	get: (id) ->
-		if typeof(@nodes[id]) is 'undefined'
+		if typeof(nodes[id]) is 'undefined'
 			return false
-		return @nodes[id]
+		return nodes[id]
 
 	set: (id, val) ->
-		@nodes[id] = val
+		nodes[id] = val
 
 class TreeNodeFinder
 	# Private
@@ -1342,6 +1347,46 @@ class TreeDnd
 			# Expand node as it looks better if it is expanded after drop
 
 		return true
+
+
+class TreeEvents
+
+	# Private
+	tree = null
+	finder = null
+
+	doEvent = (data) ->
+
+		# For most events just do event it has no target
+		if typeof(data.targetType) is 'undefined'
+			return true
+
+		# For click and double click react only on title and icon click
+		if data.targetType is 'title'
+			return true
+		if data.targetType is 'icon'
+			return true
+
+	stop = (event) ->
+		event.stopPropagation()
+
+	constructor: (initialTree, @events, @options) ->
+		tree = initialTree
+		finder = new TreeNodeFinder tree
+
+		@handle 'click'
+		@handle 'dblclick'
+		@handle 'activate'
+		@handle 'deactivate'
+
+
+	handle: (type) =>
+		if @events[type]
+			@options[type] = (event, data) =>
+				if doEvent data
+					model = finder.find data.node.data.id
+					@events[type] model, data, event
+					stop event
 
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'

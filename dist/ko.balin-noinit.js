@@ -1,5 +1,5 @@
 (function() {
-  var TreeDnd, TreeDndCache, TreeNodeFinder, assert, error, log, warn,
+  var TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -714,14 +714,19 @@
     };
 
     Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var dnd, options, tree;
+      var dnd, events, options, tree;
       tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
+      events = this.getValue(valueAccessor).on || false;
       options.toggleEffect = false;
       options.source = tree.children;
       options.extensions = [];
+      if (events) {
+        new TreeEvents(tree, events, options);
+      }
       dnd = valueAccessor().dnd || false;
       if (dnd) {
+        options.autoScroll = false;
         options.extensions.push('dnd');
         options.dnd = new TreeDnd(tree, element);
       }
@@ -1412,21 +1417,21 @@
   })(this.Maslosoft.Ko.Balin.WidgetUrl);
 
   TreeDndCache = (function() {
-    TreeDndCache.prototype.nodes = {};
+    var nodes;
 
-    function TreeDndCache() {
-      this.nodes = {};
-    }
+    nodes = {};
+
+    function TreeDndCache() {}
 
     TreeDndCache.prototype.get = function(id) {
-      if (typeof this.nodes[id] === 'undefined') {
+      if (typeof nodes[id] === 'undefined') {
         return false;
       }
-      return this.nodes[id];
+      return nodes[id];
     };
 
     TreeDndCache.prototype.set = function(id, val) {
-      return this.nodes[id] = val;
+      return nodes[id] = val;
     };
 
     return TreeDndCache;
@@ -1580,6 +1585,60 @@
     };
 
     return TreeDnd;
+
+  })();
+
+  TreeEvents = (function() {
+    var doEvent, finder, stop, tree;
+
+    tree = null;
+
+    finder = null;
+
+    doEvent = function(data) {
+      if (typeof data.targetType === 'undefined') {
+        return true;
+      }
+      if (data.targetType === 'title') {
+        return true;
+      }
+      if (data.targetType === 'icon') {
+        return true;
+      }
+    };
+
+    stop = function(event) {
+      return event.stopPropagation();
+    };
+
+    function TreeEvents(initialTree, events, options) {
+      this.events = events;
+      this.options = options;
+      this.handle = __bind(this.handle, this);
+      tree = initialTree;
+      finder = new TreeNodeFinder(tree);
+      this.handle('click');
+      this.handle('dblclick');
+      this.handle('activate');
+      this.handle('deactivate');
+    }
+
+    TreeEvents.prototype.handle = function(type) {
+      if (this.events[type]) {
+        return this.options[type] = (function(_this) {
+          return function(event, data) {
+            var model;
+            if (doEvent(data)) {
+              model = finder.find(data.node.data.id);
+              _this.events[type](model, data, event);
+              return stop(event);
+            }
+          };
+        })(this);
+      }
+    };
+
+    return TreeEvents;
 
   })();
 

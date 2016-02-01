@@ -3,17 +3,17 @@
 # @internal
 #
 class TreeDndCache
-	nodes: {}
+	nodes = {}
 	constructor: () ->
-		@nodes = {}
+		# nodes = {}
 
 	get: (id) ->
-		if typeof(@nodes[id]) is 'undefined'
+		if typeof(nodes[id]) is 'undefined'
 			return false
-		return @nodes[id]
+		return nodes[id]
 
 	set: (id, val) ->
-		@nodes[id] = val
+		nodes[id] = val
 
 class TreeNodeFinder
 	# Private

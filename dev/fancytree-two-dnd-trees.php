@@ -1,7 +1,7 @@
 <?php require './_header.php'; ?>
 <div>
 	Fancy tree drag'n'drop example. <br />
-	<b>NOTE:</b> Make sure that `children` field of model is dereferences, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee
+	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee
 </div>
 <div class="row">
 <div class="col-sm-6">
@@ -15,7 +15,7 @@
 </div>
 <script>
 	jQuery(document).ready(function() {
-		data = {
+		var data = {
 			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 			title: "Dogs",
 			children: [
