@@ -10,6 +10,7 @@ class @Maslosoft.Ko.BalinDev.Models.TreeItem extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.TreeItem"
 	id: 0
 	title: ''
+	description: ''
 	children: []
 
 	constructor: (data = null) ->

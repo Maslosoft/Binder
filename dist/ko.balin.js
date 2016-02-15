@@ -1,5 +1,5 @@
 (function() {
-  var TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, assert, error, log, warn,
+  var TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -714,7 +714,7 @@
     };
 
     Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var dnd, events, options, tree;
+      var dnd, events, nodeIcon, nodeRenderer, options, renderer, tree;
       tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
       events = this.getValue(valueAccessor).on || false;
@@ -729,6 +729,18 @@
         options.autoScroll = false;
         options.extensions.push('dnd');
         options.dnd = new TreeDnd(tree, element);
+      }
+      nodeIcon = valueAccessor().nodeIcon || false;
+      nodeRenderer = valueAccessor().nodeRenderer || false;
+      if (nodeIcon || nodeRenderer) {
+        if (nodeIcon) {
+          options.icon = false;
+        }
+        renderer = new TreeNodeRenderer(tree, options, nodeIcon);
+        if (nodeRenderer) {
+          renderer.setRenderer(new nodeRenderer(tree, options));
+        }
+        options.renderNode = renderer.render;
       }
       return jQuery(element).fancytree(options);
     };
@@ -1649,6 +1661,47 @@
     };
 
     return TreeEvents;
+
+  })();
+
+  TreeNodeRenderer = (function() {
+    var finder;
+
+    TreeNodeRenderer.prototype.icon = '';
+
+    TreeNodeRenderer.prototype.renderer = null;
+
+    finder = null;
+
+    function TreeNodeRenderer(tree, options, icon) {
+      this.icon = icon;
+      this.render = __bind(this.render, this);
+      console.log(icon);
+      finder = new TreeNodeFinder(tree);
+    }
+
+    TreeNodeRenderer.prototype.setRenderer = function(renderer) {
+      this.renderer = renderer;
+      if (typeof this.renderer.render !== 'function') {
+        return console.error("Renderer must have function `render`");
+      }
+    };
+
+    TreeNodeRenderer.prototype.render = function(event, data) {
+      var html, model, node, span;
+      node = data.node;
+      span = jQuery(node.span).find("> span.fancytree-title");
+      if (this.renderer && this.renderer.render) {
+        model = finder.find(node.data.id);
+        this.renderer.render(model, span);
+      }
+      if (this.icon) {
+        html = span.html();
+        return span.html("<i class='node-title-icon' style='background-image:url(" + this.icon + ")'></i> " + html);
+      }
+    };
+
+    return TreeNodeRenderer;
 
   })();
 

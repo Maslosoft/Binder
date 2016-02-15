@@ -656,6 +656,21 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 			options.autoScroll = false
 			options.extensions.push 'dnd'
 			options.dnd = new TreeDnd tree, element
+			
+		# Node icon and renderer
+		nodeIcon = valueAccessor().nodeIcon or false
+		nodeRenderer = valueAccessor().nodeRenderer or false
+		if nodeIcon or nodeRenderer
+			# Disable tree icon, as custom renderer will be used
+			if nodeIcon
+				options.icon = false
+			renderer = new TreeNodeRenderer tree, options, nodeIcon
+			
+			# Custom title renderer
+			if nodeRenderer
+				renderer.setRenderer(new nodeRenderer(tree, options))
+			
+			options.renderNode = renderer.render
 
 		jQuery(element).fancytree(options);
 
@@ -1457,6 +1472,38 @@ class TreeEvents
 					@events[type] model, data, event
 					stop event
 
+class TreeNodeRenderer
+
+	icon: ''
+	
+	renderer: null
+	
+	#
+	# Node finder instance
+	# @var TreeNodeFinder
+	# @private
+	#
+	finder = null
+
+	constructor: (tree, options, @icon) ->
+		console.log icon
+		finder = new TreeNodeFinder tree
+		
+	setRenderer: (@renderer) ->
+		if typeof(@renderer.render) isnt 'function'
+			console.error "Renderer must have function `render`"
+	
+	render: (event, data) =>
+		node = data.node
+		span = jQuery(node.span).find("> span.fancytree-title")
+		
+		if @renderer and @renderer.render
+			model = finder.find node.data.id
+			@renderer.render(model, span)
+		
+		if @icon
+			html = span.html()
+			span.html("<i class='node-title-icon' style='background-image:url(#{@icon})'></i> #{html}")
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

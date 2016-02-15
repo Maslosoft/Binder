@@ -26,6 +26,8 @@
 
     TreeItem.prototype.title = '';
 
+    TreeItem.prototype.description = '';
+
     TreeItem.prototype.children = [];
 
     function TreeItem(data) {

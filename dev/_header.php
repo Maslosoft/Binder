@@ -66,6 +66,13 @@
 				font-style: italic;
 				margin: .5em;
 			}
+			.node-title-icon{
+				width: 1em;
+				height: 1em;
+				display: inline-block;
+				vertical-align: middle;
+				background-size: contain;
+			}
 		</style>
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
@@ -92,6 +99,7 @@
 		<script type="text/javascript" src="./src/RegExpValidator.js"></script>
 		<script type="text/javascript" src="./src/RequiredValidator.js"></script>
 		<script type="text/javascript" src="./src/EmailValidator.js"></script>
+		<script type="text/javascript" src="./src/TitleRenderer.js"></script>
 
 
 		<script type="text/javascript">

@@ -38,6 +38,21 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 			options.autoScroll = false
 			options.extensions.push 'dnd'
 			options.dnd = new TreeDnd tree, element
+			
+		# Node icon and renderer
+		nodeIcon = valueAccessor().nodeIcon or false
+		nodeRenderer = valueAccessor().nodeRenderer or false
+		if nodeIcon or nodeRenderer
+			# Disable tree icon, as custom renderer will be used
+			if nodeIcon
+				options.icon = false
+			renderer = new TreeNodeRenderer tree, options, nodeIcon
+			
+			# Custom title renderer
+			if nodeRenderer
+				renderer.setRenderer(new nodeRenderer(tree, options))
+			
+			options.renderNode = renderer.render
 
 		jQuery(element).fancytree(options);
 
