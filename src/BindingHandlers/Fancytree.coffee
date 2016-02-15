@@ -53,8 +53,7 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 			if nodeIcon
 				options.icon = false
 			
-			# Renderer instance
-			log folderIcon
+			# Create internal renderer instance
 			renderer = new TreeNodeRenderer tree, options, nodeIcon, folderIcon
 			
 			# Custom title renderer

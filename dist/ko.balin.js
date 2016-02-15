@@ -740,7 +740,6 @@
         if (nodeIcon) {
           options.icon = false;
         }
-        log(folderIcon);
         renderer = new TreeNodeRenderer(tree, options, nodeIcon, folderIcon);
         if (nodeRenderer) {
           renderer.setRenderer(new nodeRenderer(tree, options));
@@ -1679,8 +1678,6 @@
       this.icon = icon;
       this.folderIcon = folderIcon;
       this.render = __bind(this.render, this);
-      console.log(this.icon);
-      console.log(this.folderIcon);
       finder = new TreeNodeFinder(tree);
     }
 
@@ -1701,12 +1698,9 @@
       }
       if (this.icon || this.folderIcon) {
         html = span.html();
-        log(node);
-        if (node.children && node.children.length) {
-          log('folder');
+        if (this.folderIcon && node.children && node.children.length) {
           icon = this.folderIcon;
         } else {
-          log('leaf');
           icon = this.icon;
         }
         return span.html("<i class='node-title-icon' style='background-image:url(" + icon + ")'></i> " + html);

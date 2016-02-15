@@ -14,8 +14,6 @@ class TreeNodeRenderer
 	finder = null
 
 	constructor: (tree, options, @icon, @folderIcon) ->
-		console.log @icon
-		console.log @folderIcon
 		finder = new TreeNodeFinder tree
 		
 	setRenderer: (@renderer) ->
@@ -24,19 +22,28 @@ class TreeNodeRenderer
 	
 	render: (event, data) =>
 		node = data.node
+		
+		# Operate only on title, not whole node html
+		# This will prevent destroying expanders etc.
 		span = jQuery(node.span).find("> span.fancytree-title")
 		
+		# Use custom render
 		if @renderer and @renderer.render
 			model = finder.find node.data.id
 			@renderer.render(model, span)
 		
+		# Apply icon if applicable
 		if @icon or @folderIcon
+		
+			# Use html here (not node.title) as it might be altered by custom renderer
 			html = span.html()
-			log node
-			if node.children && node.children.length
-				log 'folder'
+			
+			# Check which icon to use
+			if @folderIcon && node.children && node.children.length
 				icon = @folderIcon
 			else
-				log 'leaf'
 				icon = @icon
+			
+			# Add icon tag just before title
+			# This will ensure proper dnd for responsive icon size
 			span.html("<i class='node-title-icon' style='background-image:url(#{icon})'></i> #{html}")

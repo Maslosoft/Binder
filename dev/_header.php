@@ -106,6 +106,34 @@
 		<script type="text/javascript">
 			window.app = {};
 			window.app.model = {};
+			var app = window.app;
+			var body = jQuery('body');
+			var defaultFontSize = false; 
+			window.app.increaseFont = function(){
+				var body = jQuery('body');
+				var fontSize = parseInt(body.css('font-size'));
+				if(!defaultFontSize){
+					defaultFontSize = fontSize;
+				}
+				fontSize++;
+				body.css('font-size', fontSize + 'px');
+			}
+			window.app.decreaseFont = function(){
+				var body = jQuery('body');
+				var fontSize = parseInt(body.css('font-size'));
+				if(!defaultFontSize){
+					defaultFontSize = fontSize;
+				}
+				fontSize--;
+				body.css('font-size', fontSize + 'px');
+			}
+			window.app.resetFont = function(){
+				if(!defaultFontSize){
+					return;
+				}
+				var body = jQuery('body');
+				body.css('font-size', defaultFontSize + 'px');
+			}
 		</script>
 		<?php
 		foreach (new DirectoryIterator(__DIR__) as $file)
