@@ -9,7 +9,6 @@ class @Maslosoft.Ko.BalinDev.TitleRenderer
 		
 
 	render: (node, span) ->
-		console.log node.title
 		description = ''
 		if node.description
 			description = "<em class='text-muted'>#{node.description}</em>"

@@ -13,7 +13,6 @@
 
     TitleRenderer.prototype.render = function(node, span) {
       var description;
-      console.log(node.title);
       description = '';
       if (node.description) {
         description = "<em class='text-muted'>" + node.description + "</em>";

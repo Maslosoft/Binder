@@ -41,12 +41,21 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 			
 		# Node icon and renderer
 		nodeIcon = valueAccessor().nodeIcon or false
+		folderIcon = valueAccessor().folderIcon or false
 		nodeRenderer = valueAccessor().nodeRenderer or false
+		
+		# Folder icon option
+		if folderIcon and not nodeIcon
+			warn "Option `folderIcon` require also `nodeIcon` or it will not work at all"
+		
 		if nodeIcon or nodeRenderer
 			# Disable tree icon, as custom renderer will be used
 			if nodeIcon
 				options.icon = false
-			renderer = new TreeNodeRenderer tree, options, nodeIcon
+			
+			# Renderer instance
+			log folderIcon
+			renderer = new TreeNodeRenderer tree, options, nodeIcon, folderIcon
 			
 			# Custom title renderer
 			if nodeRenderer

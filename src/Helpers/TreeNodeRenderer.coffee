@@ -2,6 +2,8 @@ class TreeNodeRenderer
 
 	icon: ''
 	
+	folderIcon: ''
+	
 	renderer: null
 	
 	#
@@ -11,8 +13,9 @@ class TreeNodeRenderer
 	#
 	finder = null
 
-	constructor: (tree, options, @icon) ->
-		console.log icon
+	constructor: (tree, options, @icon, @folderIcon) ->
+		console.log @icon
+		console.log @folderIcon
 		finder = new TreeNodeFinder tree
 		
 	setRenderer: (@renderer) ->
@@ -27,6 +30,13 @@ class TreeNodeRenderer
 			model = finder.find node.data.id
 			@renderer.render(model, span)
 		
-		if @icon
+		if @icon or @folderIcon
 			html = span.html()
-			span.html("<i class='node-title-icon' style='background-image:url(#{@icon})'></i> #{html}")
+			log node
+			if node.children && node.children.length
+				log 'folder'
+				icon = @folderIcon
+			else
+				log 'leaf'
+				icon = @icon
+			span.html("<i class='node-title-icon' style='background-image:url(#{icon})'></i> #{html}")

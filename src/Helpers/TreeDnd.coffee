@@ -27,7 +27,6 @@ class TreeNodeFinder
 		if typeof(id) is 'undefined'
 			return false
 		if found = cache.get id
-			console.log "Cache hit: #{found.title}"
 			return found
 		if node.id is id
 			return node
@@ -100,7 +99,7 @@ class TreeDnd
 		return true
 
 	dragDrop: (node, data) =>
-		console.log arguments
+		
 		hitMode = data.hitMode
 		parent = finder.find(data.otherNode.parent.data.id)
 		current = finder.find(data.otherNode.data.id)
@@ -126,9 +125,9 @@ class TreeDnd
 
 		# Just push at target end
 		if hitMode is 'over'
-			log hitMode
-			log "Target: #{target.title}"
-			log "Current: #{current.title}"
+			# log hitMode
+			# log "Target: #{target.title}"
+			# log "Current: #{current.title}"
 			target.children.push current
 
 		# Insert before target - at target parent

@@ -659,12 +659,21 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 			
 		# Node icon and renderer
 		nodeIcon = valueAccessor().nodeIcon or false
+		folderIcon = valueAccessor().folderIcon or false
 		nodeRenderer = valueAccessor().nodeRenderer or false
+		
+		# Folder icon option
+		if folderIcon and not nodeIcon
+			warn "Option `folderIcon` require also `nodeIcon` or it will not work at all"
+		
 		if nodeIcon or nodeRenderer
 			# Disable tree icon, as custom renderer will be used
 			if nodeIcon
 				options.icon = false
-			renderer = new TreeNodeRenderer tree, options, nodeIcon
+			
+			# Renderer instance
+			log folderIcon
+			renderer = new TreeNodeRenderer tree, options, nodeIcon, folderIcon
 			
 			# Custom title renderer
 			if nodeRenderer
@@ -1268,7 +1277,6 @@ class TreeNodeFinder
 		if typeof(id) is 'undefined'
 			return false
 		if found = cache.get id
-			console.log "Cache hit: #{found.title}"
 			return found
 		if node.id is id
 			return node
@@ -1341,7 +1349,7 @@ class TreeDnd
 		return true
 
 	dragDrop: (node, data) =>
-		console.log arguments
+		
 		hitMode = data.hitMode
 		parent = finder.find(data.otherNode.parent.data.id)
 		current = finder.find(data.otherNode.data.id)
@@ -1367,9 +1375,9 @@ class TreeDnd
 
 		# Just push at target end
 		if hitMode is 'over'
-			log hitMode
-			log "Target: #{target.title}"
-			log "Current: #{current.title}"
+			# log hitMode
+			# log "Target: #{target.title}"
+			# log "Current: #{current.title}"
 			target.children.push current
 
 		# Insert before target - at target parent
@@ -1476,6 +1484,8 @@ class TreeNodeRenderer
 
 	icon: ''
 	
+	folderIcon: ''
+	
 	renderer: null
 	
 	#
@@ -1485,8 +1495,9 @@ class TreeNodeRenderer
 	#
 	finder = null
 
-	constructor: (tree, options, @icon) ->
-		console.log icon
+	constructor: (tree, options, @icon, @folderIcon) ->
+		console.log @icon
+		console.log @folderIcon
 		finder = new TreeNodeFinder tree
 		
 	setRenderer: (@renderer) ->
@@ -1501,9 +1512,16 @@ class TreeNodeRenderer
 			model = finder.find node.data.id
 			@renderer.render(model, span)
 		
-		if @icon
+		if @icon or @folderIcon
 			html = span.html()
-			span.html("<i class='node-title-icon' style='background-image:url(#{@icon})'></i> #{html}")
+			log node
+			if node.children && node.children.length
+				log 'folder'
+				icon = @folderIcon
+			else
+				log 'leaf'
+				icon = @icon
+			span.html("<i class='node-title-icon' style='background-image:url(#{icon})'></i> #{html}")
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

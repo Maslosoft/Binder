@@ -69,6 +69,7 @@
 			.node-title-icon{
 				width: 1em;
 				height: 1em;
+				margin-top: -.3em;
 				display: inline-block;
 				vertical-align: middle;
 				background-size: contain;

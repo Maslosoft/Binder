@@ -714,7 +714,7 @@
     };
 
     Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var dnd, events, nodeIcon, nodeRenderer, options, renderer, tree;
+      var dnd, events, folderIcon, nodeIcon, nodeRenderer, options, renderer, tree;
       tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
       events = this.getValue(valueAccessor).on || false;
@@ -731,12 +731,17 @@
         options.dnd = new TreeDnd(tree, element);
       }
       nodeIcon = valueAccessor().nodeIcon || false;
+      folderIcon = valueAccessor().folderIcon || false;
       nodeRenderer = valueAccessor().nodeRenderer || false;
+      if (folderIcon && !nodeIcon) {
+        warn("Option `folderIcon` require also `nodeIcon` or it will not work at all");
+      }
       if (nodeIcon || nodeRenderer) {
         if (nodeIcon) {
           options.icon = false;
         }
-        renderer = new TreeNodeRenderer(tree, options, nodeIcon);
+        log(folderIcon);
+        renderer = new TreeNodeRenderer(tree, options, nodeIcon, folderIcon);
         if (nodeRenderer) {
           renderer.setRenderer(new nodeRenderer(tree, options));
         }
@@ -1473,7 +1478,6 @@
         return false;
       }
       if (found = cache.get(id)) {
-        console.log("Cache hit: " + found.title);
         return found;
       }
       if (node.id === id) {
@@ -1553,7 +1557,6 @@
 
     TreeDnd.prototype.dragDrop = function(node, data) {
       var current, handler, hitMode, index, parent, target, targetParent;
-      console.log(arguments);
       hitMode = data.hitMode;
       parent = finder.find(data.otherNode.parent.data.id);
       current = finder.find(data.otherNode.data.id);
@@ -1567,9 +1570,6 @@
         targetParent.children.remove(current);
       }
       if (hitMode === 'over') {
-        log(hitMode);
-        log("Target: " + target.title);
-        log("Current: " + current.title);
         target.children.push(current);
       }
       if (hitMode === 'before') {
@@ -1669,14 +1669,18 @@
 
     TreeNodeRenderer.prototype.icon = '';
 
+    TreeNodeRenderer.prototype.folderIcon = '';
+
     TreeNodeRenderer.prototype.renderer = null;
 
     finder = null;
 
-    function TreeNodeRenderer(tree, options, icon) {
+    function TreeNodeRenderer(tree, options, icon, folderIcon) {
       this.icon = icon;
+      this.folderIcon = folderIcon;
       this.render = __bind(this.render, this);
-      console.log(icon);
+      console.log(this.icon);
+      console.log(this.folderIcon);
       finder = new TreeNodeFinder(tree);
     }
 
@@ -1688,16 +1692,24 @@
     };
 
     TreeNodeRenderer.prototype.render = function(event, data) {
-      var html, model, node, span;
+      var html, icon, model, node, span;
       node = data.node;
       span = jQuery(node.span).find("> span.fancytree-title");
       if (this.renderer && this.renderer.render) {
         model = finder.find(node.data.id);
         this.renderer.render(model, span);
       }
-      if (this.icon) {
+      if (this.icon || this.folderIcon) {
         html = span.html();
-        return span.html("<i class='node-title-icon' style='background-image:url(" + this.icon + ")'></i> " + html);
+        log(node);
+        if (node.children && node.children.length) {
+          log('folder');
+          icon = this.folderIcon;
+        } else {
+          log('leaf');
+          icon = this.icon;
+        }
+        return span.html("<i class='node-title-icon' style='background-image:url(" + icon + ")'></i> " + html);
       }
     };
 
