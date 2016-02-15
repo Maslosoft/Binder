@@ -11,6 +11,10 @@ $text = str_replace('}', '<!---->}', $text);
 	jQuery(document).ready(function() {
 		hljs.configure({languages:['html']});
 		hljs.highlightBlock(document.getElementsByTagName('pre')[0]);
+		
+		jQuery('body').tooltip({
+			selector: '[rel="tooltip"]'
+		});
 	});
 
 </script>

@@ -17,7 +17,7 @@ Fancy tree drag'n'drop example. <br />
 	<a href="javascript: app.decreaseFont();">Decrease</a> /
 	<a href="javascript: app.resetFont();">Reset</a>
 </p>
-<div data-bind="fancytree: {data: app.model.Tree, nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', nodeRenderer: Maslosoft.Ko.BalinDev.TitleRenderer,on:{dblclick:jQuery.noop}, dnd: true, autoExpand: true, options: app.model.options}">
+<div class="fancy-tree"data-bind="fancytree: {data: app.model.Tree, nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', nodeRenderer: Maslosoft.Ko.BalinDev.TitleRenderer,on:{dblclick:jQuery.noop}, dnd: true, autoExpand: true, options: app.model.options}">
 </div>
 <style type="text/css">
 	ul.fancytree-container{
@@ -42,7 +42,8 @@ Fancy tree drag'n'drop example. <br />
 					children: [
 						{
 							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
-							title: "Two"
+							title: "Two",
+							description: "Hover for node tooltip - also added by node renderer"
 						},
 						{
 							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',

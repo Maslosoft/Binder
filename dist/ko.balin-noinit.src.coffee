@@ -1504,6 +1504,14 @@ class TreeNodeRenderer
 	render: (event, data) =>
 		node = data.node
 		
+		# Skip event from child nodes
+		# If not skipped, double icons will appear on folder nodes
+		# TODO Investigate if there is more reliable methos for this
+		for index, val of data
+			if index is 'originalEvent'
+				return
+		
+		
 		# Operate only on title, not whole node html
 		# This will prevent destroying expanders etc.
 		span = jQuery(node.span).find("> span.fancytree-title")

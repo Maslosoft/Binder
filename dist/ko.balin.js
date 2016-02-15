@@ -1689,8 +1689,14 @@
     };
 
     TreeNodeRenderer.prototype.render = function(event, data) {
-      var html, icon, model, node, span;
+      var html, icon, index, model, node, span, val;
       node = data.node;
+      for (index in data) {
+        val = data[index];
+        if (index === 'originalEvent') {
+          return;
+        }
+      }
       span = jQuery(node.span).find("> span.fancytree-title");
       if (this.renderer && this.renderer.render) {
         model = finder.find(node.data.id);

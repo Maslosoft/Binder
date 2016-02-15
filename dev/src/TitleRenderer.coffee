@@ -12,4 +12,7 @@ class @Maslosoft.Ko.BalinDev.TitleRenderer
 		description = ''
 		if node.description
 			description = "<em class='text-muted'>#{node.description}</em>"
-		span.html("<b>#{node.title}</b> #{description} (ID: #{node.id})")
+		span.html("<b>#{node.title}</b> #{description}")
+		span.attr('title', "ID: #{node.id}")
+		span.attr('data-placement', "right")
+		span.attr('rel', 'tooltip')
