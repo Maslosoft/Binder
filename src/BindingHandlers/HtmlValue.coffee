@@ -4,7 +4,11 @@
 #
 class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
+	#
 	# Counter for id generator
+	# @private
+	# @static
+	#
 	idCounter = 0
 	
 	constructor: (options = {}) ->
@@ -14,9 +18,23 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 			# Allow `contenteditable` to get focus
 			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
 
+	#
+	# Get value of element, this can be ovverriden, see TextValue for example.
+	# Will return inner html of element.
+	#
+	# @param jQuery element
+	# @return string
+	#
 	getElementValue: (element) ->
 		return element.innerHTML
 
+	#
+	# Set value of element, this can be ovverriden, see TextValue for example
+	# Value param should be valid html.
+	#
+	# @param jQuery element
+	# @param string
+	#
 	setElementValue: (element, value) ->
 		element.innerHTML = value
 
@@ -28,6 +46,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		if not element.id
 			element.id = "Maslosoft-Ko-Balin-HtmlValue-#{idCounter++}"
 
+		# Handle update immediatelly
 		handler = (e) =>
 		
 			# On some situations element might be null (sorting), ignore this case
@@ -45,12 +64,16 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 				if modelValue isnt elementValue
 #					console.log "Write: #{modelValue} = #{elementValue}"
 					accessor(elementValue)
-
+		
+		# Handle update, but push update to end of queue
+		deferHandler = (e) =>
+			setTimeout handler, 0
+		
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
 		ko.utils.registerEventHandler element, "keyup, input", handler
 
 		# This is to allow interation with tools which could modify content, also to work with drag and drop
-		ko.utils.registerEventHandler document, "mouseup", handler
+		ko.utils.registerEventHandler document, "mouseup", deferHandler
 		return
 
 	update: (element, valueAccessor, allBindings) =>

@@ -88,7 +88,7 @@ class TreeDnd
 				children.push childNode.title
 			log "Children: #{children.join(',')}"
 
-	constructor: (initialTree, element) ->
+	constructor: (initialTree, element, events) ->
 		tree = initialTree
 		finder = new TreeNodeFinder tree
 		el = jQuery element
@@ -100,7 +100,7 @@ class TreeDnd
 		return true
 
 	dragDrop: (node, data) =>
-
+		console.log arguments
 		hitMode = data.hitMode
 		parent = finder.find(data.otherNode.parent.data.id)
 		current = finder.find(data.otherNode.data.id)

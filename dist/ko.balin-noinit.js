@@ -988,7 +988,7 @@
     };
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var handler;
+      var deferHandler, handler;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Balin-HtmlValue-" + (idCounter++);
@@ -1013,8 +1013,13 @@
           }
         };
       })(this);
+      deferHandler = (function(_this) {
+        return function(e) {
+          return setTimeout(handler, 0);
+        };
+      })(this);
       ko.utils.registerEventHandler(element, "keyup, input", handler);
-      ko.utils.registerEventHandler(document, "mouseup", handler);
+      ko.utils.registerEventHandler(document, "mouseup", deferHandler);
     };
 
     HtmlValue.prototype.update = function(element, valueAccessor, allBindings) {
@@ -1492,7 +1497,7 @@
 
     TreeDnd.prototype.autoExpandMS = 400;
 
-    TreeDnd.prototype.focusOnClick = true;
+    TreeDnd.prototype.focusOnClick = false;
 
     TreeDnd.prototype.preventVoidMoves = true;
 
@@ -1519,7 +1524,7 @@
       }
     };
 
-    function TreeDnd(initialTree, element) {
+    function TreeDnd(initialTree, element, events) {
       this.dragDrop = __bind(this.dragDrop, this);
       tree = initialTree;
       finder = new TreeNodeFinder(tree);
@@ -1536,6 +1541,7 @@
 
     TreeDnd.prototype.dragDrop = function(node, data) {
       var current, handler, hitMode, index, parent, target, targetParent;
+      console.log(arguments);
       hitMode = data.hitMode;
       parent = finder.find(data.otherNode.parent.data.id);
       current = finder.find(data.otherNode.data.id);
