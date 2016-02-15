@@ -29,6 +29,7 @@
 		$(document).on('click', '#restoreAction', function(e){
 			if(original){
 				f.html(original);
+				original = '';
 			}
 			stop(e)
 		})
