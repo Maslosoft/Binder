@@ -46,6 +46,44 @@
     return console.error(element);
   };
 
+  if (!Object.keys) {
+    Object.keys = (function() {
+      'use strict';
+      var dontEnums, dontEnumsLength, hasDontEnumBug, hasOwnProperty;
+      hasOwnProperty = Object.prototype.hasOwnProperty;
+      hasDontEnumBug = !{
+        toString: null
+      }.propertyIsEnumerable('toString');
+      dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'];
+      dontEnumsLength = dontEnums.length;
+      return function(obj) {
+        var i, prop, result;
+        if (typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
+          throw new TypeError('Object.keys called on non-object');
+        }
+        result = [];
+        prop = void 0;
+        i = void 0;
+        for (prop in obj) {
+          prop = prop;
+          if (hasOwnProperty.call(obj, prop)) {
+            result.push(prop);
+          }
+        }
+        if (hasDontEnumBug) {
+          i = 0;
+          while (i < dontEnumsLength) {
+            if (hasOwnProperty.call(obj, dontEnums[i])) {
+              result.push(dontEnums[i]);
+            }
+            i++;
+          }
+        }
+        return result;
+      };
+    })();
+  }
+
   if (!this.Maslosoft) {
     this.Maslosoft = {};
   }
