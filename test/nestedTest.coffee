@@ -5,11 +5,8 @@ class Task
 
 
 
-describe 'Task instance', ->
+describe 'TODO', ->
 	it 'should not fail', ->
-		jQuery(document).ready () ->
-			app.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({filename: './images/maslosoft.png'})
-			ko.applyBindings({model: app.model})
 		
 	it 'should have name', ->
 		task = new Task

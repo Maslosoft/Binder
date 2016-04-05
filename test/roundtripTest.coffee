@@ -1,16 +1,20 @@
 
 
-class Task
-	name: 'test'
 
+app.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({filename: 'maslosoft.png'})
+ko.applyBindings({model: app.model})
 
+doRound = () ->
+	json = JSON.stringify app.model
+	res = JSON.parse json
+	for index, model of res
+		app.model[index] = ko.tracker.factory res[index]
 
-describe 'Task instance', ->
+describe 'Test if will allow roundtrip of simple value, using new', ->
 	it 'should not fail', ->
-		jQuery(document).ready () ->
-			app.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({filename: './images/maslosoft.png'})
-			ko.applyBindings({model: app.model})
+		
 		
 	it 'should have name', ->
-		task = new Task
-		task.name.should.equal "test"
+		assert.equal app.model.Src.filename, 'maslosoft.png'
+		doRound()
+		assert.equal app.model.Src.filename, 'maslosoft.png'

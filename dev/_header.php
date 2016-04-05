@@ -84,6 +84,12 @@
 			#mocha{
 				margin: 0;
 			}
+			#mocha-stats{
+				position: static;
+			}
+			#mocha-stats .progress {
+				height:40px;
+			}
 		</style>
 		<?php endif;?>
 
@@ -185,7 +191,11 @@
 	<body>
 		<div class="container-fluid">
 			<nav>
-				<h1><?= basename($_SERVER['SCRIPT_FILENAME'], '.php') ?></h1>
+				<?php if(isset($_GET['test'])):?>
+				<h1><?= ucfirst(htmlspecialchars($_GET['test'])); ?></h1>
+				<?php else:?>
+				<h1><?= ucfirst(basename($_SERVER['SCRIPT_FILENAME'], '.php')); ?></h1>
+				<?php endif;?>
 				<ul>
 					<li class="link">
 						<a href="./index.php">Index</a>

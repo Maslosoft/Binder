@@ -11,17 +11,8 @@
 
   })();
 
-  describe('Task instance', function() {
-    it('should not fail', function() {
-      return jQuery(document).ready(function() {
-        app.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({
-          filename: './images/maslosoft.png'
-        });
-        return ko.applyBindings({
-          model: app.model
-        });
-      });
-    });
+  describe('TODO', function() {
+    it('should not fail', function() {});
     return it('should have name', function() {
       var task;
       task = new Task;
