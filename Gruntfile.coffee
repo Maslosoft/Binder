@@ -23,12 +23,24 @@ bundle = [
 	'bower_components/knockout-sortable/build/knockout-sortable.min.js'
 	'bower_components/knockout.punches/knockout.punches.min.js'
 ]
+bundleDev = [
+	'bower_components/knockout/dist/knockout.debug.js'
+	'bower_components/knockout-es5/dist/knockout-es5.js'
+	'bower_components/knockout-sortable/build/knockout-sortable.js'
+	'bower_components/knockout.punches/knockout.punches.js'
+]
 
 balinBundle = bundle.slice 0
 balinBundle.push 'dist/ko.balin.min.js'
 
+balinDevBundle = bundleDev.slice 0
+balinDevBundle.push 'dist/ko.balin.js'
+
 balinBundleNoinit = bundle.slice 0
 balinBundleNoinit.push 'dist/ko.balin-noinit.min.js'
+
+balinDevBundleNoinit = bundleDev.slice 0
+balinDevBundleNoinit.push 'dist/ko.balin-noinit.js'
 
 module.exports = (grunt) ->
 
@@ -63,9 +75,15 @@ module.exports = (grunt) ->
 			bundle:
 				src: balinBundle
 				dest: 'dist/ko.balin.bundle.min.js'
+			bundleDev:
+				src: balinDevBundle
+				dest: 'dist/ko.balin.bundle.js'
 			bundleNoinit:
 				src: balinBundleNoinit
 				dest: 'dist/ko.balin.bundle-noinit.min.js'
+			bundleDevNoinit:
+				src: balinDevBundleNoinit
+				dest: 'dist/ko.balin.bundle-noinit.js'
 		watch:
 			compile:
 				files: balin
