@@ -13,7 +13,7 @@
     "knockout",
     "knockoutjs",
     "mvvc",
-	 "binding-handlers"
+    "binding-handlers"
   ],
   "license": "MIT",
   "homepage": "http://maslosoft.com/balin/",
@@ -33,10 +33,12 @@
   "devDependencies": {
     "jquery-ui": "~1.11.1",
     "jquery": "~2.1.1",
-    "knockout.punches":"git@github.com:mbest/knockout.punches.git",
+    "knockout.punches": "git@github.com:mbest/knockout.punches.git",
     "knockout-sortable": "~0.8.8",
     "knockout-es5": "git@github.com:Maslosoft/knockout-es5.git",
     "highlightjs": "~8",
-    "bootstrap": "~3"
+    "bootstrap": "~3",
+    "mocha": "^2.4.5",
+    "chai": "^3.5.0"
   }
 }

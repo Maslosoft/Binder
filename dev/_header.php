@@ -78,7 +78,14 @@
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
 		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
-
+		<?php if(isset($mocha)):?>
+		<link rel="stylesheet" href="../bower_components/mocha/mocha.css"/>
+		<style>
+			#mocha{
+				margin: 0;
+			}
+		</style>
+		<?php endif;?>
 
 		<!--jQuery-->
 		<script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
@@ -101,6 +108,10 @@
 		<script type="text/javascript" src="./src/RequiredValidator.js"></script>
 		<script type="text/javascript" src="./src/EmailValidator.js"></script>
 		<script type="text/javascript" src="./src/TitleRenderer.js"></script>
+		<?php if(isset($mocha)):?>
+		<script type="text/javascript" src="../bower_components/mocha/mocha.js"></script>
+		<script type="text/javascript" src="../bower_components/chai/chai.js"></script>
+		<?php endif;?>
 
 
 		<script type="text/javascript">
@@ -159,8 +170,16 @@
 				$simple[$file->getFilename()] = substr($file->getFilename(), 0, -4);
 			}
 		}
+		foreach (new DirectoryIterator(__DIR__ . '/../test') as $file)
+		{
+			if(preg_match('~Test\.js~', $file->getFilename()))
+			{
+				$test[$file->getFilename()] = basename($file->getFilename(), '.js');
+			}
+		}
 		ksort($simple);
 		ksort($combined);
+		ksort($test);
 		?>
 	</head>
 	<body>
@@ -185,6 +204,17 @@
 					<?php foreach ($combined as $file => $name): ?>
 						<li class="link">
 							<a href="./<?= $file; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
+						</li>
+					<?php endforeach; ?>
+					<li class="link">
+						|
+					</li>
+					<li class="link">
+							Tests:
+					</li>
+					<?php foreach ($test as $file => $name): ?>
+						<li class="link">
+							<a href="./runTest.php?test=<?= $name; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
 						</li>
 					<?php endforeach; ?>
 				</ul>
