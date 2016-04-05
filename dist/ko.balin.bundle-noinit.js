@@ -7691,6 +7691,8 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     })();
   }
 
+  "use strict";
+
   if (!this.Maslosoft) {
     this.Maslosoft = {};
   }
@@ -9496,7 +9498,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         } else {
           this[name] = ko.tracker.factory(value);
         }
-        if (typeof this[name] === 'object' && this[name].constructor !== Array) {
+        if (this[name] && typeof this[name] === 'object' && this[name].constructor !== Array) {
           this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
       }

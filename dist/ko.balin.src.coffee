@@ -52,6 +52,7 @@ if !Object.keys
           i++
       result
 
+"use strict"
 if not @Maslosoft
 	@Maslosoft = {}
 if not @Maslosoft.Ko
@@ -1659,7 +1660,7 @@ class ModelProxyHandler
 class @Maslosoft.Ko.Balin.Model
 
 	constructor: (data = null) ->
-		
+
 		# Reassign here is required - when using model with values from class prototype only
 		for name, value of @
 
@@ -1669,7 +1670,7 @@ class @Maslosoft.Ko.Balin.Model
 				@[name] = ko.tracker.factory(value)
 
 			# Extra track of dynamic object properties
-			if typeof(@[name]) is 'object' and @[name].constructor isnt Array
+			if @[name] and typeof(@[name]) is 'object' and @[name].constructor isnt Array
 				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
 		ko.track(@)

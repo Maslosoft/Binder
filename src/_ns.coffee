@@ -1,3 +1,4 @@
+"use strict"
 if not @Maslosoft
 	@Maslosoft = {}
 if not @Maslosoft.Ko

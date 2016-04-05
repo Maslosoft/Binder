@@ -84,6 +84,8 @@
     })();
   }
 
+  "use strict";
+
   if (!this.Maslosoft) {
     this.Maslosoft = {};
   }
@@ -1889,7 +1891,7 @@
         } else {
           this[name] = ko.tracker.factory(value);
         }
-        if (typeof this[name] === 'object' && this[name].constructor !== Array) {
+        if (this[name] && typeof this[name] === 'object' && this[name].constructor !== Array) {
           this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
       }
