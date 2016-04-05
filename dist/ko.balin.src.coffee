@@ -17,6 +17,7 @@ error = (expr, element = null) ->
 	console.error expr
 	if element is null then return
 	console.error element
+
 # from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if !Object.keys
   Object.keys = do ->

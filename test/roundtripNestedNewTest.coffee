@@ -1,35 +1,31 @@
 
 
+sortable = new Maslosoft.Ko.BalinDev.Models.SortableHtmlValues
+sortable.title = 'Names Collection'
+item1 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+item1.text = 'Frank'
+sortable.items.push item1
 
-data = {
-		'sortable':{
-			title: 'Names Collection',
-			_class: 'Maslosoft.Ko.BalinDev.Models.SortableHtmlValues',
-			items: [
-				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
-					text: 'Frank'
-				},
-				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
-					text: 'Sara'
-				},
-				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
-					text: 'John'
-				},
-				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
-					text: 'Anna'
-				},
-				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
-					text: 'Joseph'
-				}
-			]
-		}
-	};
-app.model = ko.tracker.factory data
+item2 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+item2.text = 'Sara'
+sortable.items.push item2
+
+item3 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+item3.text = 'John'
+sortable.items.push item3
+
+item4 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+item4.text = 'Anna'
+sortable.items.push item4
+
+item5 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+item5.text = 'Joseph'
+sortable.items.push item5
+
+app.model.sortable = sortable
+
+ko.track app.model
+
 ko.applyBindings({model: app.model})
 
 doRound = () ->
@@ -39,9 +35,11 @@ doRound = () ->
 	for index, model of res
 		app.model[index] = ko.tracker.factory res[index]
 
-elem = jQuery('#roundtripNestedTest')
+	console.log app.model
 
-describe 'Test if will allow roundtrip of nested arrays, using ko.tracker.factory', ->
+elem = jQuery('#roundtripNestedNewTest')
+
+describe 'Test if will allow roundtrip of nested arrays, using new', ->
 	it 'should not fail', ->
 
 
@@ -72,9 +70,7 @@ describe 'Test if will allow roundtrip of nested arrays, using ko.tracker.factor
 
 		assert.equal model.items.length, 5, 'That one element was added'
 		assert.equal elem.find('div').length, 5, 'That DOM elements are 5 too'
-
 		doRound()
-
 
 		assert.equal model.items[4].text, 'new', 'That last item is `new`'
 		assert.equal model.items.length, 5, 'That one element remains added'

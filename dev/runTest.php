@@ -18,6 +18,7 @@ var assert = chai.assert;
 mocha.setup('bdd')
 </script>
 <?php if(isset($_GET['test'])):?>
+	<?php @include sprintf('../test/%s.php', htmlspecialchars(basename($_GET['test'])));?>
 	<script src="../test/<?= htmlspecialchars($_GET['test'])?>.js"></script>
 <?php else:?>
 	<?php foreach($test as $script => $name):?>
