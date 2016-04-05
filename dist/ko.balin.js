@@ -1,5 +1,5 @@
 (function() {
-  var Handler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, assert, error, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1835,38 +1835,44 @@
 
   ko.tracker = new this.Maslosoft.Ko.Track;
 
-  Handler = (function() {
-    function Handler(parent, field) {
+  if (!window.Proxy) {
+    console.warn('Your browser does not support Proxy, will not work properly in some cases...');
+    window.Proxy = (function() {
+      function Proxy() {}
+
+      return Proxy;
+
+    })();
+  }
+
+  ModelProxyHandler = (function() {
+    function ModelProxyHandler(parent, field) {
       this.parent = parent;
       this.field = field;
     }
 
-    Handler.prototype.get = function(target, name, receiver) {
+    ModelProxyHandler.prototype.get = function(target, name, receiver) {
       return target[name];
     };
 
-    Handler.prototype.set = function(target, name, value, receiver) {
+    ModelProxyHandler.prototype.set = function(target, name, value, receiver) {
       var after, before;
       before = Object.keys(target).length;
       target[name] = value;
       after = Object.keys(target).length;
       if (before !== after) {
-        this.parent[this.field] = ko.tracker.factory(this.parent[this.field]);
+        ko.valueHasMutated(this.parent, this.field);
       }
       return true;
     };
 
-    Handler.prototype.deleteProperty = function(target, name) {
-      log(target);
-      log("Delete property " + name);
+    ModelProxyHandler.prototype.deleteProperty = function(target, name) {
       delete target[name];
-      log(target);
-      this.parent[this.field] = ko.tracker.factory(this.parent[this.field]);
       ko.valueHasMutated(this.parent, this.field);
       return true;
     };
 
-    return Handler;
+    return ModelProxyHandler;
 
   })();
 
@@ -1884,8 +1890,7 @@
           this[name] = ko.tracker.factory(value);
         }
         if (typeof this[name] === 'object' && this[name].constructor !== Array) {
-          log("Proxy " + name);
-          this[name] = new Proxy(this[name], new Handler(this, name));
+          this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
       }
       ko.track(this);

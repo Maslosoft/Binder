@@ -25,6 +25,7 @@ elem = jQuery('#dynamicPropertiesTest')
 describe 'Test if will allow use of dynamic properties and do round-trip', ->
 
 	it 'if will allow adding element', ->
+		settings = app.model.settings
 		assert.equal Object.keys(settings.lang).length, 2
 		settings.lang.fr = 'Francaise'
 		settings.lang.de = 'Deutch'
@@ -36,13 +37,19 @@ describe 'Test if will allow use of dynamic properties and do round-trip', ->
 		assert.equal elem.find('div').length, 4, 'That DOM elements are 4 after round trip'
 
 	it 'if will allow removing element', ->
+		settings = app.model.settings
 		assert.equal Object.keys(settings.lang).length, 4
+
 		delete settings.lang.fr
 		delete settings.lang.de
 		delete settings.lang.pl
+
+
+		settings.lang.en = 'foo'
 
 		assert.equal Object.keys(settings.lang).length, 1
 		assert.equal elem.find('div').length, 1, 'That DOM elements are 1 before round trip'
 		doRound()
 		assert.equal Object.keys(settings.lang).length, 1, 'That there are now 1 languages'
 		assert.equal elem.find('div').length, 1, 'That DOM elements are 1 after round trip'
+		assert.equal elem.find('div')[0].innerHTML, 'foo', 'That DOM elements is changed to foo'
