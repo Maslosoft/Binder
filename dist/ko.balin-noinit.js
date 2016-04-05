@@ -1,5 +1,5 @@
 (function() {
-  var TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, assert, error, log, warn,
+  var Handler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -45,6 +45,44 @@
     }
     return console.error(element);
   };
+
+  if (!Object.keys) {
+    Object.keys = (function() {
+      'use strict';
+      var dontEnums, dontEnumsLength, hasDontEnumBug, hasOwnProperty;
+      hasOwnProperty = Object.prototype.hasOwnProperty;
+      hasDontEnumBug = !{
+        toString: null
+      }.propertyIsEnumerable('toString');
+      dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'];
+      dontEnumsLength = dontEnums.length;
+      return function(obj) {
+        var i, prop, result;
+        if (typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
+          throw new TypeError('Object.keys called on non-object');
+        }
+        result = [];
+        prop = void 0;
+        i = void 0;
+        for (prop in obj) {
+          prop = prop;
+          if (hasOwnProperty.call(obj, prop)) {
+            result.push(prop);
+          }
+        }
+        if (hasDontEnumBug) {
+          i = 0;
+          while (i < dontEnumsLength) {
+            if (hasOwnProperty.call(obj, dontEnums[i])) {
+              result.push(dontEnums[i]);
+            }
+            i++;
+          }
+        }
+        return result;
+      };
+    })();
+  }
 
   if (!this.Maslosoft) {
     this.Maslosoft = {};
@@ -1797,6 +1835,40 @@
 
   ko.tracker = new this.Maslosoft.Ko.Track;
 
+  Handler = (function() {
+    function Handler(parent, field) {
+      this.parent = parent;
+      this.field = field;
+    }
+
+    Handler.prototype.get = function(target, name, receiver) {
+      return target[name];
+    };
+
+    Handler.prototype.set = function(target, name, value, receiver) {
+      var after, before;
+      before = Object.keys(target).length;
+      target[name] = value;
+      after = Object.keys(target).length;
+      if (before !== after) {
+        this.parent[this.field] = ko.tracker.factory(this.parent[this.field]);
+      }
+      return true;
+    };
+
+    Handler.prototype.deleteProperty = function(target, name) {
+      log(target);
+      log("Delete property " + name);
+      delete target[name];
+      log(target);
+      this.parent[this.field] = ko.tracker.factory(this.parent[this.field]);
+      return true;
+    };
+
+    return Handler;
+
+  })();
+
   this.Maslosoft.Ko.Balin.Model = (function() {
     function Model(data) {
       var name, value;
@@ -1811,6 +1883,7 @@
           this[name] = ko.tracker.factory(value);
         }
       }
+      this.lang = new Proxy(this.lang, new Handler(this, 'lang'));
       ko.track(this);
     }
 

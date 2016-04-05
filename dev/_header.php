@@ -100,7 +100,7 @@
 		<!--ko-->
 		<script type="text/javascript" src="../bower_components/knockout/dist/knockout.debug.js"></script>
 		<script type="text/javascript" src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
-		<script type="text/javascript" src="../bower_components/knockout-es5/dist/knockout-es5.min.js"></script>
+		<script type="text/javascript" src="../bower_components/knockout-es5/dist/knockout-es5.js"></script>
 		<script type="text/javascript" src="../bower_components/knockout.punches/knockout.punches.min.js"></script>
 		<script type="text/javascript" src="../dist/ko.balin.js"></script>
 
@@ -125,7 +125,7 @@
 			window.app.model = {};
 			var app = window.app;
 			var body = jQuery('body');
-			var defaultFontSize = false; 
+			var defaultFontSize = false;
 			window.app.increaseFont = function(){
 				var body = jQuery('body');
 				var fontSize = parseInt(body.css('font-size'));

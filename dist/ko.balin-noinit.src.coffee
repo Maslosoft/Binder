@@ -18,6 +18,40 @@ error = (expr, element = null) ->
 	if element is null then return
 	console.error element
 
+# from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+if !Object.keys
+  Object.keys = do ->
+    'use strict'
+    hasOwnProperty = Object::hasOwnProperty
+    hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString')
+    dontEnums = [
+      'toString'
+      'toLocaleString'
+      'valueOf'
+      'hasOwnProperty'
+      'isPrototypeOf'
+      'propertyIsEnumerable'
+      'constructor'
+    ]
+    dontEnumsLength = dontEnums.length
+    (obj) ->
+      if typeof obj != 'object' and (typeof obj != 'function' or obj == null)
+        throw new TypeError('Object.keys called on non-object')
+      result = []
+      prop = undefined
+      i = undefined
+      for prop of obj
+        `prop = prop`
+        if hasOwnProperty.call(obj, prop)
+          result.push prop
+      if hasDontEnumBug
+        i = 0
+        while i < dontEnumsLength
+          if hasOwnProperty.call(obj, dontEnums[i])
+            result.push dontEnums[i]
+          i++
+      result
+
 if not @Maslosoft
 	@Maslosoft = {}
 if not @Maslosoft.Ko
@@ -1595,6 +1629,32 @@ ko.tracker = new @Maslosoft.Ko.Track
 #
 # Model class with automatically applied knockout bindings
 #
+class Handler
+	constructor: (@parent, @field) ->
+
+	get: (target, name, receiver) ->
+
+		return target[name]
+	set: (target, name, value, receiver) ->
+		# console.log Object.keys(target[name]).length
+		before = Object.keys(target).length
+		target[name] = value
+		after = Object.keys(target).length
+		if before isnt after
+			# ko.track receiver
+			@parent[@field] = ko.tracker.factory(@parent[@field])
+			# console.log receiver
+			# console.log "New key #{name}"
+		return true
+
+	deleteProperty: (target, name) ->
+		log target
+		log "Delete property #{name}"
+		delete target[name]
+		log target
+		@parent[@field] = ko.tracker.factory(@parent[@field])
+		return true
+
 class @Maslosoft.Ko.Balin.Model
 
 	constructor: (data = null) ->
@@ -1605,5 +1665,6 @@ class @Maslosoft.Ko.Balin.Model
 				@[name] = ko.tracker.factory(data[name])
 			else
 				@[name] = ko.tracker.factory(value)
+		@lang = new Proxy(@lang, new Handler(@, 'lang'))
 
 		ko.track(@)
