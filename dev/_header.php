@@ -153,6 +153,18 @@
 			}
 		</script>
 		<?php
+
+		// Include autoload
+		$alPath = realpath(__DIR__ . '/../vendor/autoload.php');
+		if(file_exists($alPath))
+		{
+			require_once $alPath;
+		}
+
+
+		$simple = [];
+		$combined = [];
+		$test = [];
 		foreach (new DirectoryIterator(__DIR__) as $file)
 		{
 			if (strpos($file->getFilename(), '_') === 0)
@@ -164,6 +176,10 @@
 				continue;
 			}
 			if ($file->getExtension() != 'php')
+			{
+				continue;
+			}
+			if(preg_match('~Test\.php~', $file->getFilename()))
 			{
 				continue;
 			}
@@ -211,7 +227,7 @@
 					<li class="link">
 						|
 					</li>
-					<?php foreach ($combined as $file => $name): ?>
+					<?php foreach ((array)$combined as $file => $name): ?>
 						<li class="link">
 							<a href="./<?= $file; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
 						</li>
