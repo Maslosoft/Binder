@@ -13,6 +13,9 @@ Time ago:
 <div data-bind="timeAgoFormatter: app.model.DateTime.date"></div>
 Locale date time
 <div data-bind="localeDateTime: app.model.DateTime.date"></div>
+Locale date time with ko punches
+<div localeDateTime="{{app.model.DateTime.date}}"></div>
+
 
 <script>
 	jQuery(document).ready(function () {

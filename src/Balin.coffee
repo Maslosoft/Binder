@@ -7,6 +7,12 @@
 
 	ko.bindingHandlers[name] = handler
 
+	# Lower-case version of binding handler for punches
+	name2 = false
+	if name.match /[A-Z]/
+		name2 = name.toLowerCase()
+		ko.bindingHandlers[name2] = handler
+
 	#Reassign options
 	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
 
@@ -14,6 +20,8 @@
 	if handler.writable
 		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
 			ko.expressionRewriting.twoWayBindings[name] = true
+			if name2
+				ko.expressionRewriting.twoWayBindings[name2] = true
 
 #
 # Register default set of binding handlers, or part of default set

@@ -103,10 +103,19 @@
   }
 
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
+    var name2;
     ko.bindingHandlers[name] = handler;
+    name2 = false;
+    if (name.match(/[A-Z]/)) {
+      name2 = name.toLowerCase();
+      ko.bindingHandlers[name2] = handler;
+    }
     if (handler.writable) {
       if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
-        return ko.expressionRewriting.twoWayBindings[name] = true;
+        ko.expressionRewriting.twoWayBindings[name] = true;
+        if (name2) {
+          return ko.expressionRewriting.twoWayBindings[name2] = true;
+        }
       }
     }
   };
