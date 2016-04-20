@@ -9507,7 +9507,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         } else {
           this[name] = ko.tracker.factory(value);
         }
-        if (this[name] && typeof this[name] === 'object' && this[name].constructor !== Array) {
+        if (this[name] && typeof this[name] === 'object' && this[name].constructor !== Array && this[name].constructor === Object) {
           this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
       }
