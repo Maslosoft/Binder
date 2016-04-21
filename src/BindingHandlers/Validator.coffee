@@ -59,6 +59,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
 				if errors and messages
+					# Clear previous errors first
+					errors.innerHTML = ''
 					errors.innerHTML = messages.join '<br />'
 			return false
 

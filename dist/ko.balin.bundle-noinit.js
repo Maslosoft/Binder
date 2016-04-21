@@ -9206,6 +9206,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
           }
           if (errors && messages) {
+            errors.innerHTML = '';
             errors.innerHTML = messages.join('<br />');
           }
         }
