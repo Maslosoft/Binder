@@ -17,6 +17,10 @@ class @Maslosoft.Ko.Balin.BaseValidator
 			@[index] = null
 			@[index] = value
 
+	reset: () ->
+		@messages = new Array
+		@rawMessages = new Object
+
 	isValid:() ->
 		throw new Error('Validator must implement `isValid` method')
 

@@ -377,6 +377,10 @@ class @Maslosoft.Ko.Balin.BaseValidator
 			@[index] = null
 			@[index] = value
 
+	reset: () ->
+		@messages = new Array
+		@rawMessages = new Object
+
 	isValid:() ->
 		throw new Error('Validator must implement `isValid` method')
 
@@ -1172,6 +1176,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 		errors = parent.querySelector @options.errorMessages
 		messages = new Array
+		validator.reset()
 		if validator.isValid(value)
 			# Apply input error styles as needed
 			if @options.inputError
@@ -1205,8 +1210,6 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 				if @options.parentSuccess
 					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
 				if errors and messages
-					# Clear previous errors first
-					errors.innerHTML = ''
 					errors.innerHTML = messages.join '<br />'
 			return false
 
@@ -1233,7 +1236,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 			proto = config[classField].prototype
 
-			if typeof(proto.isValid) isnt 'function' or typeof(proto.getErrors) isnt 'function'
+			if typeof(proto.isValid) isnt 'function' or typeof(proto.getErrors) isnt 'function' or typeof(proto.reset) isnt 'function'
 				if typeof(config[classField].prototype.constructor) is 'function'
 					name = config[classField].prototype.constructor.name
 				else

@@ -8231,6 +8231,11 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       }
     }
 
+    BaseValidator.prototype.reset = function() {
+      this.messages = new Array;
+      return this.rawMessages = new Object;
+    };
+
     BaseValidator.prototype.isValid = function() {
       throw new Error('Validator must implement `isValid` method');
     };
@@ -9171,6 +9176,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       parent = element.parentElement;
       errors = parent.querySelector(this.options.errorMessages);
       messages = new Array;
+      validator.reset();
       if (validator.isValid(value)) {
         if (this.options.inputError) {
           ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
@@ -9206,7 +9212,6 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
           }
           if (errors && messages) {
-            errors.innerHTML = '';
             errors.innerHTML = messages.join('<br />');
           }
         }
@@ -9235,7 +9240,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           continue;
         }
         proto = config[classField].prototype;
-        if (typeof proto.isValid !== 'function' || typeof proto.getErrors !== 'function') {
+        if (typeof proto.isValid !== 'function' || typeof proto.getErrors !== 'function' || typeof proto.reset !== 'function') {
           if (typeof config[classField].prototype.constructor === 'function') {
             name = config[classField].prototype.constructor.name;
           } else {
