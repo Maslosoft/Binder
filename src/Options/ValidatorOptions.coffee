@@ -24,6 +24,20 @@ class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 	parentError: 'has-error'
 
 	#
+	# Warning validation class name.
+	# This class will be added to input if validation has warnings.
+	# @var string
+	#
+	inputWarning: 'warning'
+
+	#
+	# Warning validation parent class name.
+	# This class will be added to parent of input if validation has warnings.
+	# @var string
+	#
+	parentWarning: 'has-warning'
+
+	#
 	# Succeed validation class name.
 	# This class will be added to input if validation succeds.
 	# @var string
@@ -42,3 +56,10 @@ class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 	# @var string
 	#
 	errorMessages: '.error-messages'
+
+	#
+	# Selector for warning messages. Will scope from input parent.
+	# @var string
+	#
+	warningMessages: '.warning-messages'
+

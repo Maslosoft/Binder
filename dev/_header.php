@@ -53,6 +53,9 @@
 			b.warn {
 				color: #cc0000;
 			}
+			.warning{
+				color: #8a6d3b !important;
+			}
 			.error{
 				color:#a94442 !important;
 			}
@@ -61,6 +64,13 @@
 			}
 			.error-messages{
 				color:#a94442 !important;
+				font-size: .8em;
+				font-weight: bold;
+				font-style: italic;
+				margin: .5em;
+			}
+			.warning-messages{
+				color:#8a6d3b !important;
 				font-size: .8em;
 				font-weight: bold;
 				font-style: italic;

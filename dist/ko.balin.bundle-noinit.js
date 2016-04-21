@@ -8201,11 +8201,17 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     ValidatorOptions.prototype.parentError = 'has-error';
 
+    ValidatorOptions.prototype.inputWarning = 'warning';
+
+    ValidatorOptions.prototype.parentWarning = 'has-warning';
+
     ValidatorOptions.prototype.inputSuccess = 'success';
 
     ValidatorOptions.prototype.parentSuccess = 'has-success';
 
     ValidatorOptions.prototype.errorMessages = '.error-messages';
+
+    ValidatorOptions.prototype.warningMessages = '.warning-messages';
 
     return ValidatorOptions;
 
@@ -8220,10 +8226,13 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     BaseValidator.prototype.rawMessages = [];
 
+    BaseValidator.prototype.warningMessages = [];
+
+    BaseValidator.prototype.rawWarningMessages = [];
+
     function BaseValidator(config) {
       var index, value;
-      this.messages = new Array;
-      this.rawMessages = new Object;
+      this.reset();
       for (index in config) {
         value = config[index];
         this[index] = null;
@@ -8233,7 +8242,9 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     BaseValidator.prototype.reset = function() {
       this.messages = new Array;
-      return this.rawMessages = new Object;
+      this.rawMessages = new Object;
+      this.warningMessages = new Array;
+      return this.rawWarningMessages = new Object;
     };
 
     BaseValidator.prototype.isValid = function() {
@@ -8242,6 +8253,10 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     BaseValidator.prototype.getErrors = function() {
       return this.messages;
+    };
+
+    BaseValidator.prototype.getWarnings = function() {
+      return this.warningMessages;
     };
 
     BaseValidator.prototype.addError = function(errorMessage, params) {
@@ -8264,6 +8279,29 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       if (!this.rawMessages[rawMessage]) {
         this.messages.push(errorMessage);
         return this.rawMessages[rawMessage] = true;
+      }
+    };
+
+    BaseValidator.prototype.addWarning = function(warningMessage, params) {
+      var name, rawMessage, value, _ref;
+      rawMessage = warningMessage;
+      warningMessage = warningMessage.replace("{attribute}", this.label);
+      for (name in this) {
+        value = this[name];
+        warningMessage = warningMessage.replace("{" + name + "}", value);
+      }
+      for (name in params) {
+        value = params[name];
+        warningMessage = warningMessage.replace("{" + name + "}", value);
+      }
+      _ref = this.model;
+      for (name in _ref) {
+        value = _ref[name];
+        warningMessage = warningMessage.replace("{" + name + "}", value);
+      }
+      if (!this.rawWarningMessages[rawMessage]) {
+        this.warningMessages.push(warningMessage);
+        return this.rawWarningMessages[rawMessage] = true;
       }
     };
 
@@ -9172,11 +9210,13 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     };
 
     Validator.prototype.validate = function(validator, element, value) {
-      var errors, messages, parent;
+      var errors, isValid, messages, parent, warnings;
       parent = element.parentElement;
       errors = parent.querySelector(this.options.errorMessages);
+      warnings = parent.querySelector(this.options.warningMessages);
       messages = new Array;
       validator.reset();
+      isValid = false;
       if (validator.isValid(value)) {
         if (this.options.inputError) {
           ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
@@ -9191,11 +9231,11 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           if (this.options.parentSuccess) {
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
           }
-          if (errors) {
-            errors.innerHTML = '';
-          }
         }
-        return true;
+        if (errors) {
+          errors.innerHTML = '';
+        }
+        isValid = true;
       } else {
         messages = validator.getErrors();
         if (this.options.inputError) {
@@ -9211,12 +9251,55 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           if (this.options.parentSuccess) {
             ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
           }
-          if (errors && messages) {
-            errors.innerHTML = messages.join('<br />');
+        }
+        if (errors && messages) {
+          errors.innerHTML = messages.join('<br />');
+        }
+        isValid = false;
+      }
+      log(validator.getWarnings(), warnings, isValid);
+      if (typeof validator.getWarnings === 'function' && warnings && isValid) {
+        messages = validator.getWarnings();
+        console.log(messages);
+        if (messages) {
+          if (this.options.inputWarning) {
+            ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
+          }
+          if (this.options.inputSuccess) {
+            ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
+          }
+          if (parent) {
+            if (this.options.parentWarning) {
+              ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, true);
+            }
+            if (this.options.parentSuccess) {
+              ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
+            }
+          }
+          if (warnings && messages) {
+            warnings.innerHTML = messages.join('<br />');
+          }
+        } else {
+          if (this.options.inputWarning) {
+            ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, false);
+          }
+          if (this.options.inputSuccess) {
+            ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
+          }
+          if (parent) {
+            if (this.options.parentWarning) {
+              ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, false);
+            }
+            if (this.options.parentSuccess) {
+              ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
+            }
+          }
+          if (warnings) {
+            warnings.innerHTML = messages.join('<br />');
           }
         }
-        return false;
       }
+      return isValid;
     };
 
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
