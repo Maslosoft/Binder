@@ -1,3 +1,5 @@
+"use strict"
+
 assert = (expr) ->
 	if not console then return
 	console.assert.apply console, arguments
