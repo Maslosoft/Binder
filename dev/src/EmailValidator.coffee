@@ -16,7 +16,7 @@ class @Maslosoft.Ko.BalinDev.EmailValidator extends @Maslosoft.Ko.Balin.BaseVali
 		# Example warning
 		if value.match(/com/)
 			console.log 'warn...'
-			@addWarning "This domain freqently rejected our e-mail, please add admin@example.com to your whitelist"
+			@addWarning "This domain is frequently rejected our e-mail, please add admin@example.com to your whitelist"
 
 		regexp = new RegExp @pattern, @flags
 		valid = regexp.test(value)

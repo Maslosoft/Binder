@@ -325,6 +325,12 @@ class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 	classField: '_class'
 
 	#
+	# CSS selector to find parent element
+	# @var string
+	#
+	parentSelector: '.form-group'
+
+	#
 	# Failed validation class name.
 	# This class will be added to input if validation fails.
 	# @var string
@@ -1249,7 +1255,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 	# validate a.k.a ifs mess
 	validate: (validator, element, value) =>
-		parent = element.parentElement
+		parent = jQuery(element).parents('.form-group')[0]
 
 		errors = parent.querySelector @options.errorMessages
 		warnings = parent.querySelector @options.warningMessages

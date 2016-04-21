@@ -8197,6 +8197,8 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     ValidatorOptions.prototype.classField = '_class';
 
+    ValidatorOptions.prototype.parentSelector = '.form-group';
+
     ValidatorOptions.prototype.inputError = 'error';
 
     ValidatorOptions.prototype.parentError = 'has-error';
@@ -9211,7 +9213,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     Validator.prototype.validate = function(validator, element, value) {
       var errors, isValid, messages, parent, warnings;
-      parent = element.parentElement;
+      parent = jQuery(element).parents('.form-group')[0];
       errors = parent.querySelector(this.options.errorMessages);
       warnings = parent.querySelector(this.options.warningMessages);
       messages = new Array;
