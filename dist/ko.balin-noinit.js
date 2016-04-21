@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, assert, error, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1366,8 +1366,6 @@
     function Validator(options) {
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
-      this.advise = __bind(this.advise, this);
-      this.validate = __bind(this.validate, this);
       Validator.__super__.constructor.call(this, new Maslosoft.Ko.Balin.ValidatorOptions());
     }
 
@@ -1381,97 +1379,8 @@
       return element.textContent || element.innerText || "";
     };
 
-    Validator.prototype.validate = function(validator, element, value) {
-      var errors, isValid, messages, parent, warnings;
-      parent = jQuery(element).parents('.form-group')[0];
-      errors = parent.querySelector(this.options.errorMessages);
-      warnings = parent.querySelector(this.options.warningMessages);
-      messages = new Array;
-      validator.reset();
-      isValid = false;
-      if (validator.isValid(value)) {
-        if (this.options.inputError) {
-          ko.utils.toggleDomNodeCssClass(element, this.options.inputError, false);
-        }
-        if (this.options.inputSuccess) {
-          ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
-        }
-        if (parent) {
-          if (this.options.parentError) {
-            ko.utils.toggleDomNodeCssClass(parent, this.options.parentError, false);
-          }
-          if (this.options.parentSuccess) {
-            ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
-          }
-        }
-        if (errors) {
-          errors.innerHTML = '';
-        }
-        isValid = true;
-      } else {
-        messages = validator.getErrors();
-        if (this.options.inputError) {
-          ko.utils.toggleDomNodeCssClass(element, this.options.inputError, true);
-        }
-        if (this.options.inputSuccess) {
-          ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
-        }
-        if (parent) {
-          if (this.options.parentError) {
-            ko.utils.toggleDomNodeCssClass(parent, this.options.parentError, true);
-          }
-          if (this.options.parentSuccess) {
-            ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
-          }
-        }
-        if (errors && messages) {
-          errors.innerHTML = messages.join('<br />');
-        }
-        isValid = false;
-      }
-      if (this.options.inputWarning) {
-        ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, false);
-      }
-      if (parent) {
-        if (this.options.parentWarning) {
-          ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, false);
-        }
-      }
-      if (warnings) {
-        warnings.innerHTML = '';
-      }
-      return isValid;
-    };
-
-    Validator.prototype.advise = function(validator, element, value) {
-      var errors, messages, parent, warnings;
-      parent = jQuery(element).parents('.form-group')[0];
-      errors = parent.querySelector(this.options.errorMessages);
-      warnings = parent.querySelector(this.options.warningMessages);
-      messages = validator.getWarnings();
-      if (messages.length) {
-        if (this.options.inputWarning) {
-          ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
-        }
-        if (this.options.inputSuccess) {
-          ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
-        }
-        if (parent) {
-          if (this.options.parentWarning) {
-            ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, true);
-          }
-          if (this.options.parentSuccess) {
-            ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
-          }
-        }
-        if (warnings) {
-          return warnings.innerHTML = messages.join('<br />');
-        }
-      }
-    };
-
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var cfg, classField, className, config, configuration, handler, initialVal, name, proto, validators, _i, _len;
+      var cfg, classField, className, config, configuration, handler, initialVal, manager, name, proto, validators, _i, _len;
       configuration = this.getValue(valueAccessor);
       validators = new Array;
       classField = this.options.classField;
@@ -1504,13 +1413,14 @@
         delete config[classField];
         validators.push(new className(config));
       }
+      manager = new ValidationManager(validators, this.options);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Balin-Validator-" + (idCounter++);
       }
       initialVal = this.getElementValue(element);
       handler = (function(_this) {
         return function(e) {
-          var elementValue, validator, _j, _k, _len1, _len2, _results;
+          var elementValue;
           if (!element) {
             return;
           }
@@ -1521,22 +1431,7 @@
           elementValue = _this.getElementValue(element);
           if (initialVal !== elementValue) {
             initialVal = elementValue;
-            for (_j = 0, _len1 = validators.length; _j < _len1; _j++) {
-              validator = validators[_j];
-              if (!_this.validate(validator, element, elementValue)) {
-                return;
-              }
-            }
-            _results = [];
-            for (_k = 0, _len2 = validators.length; _k < _len2; _k++) {
-              validator = validators[_k];
-              if (typeof validator.getWarnings === 'function') {
-                _results.push(_this.advise(validator, element, elementValue));
-              } else {
-                _results.push(void 0);
-              }
-            }
-            return _results;
+            return manager.validate(element, elementValue);
           }
         };
       })(this);
@@ -1867,6 +1762,152 @@
     };
 
     return TreeNodeRenderer;
+
+  })();
+
+  ValidationManager = (function() {
+    var toggle;
+
+    ValidationManager.prototype.element = null;
+
+    ValidationManager.prototype.parent = null;
+
+    ValidationManager.prototype.errors = null;
+
+    ValidationManager.prototype.warnings = null;
+
+    toggle = ko.utils.toggleDomNodeCssClass;
+
+    function ValidationManager(validators, options) {
+      this.validators = validators;
+      this.options = options;
+      this.adviseOne = __bind(this.adviseOne, this);
+      this.validateOne = __bind(this.validateOne, this);
+      this.setElement = __bind(this.setElement, this);
+      this.validate = __bind(this.validate, this);
+    }
+
+    ValidationManager.prototype.validate = function(element, value) {
+      var validator, _i, _j, _len, _len1, _ref, _ref1;
+      this.setElement(element);
+      _ref = this.validators;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        validator = _ref[_i];
+        if (!this.validateOne(validator, value)) {
+          return false;
+        }
+      }
+      _ref1 = this.validators;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        validator = _ref1[_j];
+        if (typeof validator.getWarnings === 'function') {
+          this.adviseOne(validator, value);
+        }
+      }
+      return true;
+    };
+
+    ValidationManager.prototype.setElement = function(element) {
+      this.element = element;
+      this.parent = jQuery(this.element).parents('.form-group')[0];
+      this.errors = this.parent.querySelector(this.options.errorMessages);
+      this.warnings = this.parent.querySelector(this.options.warningMessages);
+      return this;
+    };
+
+    ValidationManager.prototype.validateOne = function(validator, value) {
+      var element, errors, isValid, messages, parent, warnings;
+      element = this.element;
+      parent = this.parent;
+      errors = this.errors;
+      warnings = this.warnings;
+      messages = new Array;
+      validator.reset();
+      isValid = false;
+      if (validator.isValid(value)) {
+        if (this.options.inputError) {
+          toggle(element, this.options.inputError, false);
+        }
+        if (this.options.inputSuccess) {
+          toggle(element, this.options.inputSuccess, true);
+        }
+        if (parent) {
+          if (this.options.parentError) {
+            toggle(parent, this.options.parentError, false);
+          }
+          if (this.options.parentSuccess) {
+            toggle(parent, this.options.parentSuccess, true);
+          }
+        }
+        if (errors) {
+          errors.innerHTML = '';
+        }
+        isValid = true;
+      } else {
+        messages = validator.getErrors();
+        if (this.options.inputError) {
+          toggle(element, this.options.inputError, true);
+        }
+        if (this.options.inputSuccess) {
+          toggle(element, this.options.inputSuccess, false);
+        }
+        if (parent) {
+          if (this.options.parentError) {
+            toggle(parent, this.options.parentError, true);
+          }
+          if (this.options.parentSuccess) {
+            toggle(parent, this.options.parentSuccess, false);
+          }
+        }
+        if (errors && messages) {
+          errors.innerHTML = messages.join('<br />');
+        }
+        isValid = false;
+      }
+      if (this.options.inputWarning) {
+        toggle(element, this.options.inputWarning, false);
+      }
+      if (parent) {
+        if (this.options.parentWarning) {
+          toggle(parent, this.options.parentWarning, false);
+        }
+      }
+      if (warnings) {
+        warnings.innerHTML = '';
+      }
+      return isValid;
+    };
+
+    ValidationManager.prototype.adviseOne = function(validator, value) {
+      var element, errors, messages, parent, warnings;
+      element = this.element;
+      parent = this.parent;
+      errors = this.errors;
+      warnings = this.warnings;
+      messages = validator.getWarnings();
+      if (messages.length) {
+        if (this.options.inputWarning) {
+          toggle(element, this.options.inputWarning, true);
+        }
+        if (this.options.inputSuccess) {
+          toggle(element, this.options.inputSuccess, false);
+        }
+        if (parent) {
+          if (this.options.parentWarning) {
+            toggle(parent, this.options.parentWarning, true);
+          }
+          if (this.options.parentSuccess) {
+            toggle(parent, this.options.parentSuccess, false);
+          }
+        }
+        if (warnings) {
+          warnings.innerHTML = messages.join('<br />');
+        }
+      }
+      return this;
+    };
+
+    return ValidationManager;
 
   })();
 

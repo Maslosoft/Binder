@@ -1234,8 +1234,9 @@ class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
 
 #
 #
-# TODO Should split parts of class to some helper class, ie ValidationManager
+# Validation binding handler
 #
+# @see ValidationManager
 #
 class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
@@ -1257,113 +1258,6 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 		# For rest use text value
 		return element.textContent || element.innerText || ""
-
-	#
-	# Apply validation
-	# @param validator Maslosoft.Ko.Balin.BaseValidator
-	# @param element DomElement
-	# @param value mixed
-	#
-	validate: (validator, element, value) =>
-		parent = jQuery(element).parents('.form-group')[0]
-
-		errors = parent.querySelector @options.errorMessages
-		warnings = parent.querySelector @options.warningMessages
-		messages = new Array
-		validator.reset()
-		isValid = false
-		if validator.isValid(value)
-			# Apply input error styles as needed
-			if @options.inputError
-				ko.utils.toggleDomNodeCssClass(element, @options.inputError, false);
-			if @options.inputSuccess
-				ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, true);
-
-			# Apply parent styles as needed
-			if parent
-				if @options.parentError
-					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, false);
-				if @options.parentSuccess
-					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, true);
-
-			# Reset error messages
-			if errors
-				errors.innerHTML = ''
-			isValid = true
-		else
-			# Errors...
-			messages = validator.getErrors()
-
-			# Apply input error styles as needed
-			if @options.inputError
-				ko.utils.toggleDomNodeCssClass(element, @options.inputError, true);
-			if @options.inputSuccess
-				ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, false);
-
-			# Apply parent styles as needed
-			if parent
-				if @options.parentError
-					ko.utils.toggleDomNodeCssClass(parent, @options.parentError, true);
-				if @options.parentSuccess
-					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
-
-			# Show error messages
-			if errors and messages
-				errors.innerHTML = messages.join '<br />'
-			isValid = false
-
-		#
-		#
-		# Warnings part - this is required here to reset warnings
-		#
-		#
-
-		# Reset warnings regardless of validation result
-		# Remove input warning styles as needed
-		if @options.inputWarning
-			ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, false);
-
-		# Remove parent styles as needed
-		if parent
-			if @options.parentWarning
-				ko.utils.toggleDomNodeCssClass(parent, @options.parentWarning, false);
-		if warnings
-			warnings.innerHTML = ''
-
-		return isValid
-
-	#
-	# Apply warnings
-	# @param validator Maslosoft.Ko.Balin.BaseValidator
-	# @param element DomElement
-	# @param value mixed
-	#
-	advise: (validator, element, value) =>
-		parent = jQuery(element).parents('.form-group')[0]
-
-		errors = parent.querySelector @options.errorMessages
-		warnings = parent.querySelector @options.warningMessages
-
-		messages = validator.getWarnings()
-		# If has warnings remove success and add warnings to any applicable element
-		if messages.length
-			
-			# Apply input warning styles as needed
-			if @options.inputWarning
-				ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, true);
-			if @options.inputSuccess
-				ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, false);
-
-			# Apply parent styles as needed
-			if parent
-				if @options.parentWarning
-					ko.utils.toggleDomNodeCssClass(parent, @options.parentWarning, true);
-				if @options.parentSuccess
-					ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
-
-			# Show warnings
-			if warnings
-				warnings.innerHTML = messages.join '<br />'	
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		configuration = @getValue(valueAccessor)
@@ -1405,6 +1299,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 			# Instantiate validator
 			validators.push new className(config)
 
+		manager = new ValidationManager(validators, @options)
+
 		# Generate some id if not set, see notes below why
 		if not element.id
 			element.id = "Maslosoft-Ko-Balin-Validator-#{idCounter++}"
@@ -1422,18 +1318,10 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 			elementValue = @getElementValue(element)
 			
-			# Update only if changed
+			# Validate only if changed
 			if initialVal isnt elementValue
 				initialVal = elementValue
-				for validator in validators
-					if not @validate(validator, element, elementValue)
-						return
-				
-				# Loop again for warnings, or they would be overriden
-				for validator in validators
-					# Ensure that validator handle warnings
-					if typeof(validator.getWarnings) is 'function'
-						@advise validator, element, elementValue
+				manager.validate element, elementValue
 
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
 		ko.utils.registerEventHandler element, "keyup, input", handler
@@ -1756,6 +1644,210 @@ class TreeNodeRenderer
 			# Add icon tag just before title
 			# This will ensure proper dnd for responsive icon size
 			span.html("<i class='node-title-icon' style='background-image:url(#{icon})'></i> #{html}")
+
+#
+# Validation manager.
+#
+# This class applies proper styles and messages to configured DOM elements.
+#
+#
+#
+class ValidationManager
+
+	#
+	# Input element
+	# @var DomElement
+	#
+	element: null
+
+	#
+	# Parent of input element
+	# @var DomElement
+	#
+	parent: null
+
+	#
+	# Errors container element
+	# @var DomElement
+	#
+	errors: null
+
+	#
+	# Warnings container element
+	# @var DomElement
+	#
+	warnings: null
+
+	# Private
+	toggle = ko.utils.toggleDomNodeCssClass
+
+	#
+	# Initialize validation manager
+	#
+	# @param validators Maslosoft.Ko.Balin.BaseValidator[]
+	# @param options Maslosoft.Ko.Balin.ValidatorOptions
+	#
+	#
+	constructor: (@validators, @options) ->
+
+	#
+	# Trigger validation and warnigs on all items
+	#
+	# @param element DomElement
+	# @param value mixed
+	#
+	# @return bool
+	#
+	validate: (element, value) =>
+
+		# Set current element here, as it could be changed in some case, ie sorting
+		@setElement element
+
+		# Trigger all validators
+		for validator in @validators
+			if not @validateOne validator, value
+				return false
+
+		# Loop again for warnings, or they would be overriden
+		for validator in @validators
+			# Ensure that validator handle warnings
+			if typeof(validator.getWarnings) is 'function'
+				@adviseOne validator, value
+
+		return true
+
+	#
+	# Set working element. No need to call it directly, it is called by validate method.
+	#
+	# @param element DomElement
+	#
+	# @return ValidationManager
+	#
+	setElement: (@element) =>
+		@parent = jQuery(@element).parents('.form-group')[0]
+
+		@errors = @parent.querySelector @options.errorMessages
+		@warnings = @parent.querySelector @options.warningMessages
+		return @
+
+	#
+	# Apply validation of one validator
+	#
+	# @param validator Maslosoft.Ko.Balin.BaseValidator
+	# @param element DomElement
+	# @param value mixed
+	#
+	# @return bool
+	#
+	validateOne: (validator, value) =>
+		# Reassign variables for local scope
+		element = @element
+		parent = @parent
+		errors = @errors
+		warnings = @warnings
+
+		messages = new Array
+		validator.reset()
+		isValid = false
+		if validator.isValid(value)
+			# Apply input error styles as needed
+			if @options.inputError
+				toggle(element, @options.inputError, false);
+			if @options.inputSuccess
+				toggle(element, @options.inputSuccess, true);
+
+			# Apply parent styles as needed
+			if parent
+				if @options.parentError
+					toggle(parent, @options.parentError, false);
+				if @options.parentSuccess
+					toggle(parent, @options.parentSuccess, true);
+
+			# Reset error messages
+			if errors
+				errors.innerHTML = ''
+			isValid = true
+		else
+			# Errors...
+			messages = validator.getErrors()
+
+			# Apply input error styles as needed
+			if @options.inputError
+				toggle(element, @options.inputError, true);
+			if @options.inputSuccess
+				toggle(element, @options.inputSuccess, false);
+
+			# Apply parent styles as needed
+			if parent
+				if @options.parentError
+					toggle(parent, @options.parentError, true);
+				if @options.parentSuccess
+					toggle(parent, @options.parentSuccess, false);
+
+			# Show error messages
+			if errors and messages
+				errors.innerHTML = messages.join '<br />'
+			isValid = false
+
+		#
+		#
+		# Warnings part - this is required here to reset warnings
+		#
+		#
+
+		# Reset warnings regardless of validation result
+		# Remove input warning styles as needed
+		if @options.inputWarning
+			toggle(element, @options.inputWarning, false);
+
+		# Remove parent styles as needed
+		if parent
+			if @options.parentWarning
+				toggle(parent, @options.parentWarning, false);
+		if warnings
+			warnings.innerHTML = ''
+
+		return isValid
+
+	#
+	# Apply warnings of one input
+	#
+	# @param validator Maslosoft.Ko.Balin.BaseValidator
+	# @param element DomElement
+	# @param value mixed
+	#
+	# @return ValidationManager
+	#
+	adviseOne: (validator, value) =>
+		# Reassign variables for local scope
+		element = @element
+		parent = @parent
+		errors = @errors
+		warnings = @warnings
+
+		messages = validator.getWarnings()
+		# If has warnings remove success and add warnings to any applicable element
+		if messages.length
+
+			# Apply input warning styles as needed
+			if @options.inputWarning
+				toggle(element, @options.inputWarning, true);
+			if @options.inputSuccess
+				toggle(element, @options.inputSuccess, false);
+
+			# Apply parent styles as needed
+			if parent
+				if @options.parentWarning
+					toggle(parent, @options.parentWarning, true);
+				if @options.parentSuccess
+					toggle(parent, @options.parentSuccess, false);
+
+			# Show warnings
+			if warnings
+				warnings.innerHTML = messages.join '<br />'
+
+		return @
+
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'
