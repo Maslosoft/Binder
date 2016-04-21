@@ -412,6 +412,10 @@
       var name, rawMessage, value, _ref;
       rawMessage = errorMessage;
       errorMessage = errorMessage.replace("{attribute}", this.label);
+      for (name in this) {
+        value = this[name];
+        errorMessage = errorMessage.replace("{" + name + "}", value);
+      }
       for (name in params) {
         value = params[name];
         errorMessage = errorMessage.replace("{" + name + "}", value);

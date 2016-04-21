@@ -53,6 +53,10 @@ class @Maslosoft.Ko.Balin.BaseValidator
 		# Apply atribute label first
 		errorMessage = errorMessage.replace "{attribute}", @label
 
+		# Apply from current validator
+		for name, value of @
+			errorMessage = errorMessage.replace "{#{name}}", value
+
 		# Apply from params
 		for name, value of params
 			errorMessage = errorMessage.replace "{#{name}}", value
@@ -60,6 +64,7 @@ class @Maslosoft.Ko.Balin.BaseValidator
 		# Finally try to apply from model
 		for name, value of @model
 			errorMessage = errorMessage.replace "{#{name}}", value
+
 
 		# Ensure uniquness
 		if not @rawMessages[rawMessage]
