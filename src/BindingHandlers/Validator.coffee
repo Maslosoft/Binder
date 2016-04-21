@@ -80,7 +80,18 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 				continue
 
 			if typeof(config[classField]) isnt 'function'
-				error "Parameter `#{classField}` must be validator compatible function, binding defined on element:", element
+				error "Parameter `#{classField}` must be validator compatible class, binding defined on element:", element
+				continue
+
+			proto = config[classField].prototype
+
+			if typeof(proto.isValid) isnt 'function' or typeof(proto.getErrors) isnt 'function'
+				if typeof(config[classField].prototype.constructor) is 'function'
+					name = config[classField].prototype.constructor.name
+				else
+					name = config[classField].toString()
+
+				error "Parameter `#{classField}` (of type #{name}) must be validator compatible class, binding defined on element:", element
 				continue
 
 			# Store class name first
