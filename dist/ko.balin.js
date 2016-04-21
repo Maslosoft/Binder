@@ -8,14 +8,14 @@
     if (!console) {
       return;
     }
-    return console.assert(expr);
+    return console.assert.apply(console, arguments);
   };
 
   log = function(expr) {
     if (!console) {
       return;
     }
-    return console.log(expr);
+    return console.log.apply(console, arguments);
   };
 
   warn = function(expr, element) {
@@ -25,11 +25,7 @@
     if (!console) {
       return;
     }
-    console.warn(expr);
-    if (element === null) {
-      return;
-    }
-    return console.warn(element);
+    return console.warn.apply(console, arguments);
   };
 
   error = function(expr, element) {
@@ -39,11 +35,7 @@
     if (!console) {
       return;
     }
-    console.error(expr);
-    if (element === null) {
-      return;
-    }
-    return console.error(element);
+    return console.error.apply(console, arguments);
   };
 
   if (!Object.keys) {
@@ -406,6 +398,10 @@
         this[index] = value;
       }
     }
+
+    BaseValidator.prototype.isValid = function() {
+      throw new Error('Validator must implement `isValid` method');
+    };
 
     BaseValidator.prototype.getErrors = function() {
       return this.messages;
@@ -1381,7 +1377,7 @@
     };
 
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var cfg, classField, className, config, configuration, handler, initialVal, validators, _i, _len;
+      var cfg, classField, className, config, configuration, handler, initialVal, name, proto, validators, _i, _len;
       configuration = this.getValue(valueAccessor);
       validators = new Array;
       classField = this.options.classField;
@@ -1397,7 +1393,17 @@
           continue;
         }
         if (typeof config[classField] !== 'function') {
-          error("Parameter `" + classField + "` must be validator compatible function, binding defined on element:", element);
+          error("Parameter `" + classField + "` must be validator compatible class, binding defined on element:", element);
+          continue;
+        }
+        proto = config[classField].prototype;
+        if (typeof proto.isValid !== 'function' || typeof proto.getErrors !== 'function') {
+          if (typeof config[classField].prototype.constructor === 'function') {
+            name = config[classField].prototype.constructor.name;
+          } else {
+            name = config[classField].toString();
+          }
+          error("Parameter `" + classField + "` (of type " + name + ") must be validator compatible class, binding defined on element:", element);
           continue;
         }
         className = config[classField];
@@ -1900,7 +1906,7 @@
         } else {
           this[name] = ko.tracker.factory(value);
         }
-        if (this[name] && typeof this[name] === 'object' && this[name].constructor !== Array && this[name].constructor === Object) {
+        if (this[name] && typeof this[name] === 'object' && this[name].constructor === Object) {
           this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
       }

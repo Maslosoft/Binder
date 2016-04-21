@@ -1,22 +1,18 @@
 assert = (expr) ->
 	if not console then return
-	console.assert expr
+	console.assert.apply console, arguments
 
 log = (expr) ->
 	if not console then return
-	console.log expr
+	console.log.apply console, arguments
 
 warn = (expr, element = null) ->
 	if not console then return
-	console.warn expr
-	if element is null then return
-	console.warn element
+	console.warn.apply console, arguments
 
 error = (expr, element = null) ->
 	if not console then return
-	console.error expr
-	if element is null then return
-	console.error element
+	console.error.apply console, arguments
 
 # from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if !Object.keys
@@ -378,6 +374,9 @@ class @Maslosoft.Ko.Balin.BaseValidator
 		for index, value of config
 			@[index] = null
 			@[index] = value
+
+	isValid:() ->
+		throw new Error('Validator must implement `isValid` method')
 
 	getErrors: () ->
 		return @messages
@@ -1219,7 +1218,18 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 				continue
 
 			if typeof(config[classField]) isnt 'function'
-				error "Parameter `#{classField}` must be validator compatible function, binding defined on element:", element
+				error "Parameter `#{classField}` must be validator compatible class, binding defined on element:", element
+				continue
+
+			proto = config[classField].prototype
+
+			if typeof(proto.isValid) isnt 'function' or typeof(proto.getErrors) isnt 'function'
+				if typeof(config[classField].prototype.constructor) is 'function'
+					name = config[classField].prototype.constructor.name
+				else
+					name = config[classField].toString()
+
+				error "Parameter `#{classField}` (of type #{name}) must be validator compatible class, binding defined on element:", element
 				continue
 
 			# Store class name first
@@ -1676,9 +1686,10 @@ class @Maslosoft.Ko.Balin.Model
 				@[name] = ko.tracker.factory(data[name])
 			else
 				@[name] = ko.tracker.factory(value)
-
-			# Extra track of dynamic object properties
-			if @[name] and typeof(@[name]) is 'object' and @[name].constructor isnt Array and @[name].constructor is Object
+			
+			# Extra track of dynamic object properties, only for generic objects.
+			# Concrete objects should have predefined set of properties.
+			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Object
 				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
 		ko.track(@)
