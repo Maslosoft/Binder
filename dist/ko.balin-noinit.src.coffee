@@ -1299,8 +1299,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		# Warnings, add only if no errors
 		if typeof(validator.getWarnings) is 'function' and warnings and isValid
 			messages = validator.getWarnings()
-			
-			if messages
+			log messages
+			if messages.length
 				# Apply input warning styles as needed
 				if @options.inputWarning
 					ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, true);

@@ -1428,7 +1428,8 @@
       }
       if (typeof validator.getWarnings === 'function' && warnings && isValid) {
         messages = validator.getWarnings();
-        if (messages) {
+        log(messages);
+        if (messages.length) {
           if (this.options.inputWarning) {
             ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
           }
