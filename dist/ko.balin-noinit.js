@@ -1,4 +1,5 @@
 (function() {
+  "use strict";
   var ModelProxyHandler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
@@ -1298,6 +1299,7 @@
       var title;
       title = this.getValue(valueAccessor);
       $(element).attr("title", title);
+      $(element).attr("data-original-title", title);
       $(element).attr("rel", "tooltip");
     };
 

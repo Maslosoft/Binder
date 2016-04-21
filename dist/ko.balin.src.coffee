@@ -1,3 +1,5 @@
+"use strict"
+
 assert = (expr) ->
 	if not console then return
 	console.assert.apply console, arguments
@@ -1133,6 +1135,7 @@ class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
 	update: (element, valueAccessor) =>
 		title = @getValue(valueAccessor)
 		$(element).attr "title", title
+		$(element).attr "data-original-title", title
 		$(element).attr "rel", "tooltip"
 		return
 
