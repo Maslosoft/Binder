@@ -1426,44 +1426,57 @@
         }
         isValid = false;
       }
-      if (typeof validator.getWarnings === 'function' && warnings && isValid) {
+      if (typeof validator.getWarnings === 'function' && warnings) {
         messages = validator.getWarnings();
-        log(messages);
-        if (messages.length) {
-          if (this.options.inputWarning) {
-            ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
-          }
-          if (this.options.inputSuccess) {
-            ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
-          }
-          if (parent) {
-            if (this.options.parentWarning) {
-              ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, true);
+        if (isValid) {
+          if (messages.length) {
+            if (this.options.inputWarning) {
+              ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
             }
-            if (this.options.parentSuccess) {
-              ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
+            if (this.options.inputSuccess) {
+              ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
             }
-          }
-          if (warnings && messages) {
-            warnings.innerHTML = messages.join('<br />');
+            if (parent) {
+              if (this.options.parentWarning) {
+                ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, true);
+              }
+              if (this.options.parentSuccess) {
+                ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
+              }
+            }
+            if (warnings && messages) {
+              warnings.innerHTML = messages.join('<br />');
+            }
+          } else {
+            if (this.options.inputWarning) {
+              ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, false);
+            }
+            if (this.options.inputSuccess) {
+              ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
+            }
+            if (parent) {
+              if (this.options.parentWarning) {
+                ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, false);
+              }
+              if (this.options.parentSuccess) {
+                ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
+              }
+            }
+            if (warnings) {
+              warnings.innerHTML = '';
+            }
           }
         } else {
           if (this.options.inputWarning) {
             ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, false);
           }
-          if (this.options.inputSuccess) {
-            ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
-          }
           if (parent) {
             if (this.options.parentWarning) {
               ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, false);
             }
-            if (this.options.parentSuccess) {
-              ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
-            }
           }
           if (warnings) {
-            warnings.innerHTML = messages.join('<br />');
+            warnings.innerHTML = '';
           }
         }
       }

@@ -20,8 +20,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		# For rest use text value
 		return element.textContent || element.innerText || ""
 
+	# validate a.k.a ifs mess
 	validate: (validator, element, value) =>
-
 		parent = element.parentElement
 
 		errors = parent.querySelector @options.errorMessages
@@ -70,44 +70,57 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 			isValid = false
 
 		# Warnings, add only if no errors
-		if typeof(validator.getWarnings) is 'function' and warnings and isValid
+		if typeof(validator.getWarnings) is 'function' and warnings
 			messages = validator.getWarnings()
-			log messages
-			if messages.length
-				# Apply input warning styles as needed
-				if @options.inputWarning
-					ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, true);
-				if @options.inputSuccess
-					ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, false);
 
-				# Apply parent styles as needed
-				if parent
-					if @options.parentWarning
-						ko.utils.toggleDomNodeCssClass(parent, @options.parentWarning, true);
-					if @options.parentSuccess
-						ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
+			# When valid, remove success and add warnings if applicable
+			if isValid
+				if messages.length
+					# Apply input warning styles as needed
+					if @options.inputWarning
+						ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, true);
+					if @options.inputSuccess
+						ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, false);
 
-				# Show warnings
-				if warnings and messages
-					warnings.innerHTML = messages.join '<br />'
+					# Apply parent styles as needed
+					if parent
+						if @options.parentWarning
+							ko.utils.toggleDomNodeCssClass(parent, @options.parentWarning, true);
+						if @options.parentSuccess
+							ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, false);
+
+					# Show warnings
+					if warnings and messages
+						warnings.innerHTML = messages.join '<br />'
+				else
+					# Reset warnings
+					# Remove input warning styles as needed
+					if @options.inputWarning
+						ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, false);
+					if @options.inputSuccess
+						ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, true);
+
+					# Remove parent styles as needed
+					if parent
+						if @options.parentWarning
+							ko.utils.toggleDomNodeCssClass(parent, @options.parentWarning, false);
+						if @options.parentSuccess
+							ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, true);
+					if warnings
+						warnings.innerHTML = ''
+			# When not valid, remove warnings to not obstruct error messages
 			else
-				# Reset warnings
+				# Not valid, reset warnings
 				# Remove input warning styles as needed
 				if @options.inputWarning
 					ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, false);
-				if @options.inputSuccess
-					ko.utils.toggleDomNodeCssClass(element, @options.inputSuccess, true);
 
 				# Remove parent styles as needed
 				if parent
 					if @options.parentWarning
 						ko.utils.toggleDomNodeCssClass(parent, @options.parentWarning, false);
-					if @options.parentSuccess
-						ko.utils.toggleDomNodeCssClass(parent, @options.parentSuccess, true);
-
-				# Reset warnings
 				if warnings
-					warnings.innerHTML = messages.join '<br />'
+					warnings.innerHTML = ''
 		return isValid
 
 		
