@@ -1,22 +1,18 @@
 assert = (expr) ->
 	if not console then return
-	console.assert expr
+	console.assert.apply console, arguments
 
 log = (expr) ->
 	if not console then return
-	console.log expr
+	console.log.apply console, arguments
 
 warn = (expr, element = null) ->
 	if not console then return
-	console.warn expr
-	if element is null then return
-	console.warn element
+	console.warn.apply console, arguments
 
 error = (expr, element = null) ->
 	if not console then return
-	console.error expr
-	if element is null then return
-	console.error element
+	console.error.apply console, arguments
 
 # from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if !Object.keys
