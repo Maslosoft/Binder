@@ -25,8 +25,8 @@
 	<div class="error-messages"></div>
 </div>
 <div data-bind="with: app.model.txt3" class="form-group">
-	<label class="control-label" for="txt3">Validate contenteditable if it's only a-z:</label>
-	<div class="form-control" id="txt3" data-bind="htmlValue: text, validator: {_class: Maslosoft.Ko.BalinDev.RegExpValidator, pattern: '^[a-z]+$', allowEmpty: false}" style="width:50%;"></div>
+	<label class="control-label" for="txt3">Validate contenteditable if it's only a-z, A-Z, 0-9 _:</label>
+	<div class="form-control" id="txt3" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RegExpValidator, pattern: '~^[A-Za-z0-9_]+$~', allowEmpty: false}]" style="width:50%;"></div>
 	<div class="error-messages"></div>
 </div>
 
@@ -41,8 +41,8 @@
 	<div class="error-messages"></div>
 </div>
 <div data-bind="with: app.model.txt6" class="form-group">
-	<label class="control-label" for="txt6">This should raise errors, but continue to work with proper validator (required):</label>
-	<div class="form-control" id="txt6" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RequiredValidator, label: 'Address'}, {foo:'bar'}, {_class:'DoesNotExists'}]" style="width:50%;"></div>
+	<label class="control-label" for="txt6">This should raise errors in console, but continue to work with any proper validator (required):</label>
+	<div class="form-control" id="txt6" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RequiredValidator, label: 'Address'}, {foo:'bar'}, {_class:'DoesNotExists'}, {_class: Maslosoft.Ko.BalinDev.BogusValidator}]" style="width:50%;"></div>
 	<div class="error-messages"></div>
 </div>
 <script>

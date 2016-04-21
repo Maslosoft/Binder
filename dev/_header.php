@@ -78,20 +78,20 @@
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
 		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
-		<?php if(isset($mocha)):?>
-		<link rel="stylesheet" href="../bower_components/mocha/mocha.css"/>
-		<style>
-			#mocha{
-				margin: 0;
-			}
-			#mocha-stats{
-				position: static;
-			}
-			#mocha-stats .progress {
-				height:40px;
-			}
-		</style>
-		<?php endif;?>
+		<?php if (isset($mocha)): ?>
+			<link rel="stylesheet" href="../bower_components/mocha/mocha.css"/>
+			<style>
+				#mocha{
+					margin: 0;
+				}
+				#mocha-stats{
+					position: static;
+				}
+				#mocha-stats .progress {
+					height:40px;
+				}
+			</style>
+		<?php endif; ?>
 
 		<!--jQuery-->
 		<script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
@@ -112,12 +112,13 @@
 		<script type="text/javascript" src="./src/Model.js"></script>
 		<script type="text/javascript" src="./src/RegExpValidator.js"></script>
 		<script type="text/javascript" src="./src/RequiredValidator.js"></script>
+		<script type="text/javascript" src="./src/BogusValidator.js"></script>
 		<script type="text/javascript" src="./src/EmailValidator.js"></script>
 		<script type="text/javascript" src="./src/TitleRenderer.js"></script>
-		<?php if(isset($mocha)):?>
-		<script type="text/javascript" src="../bower_components/mocha/mocha.js"></script>
-		<script type="text/javascript" src="../bower_components/chai/chai.js"></script>
-		<?php endif;?>
+		<?php if (isset($mocha)): ?>
+			<script type="text/javascript" src="../bower_components/mocha/mocha.js"></script>
+			<script type="text/javascript" src="../bower_components/chai/chai.js"></script>
+		<?php endif; ?>
 
 
 		<script type="text/javascript">
@@ -126,26 +127,26 @@
 			var app = window.app;
 			var body = jQuery('body');
 			var defaultFontSize = false;
-			window.app.increaseFont = function(){
+			window.app.increaseFont = function () {
 				var body = jQuery('body');
 				var fontSize = parseInt(body.css('font-size'));
-				if(!defaultFontSize){
+				if (!defaultFontSize) {
 					defaultFontSize = fontSize;
 				}
 				fontSize++;
 				body.css('font-size', fontSize + 'px');
 			}
-			window.app.decreaseFont = function(){
+			window.app.decreaseFont = function () {
 				var body = jQuery('body');
 				var fontSize = parseInt(body.css('font-size'));
-				if(!defaultFontSize){
+				if (!defaultFontSize) {
 					defaultFontSize = fontSize;
 				}
 				fontSize--;
 				body.css('font-size', fontSize + 'px');
 			}
-			window.app.resetFont = function(){
-				if(!defaultFontSize){
+			window.app.resetFont = function () {
+				if (!defaultFontSize) {
 					return;
 				}
 				var body = jQuery('body');
@@ -153,10 +154,9 @@
 			}
 		</script>
 		<?php
-
 		// Include autoload
 		$alPath = realpath(__DIR__ . '/../vendor/autoload.php');
-		if(file_exists($alPath))
+		if (file_exists($alPath))
 		{
 			require_once $alPath;
 		}
@@ -179,7 +179,7 @@
 			{
 				continue;
 			}
-			if(preg_match('~Test\.php~', $file->getFilename()))
+			if (preg_match('~Test\.php~', $file->getFilename()))
 			{
 				continue;
 			}
@@ -194,7 +194,7 @@
 		}
 		foreach (new DirectoryIterator(__DIR__ . '/../test') as $file)
 		{
-			if(preg_match('~Test\.js~', $file->getFilename()))
+			if (preg_match('~Test\.js~', $file->getFilename()))
 			{
 				$test[$file->getFilename()] = basename($file->getFilename(), '.js');
 			}
@@ -207,11 +207,11 @@
 	<body>
 		<div class="container-fluid">
 			<nav>
-				<?php if(isset($_GET['test'])):?>
-				<h1><?= ucfirst(htmlspecialchars($_GET['test'])); ?></h1>
-				<?php else:?>
-				<h1><?= ucfirst(basename($_SERVER['SCRIPT_FILENAME'], '.php')); ?></h1>
-				<?php endif;?>
+				<?php if (isset($_GET['test'])): ?>
+					<h1><?= ucfirst(htmlspecialchars($_GET['test'])); ?></h1>
+				<?php else: ?>
+					<h1><?= ucfirst(basename($_SERVER['SCRIPT_FILENAME'], '.php')); ?></h1>
+				<?php endif; ?>
 				<ul>
 					<li class="link">
 						<a href="./index.php">Index</a>
@@ -227,7 +227,7 @@
 					<li class="link">
 						|
 					</li>
-					<?php foreach ((array)$combined as $file => $name): ?>
+					<?php foreach ((array) $combined as $file => $name): ?>
 						<li class="link">
 							<a href="./<?= $file; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
 						</li>
@@ -236,7 +236,7 @@
 						|
 					</li>
 					<li class="link">
-							Tests:
+						Tests:
 					</li>
 					<?php foreach ($test as $file => $name): ?>
 						<li class="link">
