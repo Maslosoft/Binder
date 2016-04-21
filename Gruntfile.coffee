@@ -18,12 +18,14 @@ balin.push 'src/_init.coffee'
 
 # Bundle setup
 bundle = [
+	'bower_components/proxy-polyfill/proxy.min.js'
 	'bower_components/knockout/dist/knockout.js'
 	'bower_components/knockout-es5/dist/knockout-es5.min.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.min.js'
 	'bower_components/knockout.punches/knockout.punches.min.js'
 ]
 bundleDev = [
+	'bower_components/proxy-polyfill/proxy.js'
 	'bower_components/knockout/dist/knockout.debug.js'
 	'bower_components/knockout-es5/dist/knockout-es5.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.js'
