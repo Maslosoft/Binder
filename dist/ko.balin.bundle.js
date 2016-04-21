@@ -6676,14 +6676,21 @@ void function(global, undefined_, undefined){
     global.WeakMap.createStorage = createStorage;
 }(function(){ return this }());
 
-// knockout-sortable 0.8.8 | (c) 2014 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
+// knockout-sortable 0.12.0 | (c) 2016 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD anonymous module
-        define(["knockout", "jquery", "jquery.ui.sortable"], factory);
+        define(["knockout", "jquery", "jquery-ui/sortable", "jquery-ui/draggable"], factory);
+    } else if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
+        // CommonJS module
+        var ko = require("knockout"),
+            jQuery = require("jquery");
+        require("jquery-ui/sortable");
+        require("jquery-ui/draggable");
+        factory(ko, jQuery);
     } else {
         // No module loader (plain <script> tag) - put directly in global namespace
-        factory(window.ko, jQuery);
+        factory(window.ko, window.jQuery);
     }
 })(function(ko, $) {
     var ITEMKEY = "ko_sortItem",
@@ -6693,7 +6700,10 @@ void function(global, undefined_, undefined){
         DRAGKEY = "ko_dragItem",
         unwrap = ko.utils.unwrapObservable,
         dataGet = ko.utils.domData.get,
-        dataSet = ko.utils.domData.set;
+        dataSet = ko.utils.domData.set,
+        version = $.ui && $.ui.version,
+        //1.8.24 included a fix for how events were triggered in nested sortables. indexOf checks will fail if version starts with that value (0 vs. -1)
+        hasNestedSortableFix = version && version.indexOf("1.6.") && version.indexOf("1.7.") && (version.indexOf("1.8.") || version === "1.8.24");
 
     //internal afterRender that adds meta-data to children
     var addMetaDataAfterRender = function(elements, data) {
@@ -6719,8 +6729,12 @@ void function(global, undefined_, undefined){
             result[dataName] = valueAccessor();
         }
 
-        ko.utils.arrayForEach(["afterAdd", "afterRender", "as", "beforeRemove", "includeDestroyed", "templateEngine", "templateOptions"], function (option) {
-            result[option] = options[option] || ko.bindingHandlers.sortable[option];
+        ko.utils.arrayForEach(["afterAdd", "afterRender", "as", "beforeRemove", "includeDestroyed", "templateEngine", "templateOptions", "nodes"], function (option) {
+            if (options.hasOwnProperty(option)) {
+                result[option] = options[option];
+            } else if (ko.bindingHandlers.sortable.hasOwnProperty(option)) {
+                result[option] = ko.bindingHandlers.sortable[option];
+            }
         });
 
         //use an afterRender function to add meta-data
@@ -6756,6 +6770,29 @@ void function(global, undefined_, undefined){
         return index;
     };
 
+    //remove problematic leading/trailing whitespace from templates
+    var stripTemplateWhitespace = function(element, name) {
+        var templateSource,
+            templateElement;
+
+        //process named templates
+        if (name) {
+            templateElement = document.getElementById(name);
+            if (templateElement) {
+                templateSource = new ko.templateSources.domElement(templateElement);
+                templateSource.text($.trim(templateSource.text()));
+            }
+        }
+        else {
+            //remove leading/trailing non-elements from anonymous templates
+            $(element).contents().each(function() {
+                if (this && this.nodeType !== 1) {
+                    element.removeChild(this);
+                }
+            });
+        }
+    };
+
     //connect items with observableArrays
     ko.bindingHandlers.sortable = {
         init: function(element, valueAccessor, allBindingsAccessor, data, context) {
@@ -6765,12 +6802,7 @@ void function(global, undefined_, undefined){
                 sortable = {},
                 startActual, updateActual;
 
-            //remove leading/trailing non-elements from anonymous templates
-            $element.contents().each(function() {
-                if (this && this.nodeType !== 1) {
-                    element.removeChild(this);
-                }
-            });
+            stripTemplateWhitespace(element, templateOptions.name);
 
             //build a new object that has the global options with overrides from the binding
             $.extend(true, sortable, ko.bindingHandlers.sortable);
@@ -6800,6 +6832,16 @@ void function(global, undefined_, undefined){
             //keep a reference to start/update functions that might have been passed in
             startActual = sortable.options.start;
             updateActual = sortable.options.update;
+            
+            //ensure draggable table row cells maintain their width while dragging
+            sortable.options.helper = function(e, ui) {
+                if (ui.is("tr")) {
+                    ui.children().each(function() {
+                        $(this).width($(this).width());
+                    });
+                }
+                return ui;
+            };
 
             //initialize sortable binding after template binding has rendered in update function
             var createTimeout = setTimeout(function() {
@@ -6839,7 +6881,7 @@ void function(global, undefined_, undefined){
                         dragItem = null;
 
                         //make sure that moves only run once, as update fires on multiple containers
-                        if (item && (this === parentEl || $.contains(this, parentEl))) {
+                        if (item && (this === parentEl) || (!hasNestedSortableFix && $.contains(this, parentEl))) {
                             //identify parents
                             sourceParent = dataGet(el, PARENTKEY);
                             sourceIndex = dataGet(el, INDEXKEY);
@@ -6872,7 +6914,7 @@ void function(global, undefined_, undefined){
 
                             //call cancel on the correct list, so KO can take care of DOM manipulation
                             if (sourceParent) {
-                                $(sourceParent === targetParent ? this : ui.sender).sortable("cancel");
+                                $(sourceParent === targetParent ? this : ui.sender || this).sortable("cancel");
                             }
                             //for a draggable item just remove the element
                             else {
@@ -6937,6 +6979,8 @@ void function(global, undefined_, undefined){
                     $element.sortable("destroy");
                 }
 
+                ko.utils.toggleDomNodeCssClass(element, sortable.connectClass, false);
+
                 //do not create the sortable if the element has been removed from DOM
                 clearTimeout(createTimeout);
             });
@@ -6969,7 +7013,7 @@ void function(global, undefined_, undefined){
                 connectClass = value.connectClass || ko.bindingHandlers.draggable.connectClass,
                 isEnabled = value.isEnabled !== undefined ? value.isEnabled : ko.bindingHandlers.draggable.isEnabled;
 
-            value = value.data || value;
+            value = "data" in value ? value.data : value;
 
             //set meta-data
             dataSet(element, DRAGKEY, value);
@@ -6993,6 +7037,11 @@ void function(global, undefined_, undefined){
                 });
             }
 
+            //handle disposal
+            ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+                $(element).draggable("destroy");
+            });
+
             return ko.bindingHandlers.template.init(element, function() { return templateOptions; }, allBindingsAccessor, data, context);
         },
         update: function(element, valueAccessor, allBindingsAccessor, data, context) {
@@ -7005,7 +7054,6 @@ void function(global, undefined_, undefined){
             helper: "clone"
         }
     };
-
 });
 
 /**
