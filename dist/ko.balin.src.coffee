@@ -1297,10 +1297,8 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 			isValid = false
 
 		# Warnings, add only if no errors
-		log validator.getWarnings(), warnings, isValid
 		if typeof(validator.getWarnings) is 'function' and warnings and isValid
 			messages = validator.getWarnings()
-			console.log messages
 			
 			if messages
 				# Apply input warning styles as needed
