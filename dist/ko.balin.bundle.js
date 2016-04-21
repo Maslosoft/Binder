@@ -9281,7 +9281,6 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       warnings = parent.querySelector(this.options.warningMessages);
       messages = validator.getWarnings();
       if (messages.length) {
-        log(messages);
         if (this.options.inputWarning) {
           ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
         }

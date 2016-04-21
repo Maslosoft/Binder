@@ -1,4 +1,9 @@
 
+#
+#
+# TODO Should split parts of class to some helper class, ie ValidationManager
+#
+#
 class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 	# Counter for id generator
@@ -107,9 +112,9 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		warnings = parent.querySelector @options.warningMessages
 
 		messages = validator.getWarnings()
-		# When valid, remove success and add warnings if applicable
+		# If has warnings remove success and add warnings to any applicable element
 		if messages.length
-			log messages
+			
 			# Apply input warning styles as needed
 			if @options.inputWarning
 				ko.utils.toggleDomNodeCssClass(element, @options.inputWarning, true);
