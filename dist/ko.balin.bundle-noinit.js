@@ -9197,6 +9197,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     function Validator(options) {
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
+      this.advise = __bind(this.advise, this);
       this.validate = __bind(this.validate, this);
       Validator.__super__.constructor.call(this, new Maslosoft.Ko.Balin.ValidatorOptions());
     }
@@ -9259,61 +9260,46 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         }
         isValid = false;
       }
-      if (typeof validator.getWarnings === 'function' && warnings) {
-        messages = validator.getWarnings();
-        if (isValid) {
-          if (messages.length) {
-            if (this.options.inputWarning) {
-              ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
-            }
-            if (this.options.inputSuccess) {
-              ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
-            }
-            if (parent) {
-              if (this.options.parentWarning) {
-                ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, true);
-              }
-              if (this.options.parentSuccess) {
-                ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
-              }
-            }
-            if (warnings && messages) {
-              warnings.innerHTML = messages.join('<br />');
-            }
-          } else {
-            if (this.options.inputWarning) {
-              ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, false);
-            }
-            if (this.options.inputSuccess) {
-              ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, true);
-            }
-            if (parent) {
-              if (this.options.parentWarning) {
-                ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, false);
-              }
-              if (this.options.parentSuccess) {
-                ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, true);
-              }
-            }
-            if (warnings) {
-              warnings.innerHTML = '';
-            }
-          }
-        } else {
-          if (this.options.inputWarning) {
-            ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, false);
-          }
-          if (parent) {
-            if (this.options.parentWarning) {
-              ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, false);
-            }
-          }
-          if (warnings) {
-            warnings.innerHTML = '';
-          }
+      if (this.options.inputWarning) {
+        ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, false);
+      }
+      if (parent) {
+        if (this.options.parentWarning) {
+          ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, false);
         }
       }
+      if (warnings) {
+        warnings.innerHTML = '';
+      }
       return isValid;
+    };
+
+    Validator.prototype.advise = function(validator, element, value) {
+      var errors, messages, parent, warnings;
+      parent = jQuery(element).parents('.form-group')[0];
+      errors = parent.querySelector(this.options.errorMessages);
+      warnings = parent.querySelector(this.options.warningMessages);
+      messages = validator.getWarnings();
+      if (messages.length) {
+        log(messages);
+        if (this.options.inputWarning) {
+          ko.utils.toggleDomNodeCssClass(element, this.options.inputWarning, true);
+        }
+        if (this.options.inputSuccess) {
+          ko.utils.toggleDomNodeCssClass(element, this.options.inputSuccess, false);
+        }
+        if (parent) {
+          if (this.options.parentWarning) {
+            ko.utils.toggleDomNodeCssClass(parent, this.options.parentWarning, true);
+          }
+          if (this.options.parentSuccess) {
+            ko.utils.toggleDomNodeCssClass(parent, this.options.parentSuccess, false);
+          }
+        }
+        if (warnings) {
+          return warnings.innerHTML = messages.join('<br />');
+        }
+      }
     };
 
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
@@ -9356,10 +9342,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       initialVal = this.getElementValue(element);
       handler = (function(_this) {
         return function(e) {
-          var elementValue, validator, _j, _len1;
-          if (e.type === 'update') {
-            console.log('update..');
-          }
+          var elementValue, validator, _j, _k, _len1, _len2, _results;
           if (!element) {
             return;
           }
@@ -9368,9 +9351,6 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
             return;
           }
           elementValue = _this.getElementValue(element);
-          if (e.type === 'update') {
-            console.log(elementValue);
-          }
           if (initialVal !== elementValue) {
             initialVal = elementValue;
             for (_j = 0, _len1 = validators.length; _j < _len1; _j++) {
@@ -9379,6 +9359,16 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
                 return;
               }
             }
+            _results = [];
+            for (_k = 0, _len2 = validators.length; _k < _len2; _k++) {
+              validator = validators[_k];
+              if (typeof validator.getWarnings === 'function') {
+                _results.push(_this.advise(validator, element, elementValue));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
           }
         };
       })(this);

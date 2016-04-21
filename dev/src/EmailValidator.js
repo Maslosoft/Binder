@@ -29,7 +29,7 @@
       }
       if (value.match(/com/)) {
         console.log('warn...');
-        this.addWarning("This domain is frequently rejected our e-mail, please add admin@example.com to your whitelist");
+        this.addWarning("This domain has frequently rejected our e-mail. Please add admin@example.com to your whitelist. This is example warnings message.");
       }
       regexp = new RegExp(this.pattern, this.flags);
       valid = regexp.test(value);

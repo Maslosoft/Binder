@@ -36,19 +36,25 @@
 
 <div data-bind="with: app.model.txt3" class="form-group">
 	<label class="control-label" for="txt4">Validate contenteditable if it's not empty and valid email:</label>
-	<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RequiredValidator, label: 'E-mail'}, {_class: Maslosoft.Ko.BalinDev.EmailValidator, label: 'E-mail'}]" style="width:50%;"></div>
+	<div class="form-control" id="txt4" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.EmailValidator, label: 'E-mail'}, {_class: Maslosoft.Ko.BalinDev.RequiredValidator, label: 'E-mail'}]" style="width:50%;"></div>
+	<div class="error-messages"></div>
+	<div class="warning-messages"></div>
+</div>
+<div data-bind="with: app.model.txt3" class="form-group">
+	<label class="control-label" for="txt4">Validate contenteditable if it's not empty and valid email (reverse validation order):</label>
+	<div class="form-control" id="txt5" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RequiredValidator, label: 'E-mail'}, {_class: Maslosoft.Ko.BalinDev.EmailValidator, label: 'E-mail'}]" style="width:50%;"></div>
 	<div class="error-messages"></div>
 	<div class="warning-messages"></div>
 </div>
 <div data-bind="with: app.model.txt3" class="form-group">
 	<label class="control-label" for="txt5">Validate contenteditable - required:</label>
-	<div class="form-control" id="txt5" data-bind="htmlValue: text, validator: {_class: Maslosoft.Ko.BalinDev.RequiredValidator, model: $data}" style="width:50%;"></div>
+	<div class="form-control" id="txt6" data-bind="htmlValue: text, validator: {_class: Maslosoft.Ko.BalinDev.RequiredValidator, model: $data}" style="width:50%;"></div>
 	<div class="error-messages"></div>
 	<div class="warning-messages"></div>
 </div>
 <div data-bind="with: app.model.txt6" class="form-group">
 	<label class="control-label" for="txt6">This should raise errors in console, but continue to work with any proper validator (required):</label>
-	<div class="form-control" id="txt6" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RequiredValidator, label: 'Address'}, {foo:'bar'}, {_class:'DoesNotExists'}, {_class: Maslosoft.Ko.BalinDev.BogusValidator}]" style="width:50%;"></div>
+	<div class="form-control" id="txt7" data-bind="htmlValue: text, validator: [{_class: Maslosoft.Ko.BalinDev.RequiredValidator, label: 'Address'}, {foo:'bar'}, {_class:'DoesNotExists'}, {_class: Maslosoft.Ko.BalinDev.BogusValidator}]" style="width:50%;"></div>
 	<div class="error-messages"></div>
 	<div class="warning-messages"></div>
 </div>
