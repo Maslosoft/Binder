@@ -39,9 +39,10 @@ class @Maslosoft.Ko.Balin.Model
 				@[name] = ko.tracker.factory(data[name])
 			else
 				@[name] = ko.tracker.factory(value)
-
-			# Extra track of dynamic object properties
-			if @[name] and typeof(@[name]) is 'object' and @[name].constructor isnt Array and @[name].constructor is Object
+			
+			# Extra track of dynamic object properties, only for generic objects.
+			# Concrete objects should have predefined set of properties.
+			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Object
 				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
 		ko.track(@)
