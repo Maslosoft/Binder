@@ -32,13 +32,25 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		if events
 			new TreeEvents tree, events, options
 
-		# DND
+		# Accessors for dnd and draggable
 		dnd = valueAccessor().dnd or false
+		drag = valueAccessor().drag or false
+
+		if dnd and drag
+			throw new Error 'Cannot use both `dnd` and `drag`'
+
+		# DND
 		if dnd
 			options.autoScroll = false
 			options.extensions.push 'dnd'
 			options.dnd = new TreeDnd tree, element
 			
+		# Draggable only
+		if drag
+			options.autoScroll = false
+			options.extensions.push 'dnd'
+			options.dnd = new TreeDrag tree, element
+
 		# Node icon and renderer
 		nodeIcon = valueAccessor().nodeIcon or false
 		folderIcon = valueAccessor().folderIcon or false

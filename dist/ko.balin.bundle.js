@@ -173,6 +173,247 @@
   scope['Proxy'] = scope.Proxy;
 })(window);
 
+/* (The MIT License)
+ *
+ * Copyright (c) 2012 Brandon Benvie <http://bbenvie.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the 'Software'), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included with all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// Original WeakMap implementation by Gozala @ https://gist.github.com/1269991
+// Updated and bugfixed by Raynos @ https://gist.github.com/1638059
+// Expanded by Benvie @ https://github.com/Benvie/harmony-collections
+
+void function(global, undefined_, undefined){
+  var getProps = Object.getOwnPropertyNames,
+      defProp  = Object.defineProperty,
+      toSource = Function.prototype.toString,
+      create   = Object.create,
+      hasOwn   = Object.prototype.hasOwnProperty,
+      funcName = /^\n?function\s?(\w*)?_?\(/;
+
+
+  function define(object, key, value){
+    if (typeof key === 'function') {
+      value = key;
+      key = nameOf(value).replace(/_$/, '');
+    }
+    return defProp(object, key, { configurable: true, writable: true, value: value });
+  }
+
+  function nameOf(func){
+    return typeof func !== 'function'
+          ? '' : 'name' in func
+          ? func.name : toSource.call(func).match(funcName)[1];
+  }
+
+  // ############
+  // ### Data ###
+  // ############
+
+  var Data = (function(){
+    var dataDesc = { value: { writable: true, value: undefined } },
+        datalock = 'return function(k){if(k===s)return l}',
+        uids     = create(null),
+
+        createUID = function(){
+          var key = Math.random().toString(36).slice(2);
+          return key in uids ? createUID() : uids[key] = key;
+        },
+
+        globalID = createUID(),
+
+        storage = function(obj){
+          if (hasOwn.call(obj, globalID))
+            return obj[globalID];
+
+          if (!Object.isExtensible(obj))
+            throw new TypeError("Object must be extensible");
+
+          var store = create(null);
+          defProp(obj, globalID, { value: store });
+          return store;
+        };
+
+    // common per-object storage area made visible by patching getOwnPropertyNames'
+    define(Object, function getOwnPropertyNames(obj){
+      var props = getProps(obj);
+      if (hasOwn.call(obj, globalID))
+        props.splice(props.indexOf(globalID), 1);
+      return props;
+    });
+
+    function Data(){
+      var puid = createUID(),
+          secret = {};
+
+      this.unlock = function(obj){
+        var store = storage(obj);
+        if (hasOwn.call(store, puid))
+          return store[puid](secret);
+
+        var data = create(null, dataDesc);
+        defProp(store, puid, {
+          value: new Function('s', 'l', datalock)(secret, data)
+        });
+        return data;
+      }
+    }
+
+    define(Data.prototype, function get(o){ return this.unlock(o).value });
+    define(Data.prototype, function set(o, v){ this.unlock(o).value = v });
+
+    return Data;
+  }());
+
+
+  var WM = (function(data){
+    var validate = function(key){
+      if (key == null || typeof key !== 'object' && typeof key !== 'function')
+        throw new TypeError("Invalid WeakMap key");
+    }
+
+    var wrap = function(collection, value){
+      var store = data.unlock(collection);
+      if (store.value)
+        throw new TypeError("Object is already a WeakMap");
+      store.value = value;
+    }
+
+    var unwrap = function(collection){
+      var storage = data.unlock(collection).value;
+      if (!storage)
+        throw new TypeError("WeakMap is not generic");
+      return storage;
+    }
+
+    var initialize = function(weakmap, iterable){
+      if (iterable !== null && typeof iterable === 'object' && typeof iterable.forEach === 'function') {
+        iterable.forEach(function(item, i){
+          if (item instanceof Array && item.length === 2)
+            set.call(weakmap, iterable[i][0], iterable[i][1]);
+        });
+      }
+    }
+
+
+    function WeakMap(iterable){
+      if (this === global || this == null || this === WeakMap.prototype)
+        return new WeakMap(iterable);
+
+      wrap(this, new Data);
+      initialize(this, iterable);
+    }
+
+    function get(key){
+      validate(key);
+      var value = unwrap(this).get(key);
+      return value === undefined_ ? undefined : value;
+    }
+
+    function set(key, value){
+      validate(key);
+      // store a token for explicit undefined so that "has" works correctly
+      unwrap(this).set(key, value === undefined ? undefined_ : value);
+    }
+
+    function has(key){
+      validate(key);
+      return unwrap(this).get(key) !== undefined;
+    }
+
+    function delete_(key){
+      validate(key);
+      var data = unwrap(this),
+          had = data.get(key) !== undefined;
+      data.set(key, undefined);
+      return had;
+    }
+
+    function toString(){
+      unwrap(this);
+      return '[object WeakMap]';
+    }
+
+    try {
+      var src = ('return '+delete_).replace('e_', '\\u0065'),
+          del = new Function('unwrap', 'validate', src)(unwrap, validate);
+    } catch (e) {
+      var del = delete_;
+    }
+
+    var src = (''+Object).split('Object');
+    var stringifier = function toString(){
+      return src[0] + nameOf(this) + src[1];
+    };
+
+    define(stringifier, stringifier);
+
+    var prep = { __proto__: [] } instanceof Array
+      ? function(f){ f.__proto__ = stringifier }
+      : function(f){ define(f, stringifier) };
+
+    prep(WeakMap);
+
+    [toString, get, set, has, del].forEach(function(method){
+      define(WeakMap.prototype, method);
+      prep(method);
+    });
+
+    return WeakMap;
+  }(new Data));
+
+  var defaultCreator = Object.create
+    ? function(){ return Object.create(null) }
+    : function(){ return {} };
+
+  function createStorage(creator){
+    var weakmap = new WM;
+    creator || (creator = defaultCreator);
+
+    function storage(object, value){
+      if (value || arguments.length === 2) {
+        weakmap.set(object, value);
+      } else {
+        value = weakmap.get(object);
+        if (value === undefined) {
+          value = creator(object);
+          weakmap.set(object, value);
+        }
+      }
+      return value;
+    }
+
+    return storage;
+  }
+
+
+  if (typeof module !== 'undefined') {
+    module.exports = WM;
+  } else if (typeof exports !== 'undefined') {
+    exports.WeakMap = WM;
+  } else if (!('WeakMap' in global)) {
+    global.WeakMap = WM;
+  }
+
+  WM.createStorage = createStorage;
+  if (global.WeakMap)
+    global.WeakMap.createStorage = createStorage;
+}((0, eval)('this'));
+
 /*!
  * Knockout JavaScript library v3.4.0
  * (c) Steven Sanderson - http://knockoutjs.com/
@@ -7195,7 +7436,7 @@ void function(global, undefined_, undefined){
 
             //override global options with override options passed in
             ko.utils.extend(draggableOptions, options);
-
+			console.log(options);
             //setup connection to a sortable
             draggableOptions.connectToSortable = connectClass ? "." + connectClass : false;
 
@@ -7831,7 +8072,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -8640,7 +8881,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     };
 
     Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var dnd, events, folderIcon, nodeIcon, nodeRenderer, options, renderer, tree;
+      var dnd, drag, events, folderIcon, nodeIcon, nodeRenderer, options, renderer, tree;
       tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
       events = this.getValue(valueAccessor).on || false;
@@ -8651,10 +8892,19 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         new TreeEvents(tree, events, options);
       }
       dnd = valueAccessor().dnd || false;
+      drag = valueAccessor().drag || false;
+      if (dnd && drag) {
+        throw new Error('Cannot use both `dnd` and `drag`');
+      }
       if (dnd) {
         options.autoScroll = false;
         options.extensions.push('dnd');
         options.dnd = new TreeDnd(tree, element);
+      }
+      if (drag) {
+        options.autoScroll = false;
+        options.extensions.push('dnd');
+        options.dnd = new TreeDrag(tree, element);
       }
       nodeIcon = valueAccessor().nodeIcon || false;
       folderIcon = valueAccessor().folderIcon || false;
@@ -9316,78 +9566,8 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
   })(this.Maslosoft.Ko.Balin.WidgetUrl);
 
-  TreeDndCache = (function() {
-    var nodes;
-
-    nodes = {};
-
-    function TreeDndCache() {}
-
-    TreeDndCache.prototype.get = function(id) {
-      if (typeof nodes[id] === 'undefined') {
-        return false;
-      }
-      return nodes[id];
-    };
-
-    TreeDndCache.prototype.set = function(id, val) {
-      return nodes[id] = val;
-    };
-
-    return TreeDndCache;
-
-  })();
-
-  TreeNodeFinder = (function() {
-    var cache, findNode, tree;
-
-    cache = null;
-
-    tree = null;
-
-    function TreeNodeFinder(initialTree) {
-      cache = new TreeDndCache;
-      tree = initialTree;
-    }
-
-    findNode = function(node, id) {
-      var child, found, foundNode, _i, _len, _ref;
-      if (typeof id === 'undefined') {
-        return false;
-      }
-      if (found = cache.get(id)) {
-        return found;
-      }
-      if (node.id === id) {
-        return node;
-      }
-      if (node._id === id) {
-        return node;
-      }
-      if (node.children && node.children.length > 0) {
-        _ref = node.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          child = _ref[_i];
-          foundNode = findNode(child, id);
-          if (foundNode !== false) {
-            cache.set(id, foundNode);
-            return foundNode;
-          }
-        }
-      }
-      return false;
-    };
-
-    TreeNodeFinder.prototype.find = function(id) {
-      return findNode(tree, id);
-    };
-
-    return TreeNodeFinder;
-
-  })();
-
   TreeDnd = (function() {
-    var el, finder, t, tree;
+    var t;
 
     TreeDnd.prototype.autoExpandMS = 400;
 
@@ -9397,11 +9577,13 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     TreeDnd.prototype.preventRecursiveMoves = true;
 
-    tree = null;
+    TreeDnd.prototype.tree = null;
 
-    finder = null;
+    TreeDnd.prototype.finder = null;
 
-    el = null;
+    TreeDnd.prototype.draggable = null;
+
+    TreeDnd.el = null;
 
     t = function(node) {
       var childNode, children, _i, _len, _ref;
@@ -9418,11 +9600,16 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       }
     };
 
-    function TreeDnd(initialTree, element, events) {
+    function TreeDnd(initialTree, element, events, options) {
       this.dragDrop = __bind(this.dragDrop, this);
-      tree = initialTree;
-      finder = new TreeNodeFinder(tree);
-      el = jQuery(element);
+      this.dragEnd = __bind(this.dragEnd, this);
+      this.draggable = {};
+      this.draggable.scroll = false;
+      this.draggable.stop = this.handler;
+      this.tree = {};
+      this.tree = initialTree;
+      this.finder = new TreeNodeFinder(this.tree);
+      this.el = jQuery(element);
     }
 
     TreeDnd.prototype.dragStart = function(node, data) {
@@ -9433,17 +9620,30 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       return true;
     };
 
+    TreeDnd.prototype.dragEnd = function(node, data) {
+      log('drag end...');
+      return true;
+    };
+
     TreeDnd.prototype.dragDrop = function(node, data) {
-      var current, handler, hitMode, index, parent, target, targetParent;
+      var ctx, current, handler, hitMode, index, parent, target, targetParent;
       hitMode = data.hitMode;
-      parent = finder.find(data.otherNode.parent.data.id);
-      current = finder.find(data.otherNode.data.id);
-      target = finder.find(node.data.id);
-      targetParent = finder.find(node.parent.data.id);
+      if (!data.otherNode) {
+        ctx = ko.contextFor(data.draggable.element[0]);
+        log(data);
+        log('Context:', ctx);
+        log(ctx.$data.title);
+        current = ctx.$data;
+      } else {
+        parent = this.finder.find(data.otherNode.parent.data.id);
+        current = this.finder.find(data.otherNode.data.id);
+      }
+      target = this.finder.find(node.data.id);
+      targetParent = this.finder.find(node.parent.data.id);
       if (parent) {
         parent.children.remove(current);
       }
-      tree.children.remove(current);
+      this.tree.children.remove(current);
       if (targetParent) {
         targetParent.children.remove(current);
       }
@@ -9455,25 +9655,26 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           index = targetParent.children.indexOf(target);
           targetParent.children.splice(index, 0, current);
         } else {
-          index = tree.children.indexOf(target);
-          tree.children.splice(index, 0, current);
+          index = this.tree.children.indexOf(target);
+          this.tree.children.splice(index, 0, current);
         }
       }
       if (hitMode === 'after') {
         if (targetParent) {
           targetParent.children.push(current);
         } else {
-          tree.children.push(current);
+          this.tree.children.push(current);
         }
       }
       handler = (function(_this) {
-        return function() {
-          el.fancytree('option', 'source', tree.children);
-          el.fancytree('getRootNode').visit(function(node) {
+        return function(e) {
+          log(e);
+          _this.el.fancytree('option', 'source', _this.tree.children);
+          _this.el.fancytree('getRootNode').visit(function(node) {
             return node.setExpanded(true);
           });
-          el.focus();
-          return log('update tree..');
+          _this.el.focus();
+          return log('update tree..', _this.el);
         };
       })(this);
       setTimeout(handler, 0);
@@ -9484,14 +9685,19 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
   })();
 
+  TreeDrag = (function() {
+    function TreeDrag() {}
+
+    return TreeDrag;
+
+  })();
+
   TreeEvents = (function() {
-    var doEvent, finder, stop, tree;
+    var doEvent, finder, stop;
 
     TreeEvents.prototype.events = null;
 
     TreeEvents.prototype.options = null;
-
-    tree = null;
 
     finder = null;
 
@@ -9515,8 +9721,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       this.events = events;
       this.options = options;
       this.handle = __bind(this.handle, this);
-      tree = initialTree;
-      finder = new TreeNodeFinder(tree);
+      finder = new TreeNodeFinder(initialTree);
       this.handle('click');
       this.handle('dblclick');
       this.handle('activate');
@@ -9539,6 +9744,28 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     };
 
     return TreeEvents;
+
+  })();
+
+  TreeNodeCache = (function() {
+    var nodes;
+
+    nodes = {};
+
+    function TreeNodeCache() {}
+
+    TreeNodeCache.prototype.get = function(id) {
+      if (typeof nodes[id] === 'undefined') {
+        return false;
+      }
+      return nodes[id];
+    };
+
+    TreeNodeCache.prototype.set = function(id, val) {
+      return nodes[id] = val;
+    };
+
+    return TreeNodeCache;
 
   })();
 
@@ -9593,6 +9820,62 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     };
 
     return TreeNodeRenderer;
+
+  })();
+
+  TreeNodeFinder = (function() {
+    var cache, findNode, trees;
+
+    cache = new TreeNodeCache;
+
+    trees = [];
+
+    function TreeNodeFinder(initialTree) {
+      trees.push(initialTree);
+      log(trees);
+    }
+
+    findNode = function(node, id) {
+      var child, found, foundNode, _i, _len, _ref;
+      if (typeof id === 'undefined') {
+        return false;
+      }
+      if (found = cache.get(id)) {
+        return found;
+      }
+      if (node.id === id) {
+        return node;
+      }
+      if (node._id === id) {
+        return node;
+      }
+      if (node.children && node.children.length > 0) {
+        _ref = node.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          foundNode = findNode(child, id);
+          if (foundNode !== false) {
+            cache.set(id, foundNode);
+            return foundNode;
+          }
+        }
+      }
+      return false;
+    };
+
+    TreeNodeFinder.prototype.find = function(id) {
+      var node, tree, _i, _len;
+      for (_i = 0, _len = trees.length; _i < _len; _i++) {
+        tree = trees[_i];
+        node = findNode(tree, id);
+        if (node) {
+          return node;
+        }
+      }
+      return false;
+    };
+
+    return TreeNodeFinder;
 
   })();
 

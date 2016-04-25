@@ -19,6 +19,7 @@ balin.push 'src/_init.coffee'
 # Bundle setup
 bundle = [
 	'bower_components/proxy-polyfill/proxy.min.js'
+	'node_modules/weakmap/weakmap.min.js'
 	'bower_components/knockout/dist/knockout.js'
 	'bower_components/knockout-es5/dist/knockout-es5.min.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.min.js'
@@ -26,6 +27,7 @@ bundle = [
 ]
 bundleDev = [
 	'bower_components/proxy-polyfill/proxy.js'
+	'node_modules/weakmap/weakmap.js'
 	'bower_components/knockout/dist/knockout.debug.js'
 	'bower_components/knockout-es5/dist/knockout-es5.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.js'

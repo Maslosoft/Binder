@@ -1,49 +1,3 @@
-#
-# Tree drag and drop helpers
-# @internal
-#
-class TreeDndCache
-	nodes = {}
-	constructor: () ->
-		# nodes = {}
-
-	get: (id) ->
-		if typeof(nodes[id]) is 'undefined'
-			return false
-		return nodes[id]
-
-	set: (id, val) ->
-		nodes[id] = val
-
-class TreeNodeFinder
-	# Private
-	cache = null
-	tree = null
-	constructor: (initialTree) ->
-		cache = new TreeDndCache
-		tree = initialTree
-
-	findNode = (node, id) ->
-		if typeof(id) is 'undefined'
-			return false
-		if found = cache.get id
-			return found
-		if node.id is id
-			return node
-		if  node._id is id
-			return node
-
-		if node.children and node.children.length > 0
-			for child in node.children
-				foundNode = findNode(child, id)
-				if foundNode isnt false
-					cache.set id, foundNode
-					return foundNode
-		return false
-
-	find: (id) ->
-		return findNode tree, id
-
 class TreeDnd
 
 	# Expand helps greatly when doing dnd
@@ -58,25 +12,30 @@ class TreeDnd
 	preventVoidMoves: true
 	preventRecursiveMoves: true
 
-	# Private
-
 	#
 	# Whole tree data
 	# @var TreeItem[]
 	#
-	tree = null
-
+	tree: null
 	#
 	# Node finder instance
 	# @var TreeNodeFinder
 	#
-	finder = null
+	finder: null
+
+	#
+	# Draggable options
+	#
+	#
+	draggable: null
 
 	#
 	# Tree html element
 	#
 	#
-	el = null
+	@el = null
+
+	# Private
 
 	t = (node) ->
 		return # Comment to log
@@ -87,10 +46,14 @@ class TreeDnd
 				children.push childNode.title
 			log "Children: #{children.join(',')}"
 
-	constructor: (initialTree, element, events) ->
-		tree = initialTree
-		finder = new TreeNodeFinder tree
-		el = jQuery element
+	constructor: (initialTree, element, events, options) ->
+		@draggable = {}
+		@draggable.scroll = false
+		@draggable.stop = @handler
+		@tree = {}
+		@tree = initialTree
+		@finder = new TreeNodeFinder @tree
+		@el = jQuery element
 
 	dragStart: (node, data) ->
 		return true
@@ -98,13 +61,28 @@ class TreeDnd
 	dragEnter: (node, data) ->
 		return true
 
+	dragEnd: (node, data) =>
+		log 'drag end...'
+		return true
+
 	dragDrop: (node, data) =>
 		
 		hitMode = data.hitMode
-		parent = finder.find(data.otherNode.parent.data.id)
-		current = finder.find(data.otherNode.data.id)
-		target = finder.find(node.data.id)
-		targetParent = finder.find(node.parent.data.id)
+
+		if not data.otherNode
+			# Drop from ourside tree
+			ctx = ko.contextFor data.draggable.element[0]
+			log data
+			log 'Context:', ctx
+			log ctx.$data.title
+			current = ctx.$data
+		else
+			# From from within tree
+			parent = @finder.find(data.otherNode.parent.data.id)
+			current = @finder.find(data.otherNode.data.id)
+
+		target = @finder.find(node.data.id)
+		targetParent = @finder.find(node.parent.data.id)
 
 
 		# console.log "Parent: #{parent.title}"
@@ -118,7 +96,7 @@ class TreeDnd
 		# Remove current element first
 		if parent
 			parent.children.remove current
-		tree.children.remove current
+		@tree.children.remove current
 
 		if targetParent
 			targetParent.children.remove current
@@ -138,8 +116,8 @@ class TreeDnd
 				targetParent.children.splice index, 0, current
 			else
 				# Move over root node
-				index = tree.children.indexOf target
-				tree.children.splice index, 0, current
+				index = @tree.children.indexOf target
+				@tree.children.splice index, 0, current
 			# console.log "indexOf: #{index} (before)"
 
 		# Simply push at the end - but at targetParent
@@ -147,18 +125,19 @@ class TreeDnd
 			if targetParent
 				targetParent.children.push current
 			else
-				tree.children.push current
+				@tree.children.push current
 
 		# NOTE: This could possibly work, but it doesn't.
 		# This would update whole tree with new data. Some infinite recursion occurs.
 		# @handle element, valueAccessor, allBindingsAccessor
 
-		handler = () =>
-			el.fancytree 'option', 'source', tree.children
-			el.fancytree('getRootNode').visit (node) ->
+		handler = (e) =>
+			log e
+			@el.fancytree 'option', 'source', @tree.children
+			@el.fancytree('getRootNode').visit (node) ->
 				node.setExpanded true
-			el.focus()
-			log 'update tree..'
+			@el.focus()
+			log 'update tree..', @el
 
 		setTimeout handler, 0
 		# Move fancytree node separatelly

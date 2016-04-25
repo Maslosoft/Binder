@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDndCache, TreeEvents, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -809,7 +809,7 @@
     };
 
     Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var dnd, events, folderIcon, nodeIcon, nodeRenderer, options, renderer, tree;
+      var dnd, drag, events, folderIcon, nodeIcon, nodeRenderer, options, renderer, tree;
       tree = this.getData(valueAccessor);
       options = valueAccessor().options || {};
       events = this.getValue(valueAccessor).on || false;
@@ -820,10 +820,19 @@
         new TreeEvents(tree, events, options);
       }
       dnd = valueAccessor().dnd || false;
+      drag = valueAccessor().drag || false;
+      if (dnd && drag) {
+        throw new Error('Cannot use both `dnd` and `drag`');
+      }
       if (dnd) {
         options.autoScroll = false;
         options.extensions.push('dnd');
         options.dnd = new TreeDnd(tree, element);
+      }
+      if (drag) {
+        options.autoScroll = false;
+        options.extensions.push('dnd');
+        options.dnd = new TreeDrag(tree, element);
       }
       nodeIcon = valueAccessor().nodeIcon || false;
       folderIcon = valueAccessor().folderIcon || false;
@@ -1485,78 +1494,8 @@
 
   })(this.Maslosoft.Ko.Balin.WidgetUrl);
 
-  TreeDndCache = (function() {
-    var nodes;
-
-    nodes = {};
-
-    function TreeDndCache() {}
-
-    TreeDndCache.prototype.get = function(id) {
-      if (typeof nodes[id] === 'undefined') {
-        return false;
-      }
-      return nodes[id];
-    };
-
-    TreeDndCache.prototype.set = function(id, val) {
-      return nodes[id] = val;
-    };
-
-    return TreeDndCache;
-
-  })();
-
-  TreeNodeFinder = (function() {
-    var cache, findNode, tree;
-
-    cache = null;
-
-    tree = null;
-
-    function TreeNodeFinder(initialTree) {
-      cache = new TreeDndCache;
-      tree = initialTree;
-    }
-
-    findNode = function(node, id) {
-      var child, found, foundNode, _i, _len, _ref;
-      if (typeof id === 'undefined') {
-        return false;
-      }
-      if (found = cache.get(id)) {
-        return found;
-      }
-      if (node.id === id) {
-        return node;
-      }
-      if (node._id === id) {
-        return node;
-      }
-      if (node.children && node.children.length > 0) {
-        _ref = node.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          child = _ref[_i];
-          foundNode = findNode(child, id);
-          if (foundNode !== false) {
-            cache.set(id, foundNode);
-            return foundNode;
-          }
-        }
-      }
-      return false;
-    };
-
-    TreeNodeFinder.prototype.find = function(id) {
-      return findNode(tree, id);
-    };
-
-    return TreeNodeFinder;
-
-  })();
-
   TreeDnd = (function() {
-    var el, finder, t, tree;
+    var t;
 
     TreeDnd.prototype.autoExpandMS = 400;
 
@@ -1566,11 +1505,13 @@
 
     TreeDnd.prototype.preventRecursiveMoves = true;
 
-    tree = null;
+    TreeDnd.prototype.tree = null;
 
-    finder = null;
+    TreeDnd.prototype.finder = null;
 
-    el = null;
+    TreeDnd.prototype.draggable = null;
+
+    TreeDnd.el = null;
 
     t = function(node) {
       var childNode, children, _i, _len, _ref;
@@ -1587,11 +1528,16 @@
       }
     };
 
-    function TreeDnd(initialTree, element, events) {
+    function TreeDnd(initialTree, element, events, options) {
       this.dragDrop = __bind(this.dragDrop, this);
-      tree = initialTree;
-      finder = new TreeNodeFinder(tree);
-      el = jQuery(element);
+      this.dragEnd = __bind(this.dragEnd, this);
+      this.draggable = {};
+      this.draggable.scroll = false;
+      this.draggable.stop = this.handler;
+      this.tree = {};
+      this.tree = initialTree;
+      this.finder = new TreeNodeFinder(this.tree);
+      this.el = jQuery(element);
     }
 
     TreeDnd.prototype.dragStart = function(node, data) {
@@ -1602,17 +1548,30 @@
       return true;
     };
 
+    TreeDnd.prototype.dragEnd = function(node, data) {
+      log('drag end...');
+      return true;
+    };
+
     TreeDnd.prototype.dragDrop = function(node, data) {
-      var current, handler, hitMode, index, parent, target, targetParent;
+      var ctx, current, handler, hitMode, index, parent, target, targetParent;
       hitMode = data.hitMode;
-      parent = finder.find(data.otherNode.parent.data.id);
-      current = finder.find(data.otherNode.data.id);
-      target = finder.find(node.data.id);
-      targetParent = finder.find(node.parent.data.id);
+      if (!data.otherNode) {
+        ctx = ko.contextFor(data.draggable.element[0]);
+        log(data);
+        log('Context:', ctx);
+        log(ctx.$data.title);
+        current = ctx.$data;
+      } else {
+        parent = this.finder.find(data.otherNode.parent.data.id);
+        current = this.finder.find(data.otherNode.data.id);
+      }
+      target = this.finder.find(node.data.id);
+      targetParent = this.finder.find(node.parent.data.id);
       if (parent) {
         parent.children.remove(current);
       }
-      tree.children.remove(current);
+      this.tree.children.remove(current);
       if (targetParent) {
         targetParent.children.remove(current);
       }
@@ -1624,25 +1583,26 @@
           index = targetParent.children.indexOf(target);
           targetParent.children.splice(index, 0, current);
         } else {
-          index = tree.children.indexOf(target);
-          tree.children.splice(index, 0, current);
+          index = this.tree.children.indexOf(target);
+          this.tree.children.splice(index, 0, current);
         }
       }
       if (hitMode === 'after') {
         if (targetParent) {
           targetParent.children.push(current);
         } else {
-          tree.children.push(current);
+          this.tree.children.push(current);
         }
       }
       handler = (function(_this) {
-        return function() {
-          el.fancytree('option', 'source', tree.children);
-          el.fancytree('getRootNode').visit(function(node) {
+        return function(e) {
+          log(e);
+          _this.el.fancytree('option', 'source', _this.tree.children);
+          _this.el.fancytree('getRootNode').visit(function(node) {
             return node.setExpanded(true);
           });
-          el.focus();
-          return log('update tree..');
+          _this.el.focus();
+          return log('update tree..', _this.el);
         };
       })(this);
       setTimeout(handler, 0);
@@ -1653,14 +1613,19 @@
 
   })();
 
+  TreeDrag = (function() {
+    function TreeDrag() {}
+
+    return TreeDrag;
+
+  })();
+
   TreeEvents = (function() {
-    var doEvent, finder, stop, tree;
+    var doEvent, finder, stop;
 
     TreeEvents.prototype.events = null;
 
     TreeEvents.prototype.options = null;
-
-    tree = null;
 
     finder = null;
 
@@ -1684,8 +1649,7 @@
       this.events = events;
       this.options = options;
       this.handle = __bind(this.handle, this);
-      tree = initialTree;
-      finder = new TreeNodeFinder(tree);
+      finder = new TreeNodeFinder(initialTree);
       this.handle('click');
       this.handle('dblclick');
       this.handle('activate');
@@ -1708,6 +1672,28 @@
     };
 
     return TreeEvents;
+
+  })();
+
+  TreeNodeCache = (function() {
+    var nodes;
+
+    nodes = {};
+
+    function TreeNodeCache() {}
+
+    TreeNodeCache.prototype.get = function(id) {
+      if (typeof nodes[id] === 'undefined') {
+        return false;
+      }
+      return nodes[id];
+    };
+
+    TreeNodeCache.prototype.set = function(id, val) {
+      return nodes[id] = val;
+    };
+
+    return TreeNodeCache;
 
   })();
 
@@ -1762,6 +1748,62 @@
     };
 
     return TreeNodeRenderer;
+
+  })();
+
+  TreeNodeFinder = (function() {
+    var cache, findNode, trees;
+
+    cache = new TreeNodeCache;
+
+    trees = [];
+
+    function TreeNodeFinder(initialTree) {
+      trees.push(initialTree);
+      log(trees);
+    }
+
+    findNode = function(node, id) {
+      var child, found, foundNode, _i, _len, _ref;
+      if (typeof id === 'undefined') {
+        return false;
+      }
+      if (found = cache.get(id)) {
+        return found;
+      }
+      if (node.id === id) {
+        return node;
+      }
+      if (node._id === id) {
+        return node;
+      }
+      if (node.children && node.children.length > 0) {
+        _ref = node.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          foundNode = findNode(child, id);
+          if (foundNode !== false) {
+            cache.set(id, foundNode);
+            return foundNode;
+          }
+        }
+      }
+      return false;
+    };
+
+    TreeNodeFinder.prototype.find = function(id) {
+      var node, tree, _i, _len;
+      for (_i = 0, _len = trees.length; _i < _len; _i++) {
+        tree = trees[_i];
+        node = findNode(tree, id);
+        if (node) {
+          return node;
+        }
+      }
+      return false;
+    };
+
+    return TreeNodeFinder;
 
   })();
 

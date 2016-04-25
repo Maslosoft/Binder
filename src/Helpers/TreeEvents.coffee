@@ -14,12 +14,6 @@ class TreeEvents
 	# Private
 
 	#
-	# Initial tree data
-	# @var TreeItem[]
-	#
-	tree = null
-
-	#
 	# Finder instance
 	# @var TreeNodeFinder
 	#
@@ -43,8 +37,7 @@ class TreeEvents
 		event.stopPropagation()
 
 	constructor: (initialTree, @events, @options) ->
-		tree = initialTree
-		finder = new TreeNodeFinder tree
+		finder = new TreeNodeFinder initialTree
 
 		@handle 'click'
 		@handle 'dblclick'
