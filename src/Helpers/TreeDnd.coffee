@@ -30,6 +30,12 @@ class TreeDnd
 	draggable: null
 
 	#
+	#
+	# @var TreeEvents
+	#
+	events: null
+
+	#
 	# Tree html element
 	#
 	#
@@ -46,10 +52,10 @@ class TreeDnd
 				children.push childNode.title
 			log "Children: #{children.join(',')}"
 
-	constructor: (initialTree, element, events, options) ->
+	constructor: (initialTree, element, @events, options) ->
 		@draggable = {}
 		@draggable.scroll = false
-		@draggable.stop = @handler
+		
 		@tree = {}
 		@tree = initialTree
 		@finder = new TreeNodeFinder @tree
@@ -69,17 +75,24 @@ class TreeDnd
 		
 		hitMode = data.hitMode
 
+		# Dragged element - either draggable or tree element
+		dragged = data.draggable.element[0]
+
 		if not data.otherNode
 			# Drop from ourside tree
-			ctx = ko.contextFor data.draggable.element[0]
-			log data
-			log 'Context:', ctx
-			log ctx.$data.title
+			ctx = ko.contextFor dragged
 			current = ctx.$data
 		else
 			# From from within tree
 			parent = @finder.find(data.otherNode.parent.data.id)
 			current = @finder.find(data.otherNode.data.id)
+
+			if not @el.is dragged
+				log 'From other instance...'
+				# Drop from other tree instance
+				data = ko.dataFor dragged
+				log data
+				setTimeout handler, 0
 
 		target = @finder.find(node.data.id)
 		targetParent = @finder.find(node.parent.data.id)

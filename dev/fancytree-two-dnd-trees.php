@@ -6,15 +6,18 @@
 </div>
 <div class="row">
 	<div class="col-sm-4">
+		<h4>Drag only list</h4>
 		<ul  data-bind="foreach: {data: app.model.list.children}">
 			<li data-bind="draggable: {data: $data, options: {connectToFancytree: true}}">{{title}}</li>
 		</ul>
 	</div>
 	<div class="col-sm-4">
-		<div data-bind="fancytree: {data: app.model.Tree, dnd: true, autoExpand: true, options: app.model.options}">
+		<h4>Drag only</h4>
+		<div data-bind="fancytree: {data: app.model.Tree, drag: true, autoExpand: true, options: app.model.options}">
 		</div>
 	</div>
 	<div class="col-sm-4">
+		<h4>Drop target and DND tree</h4>
 		<div data-bind="fancytree: {data: app.model.Tree2, dnd: true, autoExpand: true, options: app.model.options}">
 		</div>
 	</div>

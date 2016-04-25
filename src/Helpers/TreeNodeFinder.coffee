@@ -5,7 +5,6 @@ class TreeNodeFinder
 	
 	constructor: (initialTree) ->
 		trees.push initialTree
-		log trees
 
 	findNode = (node, id) ->
 		if typeof(id) is 'undefined'
