@@ -2110,9 +2110,6 @@ if !window.Proxy
 class ModelProxyHandler
 	constructor: (@parent, @field) ->
 
-	get: (target, name, receiver) ->
-
-		return target[name]
 	set: (target, name, value, receiver) ->
 		before = Object.keys(target).length
 		target[name] = value
@@ -2143,6 +2140,9 @@ class @Maslosoft.Ko.Balin.Model
 			# Extra track of dynamic object properties, only for generic objects.
 			# Concrete objects should have predefined set of properties.
 			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Object
+				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
+
+			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Array
 				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
 		ko.track(@)

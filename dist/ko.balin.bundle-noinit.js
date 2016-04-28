@@ -6497,207 +6497,222 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
       }
     }
   }
+  //<editor-fold defaultstate="collapsed" desc="Computed">
 
-  // Computed properties
-  // -------------------
-  //
-  // The preceding code is already sufficient to upgrade ko.computed model properties to ES5
-  // getter/setter pairs (or in the case of readonly ko.computed properties, just a getter).
-  // These then behave like a regular property with a getter function, except they are smarter:
-  // your evaluator is only invoked when one of its dependencies changes. The result is cached
-  // and used for all evaluations until the next time a dependency changes).
-  //
-  // However, instead of forcing developers to declare a ko.computed property explicitly, it's
-  // nice to offer a utility function that declares a computed getter directly.
+	// Computed properties
+	// -------------------
+	//
+	// The preceding code is already sufficient to upgrade ko.computed model properties to ES5
+	// getter/setter pairs (or in the case of readonly ko.computed properties, just a getter).
+	// These then behave like a regular property with a getter function, except they are smarter:
+	// your evaluator is only invoked when one of its dependencies changes. The result is cached
+	// and used for all evaluations until the next time a dependency changes).
+	//
+	// However, instead of forcing developers to declare a ko.computed property explicitly, it's
+	// nice to offer a utility function that declares a computed getter directly.
 
-  // Implements `ko.defineProperty`
-  function defineComputedProperty(obj, propertyName, evaluatorOrOptions) {
-    var ko = this,
+	// Implements `ko.defineProperty`
+	function defineComputedProperty(obj, propertyName, evaluatorOrOptions) {
+		var ko = this,
       computedOptions = { owner: obj, deferEvaluation: true };
 
-    if (typeof evaluatorOrOptions === 'function') {
-      computedOptions.read = evaluatorOrOptions;
-    } else {
-      if ('value' in evaluatorOrOptions) {
-        throw new Error('For ko.defineProperty, you must not specify a "value" for the property. ' +
-                        'You must provide a "get" function.');
-      }
+		if (typeof evaluatorOrOptions === 'function') {
+			computedOptions.read = evaluatorOrOptions;
+		} else {
+			if ('value' in evaluatorOrOptions) {
+				throw new Error('For ko.defineProperty, you must not specify a "value" for the property. ' +
+						  'You must provide a "get" function.');
+			}
 
-      if (typeof evaluatorOrOptions.get !== 'function') {
-        throw new Error('For ko.defineProperty, the third parameter must be either an evaluator function, ' +
-                        'or an options object containing a function called "get".');
-      }
+			if (typeof evaluatorOrOptions.get !== 'function') {
+				throw new Error('For ko.defineProperty, the third parameter must be either an evaluator function, ' +
+						  'or an options object containing a function called "get".');
+			}
 
-      computedOptions.read = evaluatorOrOptions.get;
-      computedOptions.write = evaluatorOrOptions.set;
-    }
+			computedOptions.read = evaluatorOrOptions.get;
+			computedOptions.write = evaluatorOrOptions.set;
+		}
 
-    obj[propertyName] = ko.computed(computedOptions);
-    track.call(ko, obj, [propertyName]);
-    return obj;
-  }
+		obj[propertyName] = ko.computed(computedOptions);
+		track.call(ko, obj, [propertyName]);
+		return obj;
+	}
+	//</editor-fold>
 
-  // Array handling
-  // --------------
-  //
-  // Arrays are special, because unlike other property types, they have standard mutator functions
-  // (`push`/`pop`/`splice`/etc.) and it's desirable to trigger a change notification whenever one of
-  // those mutator functions is invoked.
-  //
-  // Traditionally, Knockout handles this by putting special versions of `push`/`pop`/etc. on observable
-  // arrays that mutate the underlying array and then trigger a notification. That approach doesn't
-  // work for Knockout-ES5 because properties now return the underlying arrays, so the mutator runs
-  // in the context of the underlying array, not any particular observable:
-  //
-  //     // Operates on the underlying array value
-  //     myModel.someCollection.push('New value');
-  //
-  // To solve this, Knockout-ES5 detects array values, and modifies them as follows:
-  //  1. Associates a hidden subscribable with each array instance that it encounters
-  //  2. Intercepts standard mutators (`push`/`pop`/etc.) and makes them trigger the subscribable
-  // Then, for model properties whose values are arrays, the property's underlying observable
-  // subscribes to the array subscribable, so it can trigger a change notification after mutation.
 
-  // Given an observable that underlies a model property, watch for any array value that might
-  // be assigned as the property value, and hook into its change events
-  function notifyWhenPresentOrFutureArrayValuesMutate(ko, observable) {
-    var watchingArraySubscription = null;
-    ko.computed(function () {
-      // Unsubscribe to any earlier array instance
-      if (watchingArraySubscription) {
-        watchingArraySubscription.dispose();
-        watchingArraySubscription = null;
-      }
+	//<editor-fold defaultstate="collapsed" desc="Arrays">
+	// Array handling
+	// --------------
+	//
+	// Arrays are special, because unlike other property types, they have standard mutator functions
+	// (`push`/`pop`/`splice`/etc.) and it's desirable to trigger a change notification whenever one of
+	// those mutator functions is invoked.
+	//
+	// Traditionally, Knockout handles this by putting special versions of `push`/`pop`/etc. on observable
+	// arrays that mutate the underlying array and then trigger a notification. That approach doesn't
+	// work for Knockout-ES5 because properties now return the underlying arrays, so the mutator runs
+	// in the context of the underlying array, not any particular observable:
+	//
+	//     // Operates on the underlying array value
+	//     myModel.someCollection.push('New value');
+	//
+	// To solve this, Knockout-ES5 detects array values, and modifies them as follows:
+	//  1. Associates a hidden subscribable with each array instance that it encounters
+	//  2. Intercepts standard mutators (`push`/`pop`/etc.) and makes them trigger the subscribable
+	// Then, for model properties whose values are arrays, the property's underlying observable
+	// subscribes to the array subscribable, so it can trigger a change notification after mutation.
 
-      // Subscribe to the new array instance
-      var newArrayInstance = observable();
-      if (newArrayInstance instanceof Array) {
-        watchingArraySubscription = startWatchingArrayInstance(ko, observable, newArrayInstance);
-      }
-    });
-  }
+	// Given an observable that underlies a model property, watch for any array value that might
+	// be assigned as the property value, and hook into its change events
+	function notifyWhenPresentOrFutureArrayValuesMutate(ko, observable) {
+		var watchingArraySubscription = null;
+		ko.computed(function () {
+			// Unsubscribe to any earlier array instance
+			if (watchingArraySubscription) {
+				watchingArraySubscription.dispose();
+				watchingArraySubscription = null;
+			}
 
-  // Listens for array mutations, and when they happen, cause the observable to fire notifications.
-  // This is used to make model properties of type array fire notifications when the array changes.
-  // Returns a subscribable that can later be disposed.
-  function startWatchingArrayInstance(ko, observable, arrayInstance) {
-    var subscribable = getSubscribableForArray(ko, arrayInstance);
-    return subscribable.subscribe(observable);
-  }
+			// Subscribe to the new array instance
+			var newArrayInstance = observable();
+			if (newArrayInstance instanceof Array) {
+				watchingArraySubscription = startWatchingArrayInstance(ko, observable, newArrayInstance);
+			}
+		});
+	}
 
-  // Lazily created by `getSubscribableForArray` below. Has to be created lazily because the
-  // WeakMap factory isn't available until the module has finished loading (may be async).
-  var arraySubscribablesMap;
+	// Listens for array mutations, and when they happen, cause the observable to fire notifications.
+	// This is used to make model properties of type array fire notifications when the array changes.
+	// Returns a subscribable that can later be disposed.
+	function startWatchingArrayInstance(ko, observable, arrayInstance) {
+		var subscribable = getSubscribableForArray(ko, arrayInstance);
+		return subscribable.subscribe(observable);
+	}
 
-  // Gets or creates a subscribable that fires after each array mutation
-  function getSubscribableForArray(ko, arrayInstance) {
-    if (!arraySubscribablesMap) {
-      arraySubscribablesMap = weakMapFactory();
-    }
+	// Lazily created by `getSubscribableForArray` below. Has to be created lazily because the
+	// WeakMap factory isn't available until the module has finished loading (may be async).
+	var arraySubscribablesMap;
 
-    var subscribable = arraySubscribablesMap.get(arrayInstance);
-    if (!subscribable) {
-      subscribable = new ko.subscribable();
-      arraySubscribablesMap.set(arrayInstance, subscribable);
+	// Gets or creates a subscribable that fires after each array mutation
+	function getSubscribableForArray(ko, arrayInstance) {
+		if (!arraySubscribablesMap) {
+			arraySubscribablesMap = weakMapFactory();
+		}
 
-      var notificationPauseSignal = {};
-      wrapStandardArrayMutators(arrayInstance, subscribable, notificationPauseSignal);
-      addKnockoutArrayMutators(ko, arrayInstance, subscribable, notificationPauseSignal);
-    }
+		var subscribable = arraySubscribablesMap.get(arrayInstance);
+		if (!subscribable) {
+			subscribable = new ko.subscribable();
+			arraySubscribablesMap.set(arrayInstance, subscribable);
 
-    return subscribable;
-  }
+			var notificationPauseSignal = {};
+			wrapStandardArrayMutators(arrayInstance, subscribable, notificationPauseSignal);
+			addKnockoutArrayMutators(ko, arrayInstance, subscribable, notificationPauseSignal);
+		}
 
-  // After each array mutation, fires a notification on the given subscribable
-  function wrapStandardArrayMutators(arrayInstance, subscribable, notificationPauseSignal) {
-    ['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'].forEach(function(fnName) {
-      var origMutator = arrayInstance[fnName];
-      arrayInstance[fnName] = function() {
-        var result = origMutator.apply(this, arguments);
-        if (notificationPauseSignal.pause !== true) {
-          subscribable.notifySubscribers(this);
-        }
-        return result;
-      };
-    });
-  }
+		return subscribable;
+	}
 
-  // Adds Knockout's additional array mutation functions to the array
-  function addKnockoutArrayMutators(ko, arrayInstance, subscribable, notificationPauseSignal) {
-    ['remove', 'removeAll', 'destroy', 'destroyAll', 'replace'].forEach(function(fnName) {
-      // Make it a non-enumerable property for consistency with standard Array functions
-      Object.defineProperty(arrayInstance, fnName, {
-        enumerable: false,
-        value: function() {
-          var result;
+	// After each array mutation, fires a notification on the given subscribable
+	function wrapStandardArrayMutators(arrayInstance, subscribable, notificationPauseSignal) {
+		['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'].forEach(function(fnName) {
+			var origMutator = arrayInstance[fnName];
+			arrayInstance[fnName] = function() {
+				var result = origMutator.apply(this, arguments);
+				if (notificationPauseSignal.pause !== true) {
+					subscribable.notifySubscribers(this);
+				}
+				return result;
+			};
+		});
+	}
 
-          // These additional array mutators are built using the underlying push/pop/etc.
-          // mutators, which are wrapped to trigger notifications. But we don't want to
-          // trigger multiple notifications, so pause the push/pop/etc. wrappers and
-          // delivery only one notification at the end of the process.
-          notificationPauseSignal.pause = true;
-          try {
-            // Creates a temporary observableArray that can perform the operation.
-            result = ko.observableArray.fn[fnName].apply(ko.observableArray(arrayInstance), arguments);
-          }
-          finally {
-            notificationPauseSignal.pause = false;
-          }
-          subscribable.notifySubscribers(arrayInstance);
-          return result;
-        }
-      });
-    });
-  }
+	// Adds Knockout's additional array mutation functions to the array
+	function addKnockoutArrayMutators(ko, arrayInstance, subscribable, notificationPauseSignal) {
+		['remove', 'removeAll', 'destroy', 'destroyAll', 'replace'].forEach(function(fnName) {
+			try{
 
-  // Static utility functions
-  // ------------------------
-  //
-  // Since Knockout-ES5 sets up properties that return values, not observables, you can't
-  // trivially subscribe to the underlying observables (e.g., `someProperty.subscribe(...)`),
-  // or tell them that object values have mutated, etc. To handle this, we set up some
-  // extra utility functions that can return or work with the underlying observables.
+				// Make it a non-enumerable property for consistency with standard Array functions
+				Object.defineProperty(arrayInstance, fnName, {
+					enumerable: false,
+					value: function() {
+						var result;
 
-  // Returns the underlying observable associated with a model property (or `null` if the
-  // model or property doesn't exist, or isn't associated with an observable). This means
-  // you can subscribe to the property, e.g.:
-  //
-  //     ko.getObservable(model, 'propertyName')
-  //       .subscribe(function(newValue) { ... });
-  function getObservable(obj, propertyName) {
-    if (!obj || typeof obj !== 'object') {
-      return null;
-    }
+						// These additional array mutators are built using the underlying push/pop/etc.
+						// mutators, which are wrapped to trigger notifications. But we don't want to
+						// trigger multiple notifications, so pause the push/pop/etc. wrappers and
+						// delivery only one notification at the end of the process.
+						notificationPauseSignal.pause = true;
+						try {
+							// Creates a temporary observableArray that can perform the operation.
+							result = ko.observableArray.fn[fnName].apply(ko.observableArray(arrayInstance), arguments);
+						}
+						finally {
+							notificationPauseSignal.pause = false;
+						}
+						subscribable.notifySubscribers(arrayInstance);
+						return result;
+					}
+				});
+			}
+			catch(e)
+			{
+				// Skip existing
+			}
+		});
+	}
+	//</editor-fold>
 
-    var allObservablesForObject = getAllObservablesForObject(obj, false);
-    if (allObservablesForObject && propertyName in allObservablesForObject) {
-      return allObservablesForObject[propertyName]();
-    }
+  //<editor-fold defaultstate="collapsed" desc="Utilities">
 
-    return null;
-  }
-  
-  // Returns a boolean indicating whether the property on the object has an underlying
-  // observables. This does the check in a way not to create an observable if the
-  // object was created with lazily created observables
-  function isTracked(obj, propertyName) {
-    if (!obj || typeof obj !== 'object') {
-      return false;
-    }
-    
-    var allObservablesForObject = getAllObservablesForObject(obj, false);
-    return !!allObservablesForObject && propertyName in allObservablesForObject;
-  }
+	// Static utility functions
+	// ------------------------
+	//
+	// Since Knockout-ES5 sets up properties that return values, not observables, you can't
+	// trivially subscribe to the underlying observables (e.g., `someProperty.subscribe(...)`),
+	// or tell them that object values have mutated, etc. To handle this, we set up some
+	// extra utility functions that can return or work with the underlying observables.
 
-  // Causes a property's associated observable to fire a change notification. Useful when
-  // the property value is a complex object and you've modified a child property.
-  function valueHasMutated(obj, propertyName) {
-    var observable = getObservable(obj, propertyName);
+	// Returns the underlying observable associated with a model property (or `null` if the
+	// model or property doesn't exist, or isn't associated with an observable). This means
+	// you can subscribe to the property, e.g.:
+	//
+	//     ko.getObservable(model, 'propertyName')
+	//       .subscribe(function(newValue) { ... });
+	function getObservable(obj, propertyName) {
+		if (!obj || typeof obj !== 'object') {
+			return null;
+		}
 
-    if (observable) {
-      observable.valueHasMutated();
-    }
-  }
+		var allObservablesForObject = getAllObservablesForObject(obj, false);
+		if (allObservablesForObject && propertyName in allObservablesForObject) {
+			return allObservablesForObject[propertyName]();
+		}
+
+		return null;
+	}
+
+	// Returns a boolean indicating whether the property on the object has an underlying
+	// observables. This does the check in a way not to create an observable if the
+	// object was created with lazily created observables
+	function isTracked(obj, propertyName) {
+		if (!obj || typeof obj !== 'object') {
+			return false;
+		}
+
+		var allObservablesForObject = getAllObservablesForObject(obj, false);
+		return !!allObservablesForObject && propertyName in allObservablesForObject;
+	}
+
+	// Causes a property's associated observable to fire a change notification. Useful when
+	// the property value is a complex object and you've modified a child property.
+	function valueHasMutated(obj, propertyName) {
+		var observable = getObservable(obj, propertyName);
+
+		if (observable) {
+			observable.valueHasMutated();
+		}
+	}
+	//</editor-fold>
 
   // Module initialisation
   // ---------------------
@@ -6711,95 +6726,98 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
   // Instantiated by prepareExports, accounting for which module loader is being used.
   var weakMapFactory;
 
-  // Extends a Knockout instance with Knockout-ES5 functionality
-  function attachToKo(ko) {
-    ko.track = track;
-    ko.untrack = untrack;
-    ko.getObservable = getObservable;
-    ko.valueHasMutated = valueHasMutated;
-    ko.defineProperty = defineComputedProperty;
+	//<editor-fold defaultstate="collapsed" desc="Attach to KO">
+	// Extends a Knockout instance with Knockout-ES5 functionality
+	function attachToKo(ko) {
+		ko.track = track;
+		ko.untrack = untrack;
+		ko.getObservable = getObservable;
+		ko.valueHasMutated = valueHasMutated;
+		ko.defineProperty = defineComputedProperty;
 
-    // todo: test it, maybe added it to ko. directly
-    ko.es5 = {
-      getAllObservablesForObject: getAllObservablesForObject,
-      notifyWhenPresentOrFutureArrayValuesMutate: notifyWhenPresentOrFutureArrayValuesMutate,
-      isTracked: isTracked
-    };
+		// todo: test it, maybe added it to ko. directly
+		ko.es5 = {
+			getAllObservablesForObject: getAllObservablesForObject,
+			notifyWhenPresentOrFutureArrayValuesMutate: notifyWhenPresentOrFutureArrayValuesMutate,
+			isTracked: isTracked
+		};
 
-    // Custom Binding Provider
-    // -------------------
-    //
-    // To ensure that when using this plugin any custom bindings are provided with the observable
-    // rather than only the value of the property, a custom binding provider supplies bindings with
-    // actual observable values. The built in bindings use Knockout's internal `_ko_property_writers`
-    // feature to be able to write back to the property, but custom bindings may not be able to use
-    // that, especially if they use an options object.
+		// Custom Binding Provider
+		// -------------------
+		//
+		// To ensure that when using this plugin any custom bindings are provided with the observable
+		// rather than only the value of the property, a custom binding provider supplies bindings with
+		// actual observable values. The built in bindings use Knockout's internal `_ko_property_writers`
+		// feature to be able to write back to the property, but custom bindings may not be able to use
+		// that, especially if they use an options object.
 
-    function CustomBindingProvider(providerToWrap) {
-       this.bindingCache = {};
-       this._providerToWrap = providerToWrap;
-       this._nativeBindingProvider = new ko.bindingProvider();
-    }
+		function CustomBindingProvider(providerToWrap) {
+			this.bindingCache = {};
+			this._providerToWrap = providerToWrap;
+			this._nativeBindingProvider = new ko.bindingProvider();
+		}
 
-    CustomBindingProvider.prototype.nodeHasBindings = function() {
-       return this._providerToWrap.nodeHasBindings.apply(this._providerToWrap, arguments);
-    };
+		CustomBindingProvider.prototype.nodeHasBindings = function() {
+			return this._providerToWrap.nodeHasBindings.apply(this._providerToWrap, arguments);
+		};
 
-    CustomBindingProvider.prototype.getBindingAccessors = function(node, bindingContext) {
-       var bindingsString = this._nativeBindingProvider.getBindingsString(node, bindingContext);
-       return bindingsString ? this.parseBindingsString(bindingsString, bindingContext, node, {'valueAccessors':true}) : null;
-    };
+		CustomBindingProvider.prototype.getBindingAccessors = function(node, bindingContext) {
+			var bindingsString = this._nativeBindingProvider.getBindingsString(node, bindingContext);
+			return bindingsString ? this.parseBindingsString(bindingsString, bindingContext, node, {'valueAccessors':true}) : null;
+		};
 
-    CustomBindingProvider.prototype.parseBindingsString = function(bindingsString, bindingContext, node, options) {
-       try {
-          var bindingFunction = createBindingsStringEvaluatorViaCache(bindingsString, this.bindingCache, options);
-          return bindingFunction(bindingContext, node);
-       } catch (ex) {
-          ex.message = 'Unable to parse bindings.\nBindings value: ' + bindingsString + '\nMessage: ' + ex.message;
-          throw ex;
-       }
-    };
+		CustomBindingProvider.prototype.parseBindingsString = function(bindingsString, bindingContext, node, options) {
+			try {
+				var bindingFunction = createBindingsStringEvaluatorViaCache(bindingsString, this.bindingCache, options);
+				return bindingFunction(bindingContext, node);
+			} catch (ex) {
+				ex.message = 'Unable to parse bindings.\nBindings value: ' + bindingsString + '\nMessage: ' + ex.message;
+				throw ex;
+			}
+		};
 
-    function preProcessBindings(bindingsStringOrKeyValueArray, bindingOptions) {
-       bindingOptions = bindingOptions || {};
+		function preProcessBindings(bindingsStringOrKeyValueArray, bindingOptions) {
+			bindingOptions = bindingOptions || {};
 
-       function processKeyValue(key, val) {
-         // Handle arrays if value starts with bracket
-         if(val.match(/^\[/)){
-           // This is required or will throw errors
-           resultStrings.push(key + ':ko.observableArray(' + val + ')');
-         }else{
-           resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
-         }
+			function processKeyValue(key, val) {
+				// Handle arrays if value starts with bracket
+				if(val.match(/^\[/)){
+					// This is required or will throw errors
+					resultStrings.push(key + ':ko.observableArray(' + val + ')');
+				}else{
+					resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
+				}
 
-       }
+			}
 
-       var resultStrings = [],
-          keyValueArray = typeof bindingsStringOrKeyValueArray === 'string' ?
-            ko.expressionRewriting.parseObjectLiteral(bindingsStringOrKeyValueArray) : bindingsStringOrKeyValueArray;
+			var resultStrings = [],
+			keyValueArray = typeof bindingsStringOrKeyValueArray === 'string' ?
+			ko.expressionRewriting.parseObjectLiteral(bindingsStringOrKeyValueArray) : bindingsStringOrKeyValueArray;
 
-       keyValueArray.forEach(function(keyValue) {
-          processKeyValue(keyValue.key || keyValue.unknown, keyValue.value);
-       });
-       return ko.expressionRewriting.preProcessBindings(resultStrings.join(','), bindingOptions);
-    }
+			keyValueArray.forEach(function(keyValue) {
+				processKeyValue(keyValue.key || keyValue.unknown, keyValue.value);
+			});
+			return ko.expressionRewriting.preProcessBindings(resultStrings.join(','), bindingOptions);
+		}
 
-    function createBindingsStringEvaluatorViaCache(bindingsString, cache, options) {
-       var cacheKey = bindingsString + (options && options.valueAccessors || '');
-       return cache[cacheKey] || (cache[cacheKey] = createBindingsStringEvaluator(bindingsString, options));
-    }
+		function createBindingsStringEvaluatorViaCache(bindingsString, cache, options) {
+			var cacheKey = bindingsString + (options && options.valueAccessors || '');
+			return cache[cacheKey] || (cache[cacheKey] = createBindingsStringEvaluator(bindingsString, options));
+		}
 
-    function createBindingsStringEvaluator(bindingsString, options) {
-       var rewrittenBindings = preProcessBindings(bindingsString, options),
-          functionBody = 'with($context){with($data||{}){return{' + rewrittenBindings + '}}}';
-        /* jshint -W054 */
-       return new Function('$context', '$element', functionBody);
-    }
+		function createBindingsStringEvaluator(bindingsString, options) {
+			var rewrittenBindings = preProcessBindings(bindingsString, options),
+			functionBody = 'with($context){with($data||{}){return{' + rewrittenBindings + '}}}';
+			/* jshint -W054 */
+			return new Function('$context', '$element', functionBody);
+		}
 
-    ko.es5BindingProvider = CustomBindingProvider;
+		ko.es5BindingProvider = CustomBindingProvider;
 
-    ko.bindingProvider.instance = new CustomBindingProvider(ko.bindingProvider.instance);
-  }
+		ko.bindingProvider.instance = new CustomBindingProvider(ko.bindingProvider.instance);
+	}
+	//</editor-fold>
+
 
   // Determines which module loading scenario we're in, grabs dependencies, and attaches to KO
   function prepareExports() {
@@ -10236,10 +10254,6 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       this.field = field;
     }
 
-    ModelProxyHandler.prototype.get = function(target, name, receiver) {
-      return target[name];
-    };
-
     ModelProxyHandler.prototype.set = function(target, name, value, receiver) {
       var after, before;
       before = Object.keys(target).length;
@@ -10275,6 +10289,9 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           this[name] = ko.tracker.factory(value);
         }
         if (this[name] && typeof this[name] === 'object' && this[name].constructor === Object) {
+          this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
+        }
+        if (this[name] && typeof this[name] === 'object' && this[name].constructor === Array) {
           this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
       }

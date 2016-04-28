@@ -2164,10 +2164,6 @@
       this.field = field;
     }
 
-    ModelProxyHandler.prototype.get = function(target, name, receiver) {
-      return target[name];
-    };
-
     ModelProxyHandler.prototype.set = function(target, name, value, receiver) {
       var after, before;
       before = Object.keys(target).length;
@@ -2203,6 +2199,9 @@
           this[name] = ko.tracker.factory(value);
         }
         if (this[name] && typeof this[name] === 'object' && this[name].constructor === Object) {
+          this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
+        }
+        if (this[name] && typeof this[name] === 'object' && this[name].constructor === Array) {
           this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
       }

@@ -1,4 +1,7 @@
 <?php require './_header.php'; ?>
+<div>
+	<a href="#" data-bind="click: addNode">Add new node programatically</a>
+</div>
 <div data-bind="with: app.model.SortableHtmlValues">
 	<div>Sortable: <input data-bind="textInput: title"/> <span data-bind="htmlValue: title"></span></div>
 	<div id="dev" data-bind="sortable: {data: items, connectClass: 'Names', options: {distance: 10}}">
@@ -21,6 +24,15 @@
 </div>
 <script>
 	jQuery(document).ready(function(){
+		var nodeId = 0;
+		window.addNode = function (data, e) {
+			nodeId++;
+			var model = new Maslosoft.Ko.BalinDev.Models.HtmlValue;
+			model.text = 'New name #' + nodeId;
+			app.model.SortableHtmlValues.items.push(model);
+			e.stopPropagation();
+			e.preventDefault();
+		};
 		var data = {
 			title: 'Names Collection',
 			items: [
