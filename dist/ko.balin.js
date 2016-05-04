@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -38,6 +38,12 @@
     }
     return console.error.apply(console, arguments);
   };
+
+  if (!Array.isArray) {
+    Array.isArray = function(arg) {
+      return Object.prototype.toString.call(arg) === '[object Array]';
+    };
+  }
 
   if (!Object.keys) {
     Object.keys = (function() {
@@ -136,6 +142,7 @@
       htmlTree: Maslosoft.Ko.Balin.HtmlTree,
       htmlValue: Maslosoft.Ko.Balin.HtmlValue,
       icon: Maslosoft.Ko.Balin.Icon,
+      log: Maslosoft.Ko.Balin.Log,
       model: Maslosoft.Ko.Balin.DataModel,
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
@@ -1227,6 +1234,27 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.Log = (function(_super) {
+    __extends(Log, _super);
+
+    function Log() {
+      this.init = __bind(this.init, this);
+      this.update = __bind(this.update, this);
+      return Log.__super__.constructor.apply(this, arguments);
+    }
+
+    Log.prototype.update = function(element, valueAccessor, allBindings) {
+      return console.log(this.getValue(valueAccessor), element);
+    };
+
+    Log.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      return console.log(this.getValue(valueAccessor), element);
+    };
+
+    return Log;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.Selected = (function(_super) {
     __extends(Selected, _super);
 
@@ -2103,6 +2131,7 @@
 
   this.Maslosoft.Ko.Track = (function() {
     function Track() {
+      this.fromJs = __bind(this.fromJs, this);
       this.factory = __bind(this.factory, this);
     }
 
@@ -2128,7 +2157,7 @@
       }
       if (typeof data === 'object') {
         data = ko.track(data);
-        if (data.constructor === Array) {
+        if (Array.isArray(data)) {
           for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
             model = data[index];
             data[index] = this.factory(model);
@@ -2141,6 +2170,25 @@
         }
       }
       return data;
+    };
+
+    Track.prototype.fromJs = function(model, jsData) {
+      var name, value, _results;
+      console.log(jsData);
+      _results = [];
+      for (name in jsData) {
+        value = jsData[name];
+        if (typeof value === 'object') {
+          if (model[name]) {
+            _results.push(this.fromJs(model[name], value));
+          } else {
+            _results.push(model[name] = this.factory(value));
+          }
+        } else {
+          _results.push(model[name] = value);
+        }
+      }
+      return _results;
     };
 
     return Track;
@@ -2167,11 +2215,18 @@
 
     ModelProxyHandler.prototype.set = function(target, name, value, receiver) {
       var after, before;
-      before = Object.keys(target).length;
-      target[name] = value;
-      after = Object.keys(target).length;
-      if (before !== after) {
-        ko.valueHasMutated(this.parent, this.field);
+      if (typeof target === 'object') {
+        before = Object.keys(target).length;
+        target[name] = value;
+        after = Object.keys(target).length;
+        if (before !== after) {
+          ko.valueHasMutated(this.parent, this.field);
+        }
+      } else {
+        if (target !== value) {
+          target = value;
+          ko.valueHasMutated(this.parent, this.field);
+        }
       }
       return true;
     };
@@ -2186,25 +2241,28 @@
 
   })();
 
+  initMap = new Map();
+
   this.Maslosoft.Ko.Balin.Model = (function() {
     function Model(data) {
-      var name, value;
+      var initialized, name, value;
       if (data == null) {
         data = null;
       }
-      for (name in this) {
-        value = this[name];
-        if (data && typeof data[name] !== 'undefined') {
-          this[name] = ko.tracker.factory(data[name]);
-        } else {
+      initialized = initMap.get(this);
+      if (!initialized) {
+        initMap.set(this, true);
+        for (name in this) {
+          value = this[name];
           this[name] = ko.tracker.factory(value);
+          if (this[name] && typeof this[name] === 'object') {
+            this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
+          }
         }
-        if (this[name] && typeof this[name] === 'object' && this[name].constructor === Object) {
-          this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
-        }
-        if (this[name] && typeof this[name] === 'object' && this[name].constructor === Array) {
-          this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
-        }
+      }
+      for (name in data) {
+        value = data[name];
+        this[name] = value;
       }
       ko.track(this);
     }

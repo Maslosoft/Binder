@@ -41,15 +41,24 @@ class @Maslosoft.Ko.Track
 		if typeof(data) is 'object'
 			data = ko.track(data)
 			# Check if array (different loop used here)
-			if data.constructor is Array
+			if Array.isArray data
 				for model, index in data
 					data[index] = @factory model
 			else
 				for name, value of data
 					data[name] = @factory(value)
-
+		
 		return data
 
-
+	fromJs: (model, jsData) =>
+		console.log jsData
+		for name, value of jsData
+			if typeof(value) is 'object'
+				if model[name]
+					@fromJs model[name], value
+				else
+					model[name] = @factory value
+			else
+				model[name] = value
 
 ko.tracker = new @Maslosoft.Ko.Track

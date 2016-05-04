@@ -37,10 +37,15 @@
     var index, json, model, res, results;
     json = JSON.stringify(app.model);
     res = JSON.parse(json);
+    console.log(res);
     results = [];
     for (index in res) {
       model = res[index];
-      results.push(app.model[index] = ko.tracker.factory(res[index]));
+      if (!!app.model[index]) {
+        results.push(ko.tracker.fromJs(app.model[index], res[index]));
+      } else {
+        results.push(app.model[index] = ko.tracker.factory(res[index]));
+      }
     }
     return results;
   };
@@ -50,13 +55,14 @@
   describe('Test if will allow roundtrip of nested arrays, using ko.tracker.factory', function() {
     it('should not fail', function() {});
     it('should have name', function() {
+      console.log(app.model.sortable);
       assert.equal(app.model.sortable.title, 'Names Collection');
       doRound();
       return assert.equal(app.model.sortable.title, 'Names Collection');
     });
     it('should allow pop', function() {
-      assert.equal(app.model.sortable.items.length, 5);
-      assert.equal(elem.find('div').length, 5);
+      assert.equal(app.model.sortable.items.length, 5, 'That there are 5 items at beginning');
+      assert.equal(elem.find('div').length, 5, 'That there are 5 items at beginning in DOM');
       app.model.sortable.items.pop();
       assert.equal(app.model.sortable.items[0].text, 'Frank', 'That first item is Frank');
       assert.equal(app.model.sortable.items.length, 4, 'That one element was removed from array');
@@ -69,7 +75,7 @@
     return it('should allow push', function() {
       var model;
       model = app.model.sortable;
-      assert.equal(model.items.length, 4);
+      assert.equal(model.items.length, 4, 'That there are still 4 items from previous test');
       model.items.push(new Maslosoft.Ko.BalinDev.Models.HtmlValue({
         text: 'new'
       }));

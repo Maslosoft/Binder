@@ -16,6 +16,12 @@ error = (expr, element = null) ->
 	if not console then return
 	console.error.apply console, arguments
 
+# from https://developer.mozilla.org/pl/docs/Web/JavaScript/Referencje/Obiekty/Array/isArray
+if !Array.isArray
+  Array.isArray = (arg) ->
+    return Object.prototype.toString.call(arg) is '[object Array]'
+
+
 # from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if !Object.keys
   Object.keys = do ->
@@ -108,6 +114,7 @@ if not @Maslosoft.Ko.Balin.Helpers
 		htmlTree: Maslosoft.Ko.Balin.HtmlTree
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
+		log: Maslosoft.Ko.Balin.Log
 		model: Maslosoft.Ko.Balin.DataModel
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
@@ -1159,6 +1166,18 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 
 		return
 
+
+#
+# Log with element reference
+#
+#
+class @Maslosoft.Ko.Balin.Log extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor, allBindings) =>
+		console.log @getValue(valueAccessor), element
+
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+		console.log @getValue(valueAccessor), element
 #
 # Selected binding
 # This adds class from options if value is true
@@ -2086,16 +2105,25 @@ class @Maslosoft.Ko.Track
 		if typeof(data) is 'object'
 			data = ko.track(data)
 			# Check if array (different loop used here)
-			if data.constructor is Array
+			if Array.isArray data
 				for model, index in data
 					data[index] = @factory model
 			else
 				for name, value of data
 					data[name] = @factory(value)
-
+		
 		return data
 
-
+	fromJs: (model, jsData) =>
+		console.log jsData
+		for name, value of jsData
+			if typeof(value) is 'object'
+				if model[name]
+					@fromJs model[name], value
+				else
+					model[name] = @factory value
+			else
+				model[name] = value
 
 ko.tracker = new @Maslosoft.Ko.Track
 
@@ -2112,12 +2140,18 @@ class ModelProxyHandler
 	constructor: (@parent, @field) ->
 
 	set: (target, name, value, receiver) ->
-		before = Object.keys(target).length
-		target[name] = value
-		after = Object.keys(target).length
-		if before isnt after
-			# Notify change
-			ko.valueHasMutated(@parent, @field)
+
+		if typeof(target) is 'object'
+			before = Object.keys(target).length
+			target[name] = value
+			after = Object.keys(target).length
+			if before isnt after
+				# Notify change
+				ko.valueHasMutated(@parent, @field)
+		else
+			if target isnt value
+				target = value
+				ko.valueHasMutated(@parent, @field)
 		return true
 
 	deleteProperty: (target, name) ->
@@ -2126,26 +2160,27 @@ class ModelProxyHandler
 		ko.valueHasMutated(@parent, @field)
 		return true
 
+initMap = new Map()
+
 class @Maslosoft.Ko.Balin.Model
 
 	constructor: (data = null) ->
 
-		# Reassign here is required - when using model with values from class prototype only
-		for name, value of @
+		initialized = initMap.get @
 
-			if data and typeof data[name] isnt 'undefined'
-				@[name] = ko.tracker.factory(data[name])
-			else
+		if not initialized
+			initMap.set @, true
+			# Reassign here is required - when using model with values from class prototype only
+			for name, value of @
+
 				@[name] = ko.tracker.factory(value)
-			
-			# Extra track of dynamic object properties, only for generic objects.
-			# Concrete objects should have predefined set of properties.
-			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Object
-				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
-			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Array
-				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
+				# Extra track of object properties.
+				if @[name] and typeof(@[name]) is 'object'
+					@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
+		for name, value of data
+			@[name] = value
 		ko.track(@)
 
 @Maslosoft.Ko.Balin.registerDefaults()

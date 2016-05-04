@@ -46,6 +46,7 @@
 		htmlTree: Maslosoft.Ko.Balin.HtmlTree
 		htmlValue: Maslosoft.Ko.Balin.HtmlValue
 		icon: Maslosoft.Ko.Balin.Icon
+		log: Maslosoft.Ko.Balin.Log
 		model: Maslosoft.Ko.Balin.DataModel
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue

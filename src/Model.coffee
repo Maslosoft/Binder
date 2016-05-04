@@ -11,12 +11,18 @@ class ModelProxyHandler
 	constructor: (@parent, @field) ->
 
 	set: (target, name, value, receiver) ->
-		before = Object.keys(target).length
-		target[name] = value
-		after = Object.keys(target).length
-		if before isnt after
-			# Notify change
-			ko.valueHasMutated(@parent, @field)
+
+		if typeof(target) is 'object'
+			before = Object.keys(target).length
+			target[name] = value
+			after = Object.keys(target).length
+			if before isnt after
+				# Notify change
+				ko.valueHasMutated(@parent, @field)
+		else
+			if target isnt value
+				target = value
+				ko.valueHasMutated(@parent, @field)
 		return true
 
 	deleteProperty: (target, name) ->
@@ -25,24 +31,25 @@ class ModelProxyHandler
 		ko.valueHasMutated(@parent, @field)
 		return true
 
+initMap = new Map()
+
 class @Maslosoft.Ko.Balin.Model
 
 	constructor: (data = null) ->
 
-		# Reassign here is required - when using model with values from class prototype only
-		for name, value of @
+		initialized = initMap.get @
 
-			if data and typeof data[name] isnt 'undefined'
-				@[name] = ko.tracker.factory(data[name])
-			else
+		if not initialized
+			initMap.set @, true
+			# Reassign here is required - when using model with values from class prototype only
+			for name, value of @
+
 				@[name] = ko.tracker.factory(value)
-			
-			# Extra track of dynamic object properties, only for generic objects.
-			# Concrete objects should have predefined set of properties.
-			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Object
-				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
-			if @[name] and typeof(@[name]) is 'object' and @[name].constructor is Array
-				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
+				# Extra track of object properties.
+				if @[name] and typeof(@[name]) is 'object'
+					@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
+		for name, value of data
+			@[name] = value
 		ko.track(@)

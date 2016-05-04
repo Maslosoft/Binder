@@ -16,9 +16,12 @@ ko.applyBindings({model: app.model})
 doRound = () ->
 	json = JSON.stringify app.model
 	res = JSON.parse json
-
+	console.log res
 	for index, model of res
-		app.model[index] = ko.tracker.factory res[index]
+		if !!app.model[index]
+			ko.tracker.fromJs(app.model[index], res[index])
+		else
+			app.model[index] = ko.tracker.factory res[index]
 
 elem = jQuery('#dynamicPropertiesTest')
 

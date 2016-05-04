@@ -37,10 +37,15 @@
     var index, json, model, res, results;
     json = JSON.stringify(app.model);
     res = JSON.parse(json);
+    console.log(res);
     results = [];
     for (index in res) {
       model = res[index];
-      results.push(app.model[index] = ko.tracker.factory(res[index]));
+      if (!!app.model[index]) {
+        results.push(ko.tracker.fromJs(app.model[index], res[index]));
+      } else {
+        results.push(app.model[index] = ko.tracker.factory(res[index]));
+      }
     }
     return results;
   };

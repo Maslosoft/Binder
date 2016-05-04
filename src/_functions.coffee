@@ -16,6 +16,12 @@ error = (expr, element = null) ->
 	if not console then return
 	console.error.apply console, arguments
 
+# from https://developer.mozilla.org/pl/docs/Web/JavaScript/Referencje/Obiekty/Array/isArray
+if !Array.isArray
+  Array.isArray = (arg) ->
+    return Object.prototype.toString.call(arg) is '[object Array]'
+
+
 # from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if !Object.keys
   Object.keys = do ->
