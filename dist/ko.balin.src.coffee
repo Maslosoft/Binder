@@ -131,6 +131,7 @@ if not @Maslosoft.Ko.Balin.Helpers
 #
 @Maslosoft.Ko.Balin.registerEvents = (handlers = null) ->
 	config = {
+		'dblclick',
 		'mousedown',
 		'mouseup',
 		'mouseover',

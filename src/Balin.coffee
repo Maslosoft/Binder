@@ -69,6 +69,7 @@
 #
 @Maslosoft.Ko.Balin.registerEvents = (handlers = null) ->
 	config = {
+		'dblclick',
 		'mousedown',
 		'mouseup',
 		'mouseover',

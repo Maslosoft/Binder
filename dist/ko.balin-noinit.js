@@ -169,6 +169,7 @@
       handlers = null;
     }
     config = {
+      'dblclick': 'dblclick',
       'mousedown': 'mousedown',
       'mouseup': 'mouseup',
       'mouseover': 'mouseover',
