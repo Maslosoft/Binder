@@ -37,7 +37,6 @@
     var index, json, model, res, results;
     json = JSON.stringify(app.model);
     res = JSON.parse(json);
-    console.log(res);
     results = [];
     for (index in res) {
       model = res[index];

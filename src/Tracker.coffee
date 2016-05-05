@@ -51,7 +51,6 @@ class @Maslosoft.Ko.Track
 		return data
 
 	fromJs: (model, jsData) =>
-		console.log jsData
 		for name, value of jsData
 			if typeof(value) is 'object'
 				if model[name]

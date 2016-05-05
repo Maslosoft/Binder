@@ -16,7 +16,8 @@ ko.applyBindings({model: app.model})
 doRound = () ->
 	json = JSON.stringify app.model
 	res = JSON.parse json
-	console.log res
+
+	# Update or create new models
 	for index, model of res
 		if !!app.model[index]
 			ko.tracker.fromJs(app.model[index], res[index])
