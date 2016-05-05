@@ -2174,7 +2174,6 @@
 
     Track.prototype.fromJs = function(model, jsData) {
       var name, value, _results;
-      console.log(jsData);
       _results = [];
       for (name in jsData) {
         value = jsData[name];
@@ -2214,19 +2213,19 @@
     }
 
     ModelProxyHandler.prototype.set = function(target, name, value, receiver) {
-      var after, before;
-      if (typeof target === 'object') {
-        before = Object.keys(target).length;
-        target[name] = value;
-        after = Object.keys(target).length;
-        if (before !== after) {
-          ko.valueHasMutated(this.parent, this.field);
-        }
-      } else {
-        if (target !== value) {
-          target = value;
-          ko.valueHasMutated(this.parent, this.field);
-        }
+      var after, before, changed;
+      changed = false;
+      if (target[name] !== value) {
+        changed = true;
+      }
+      before = Object.keys(target).length;
+      target[name] = value;
+      after = Object.keys(target).length;
+      if (before !== after) {
+        changed = true;
+      }
+      if (changed) {
+        ko.valueHasMutated(this.parent, this.field);
       }
       return true;
     };

@@ -2115,7 +2115,6 @@ class @Maslosoft.Ko.Track
 		return data
 
 	fromJs: (model, jsData) =>
-		console.log jsData
 		for name, value of jsData
 			if typeof(value) is 'object'
 				if model[name]
@@ -2140,18 +2139,22 @@ class ModelProxyHandler
 	constructor: (@parent, @field) ->
 
 	set: (target, name, value, receiver) ->
+		changed = false
 
-		if typeof(target) is 'object'
-			before = Object.keys(target).length
-			target[name] = value
-			after = Object.keys(target).length
-			if before isnt after
-				# Notify change
-				ko.valueHasMutated(@parent, @field)
-		else
-			if target isnt value
-				target = value
-				ko.valueHasMutated(@parent, @field)
+		# Detect value change
+		if target[name] isnt value
+			changed = true
+
+		# Detect keys change
+		before = Object.keys(target).length
+		target[name] = value
+		after = Object.keys(target).length
+		if before isnt after
+			changed = true
+		
+		# Notify change
+		if changed
+			ko.valueHasMutated(@parent, @field)
 		return true
 
 	deleteProperty: (target, name) ->
