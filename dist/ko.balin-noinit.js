@@ -828,9 +828,7 @@
       options.toggleEffect = false;
       options.source = tree.children;
       options.extensions = [];
-      if (events) {
-        treeEvents = new TreeEvents(tree, events, options);
-      }
+      treeEvents = new TreeEvents(tree, events, options);
       dnd = valueAccessor().dnd || false;
       drag = valueAccessor().drag || false;
       if (dnd && drag) {
@@ -1398,6 +1396,20 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.Tree = (function(_super) {
+    __extends(Tree, _super);
+
+    function Tree() {
+      this.update = __bind(this.update, this);
+      return Tree.__super__.constructor.apply(this, arguments);
+    }
+
+    Tree.prototype.update = function(element, valueAccessor) {};
+
+    return Tree;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.Validator = (function(_super) {
     var idCounter;
 
@@ -1592,12 +1604,13 @@
       var ctx, current, dragged, handler, hitMode, index, parent, target, targetParent;
       hitMode = data.hitMode;
       dragged = data.draggable.element[0];
+      this.events.drop(node, data);
       if (!data.otherNode) {
         ctx = ko.contextFor(dragged);
-        current = ctx.$data;
+        current = this.events.getNode(ctx.$data);
       } else {
         parent = this.finder.find(data.otherNode.parent.data.id);
-        current = this.finder.find(data.otherNode.data.id);
+        current = this.events.getNode(this.finder.find(data.otherNode.data.id));
         if (!this.el.is(dragged)) {
           log('From other instance...');
           data = ko.dataFor(dragged);
@@ -1774,6 +1787,8 @@
 
     TreeEvents.prototype.events = null;
 
+    TreeEvents.prototype.dropEvent = null;
+
     TreeEvents.prototype.options = null;
 
     finder = null;
@@ -1798,12 +1813,33 @@
       this.events = events;
       this.options = options;
       this.handle = __bind(this.handle, this);
+      this.getNode = __bind(this.getNode, this);
+      this.drop = __bind(this.drop, this);
       finder = new TreeNodeFinder(initialTree);
       this.handle('click');
       this.handle('dblclick');
       this.handle('activate');
       this.handle('deactivate');
     }
+
+    TreeEvents.prototype.drop = function(node, data) {
+      log("Drop...");
+      log(this.events);
+      if (this.events.drop) {
+        this.dropEvent = new this.events.drop(node, data);
+        return log(this.dropEvent);
+      }
+    };
+
+    TreeEvents.prototype.getNode = function(node) {
+      log("Tree event drop...");
+      log(this.dropEvent);
+      if (this.dropEvent && this.dropEvent.getNode) {
+        return this.dropEvent.getNode(node);
+      } else {
+        return node;
+      }
+    };
 
     TreeEvents.prototype.handle = function(type) {
       if (this.events[type]) {
@@ -2259,6 +2295,15 @@
         data = null;
       }
       initialized = initMap.get(this);
+      for (name in this) {
+        value = this[name];
+        if (isPlainObject(this[name])) {
+          this[name] = {};
+        }
+        if (Array.isArray(this[name])) {
+          this[name] = [];
+        }
+      }
       if (!initialized) {
         initMap.set(this, true);
         for (name in this) {

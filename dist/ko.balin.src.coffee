@@ -793,8 +793,7 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		options.extensions = []
 
 		# Events
-		if events
-			treeEvents = new TreeEvents tree, events, options
+		treeEvents = new TreeEvents tree, events, options
 
 		# Accessors for dnd and draggable
 		dnd = valueAccessor().dnd or false
@@ -1265,6 +1264,16 @@ class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
 		$(element).attr "rel", "tooltip"
 		return
 
+#
+# Tree binding handler
+#
+class @Maslosoft.Ko.Balin.Tree extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor) =>
+		
+		return
+
+
 
 #
 #
@@ -1463,20 +1472,29 @@ class TreeDnd
 		return true
 
 	dragDrop: (node, data) =>
-		
+
 		hitMode = data.hitMode
 
 		# Dragged element - either draggable or tree element
 		dragged = data.draggable.element[0]
 
+		# Event handler for drop
+		@events.drop node, data
+
 		if not data.otherNode
 			# Drop from ourside tree
 			ctx = ko.contextFor dragged
-			current = ctx.$data
+
+			# Handle drop event possible transformation of node
+			current = @events.getNode(ctx.$data)
+
 		else
 			# From from within tree
 			parent = @finder.find(data.otherNode.parent.data.id)
-			current = @finder.find(data.otherNode.data.id)
+
+			# Find node
+			# Handle drop event possible transformation of node
+			current = @events.getNode(@finder.find(data.otherNode.data.id))
 
 			if not @el.is dragged
 				log 'From other instance...'
@@ -1709,6 +1727,12 @@ class TreeEvents
 	events: null
 
 	#
+	# Drop event is handled differently
+	# 
+	#
+	dropEvent: null
+
+	#
 	# Fancy tree options
 	#
 	#
@@ -1747,6 +1771,25 @@ class TreeEvents
 		@handle 'activate'
 		@handle 'deactivate'
 
+	# Drop event
+	drop: (node, data) =>
+		log "Drop..."
+		log @events
+		if @events.drop
+			@dropEvent = new @events.drop(node, data)
+			log @dropEvent
+
+	#
+	# Handler to possibly recreate/transform node
+	#
+	#
+	getNode: (node) =>
+		log "Tree event drop..."
+		log @dropEvent
+		if @dropEvent and @dropEvent.getNode
+			return @dropEvent.getNode node
+		else
+			return node
 
 	handle: (type) =>
 		if @events[type]
@@ -2179,6 +2222,13 @@ class @Maslosoft.Ko.Balin.Model
 	constructor: (data = null) ->
 
 		initialized = initMap.get @
+
+		# Dereference first
+		for name, value of @
+			if isPlainObject @[name]
+				@[name] = {}
+			if Array.isArray @[name]
+				@[name] = []
 
 		# Initialize new object
 		if not initialized

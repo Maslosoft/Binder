@@ -5,6 +5,15 @@ if not @Maslosoft.Ko.BalinDev
 if not @Maslosoft.Ko.BalinDev.Models
 	@Maslosoft.Ko.BalinDev.Models = {}
 
+class @Maslosoft.Ko.BalinDev.FancyTreeDropHandler
+
+	constructor: (node, data) ->
+		
+	getNode: (node) =>
+		console.log "Transform node..."
+		console.log node
+		return node
+
 class @Maslosoft.Ko.BalinDev.Models.TreeItem extends @Maslosoft.Ko.Balin.Model
 	@idCounter = 0
 	_class: "Maslosoft.Ko.BalinDev.Models.TreeItem"
