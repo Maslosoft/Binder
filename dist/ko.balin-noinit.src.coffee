@@ -21,6 +21,8 @@ if !Array.isArray
   Array.isArray = (arg) ->
     return Object.prototype.toString.call(arg) is '[object Array]'
 
+isPlainObject = (obj) ->
+	return !!obj and typeof(obj) is 'object' and obj.constructor is Object
 
 # from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if !Object.keys
@@ -2103,7 +2105,7 @@ class @Maslosoft.Ko.Track
 
 		# Track generic object
 		if typeof(data) is 'object'
-			data = ko.track(data)
+			data = ko.track(data, {deep: true})
 			# Check if array (different loop used here)
 			if Array.isArray data
 				for model, index in data
@@ -2143,6 +2145,7 @@ class ModelProxyHandler
 
 		# Detect value change
 		if target[name] isnt value
+#			log "Changed: #{@parent.constructor.name}.#{@field} @ #{target.constructor.name}.#{name}"
 			changed = true
 
 		# Detect keys change
@@ -2150,6 +2153,7 @@ class ModelProxyHandler
 		target[name] = value
 		after = Object.keys(target).length
 		if before isnt after
+#			log "New key: #{@parent.constructor.name}.#{@field} @ #{target.constructor.name}.#{name}"
 			changed = true
 		
 		# Notify change
@@ -2160,10 +2164,15 @@ class ModelProxyHandler
 	deleteProperty: (target, name) ->
 		delete target[name]
 		# Notify change
+#		log "Deleted: #{@parent.constructor.name}.#{@field} @ #{target.constructor.name}.#{name}"
 		ko.valueHasMutated(@parent, @field)
 		return true
 
-initMap = new Map()
+# Map for concrete objects initializations
+if WeakMap
+	initMap = new WeakMap()
+else
+	initMap = new Map()
 
 class @Maslosoft.Ko.Balin.Model
 
@@ -2171,6 +2180,7 @@ class @Maslosoft.Ko.Balin.Model
 
 		initialized = initMap.get @
 
+		# Initialize new object
 		if not initialized
 			initMap.set @, true
 			# Reassign here is required - when using model with values from class prototype only
@@ -2179,9 +2189,15 @@ class @Maslosoft.Ko.Balin.Model
 				@[name] = ko.tracker.factory(value)
 
 				# Extra track of object properties.
-				if @[name] and typeof(@[name]) is 'object'
+				if isPlainObject @[name]
 					@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 
+		# Apply data
 		for name, value of data
-			@[name] = value
-		ko.track(@)
+			@[name] = ko.tracker.factory(value)
+
+		# Track plain objects always
+		for name, value of @
+			if isPlainObject @[name]
+				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
+		ko.track(@, {deep: true})

@@ -39,7 +39,7 @@ class @Maslosoft.Ko.Track
 
 		# Track generic object
 		if typeof(data) is 'object'
-			data = ko.track(data)
+			data = ko.track(data, {deep: true})
 			# Check if array (different loop used here)
 			if Array.isArray data
 				for model, index in data

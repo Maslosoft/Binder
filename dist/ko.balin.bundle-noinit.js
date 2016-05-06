@@ -18,7 +18,7 @@
 
 
 (function(scope) {
-  if (scope.Proxy) {
+  if (scope['Proxy']) {
     return;
   }
   let lastRevokeFn = null;
@@ -8091,7 +8091,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -8135,6 +8135,10 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       return Object.prototype.toString.call(arg) === '[object Array]';
     };
   }
+
+  isPlainObject = function(obj) {
+    return !!obj && typeof obj === 'object' && obj.constructor === Object;
+  };
 
   if (!Object.keys) {
     Object.keys = (function() {
@@ -10247,7 +10251,9 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         }
       }
       if (typeof data === 'object') {
-        data = ko.track(data);
+        data = ko.track(data, {
+          deep: true
+        });
         if (Array.isArray(data)) {
           for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
             model = data[index];
@@ -10331,7 +10337,11 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
   })();
 
-  initMap = new Map();
+  if (WeakMap) {
+    initMap = new WeakMap();
+  } else {
+    initMap = new Map();
+  }
 
   this.Maslosoft.Ko.Balin.Model = (function() {
     function Model(data) {
@@ -10345,16 +10355,24 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         for (name in this) {
           value = this[name];
           this[name] = ko.tracker.factory(value);
-          if (this[name] && typeof this[name] === 'object') {
+          if (isPlainObject(this[name])) {
             this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
           }
         }
       }
       for (name in data) {
         value = data[name];
-        this[name] = value;
+        this[name] = ko.tracker.factory(value);
       }
-      ko.track(this);
+      for (name in this) {
+        value = this[name];
+        if (isPlainObject(this[name])) {
+          this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
+        }
+      }
+      ko.track(this, {
+        deep: true
+      });
     }
 
     return Model;

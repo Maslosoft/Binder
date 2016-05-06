@@ -21,6 +21,8 @@ if !Array.isArray
   Array.isArray = (arg) ->
     return Object.prototype.toString.call(arg) is '[object Array]'
 
+isPlainObject = (obj) ->
+	return !!obj and typeof(obj) is 'object' and obj.constructor is Object
 
 # from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 if !Object.keys
