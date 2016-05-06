@@ -6,6 +6,12 @@ class TreeEvents
 	events: null
 
 	#
+	# Drop event is handled differently
+	# 
+	#
+	dropEvent: null
+
+	#
 	# Fancy tree options
 	#
 	#
@@ -44,6 +50,25 @@ class TreeEvents
 		@handle 'activate'
 		@handle 'deactivate'
 
+	# Drop event
+	drop: (node, data) =>
+		log "Drop..."
+		log @events
+		if @events.drop
+			@dropEvent = new @events.drop(node, data)
+			log @dropEvent
+
+	#
+	# Handler to possibly recreate/transform node
+	#
+	#
+	getNode: (node) =>
+		log "Tree event drop..."
+		log @dropEvent
+		if @dropEvent and @dropEvent.getNode
+			return @dropEvent.getNode node
+		else
+			return node
 
 	handle: (type) =>
 		if @events[type]

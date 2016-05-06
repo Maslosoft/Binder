@@ -29,8 +29,7 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 		options.extensions = []
 
 		# Events
-		if events
-			treeEvents = new TreeEvents tree, events, options
+		treeEvents = new TreeEvents tree, events, options
 
 		# Accessors for dnd and draggable
 		dnd = valueAccessor().dnd or false

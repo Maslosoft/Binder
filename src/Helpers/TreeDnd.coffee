@@ -72,20 +72,29 @@ class TreeDnd
 		return true
 
 	dragDrop: (node, data) =>
-		
+
 		hitMode = data.hitMode
 
 		# Dragged element - either draggable or tree element
 		dragged = data.draggable.element[0]
 
+		# Event handler for drop
+		@events.drop node, data
+
 		if not data.otherNode
 			# Drop from ourside tree
 			ctx = ko.contextFor dragged
-			current = ctx.$data
+
+			# Handle drop event possible transformation of node
+			current = @events.getNode(ctx.$data)
+
 		else
 			# From from within tree
 			parent = @finder.find(data.otherNode.parent.data.id)
-			current = @finder.find(data.otherNode.data.id)
+
+			# Find node
+			# Handle drop event possible transformation of node
+			current = @events.getNode(@finder.find(data.otherNode.data.id))
 
 			if not @el.is dragged
 				log 'From other instance...'
