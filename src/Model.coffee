@@ -50,6 +50,13 @@ class @Maslosoft.Ko.Balin.Model
 
 		initialized = initMap.get @
 
+		# Dereference first
+		for name, value of @
+			if isPlainObject @[name]
+				@[name] = {}
+			if Array.isArray @[name]
+				@[name] = []
+
 		# Initialize new object
 		if not initialized
 			initMap.set @, true
