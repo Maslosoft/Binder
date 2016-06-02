@@ -538,7 +538,7 @@ class @Maslosoft.Ko.Balin.CssClass extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
-		if value
+		if !!value
 			ko.utils.toggleDomNodeCssClass(element, @options.className, true);
 		else
 			ko.utils.toggleDomNodeCssClass(element, @options.className, false);

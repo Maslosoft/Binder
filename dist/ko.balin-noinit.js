@@ -505,7 +505,7 @@
     CssClass.prototype.update = function(element, valueAccessor) {
       var value;
       value = this.getValue(valueAccessor);
-      if (value) {
+      if (!!value) {
         ko.utils.toggleDomNodeCssClass(element, this.options.className, true);
       } else {
         ko.utils.toggleDomNodeCssClass(element, this.options.className, false);
