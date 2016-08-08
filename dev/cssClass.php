@@ -22,7 +22,7 @@
 		// Define custom binding
 		Maslosoft.Ko.Balin.register('custom', new Maslosoft.Ko.Balin.CssClass({className: 'custom'}));
 
-		app.model.selected = new Maslosoft.Ko.BalinDev.Models.Selected({isSelected: false});
+		app.model.selected = new Maslosoft.Ko.BalinDev.Models.Selected({isSelected: true});
 		app.model.active = new Maslosoft.Ko.BalinDev.Models.Selected({isSelected: false});
 		app.model.disabled = new Maslosoft.Ko.BalinDev.Models.Selected({isSelected: false});
 		app.model.custom = new Maslosoft.Ko.BalinDev.Models.Selected({isSelected: false});

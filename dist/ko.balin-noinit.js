@@ -253,7 +253,10 @@
           value = value[this.options.valueField]();
         }
       }
-      return value || defaults;
+      if (typeof value === 'undefined') {
+        return defaults;
+      }
+      return value;
     };
 
     return Base;
@@ -543,12 +546,13 @@
     __extends(WidgetUrl, _super);
 
     function WidgetUrl() {
+      this.setRel = __bind(this.setRel, this);
       this.createUrl = __bind(this.createUrl, this);
       return WidgetUrl.__super__.constructor.apply(this, arguments);
     }
 
     WidgetUrl.prototype.getData = function(element, valueAccessor, allBindings, bindingName) {
-      var data, src;
+      var bindingParams, data, src;
       src = this.getValue(valueAccessor);
       data = {};
       data.id = allBindings.get('widgetId') || src.id;
@@ -556,8 +560,15 @@
         data.id = allBindings.get('widget').id;
       }
       data[bindingName] = allBindings.get(bindingName) || src[bindingName];
-      data.params = allBindings.get('params') || src.params;
+      bindingParams = allBindings.get('params');
+      if (typeof bindingParams === void 0) {
+        data.params = src.params;
+      } else {
+        data.params = bindingParams;
+      }
+      console.log(data.params);
       data.params = this.getValue(data.params);
+      console.log(data.params);
       if (typeof src === 'string') {
         data[bindingName] = src;
       }
@@ -567,8 +578,11 @@
     WidgetUrl.prototype.createUrl = function(widgetId, action, params, terminator) {
       var args, href, name, value;
       args = [];
+      console.log(typeof params);
       if (typeof params === 'string' || typeof params === 'number') {
-        args.push("" + params);
+        if (params !== "" || typeof params === 'number') {
+          args.push("" + params);
+        }
       } else {
         for (name in params) {
           value = params[name];
@@ -578,12 +592,33 @@
         }
       }
       href = "" + terminator + widgetId + "." + action;
+      console.log(args);
       if (args.length === 0) {
         return href;
       } else {
         args = args.join(',', args);
         return "" + href + "=" + args;
       }
+    };
+
+    WidgetUrl.prototype.setRel = function(element) {
+      var hasRel, rel, relValue, rels, _i, _len;
+      hasRel = false;
+      rels = [];
+      rel = element.getAttribute('rel');
+      if (rel) {
+        rels = rel.split(' ');
+        for (_i = 0, _len = rels.length; _i < _len; _i++) {
+          relValue = rels[_i];
+          if (relValue === 'virtual') {
+            hasRel = true;
+          }
+        }
+      }
+      if (!hasRel) {
+        rels.push('virtual');
+      }
+      return element.setAttribute('rel', rels.join(' '));
     };
 
     return WidgetUrl;
@@ -1512,7 +1547,7 @@
       data = this.getData(element, valueAccessor, allBindings, 'action');
       href = this.createUrl(data.id, data.action, data.params, '?');
       element.setAttribute('href', href);
-      return element.setAttribute('rel', 'virtual');
+      return this.setRel(element);
     };
 
     return WidgetAction;
@@ -1532,7 +1567,7 @@
       data = this.getData(element, valueAccessor, allBindings, 'activity');
       href = this.createUrl(data.id, data.activity, data.params, '#');
       element.setAttribute('href', href);
-      return element.setAttribute('rel', 'virtual');
+      return this.setRel(element);
     };
 
     return WidgetActivity;

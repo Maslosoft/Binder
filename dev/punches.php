@@ -8,9 +8,9 @@
 </p>
 <p data-bind="with: app.model.txt1">
 	<input data-bind="textInput: text"></input>
-	<div>This should be escaped value: {{app.model.txt1.text}}</div>
-	<div>This should have html value: {{{app.model.txt1.text}}}</div>
-	<span rel="tooltip" title="{{app.model.txt1.text}}" data-original-title="{{app.model.txt1.text}}">This should have title attribute value of {{app.model.txt1.text}}</span>
+<div>This should be escaped value: {{app.model.txt1.text}}</div>
+<div>This should have html value: {{{app.model.txt1.text}}}</div>
+<span rel="tooltip" title="{{app.model.txt1.text}}" data-original-title="{{app.model.txt1.text}}">This should have title attribute value of {{app.model.txt1.text}}</span>
 </p>
 
 <script>
@@ -31,7 +31,7 @@
 
 		ko.applyBindings({model: app.model});
 		jQuery('body').tooltip({
-			selector: '[rel="tooltip"]'
+			selector: '[rel~="tooltip"]'
 		});
 	});
 </script>

@@ -202,7 +202,11 @@ class @Maslosoft.Ko.Balin.Base
 				value = value[@options.valueField]
 			else
 				value = value[@options.valueField]()
-		return value or defaults
+				
+		# Only use defaults when undefined
+		if typeof(value) is 'undefined'
+			return defaults
+		return value
 
 class @Maslosoft.Ko.Balin.Options
 
@@ -571,10 +575,21 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 			data.id = allBindings.get('widget').id
 
 		data[bindingName] = allBindings.get(bindingName) or src[bindingName]
-		data.params = allBindings.get('params') or src.params
 
-		data.params = @getValue(data.params)
+		# Need to check for undefined here,
+		# as params might be `0` or `` or `false`
+		bindingParams = allBindings.get('params');
+		if typeof(bindingParams) is undefined
+			data.params = src.params
+		else
+			data.params = bindingParams
+
+		console.log data.params
 		
+		data.params = @getValue(data.params)
+
+		console.log data.params
+
 		if typeof(src) is 'string'
 			data[bindingName] = src
 		
@@ -583,8 +598,12 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 	createUrl: (widgetId, action, params, terminator) =>
 		
 		args = [];
+		# Assign one value params
+		console.log typeof(params)
 		if typeof(params) is 'string' or typeof(params) is 'number'
-			args.push "" + params
+			# Skip empty strings
+			if params isnt "" or typeof(params) is 'number'
+				args.push "" + params
 		else
 			for name, value of params
 				name = encodeURIComponent("" + name)
@@ -592,11 +611,28 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 				args.push "#{name}:#{value}"
 		
 		href = "#{terminator}#{widgetId}.#{action}";
+		console.log args
 		if args.length is 0
 			return href;
 		else
 			args = args.join(',', args)
 			return "#{href}=#{args}"
+
+	setRel: (element) =>
+
+		hasRel = false
+		rels = []
+		rel = element.getAttribute('rel')
+		if rel
+			rels = rel.split(' ')
+			for relValue in rels
+				if relValue is 'virtual'
+					hasRel = true
+
+		if not hasRel
+			rels.push 'virtual'
+
+		element.setAttribute('rel', rels.join(' '))
 #
 # Disabled binding
 # This adds class from options if value is true
@@ -1386,7 +1422,8 @@ class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
 		href = @createUrl(data.id, data.action, data.params, '?')
 
 		element.setAttribute('href', href)
-		element.setAttribute('rel', 'virtual')
+		
+		@setRel element
 
 
 class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
@@ -1397,7 +1434,9 @@ class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
 		href = @createUrl(data.id, data.activity, data.params, '#')
 
 		element.setAttribute('href', href)
-		element.setAttribute('rel', 'virtual')
+
+		@setRel element
+			
 class TreeDnd
 
 	# Expand helps greatly when doing dnd

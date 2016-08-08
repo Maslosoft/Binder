@@ -36,4 +36,8 @@ class @Maslosoft.Ko.Balin.Base
 				value = value[@options.valueField]
 			else
 				value = value[@options.valueField]()
-		return value or defaults
+				
+		# Only use defaults when undefined
+		if typeof(value) is 'undefined'
+			return defaults
+		return value

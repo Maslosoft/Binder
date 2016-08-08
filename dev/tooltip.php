@@ -12,7 +12,7 @@
 		app.model.Tooltip = new Maslosoft.Ko.BalinDev.Models.Tooltip({title: 'This is tooltip text'});
 		ko.applyBindings({model: app.model});
 		jQuery('body').tooltip({
-			selector: '[rel="tooltip"]'
+			selector: '[rel~="tooltip"]'
 		});
 	});
 </script>
