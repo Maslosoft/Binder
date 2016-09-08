@@ -125,7 +125,8 @@ if not @Maslosoft.Ko.Balin.Helpers
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
 		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		selected: Maslosoft.Ko.Balin.Selected
-		validator: Maslosoft.Ko.Balin.Validator
+		validator: Maslosoft.Ko.Balin.Validator,
+		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
 	}
 
 	if handlers isnt null
@@ -1413,6 +1414,39 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 		# NOTE: Will not trigger on value change, as it is not directly observing value.
 		# Will trigger only on init
 
+#
+# Video PLaylist binding handler
+#
+class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Base
+
+	getData: (valueAccessor) ->
+		# Verbose syntax, at least {data: data}
+		value = @getValue(valueAccessor) or []
+		if value.data
+			return value.data
+		return value
+
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+		
+		# Video options
+		options = valueAccessor().options or {}
+#		@update(element, valueAccessor, allBindingsAccessor)
+
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		data = @getData(valueAccessor)
+		console.log data
+
+		html = []
+		for video in data
+			html.push "<a href='#{video.url}'>#{video.title}</a>"
+
+		ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
+
+		ko.utils.addCssClass
+		element.innerHTML = html.join "\n"
+		new Maslosoft.Playlist element
+		
 
 class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
 

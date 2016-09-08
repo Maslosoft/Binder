@@ -88,6 +88,7 @@
 		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
 		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+		<link rel="stylesheet" href="../bower_components/maslosoft-playlist/dist/playlist.css"/>
 		<?php if (isset($mocha)): ?>
 			<link rel="stylesheet" href="../bower_components/mocha/mocha.css"/>
 			<style>
@@ -119,6 +120,7 @@
 		<script type="text/javascript" src="../bower_components/highlightjs/highlight.pack.js"></script>
 		<script type="text/javascript" src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
 		<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../bower_components/maslosoft-playlist/dist/playlist.js"></script>
 		<script type="text/javascript" src="./src/Model.js"></script>
 		<script type="text/javascript" src="./src/RegExpValidator.js"></script>
 		<script type="text/javascript" src="./src/RequiredValidator.js"></script>

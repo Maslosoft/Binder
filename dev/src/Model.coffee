@@ -98,3 +98,12 @@ class @Maslosoft.Ko.BalinDev.Models.DateTime extends @Maslosoft.Ko.Balin.Model
 class @Maslosoft.Ko.BalinDev.Models.Nested extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Nested"
 	rawI18N: ''
+
+class @Maslosoft.Ko.BalinDev.Models.Video extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Video"
+	url: ''
+	title: ''
+
+class @Maslosoft.Ko.BalinDev.Models.Videos extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Video"
+	videos: []

@@ -55,7 +55,8 @@
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
 		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		selected: Maslosoft.Ko.Balin.Selected
-		validator: Maslosoft.Ko.Balin.Validator
+		validator: Maslosoft.Ko.Balin.Validator,
+		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
 	}
 
 	if handlers isnt null

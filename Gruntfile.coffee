@@ -24,6 +24,7 @@ bundle = [
 	'bower_components/knockout-es5/dist/knockout-es5.min.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.min.js'
 	'bower_components/knockout.punches/knockout.punches.min.js'
+	'bower_components/maslosoft-playlist/dist/playlist.min.js'
 ]
 bundleDev = [
 	'bower_components/proxy-polyfill/proxy.js'
@@ -32,6 +33,7 @@ bundleDev = [
 	'bower_components/knockout-es5/dist/knockout-es5.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.js'
 	'bower_components/knockout.punches/knockout.punches.js'
+	'bower_components/maslosoft-playlist/dist/playlist.js'
 ]
 
 balinBundle = bundle.slice 0

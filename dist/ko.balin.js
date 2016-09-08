@@ -155,7 +155,8 @@
       timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter,
       timeFormatter: Maslosoft.Ko.Balin.TimeFormatter,
       selected: Maslosoft.Ko.Balin.Selected,
-      validator: Maslosoft.Ko.Balin.Validator
+      validator: Maslosoft.Ko.Balin.Validator,
+      videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
     };
     if (handlers !== null) {
       _results = [];
@@ -1531,6 +1532,48 @@
     Validator.prototype.update = function(element, valueAccessor, allBindings) {};
 
     return Validator;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.VideoPlaylist = (function(_super) {
+    __extends(VideoPlaylist, _super);
+
+    function VideoPlaylist() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return VideoPlaylist.__super__.constructor.apply(this, arguments);
+    }
+
+    VideoPlaylist.prototype.getData = function(valueAccessor) {
+      var value;
+      value = this.getValue(valueAccessor) || [];
+      if (value.data) {
+        return value.data;
+      }
+      return value;
+    };
+
+    VideoPlaylist.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      var options;
+      return options = valueAccessor().options || {};
+    };
+
+    VideoPlaylist.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var data, html, video, _i, _len;
+      data = this.getData(valueAccessor);
+      console.log(data);
+      html = [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        video = data[_i];
+        html.push("<a href='" + video.url + "'>" + video.title + "</a>");
+      }
+      ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
+      ko.utils.addCssClass;
+      element.innerHTML = html.join("\n");
+      return new Maslosoft.Playlist(element);
+    };
+
+    return VideoPlaylist;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
