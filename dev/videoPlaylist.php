@@ -3,8 +3,12 @@
 	Videos
 </div>
 <div data-bind="foreach: app.model.list.videos">
-	<input data-bind="textInput: url" style="width: 50%;"/>
-	<a href="#" class="remove">Remove</a>
+	<div>
+		<div data-bind="videoThumb: url" style="height:67px;width:100px;background-size:cover;display:inline-block;">
+		</div>
+		<input data-bind="textInput: url" style="width: 50%;"/>
+		<a href="#" class="remove">Remove</a>
+	</div>
 </div>
 <div>
 	Fill url into field below to add video

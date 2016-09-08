@@ -1,7 +1,7 @@
 #
 # Video PLaylist binding handler
 #
-class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
 
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}
@@ -23,7 +23,9 @@ class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Base
 
 		html = []
 		for video in data
-			html.push "<a href='#{video.url}'>#{video.title}</a>"
+			url = video.url
+			if @isVideoUrl url
+				html.push "<a href='#{url}'>#{video.title}</a>"
 
 		ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
 

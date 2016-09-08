@@ -156,7 +156,8 @@
       timeFormatter: Maslosoft.Ko.Balin.TimeFormatter,
       selected: Maslosoft.Ko.Balin.Selected,
       validator: Maslosoft.Ko.Balin.Validator,
-      videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
+      videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist,
+      videoThumb: Maslosoft.Ko.Balin.VideoThumb
     };
     if (handlers !== null) {
       _results = [];
@@ -540,6 +541,59 @@
     };
 
     return MomentFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Video = (function(_super) {
+    var adapters, options;
+
+    __extends(Video, _super);
+
+    function Video() {
+      this.setThumb = __bind(this.setThumb, this);
+      this.isVideoUrl = __bind(this.isVideoUrl, this);
+      return Video.__super__.constructor.apply(this, arguments);
+    }
+
+    options = null;
+
+    adapters = null;
+
+    jQuery(document).ready(function() {
+      options = new Maslosoft.Playlist.Options;
+      return adapters = options.adapters;
+    });
+
+    Video.prototype.isVideoUrl = function(url) {
+      var adapter, _i, _len;
+      for (_i = 0, _len = adapters.length; _i < _len; _i++) {
+        adapter = adapters[_i];
+        if (adapter.match(url)) {
+          console.log("Match: " + url);
+          return adapter;
+        }
+      }
+      return false;
+    };
+
+    Video.prototype.setThumb = function(url, element) {
+      var ad, adapter, thumbCallback;
+      if (adapter = this.isVideoUrl(url)) {
+        thumbCallback = function(src) {
+          if (element.tagName.toLowerCase() === 'img') {
+            return element.src = src;
+          } else {
+            return jQuery(element).css('background-image', "url('" + src + "')");
+          }
+        };
+        console.log(url);
+        ad = new adapter;
+        ad.setUrl(url);
+        return ad.setThumb(thumbCallback);
+      }
+    };
+
+    return Video;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
@@ -1559,13 +1613,16 @@
     };
 
     VideoPlaylist.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var data, html, video, _i, _len;
+      var data, html, url, video, _i, _len;
       data = this.getData(valueAccessor);
       console.log(data);
       html = [];
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         video = data[_i];
-        html.push("<a href='" + video.url + "'>" + video.title + "</a>");
+        url = video.url;
+        if (this.isVideoUrl(url)) {
+          html.push("<a href='" + url + "'>" + video.title + "</a>");
+        }
       }
       ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
       ko.utils.addCssClass;
@@ -1575,7 +1632,28 @@
 
     return VideoPlaylist;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Ko.Balin.Video);
+
+  this.Maslosoft.Ko.Balin.VideoThumb = (function(_super) {
+    __extends(VideoThumb, _super);
+
+    function VideoThumb() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return VideoThumb.__super__.constructor.apply(this, arguments);
+    }
+
+    VideoThumb.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+
+    VideoThumb.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var url;
+      url = this.getValue(valueAccessor);
+      return this.setThumb(url, element);
+    };
+
+    return VideoThumb;
+
+  })(this.Maslosoft.Ko.Balin.Video);
 
   this.Maslosoft.Ko.Balin.WidgetAction = (function(_super) {
     __extends(WidgetAction, _super);

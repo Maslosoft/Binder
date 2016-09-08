@@ -125,8 +125,9 @@ if not @Maslosoft.Ko.Balin.Helpers
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
 		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		selected: Maslosoft.Ko.Balin.Selected
-		validator: Maslosoft.Ko.Balin.Validator,
+		validator: Maslosoft.Ko.Balin.Validator
 		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
+		videoThumb: Maslosoft.Ko.Balin.VideoThumb
 	}
 
 	if handlers isnt null
@@ -562,6 +563,57 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@options.sourceFormat](value).format(@options.displayFormat)
 		return
+
+#
+# Base class for video related bindings
+#
+class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
+
+	options = null
+	adapters = null
+
+	jQuery(document).ready () ->
+
+		# Initalize thumbnails adapters
+		options = new Maslosoft.Playlist.Options
+
+		# Set adapters from options
+		adapters = options.adapters
+
+	#
+	# Check is supported video url
+	# @param url string
+	# @return false|object
+	#
+	isVideoUrl: (url) =>
+		for adapter in adapters
+			if adapter.match url
+				console.log "Match: #{url}"
+				return adapter
+		return false
+
+	#
+	# Will set image src attribute to video thumbnail,
+	# or element background-image style if it's not image
+	# @param url string
+	# @param element DomElement
+	#
+	setThumb: (url, element) =>
+		if adapter = @isVideoUrl url
+		
+			thumbCallback = (src) ->
+				if element.tagName.toLowerCase() is 'img'
+					element.src = src
+				else
+					jQuery(element).css 'background-image', "url('#{src}')"
+			
+			console.log url
+			# Init adapter
+			ad = new adapter
+			ad.setUrl url
+			ad.setThumb thumbCallback
+
+
 
 
 class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
@@ -1417,7 +1469,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 #
 # Video PLaylist binding handler
 #
-class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
 
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}
@@ -1439,13 +1491,30 @@ class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Base
 
 		html = []
 		for video in data
-			html.push "<a href='#{video.url}'>#{video.title}</a>"
+			url = video.url
+			if @isVideoUrl url
+				html.push "<a href='#{url}'>#{video.title}</a>"
 
 		ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
 
 		ko.utils.addCssClass
 		element.innerHTML = html.join "\n"
 		new Maslosoft.Playlist element
+		
+#
+# Video PLaylist binding handler
+#
+class @Maslosoft.Ko.Balin.VideoThumb extends @Maslosoft.Ko.Balin.Video
+
+	init: (element, valueAccessor, allBindingsAccessor, context) =>
+		
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		url = @getValue(valueAccessor)
+
+		@setThumb url, element
+
+				
+
 		
 
 class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
