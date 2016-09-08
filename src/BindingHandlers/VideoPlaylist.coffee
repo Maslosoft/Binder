@@ -2,7 +2,7 @@
 # Video PLaylist binding handler
 #
 class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
-
+	initVideos: null
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}
 		value = @getValue(valueAccessor) or []
@@ -11,25 +11,24 @@ class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
 		return value
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		
-		# Video options
-		options = valueAccessor().options or {}
-#		@update(element, valueAccessor, allBindingsAccessor)
 
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		data = @getData(valueAccessor)
-		console.log data
+		data = @getData valueAccessor
+		options = @getValue valueAccessor or {}
+		urlField = options.urlField or 'url'
+		titleField = options.urlField or 'title'
 
 		html = []
 		for video in data
-			url = video.url
+			url = video[urlField]
+			title = video[titleField]
 			if @isVideoUrl url
-				html.push "<a href='#{url}'>#{video.title}</a>"
+				html.push "<a href='#{url}'>#{title}</a>"
 
-		ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
-
-		ko.utils.addCssClass
 		element.innerHTML = html.join "\n"
-		new Maslosoft.Playlist element
-		
+		if html.length
+			ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
+			new Maslosoft.Playlist element
+		else
+			ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', false);

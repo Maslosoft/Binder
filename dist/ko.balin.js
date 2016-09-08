@@ -105,6 +105,28 @@
     this.Maslosoft.Ko.Balin.Helpers = {};
   }
 
+  this.Maslosoft.Ko.debounce = function(func, wait, immediate) {
+    var timeout;
+    timeout = void 0;
+    return function() {
+      var args, callNow, context, later;
+      context = this;
+      args = arguments;
+      later = function() {
+        timeout = null;
+        if (!immediate) {
+          func.apply(context, args);
+        }
+      };
+      callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait || 200);
+      if (callNow) {
+        func.apply(context, args);
+      }
+    };
+  };
+
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
     var name2;
     ko.bindingHandlers[name] = handler;
@@ -569,7 +591,6 @@
       for (_i = 0, _len = adapters.length; _i < _len; _i++) {
         adapter = adapters[_i];
         if (adapter.match(url)) {
-          console.log("Match: " + url);
           return adapter;
         }
       }
@@ -1598,6 +1619,8 @@
       return VideoPlaylist.__super__.constructor.apply(this, arguments);
     }
 
+    VideoPlaylist.prototype.initVideos = null;
+
     VideoPlaylist.prototype.getData = function(valueAccessor) {
       var value;
       value = this.getValue(valueAccessor) || [];
@@ -1607,27 +1630,30 @@
       return value;
     };
 
-    VideoPlaylist.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var options;
-      return options = valueAccessor().options || {};
-    };
+    VideoPlaylist.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
 
     VideoPlaylist.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var data, html, url, video, _i, _len;
+      var data, html, options, title, titleField, url, urlField, video, _i, _len;
       data = this.getData(valueAccessor);
-      console.log(data);
+      options = this.getValue(valueAccessor || {});
+      urlField = options.urlField || 'url';
+      titleField = options.urlField || 'title';
       html = [];
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         video = data[_i];
-        url = video.url;
+        url = video[urlField];
+        title = video[titleField];
         if (this.isVideoUrl(url)) {
-          html.push("<a href='" + url + "'>" + video.title + "</a>");
+          html.push("<a href='" + url + "'>" + title + "</a>");
         }
       }
-      ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
-      ko.utils.addCssClass;
       element.innerHTML = html.join("\n");
-      return new Maslosoft.Playlist(element);
+      if (html.length) {
+        ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
+        return new Maslosoft.Playlist(element);
+      } else {
+        return ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', false);
+      }
     };
 
     return VideoPlaylist;

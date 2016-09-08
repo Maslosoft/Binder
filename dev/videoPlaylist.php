@@ -19,10 +19,18 @@
 <p>
 	NOTE: CSS is not included in package!
 </p>
+<div data-bind="if: !app.model.list.videos.length">
+	<b>Add some videos to initialize playlist</b>
+</div>
 <!--A bit of layout to make player smaller-->
 <div class="row">
-	<div class="col-md-5 col-xs-12 col-sm-8">
+	<div class="col-md-6 col-xs-12 col-sm-8">
 		<div data-bind="videoPlaylist: app.model.list.videos">
+
+		</div>
+	</div>
+	<div class="col-md-6 col-xs-12 col-sm-8">
+		<div data-bind="videoPlaylist: {data: app.model.list.videos, urlField: 'url', titleField: 'title'}">
 
 		</div>
 	</div>

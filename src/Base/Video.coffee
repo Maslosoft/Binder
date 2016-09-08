@@ -22,7 +22,6 @@ class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
 	isVideoUrl: (url) =>
 		for adapter in adapters
 			if adapter.match url
-				console.log "Match: #{url}"
 				return adapter
 		return false
 
@@ -34,17 +33,15 @@ class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
 	#
 	setThumb: (url, element) =>
 		if adapter = @isVideoUrl url
-		
+
 			thumbCallback = (src) ->
 				if element.tagName.toLowerCase() is 'img'
 					element.src = src
 				else
 					jQuery(element).css 'background-image', "url('#{src}')"
-			
+
 			console.log url
 			# Init adapter
 			ad = new adapter
 			ad.setUrl url
 			ad.setThumb thumbCallback
-
-

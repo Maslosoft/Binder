@@ -69,6 +69,34 @@ if not @Maslosoft.Ko.Balin.Helpers
 	@Maslosoft.Ko.Balin.Helpers = {}
 
 #
+#
+# Extra utils
+#
+
+#
+# Debounce function
+# @link https://john-dugan.com/javascript-debounce/
+#
+@Maslosoft.Ko.debounce = (func, wait, immediate) ->
+  timeout = undefined
+  ->
+    context = this
+    args = arguments
+
+    later = ->
+      timeout = null
+      if !immediate
+        func.apply context, args
+      return
+
+    callNow = immediate and !timeout
+    clearTimeout timeout
+    timeout = setTimeout(later, wait or 200)
+    if callNow
+      func.apply context, args
+    return
+
+#
 # Register binding handler
 # @param string name
 # @params Maslosoft.Ko.Balin.Base handler
@@ -588,7 +616,6 @@ class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
 	isVideoUrl: (url) =>
 		for adapter in adapters
 			if adapter.match url
-				console.log "Match: #{url}"
 				return adapter
 		return false
 
@@ -600,20 +627,18 @@ class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
 	#
 	setThumb: (url, element) =>
 		if adapter = @isVideoUrl url
-		
+
 			thumbCallback = (src) ->
 				if element.tagName.toLowerCase() is 'img'
 					element.src = src
 				else
 					jQuery(element).css 'background-image', "url('#{src}')"
-			
+
 			console.log url
 			# Init adapter
 			ad = new adapter
 			ad.setUrl url
 			ad.setThumb thumbCallback
-
-
 
 
 class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
@@ -1470,7 +1495,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 # Video PLaylist binding handler
 #
 class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
-
+	initVideos: null
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}
 		value = @getValue(valueAccessor) or []
@@ -1479,28 +1504,28 @@ class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
 		return value
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		
-		# Video options
-		options = valueAccessor().options or {}
-#		@update(element, valueAccessor, allBindingsAccessor)
 
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		data = @getData(valueAccessor)
-		console.log data
+		data = @getData valueAccessor
+		options = @getValue valueAccessor or {}
+		urlField = options.urlField or 'url'
+		titleField = options.urlField or 'title'
 
 		html = []
 		for video in data
-			url = video.url
+			url = video[urlField]
+			title = video[titleField]
 			if @isVideoUrl url
-				html.push "<a href='#{url}'>#{video.title}</a>"
+				html.push "<a href='#{url}'>#{title}</a>"
 
-		ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
-
-		ko.utils.addCssClass
 		element.innerHTML = html.join "\n"
-		new Maslosoft.Playlist element
-		
+		if html.length
+			ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
+			new Maslosoft.Playlist element
+		else
+			ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', false);
+
 #
 # Video PLaylist binding handler
 #

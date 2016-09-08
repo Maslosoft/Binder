@@ -1,4 +1,32 @@
 #
+#
+# Extra utils
+#
+
+#
+# Debounce function
+# @link https://john-dugan.com/javascript-debounce/
+#
+@Maslosoft.Ko.debounce = (func, wait, immediate) ->
+  timeout = undefined
+  ->
+    context = this
+    args = arguments
+
+    later = ->
+      timeout = null
+      if !immediate
+        func.apply context, args
+      return
+
+    callNow = immediate and !timeout
+    clearTimeout timeout
+    timeout = setTimeout(later, wait or 200)
+    if callNow
+      func.apply context, args
+    return
+
+#
 # Register binding handler
 # @param string name
 # @params Maslosoft.Ko.Balin.Base handler
