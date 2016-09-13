@@ -1276,8 +1276,9 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 
 		# Set max image dimentions
 		$element.css
-			maxWidth: size
-			maxHeight: size
+			width: "#{size}px"
+			height: 'auto'
+			maxWidth: '100%'
 
 		return
 

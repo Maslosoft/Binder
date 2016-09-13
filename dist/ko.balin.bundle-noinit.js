@@ -10070,8 +10070,9 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         $element.attr("src", src);
       }
       $element.css({
-        maxWidth: size,
-        maxHeight: size
+        width: "" + size + "px",
+        height: 'auto',
+        maxWidth: '100%'
       });
     };
 
