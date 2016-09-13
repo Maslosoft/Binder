@@ -93,7 +93,7 @@ module.exports = (grunt) ->
 		watch:
 			compile:
 				files: balin
-				tasks: ['coffee', 'uglify', 'concat']
+				tasks: ['coffee:compile']
 
 	# These plugins provide necessary tasks.
 	grunt.loadNpmTasks 'grunt-contrib-coffee'

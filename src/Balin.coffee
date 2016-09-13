@@ -63,6 +63,7 @@
 		asset: Maslosoft.Ko.Balin.Asset
 		data: Maslosoft.Ko.Balin.Data
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
+		datePicker: Maslosoft.Ko.Balin.DatePicker
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
 		disabled: Maslosoft.Ko.Balin.Disabled
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
@@ -82,6 +83,7 @@
 		tooltip: Maslosoft.Ko.Balin.Tooltip
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
 		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
+		timePicker: Maslosoft.Ko.Balin.TimePicker
 		selected: Maslosoft.Ko.Balin.Selected
 		validator: Maslosoft.Ko.Balin.Validator
 		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist

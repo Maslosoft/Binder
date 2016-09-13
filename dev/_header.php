@@ -89,6 +89,10 @@
 		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
 		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
 		<link rel="stylesheet" href="../bower_components/maslosoft-playlist/dist/playlist.css"/>
+		<link rel="stylesheet" href="../bower_components/pickadate/lib/themes/classic.css"/>
+		<link rel="stylesheet" href="../bower_components/pickadate/lib/themes/classic.date.css"/>
+		<link rel="stylesheet" href="../bower_components/pickadate/lib/themes/classic.time.css"/>
+
 		<?php if (isset($mocha)): ?>
 			<link rel="stylesheet" href="../bower_components/mocha/mocha.css"/>
 			<style>
@@ -116,6 +120,10 @@
 		<script type="text/javascript" src="../dist/ko.balin.js"></script>
 
 		<!--other libs-->
+		<script type="text/javascript" src="../bower_components/datejs_original/date.js"></script>
+		<script type="text/javascript" src="../bower_components/pickadate/lib/compressed/picker.js"></script>
+		<script type="text/javascript" src="../bower_components/pickadate/lib/compressed/picker.date.js"></script>
+		<script type="text/javascript" src="../bower_components/pickadate/lib/compressed/picker.time.js"></script>
 		<script type="text/javascript" src="../bower_components/moment/min/moment-with-locales.min.js"></script>
 		<script type="text/javascript" src="../bower_components/highlightjs/highlight.pack.js"></script>
 		<script type="text/javascript" src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>

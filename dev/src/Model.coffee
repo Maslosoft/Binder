@@ -107,3 +107,7 @@ class @Maslosoft.Ko.BalinDev.Models.Video extends @Maslosoft.Ko.Balin.Model
 class @Maslosoft.Ko.BalinDev.Models.Videos extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Video"
 	videos: []
+
+class @Maslosoft.Ko.BalinDev.Models.DatePicker extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.DatePicker"
+	date: 21232323

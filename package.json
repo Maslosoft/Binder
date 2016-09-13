@@ -27,5 +27,8 @@
     "grunt-contrib-uglify": "~0.5.1",
     "grunt-contrib-watch": "~0.6.1",
     "weakmap": "0.0.6"
+  },
+  "dependencies": {
+    "datejs": "^1.0.0-rc3"
   }
 }
