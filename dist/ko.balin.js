@@ -891,7 +891,6 @@
         showOnFocus: false
       };
       config = allBindingsAccessor.get('dateOptions') || [];
-      console.log(config);
       if (config) {
         for (name in config) {
           value = config[name];
@@ -915,14 +914,12 @@
       options = this.getOptions(allBindings);
       modelValue = this.getData(valueAccessor);
       elementValue = this.getModelValue(element.value, options);
-      console.log(element.value, modelValue, elementValue);
       if (modelValue !== elementValue) {
         if (valueAccessor().data) {
-          ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue);
+          return ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue);
         } else {
-          ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
+          return ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
         }
-        return console.log('should update model...');
       }
     };
 
@@ -1003,14 +1000,12 @@
     DatePicker.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
       var options, value;
       if (valueAccessor().data) {
-        console.log('Long notation...');
         ko.utils.setTextContent(element, valueAccessor().data);
       } else {
         ko.utils.setTextContent(element, valueAccessor());
       }
       options = this.getOptions(allBindingsAccessor);
       value = this.getDisplayValue(this.getData(valueAccessor), options);
-      console.log("Should update element", value, element.value);
       if (element.value !== value) {
         return element.value = value;
       }
@@ -1574,15 +1569,13 @@
       var elementValue, modelValue, val;
       modelValue = this.getValue(valueAccessor);
       elementValue = this.getModelValue(element.value);
-      console.log(element.value, modelValue, elementValue);
       if (ko.isWriteableObservable(valueAccessor) || true) {
         if (modelValue !== elementValue) {
           ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
-          val = elementValue;
-          return console.log('should update model...');
+          return val = elementValue;
         }
       } else {
-        return console.log('not writeabe');
+
       }
     };
 
@@ -1619,7 +1612,6 @@
       pickerWrapper = jQuery(template);
       pickerWrapper.insertAfter(textInput);
       pickerElement = pickerWrapper.find('a.picker-trigger-link');
-      console.log(pickerElement);
       options = {
         format: this.options.displayFormat.toLowerCase(),
         selectMonths: true,
@@ -1633,7 +1625,6 @@
           _this.updateModel(element, valueAccessor, allBindingsAccessor);
         };
       })(this));
-      console.log(picker);
       events = {};
       events.change = (function(_this) {
         return function() {
@@ -1648,13 +1639,11 @@
       events.keyup = function(e) {
         if (e.which === 86 && e.ctrlKey) {
           events.change();
-          console.log(e.which);
         }
       };
       events.mouseup = events.change;
       events.focus = (function(_this) {
         return function() {
-          console.log('Open picker');
           picker.open(false);
         };
       })(this);
@@ -1663,7 +1652,6 @@
           if (e.relatedTarget) {
             return;
           }
-          console.log('Close picker');
           picker.close();
           _this.updateModel(element, valueAccessor, allBindingsAccessor);
         };

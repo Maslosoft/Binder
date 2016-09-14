@@ -871,7 +871,7 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 			showOnFocus: false
 		}
 		config = allBindingsAccessor.get('dateOptions') or []
-		console.log config
+		
 		
 		# Only in long notation set options
 		if config
@@ -896,7 +896,7 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 		options = @getOptions allBindings
 		modelValue = @getData valueAccessor
 		elementValue = @getModelValue element.value, options
-		console.log element.value, modelValue, elementValue
+		
 		# Update only if changed
 		if modelValue isnt elementValue
 			if valueAccessor().data
@@ -904,7 +904,7 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 				ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue)
 			else
 				ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue)
-			console.log 'should update model...'
+			
 
 	#
 	# Get display value from model value according to formatting options
@@ -998,13 +998,13 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 	#
 	update: (element, valueAccessor, allBindingsAccessor) =>
 		if valueAccessor().data
-			console.log 'Long notation...'
+			
 			ko.utils.setTextContent(element, valueAccessor().data)
 		else
 			ko.utils.setTextContent(element, valueAccessor())
 		options = @getOptions allBindingsAccessor
 		value = @getDisplayValue(@getData(valueAccessor), options)
-		console.log "Should update element", value, element.value
+		
 		if element.value isnt value
 			element.value = value
 ###
@@ -1481,15 +1481,15 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 	updateModel: (element, valueAccessor, allBindings) =>
 		modelValue = @getValue valueAccessor
 		elementValue = @getModelValue element.value
-		console.log element.value, modelValue, elementValue
+		
 		if ko.isWriteableObservable(valueAccessor) or true
 			# Update only if changed
 			if modelValue isnt elementValue
 				ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue)
 				val = elementValue
-				console.log 'should update model...'
+				
 		else
-			console.log 'not writeabe'
+			
 
 	#
 	# Get display value from model value according to formatting options
@@ -1536,7 +1536,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 		pickerWrapper.insertAfter textInput
 		
 		pickerElement = pickerWrapper.find('a.picker-trigger-link')
-		console.log pickerElement
+		
 
 		options = {
 			# Format of pickadate is not compatible of this of moment
@@ -1553,7 +1553,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 			@updateModel element, valueAccessor, allBindingsAccessor
 			return
 
-		console.log picker
+		
 
 		events = {}
 
@@ -1572,7 +1572,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 		events.keyup = (e) ->
 			if e.which is 86 and e.ctrlKey
 				events.change()
-				console.log e.which
+				
 			return
 
 			
@@ -1580,7 +1580,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 
 		# Focus event of text input
 		events.focus = () =>
-			console.log 'Open picker'
+			
 			picker.open false
 			return
 
@@ -1589,7 +1589,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 			# Don't hide picker when clicking picker itself
 			if e.relatedTarget
 				return
-			console.log 'Close picker'
+			
 			picker.close()
 			@updateModel element, valueAccessor, allBindingsAccessor
 			return

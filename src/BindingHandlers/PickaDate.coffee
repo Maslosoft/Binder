@@ -10,15 +10,15 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 	updateModel: (element, valueAccessor, allBindings) =>
 		modelValue = @getValue valueAccessor
 		elementValue = @getModelValue element.value
-		console.log element.value, modelValue, elementValue
+		
 		if ko.isWriteableObservable(valueAccessor) or true
 			# Update only if changed
 			if modelValue isnt elementValue
 				ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue)
 				val = elementValue
-				console.log 'should update model...'
+				
 		else
-			console.log 'not writeabe'
+			
 
 	#
 	# Get display value from model value according to formatting options
@@ -65,7 +65,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 		pickerWrapper.insertAfter textInput
 		
 		pickerElement = pickerWrapper.find('a.picker-trigger-link')
-		console.log pickerElement
+		
 
 		options = {
 			# Format of pickadate is not compatible of this of moment
@@ -82,7 +82,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 			@updateModel element, valueAccessor, allBindingsAccessor
 			return
 
-		console.log picker
+		
 
 		events = {}
 
@@ -101,7 +101,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 		events.keyup = (e) ->
 			if e.which is 86 and e.ctrlKey
 				events.change()
-				console.log e.which
+				
 			return
 
 			
@@ -109,7 +109,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 
 		# Focus event of text input
 		events.focus = () =>
-			console.log 'Open picker'
+			
 			picker.open false
 			return
 
@@ -118,7 +118,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 			# Don't hide picker when clicking picker itself
 			if e.relatedTarget
 				return
-			console.log 'Close picker'
+			
 			picker.close()
 			@updateModel element, valueAccessor, allBindingsAccessor
 			return
