@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, warn,
+  var DatePickerHandler, ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -158,6 +158,7 @@
       data: Maslosoft.Ko.Balin.Data,
       dateFormatter: Maslosoft.Ko.Balin.DateFormatter,
       datePicker: Maslosoft.Ko.Balin.DatePicker,
+      datePickerPickaDate: Maslosoft.Ko.Balin.PickaDate,
       dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter,
       disabled: Maslosoft.Ko.Balin.Disabled,
       enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter,
@@ -867,9 +868,45 @@
       DatePicker.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateOptions(options));
     }
 
+    DatePicker.prototype.getData = function(valueAccessor) {
+      var value;
+      value = this.getValue(valueAccessor) || [];
+      if (value.data) {
+        return value.data;
+      }
+      return value;
+    };
+
+    DatePicker.prototype.getOptions = function(valueAccessor) {
+      var config, name, options, value;
+      options = {
+        format: this.options.displayFormat.toLowerCase(),
+        forceParse: false,
+        todayHighlight: true,
+        showOnFocus: false
+      };
+      config = this.getValue(valueAccessor) || [];
+      if (config.data) {
+        for (name in config) {
+          value = config[name];
+          if (name === 'data') {
+            continue;
+          }
+          if (name === 'template') {
+            continue;
+          }
+          if (name === 'format') {
+            options.displayFormat = value;
+          }
+          options[name] = value;
+        }
+      }
+      return options;
+    };
+
     DatePicker.prototype.updateModel = function(element, valueAccessor, allBindings) {
       var elementValue, modelValue, val;
-      modelValue = this.getValue(valueAccessor);
+      modelValue = this.getData(valueAccessor);
       elementValue = this.getModelValue(element.value);
       console.log(element.value, modelValue, elementValue);
       if (ko.isWriteableObservable(valueAccessor) || true) {
@@ -904,76 +941,56 @@
     };
 
     DatePicker.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var $inputDate, events, inputValue, options, picker, pickerElement, pickerWrapper, template, textInput;
-      inputValue = this.getDisplayValue(this.getValue(valueAccessor));
-      textInput = jQuery(element);
-      textInput.val(inputValue);
-      if (this.options.template) {
-        template = this.options.template;
+      var addon, input, isOpen, options, template, trigger;
+      options = this.getOptions(valueAccessor);
+      element.value = this.getDisplayValue(this.getData(valueAccessor));
+      input = jQuery(element);
+      if (options.template) {
+        template = options.template;
       } else {
         template = '<div class="input-group-addon">\n	<a class="picker-trigger-link" style="cursor: pointer;">\n		<i class="glyphicon glyphicon-calendar"></i>\n	</a>\n</div>';
       }
-      pickerWrapper = jQuery(template);
-      pickerWrapper.insertAfter(textInput);
-      pickerElement = pickerWrapper.find('a.picker-trigger-link');
-      console.log(pickerElement);
-      options = {
-        format: this.options.displayFormat.toLowerCase(),
-        selectMonths: true,
-        selectYears: true
-      };
-      $inputDate = pickerElement.pickadate(options);
-      picker = $inputDate.pickadate('picker');
-      picker.on('set', (function(_this) {
-        return function() {
-          textInput.val(picker.get('value'));
-          _this.updateModel(element, valueAccessor, allBindingsAccessor);
+      addon = jQuery(template);
+      addon.insertAfter(input);
+      trigger = addon.find('a.picker-trigger-link');
+      input.datepicker(options);
+      input.on('changeDate', (function(_this) {
+        return function(e) {
+          return false;
         };
       })(this));
-      console.log(picker);
-      events = {};
-      events.change = (function(_this) {
-        return function() {
+      input.on('change', (function(_this) {
+        return function(e) {
           var parsedDate;
           parsedDate = Date.parse(element.value);
-          if (parsedDate) {
-            picker.set('select', [parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()]);
+          if (parsedDate && !e.isTrigger) {
+            console.log(e.isTrigger);
+            console.log("Change and parsed " + element.value, e);
+            console.log("" + parsedDate);
+            element.value = _this.getDisplayValue(Math.round(parsedDate.getTime() / 1000));
             _this.updateModel(element, valueAccessor, allBindingsAccessor);
+            input.datepicker('update');
+            return true;
           }
+          return false;
         };
-      })(this);
-      events.keyup = function(e) {
-        if (e.which === 86 && e.ctrlKey) {
-          events.change();
-          console.log(e.which);
-        }
-      };
-      events.mouseup = events.change;
-      events.focus = (function(_this) {
-        return function() {
-          console.log('Open picker');
-          picker.open(false);
-        };
-      })(this);
-      events.blur = (function(_this) {
+      })(this));
+      isOpen = false;
+      input.on('show', (function(_this) {
         return function(e) {
-          if (e.relatedTarget) {
-            return;
-          }
-          console.log('Close picker');
-          picker.close();
-          _this.updateModel(element, valueAccessor, allBindingsAccessor);
+          return isOpen = true;
         };
-      })(this);
-      textInput.on(events);
-      pickerElement.on('click', function(e) {
-        var isOpen, root;
-        root = jQuery(picker.$root[0]);
-        isOpen = jQuery(root.children()[0]).height() > 0;
+      })(this));
+      input.on('hide', (function(_this) {
+        return function(e) {
+          return isOpen = false;
+        };
+      })(this));
+      trigger.on('mousedown', function(e) {
         if (isOpen) {
-          picker.close();
+          input.datepicker('hide');
         } else {
-          picker.open(false);
+          input.datepicker('show');
         }
         e.stopPropagation();
         e.preventDefault();
@@ -983,7 +1000,7 @@
     DatePicker.prototype.update = function(element, valueAccessor) {
       var value;
       ko.utils.setTextContent(element, valueAccessor());
-      value = this.getDisplayValue(this.getValue(valueAccessor));
+      value = this.getDisplayValue(this.getData(valueAccessor));
       if (element.value !== value) {
         return element.value = value;
       }
@@ -1525,6 +1542,150 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+
+  /*
+  Date picker
+  NOTE: Not recommended, as Pick A Date is not maintanted
+   */
+
+  this.Maslosoft.Ko.Balin.PickaDate = (function(_super) {
+    __extends(PickaDate, _super);
+
+    function PickaDate(options) {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      this.getModelValue = __bind(this.getModelValue, this);
+      this.getDisplayValue = __bind(this.getDisplayValue, this);
+      this.updateModel = __bind(this.updateModel, this);
+      PickaDate.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateOptions(options));
+    }
+
+    PickaDate.prototype.updateModel = function(element, valueAccessor, allBindings) {
+      var elementValue, modelValue, val;
+      modelValue = this.getValue(valueAccessor);
+      elementValue = this.getModelValue(element.value);
+      console.log(element.value, modelValue, elementValue);
+      if (ko.isWriteableObservable(valueAccessor) || true) {
+        if (modelValue !== elementValue) {
+          ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
+          val = elementValue;
+          return console.log('should update model...');
+        }
+      } else {
+        return console.log('not writeabe');
+      }
+    };
+
+    PickaDate.prototype.getDisplayValue = function(value) {
+      var inputValue;
+      if (this.options.sourceFormat === 'unix') {
+        inputValue = moment.unix(value).format(this.options.displayFormat);
+      } else {
+        inputValue = moment(value, this.options.sourceFormat).format(this.options.displayFormat);
+      }
+      return inputValue;
+    };
+
+    PickaDate.prototype.getModelValue = function(value) {
+      var modelValue;
+      if (this.options.sourceFormat === 'unix') {
+        modelValue = moment(value, this.options.displayFormat).unix();
+      } else {
+        modelValue = moment(value, this.options.displayFormat).format(this.options.sourceFormat);
+      }
+      return modelValue;
+    };
+
+    PickaDate.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var $inputDate, events, inputValue, options, picker, pickerElement, pickerWrapper, template, textInput;
+      inputValue = this.getDisplayValue(this.getValue(valueAccessor));
+      textInput = jQuery(element);
+      textInput.val(inputValue);
+      if (this.options.template) {
+        template = this.options.template;
+      } else {
+        template = '<div class="input-group-addon">\n	<a class="picker-trigger-link" style="cursor: pointer;">\n		<i class="glyphicon glyphicon-calendar"></i>\n	</a>\n</div>';
+      }
+      pickerWrapper = jQuery(template);
+      pickerWrapper.insertAfter(textInput);
+      pickerElement = pickerWrapper.find('a.picker-trigger-link');
+      console.log(pickerElement);
+      options = {
+        format: this.options.displayFormat.toLowerCase(),
+        selectMonths: true,
+        selectYears: true
+      };
+      $inputDate = pickerElement.pickadate(options);
+      picker = $inputDate.pickadate('picker');
+      picker.on('set', (function(_this) {
+        return function() {
+          textInput.val(picker.get('value'));
+          _this.updateModel(element, valueAccessor, allBindingsAccessor);
+        };
+      })(this));
+      console.log(picker);
+      events = {};
+      events.change = (function(_this) {
+        return function() {
+          var parsedDate;
+          parsedDate = Date.parse(element.value);
+          if (parsedDate) {
+            picker.set('select', [parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()]);
+            _this.updateModel(element, valueAccessor, allBindingsAccessor);
+          }
+        };
+      })(this);
+      events.keyup = function(e) {
+        if (e.which === 86 && e.ctrlKey) {
+          events.change();
+          console.log(e.which);
+        }
+      };
+      events.mouseup = events.change;
+      events.focus = (function(_this) {
+        return function() {
+          console.log('Open picker');
+          picker.open(false);
+        };
+      })(this);
+      events.blur = (function(_this) {
+        return function(e) {
+          if (e.relatedTarget) {
+            return;
+          }
+          console.log('Close picker');
+          picker.close();
+          _this.updateModel(element, valueAccessor, allBindingsAccessor);
+        };
+      })(this);
+      textInput.on(events);
+      pickerElement.on('click', function(e) {
+        var isOpen, root;
+        root = jQuery(picker.$root[0]);
+        isOpen = jQuery(root.children()[0]).height() > 0;
+        if (isOpen) {
+          picker.close();
+        } else {
+          picker.open(false);
+        }
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    };
+
+    PickaDate.prototype.update = function(element, valueAccessor) {
+      var value;
+      ko.utils.setTextContent(element, valueAccessor());
+      value = this.getDisplayValue(this.getValue(valueAccessor));
+      if (element.value !== value) {
+        return element.value = value;
+      }
+    };
+
+    return PickaDate;
+
+  })(this.Maslosoft.Ko.Balin.Picker);
+
   this.Maslosoft.Ko.Balin.Selected = (function(_super) {
     __extends(Selected, _super);
 
@@ -1893,6 +2054,17 @@
     return WidgetActivity;
 
   })(this.Maslosoft.Ko.Balin.WidgetUrl);
+
+  DatePickerHandler = (function() {
+    DatePickerHandler.prototype.options = null;
+
+    function DatePickerHandler(options) {
+      this.options = options;
+    }
+
+    return DatePickerHandler;
+
+  })();
 
   TreeDnd = (function() {
     var t;

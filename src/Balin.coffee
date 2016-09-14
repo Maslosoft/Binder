@@ -64,6 +64,7 @@
 		data: Maslosoft.Ko.Balin.Data
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
 		datePicker: Maslosoft.Ko.Balin.DatePicker
+		datePickerPickaDate: Maslosoft.Ko.Balin.PickaDate
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
 		disabled: Maslosoft.Ko.Balin.Disabled
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter

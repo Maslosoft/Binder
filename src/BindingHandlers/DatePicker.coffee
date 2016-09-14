@@ -5,9 +5,44 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 
 	constructor: (options) ->
 		super new Maslosoft.Ko.Balin.DateOptions(options)
+	
+	getData: (valueAccessor) ->
+		# Verbose syntax, at least {data: data}
+		value = @getValue(valueAccessor) or []
+		if value.data
+			return value.data
+		return value
+
+	getOptions: (valueAccessor) ->
+		options = {
+			# Format of pickadate is not compatible of this of moment
+			format: @options.displayFormat.toLowerCase()
+			forceParse: false
+			todayHighlight: true
+			showOnFocus: false
+		}
+		config = @getValue(valueAccessor) or []
+		# Only in long notation set options
+		if config.data
+			for name, value of config
+
+				# Skip data
+				if name is 'data'
+					continue
+
+				# Skip template
+				if name is 'template'
+					continue
+
+				# Special treatment for display format
+				if name is 'format'
+					options.displayFormat = value
+				
+				options[name] = value
+		return options
 
 	updateModel: (element, valueAccessor, allBindings) =>
-		modelValue = @getValue valueAccessor
+		modelValue = @getData valueAccessor
 		elementValue = @getModelValue element.value
 		console.log element.value, modelValue, elementValue
 		if ko.isWriteableObservable(valueAccessor) or true
@@ -45,13 +80,14 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 
 	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 
-		inputValue = @getDisplayValue(@getValue(valueAccessor))
-		
-		textInput = jQuery(element)
-		textInput.val inputValue
+		options = @getOptions(valueAccessor)
 
-		if @options.template
-			template = @options.template
+		element.value = @getDisplayValue(@getData(valueAccessor))
+		
+		input = jQuery(element)
+
+		if options.template
+			template = options.template
 		else
 			template = '''
 			<div class="input-group-addon">
@@ -60,87 +96,51 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 				</a>
 			</div>
 			'''
-		pickerWrapper = jQuery(template)
-		pickerWrapper.insertAfter textInput
+		addon = jQuery(template)
+		addon.insertAfter input
 		
-		pickerElement = pickerWrapper.find('a.picker-trigger-link')
-		console.log pickerElement
+		trigger = addon.find('a.picker-trigger-link')
 
-		options = {
-			# Format of pickadate is not compatible of this of moment
-			format: @options.displayFormat.toLowerCase()
-			selectMonths: true
-			selectYears: true
-		}
+		input.datepicker(options)
 
-		$inputDate = pickerElement.pickadate(options)
-		picker = $inputDate.pickadate('picker')
+		# Don't trigger picker change date, as date need to be parsed by datejs
+		input.on 'changeDate', (e) =>
+			return false
 
-		picker.on 'set', =>
-			textInput.val picker.get('value')
-			@updateModel element, valueAccessor, allBindingsAccessor
-			return
-
-		console.log picker
-
-		events = {}
-
-		# On change or other events (paste etc.)
-		events.change = () =>
+		# Here is actual date change handling
+		input.on 'change', (e) =>
 			parsedDate = Date.parse(element.value)
-			if parsedDate
-				picker.set 'select', [
-					parsedDate.getFullYear()
-					parsedDate.getMonth()
-					parsedDate.getDate()
-				]
+			if parsedDate and not e.isTrigger
+				console.log e.isTrigger
+				console.log "Change and parsed #{element.value}", e
+				console.log "#{parsedDate}"
+				element.value = @getDisplayValue(Math.round(parsedDate.getTime() / 1000))
 				@updateModel element, valueAccessor, allBindingsAccessor
-			return
+				input.datepicker 'update'
+				return true
+			return false
 
-		events.keyup = (e) ->
-			if e.which is 86 and e.ctrlKey
-				events.change()
-				console.log e.which
-			return
+		# Handle opened state
+		isOpen = false
+		input.on 'show', (e) =>
+			isOpen = true
 
-			
-		events.mouseup = events.change
+		input.on 'hide', (e) =>
+			isOpen = false
 
-		# Focus event of text input
-		events.focus = () =>
-			console.log 'Open picker'
-			picker.open false
-			return
-
-		# Blur of text input
-		events.blur = (e) =>
-			# Don't hide picker when clicking picker itself
-			if e.relatedTarget
-				return
-			console.log 'Close picker'
-			picker.close()
-			@updateModel element, valueAccessor, allBindingsAccessor
-			return
-
-		textInput.on events
-
-		pickerElement.on 'click', (e) ->
-			root = jQuery(picker.$root[0])
-			# This seems to be only method
-			# to discover if picker is really open
-			isOpen = jQuery(root.children()[0]).height() > 0
+		# Need mousedown or will no hide on second click
+		trigger.on 'mousedown', (e) ->
 			if isOpen
-				picker.close()
+				input.datepicker('hide')
 			else
-				picker.open(false)
+				input.datepicker('show')
 			e.stopPropagation()
 			e.preventDefault()
 			return
-
 		return
 
 	update: (element, valueAccessor) =>
 		ko.utils.setTextContent(element, valueAccessor())
-		value = @getDisplayValue(@getValue(valueAccessor))
+		value = @getDisplayValue(@getData(valueAccessor))
 		if element.value isnt value
 			element.value = value

@@ -1,17 +1,11 @@
 <?php require './_header.php'; ?>
-<form class="form">
-	<div class="form-group">
-		<div class="input-group col-md-4 col-sm-6">
-			<input data-bind="datePicker: app.model.datePicker.date" type="text" class="form-control"/>
-		</div>
-	</div>
-	<div class="form-group">
-		<div class="input-group col-md-4 col-sm-6">
-			<input data-bind="datePicker: {data: app.model.datePicker.date, format: 'yyyy/mm/dd'}" type="text" class="form-control"/>
-		</div>
-	</div>
-</form>
-<div data-bind="dateFormatter: app.model.datePicker.date">
+<p class="text-danger">
+	Not recommended, use <a href="datePicker.php"> datePicker</a> instead
+</p>
+<div class="input-group col-md-4 col-sm-6">
+	<input data-bind="datePickerPickaDate: app.model.datePicker.date" type="text" class="form-control"/>
+</div>
+<div data-bind="text: app.model.datePicker.date">
 
 </div>
 <a href="#" data-bind="click: function(){app.model.datePicker.date = Math.round(Date.now() / 1000) - 200000;}">Set a bit to past</a> <br/>
