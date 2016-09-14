@@ -7,7 +7,17 @@
 	</div>
 	<div class="form-group">
 		<div class="input-group col-md-4 col-sm-6">
-			<input data-bind="datePicker: {data: app.model.datePicker.date, format: 'yyyy/mm/dd'}" type="text" class="form-control"/>
+			<input data-bind="datePicker: app.model.datePicker.date, dateOptions: {format: 'yyyy/mm/dd'}" type="text" class="form-control"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="input-group col-md-4 col-sm-6">
+			<input data-bind="datePicker: app.model.datePicker.date, dateOptions: {format: 'dd.mm.yyyy'}" type="text" class="form-control"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="input-group col-md-4 col-sm-6">
+			<input data-bind="datePicker: app.model.datePicker.date" type="text" class="form-control"/>
 		</div>
 	</div>
 </form>

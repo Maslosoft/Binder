@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var DatePickerHandler, ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -129,19 +129,21 @@
 
   this.Maslosoft.Ko.Balin.register = function(name, handler) {
     var name2;
-    ko.bindingHandlers[name] = handler;
     name2 = false;
     if (name.match(/[A-Z]/)) {
       name2 = name.toLowerCase();
-      ko.bindingHandlers[name2] = handler;
     }
     if (handler.writable) {
       if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
         ko.expressionRewriting.twoWayBindings[name] = true;
         if (name2) {
-          return ko.expressionRewriting.twoWayBindings[name2] = true;
+          ko.expressionRewriting.twoWayBindings[name2] = true;
         }
       }
+    }
+    ko.bindingHandlers[name] = handler;
+    if (name2) {
+      return ko.bindingHandlers[name2] = handler;
     }
   };
 
@@ -877,16 +879,20 @@
       return value;
     };
 
-    DatePicker.prototype.getOptions = function(valueAccessor) {
+    DatePicker.prototype.getOptions = function(allBindingsAccessor) {
       var config, name, options, value;
       options = {
+        lang: this.options.lang,
+        sourceFormat: this.options.sourceFormat,
+        displayFormat: this.options.displayFormat,
         format: this.options.displayFormat.toLowerCase(),
         forceParse: false,
         todayHighlight: true,
         showOnFocus: false
       };
-      config = this.getValue(valueAccessor) || [];
-      if (config.data) {
+      config = allBindingsAccessor.get('dateOptions') || [];
+      console.log(config);
+      if (config) {
         for (name in config) {
           value = config[name];
           if (name === 'data') {
@@ -896,7 +902,7 @@
             continue;
           }
           if (name === 'format') {
-            options.displayFormat = value;
+            options.displayFormat = value.toUpperCase();
           }
           options[name] = value;
         }
@@ -905,45 +911,45 @@
     };
 
     DatePicker.prototype.updateModel = function(element, valueAccessor, allBindings) {
-      var elementValue, modelValue, val;
+      var elementValue, modelValue, options;
+      options = this.getOptions(allBindings);
       modelValue = this.getData(valueAccessor);
-      elementValue = this.getModelValue(element.value);
+      elementValue = this.getModelValue(element.value, options);
       console.log(element.value, modelValue, elementValue);
-      if (ko.isWriteableObservable(valueAccessor) || true) {
-        if (modelValue !== elementValue) {
+      if (modelValue !== elementValue) {
+        if (valueAccessor().data) {
+          ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue);
+        } else {
           ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
-          val = elementValue;
-          return console.log('should update model...');
         }
-      } else {
-        return console.log('not writeabe');
+        return console.log('should update model...');
       }
     };
 
-    DatePicker.prototype.getDisplayValue = function(value) {
+    DatePicker.prototype.getDisplayValue = function(value, options) {
       var inputValue;
-      if (this.options.sourceFormat === 'unix') {
-        inputValue = moment.unix(value).format(this.options.displayFormat);
+      if (options.sourceFormat === 'unix') {
+        inputValue = moment.unix(value).format(options.displayFormat);
       } else {
-        inputValue = moment(value, this.options.sourceFormat).format(this.options.displayFormat);
+        inputValue = moment(value, options.sourceFormat).format(options.displayFormat);
       }
       return inputValue;
     };
 
-    DatePicker.prototype.getModelValue = function(value) {
+    DatePicker.prototype.getModelValue = function(value, options) {
       var modelValue;
-      if (this.options.sourceFormat === 'unix') {
-        modelValue = moment(value, this.options.displayFormat).unix();
+      if (options.sourceFormat === 'unix') {
+        modelValue = moment(value, options.displayFormat).unix();
       } else {
-        modelValue = moment(value, this.options.displayFormat).format(this.options.sourceFormat);
+        modelValue = moment(value, options.displayFormat).format(options.sourceFormat);
       }
       return modelValue;
     };
 
     DatePicker.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
       var addon, input, isOpen, options, template, trigger;
-      options = this.getOptions(valueAccessor);
-      element.value = this.getDisplayValue(this.getData(valueAccessor));
+      options = this.getOptions(allBindingsAccessor);
+      element.value = this.getDisplayValue(this.getData(valueAccessor), options);
       input = jQuery(element);
       if (options.template) {
         template = options.template;
@@ -964,10 +970,7 @@
           var parsedDate;
           parsedDate = Date.parse(element.value);
           if (parsedDate && !e.isTrigger) {
-            console.log(e.isTrigger);
-            console.log("Change and parsed " + element.value, e);
-            console.log("" + parsedDate);
-            element.value = _this.getDisplayValue(Math.round(parsedDate.getTime() / 1000));
+            element.value = _this.getDisplayValue(Math.round(parsedDate.getTime() / 1000), options);
             _this.updateModel(element, valueAccessor, allBindingsAccessor);
             input.datepicker('update');
             return true;
@@ -997,10 +1000,17 @@
       });
     };
 
-    DatePicker.prototype.update = function(element, valueAccessor) {
-      var value;
-      ko.utils.setTextContent(element, valueAccessor());
-      value = this.getDisplayValue(this.getData(valueAccessor));
+    DatePicker.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
+      var options, value;
+      if (valueAccessor().data) {
+        console.log('Long notation...');
+        ko.utils.setTextContent(element, valueAccessor().data);
+      } else {
+        ko.utils.setTextContent(element, valueAccessor());
+      }
+      options = this.getOptions(allBindingsAccessor);
+      value = this.getDisplayValue(this.getData(valueAccessor), options);
+      console.log("Should update element", value, element.value);
       if (element.value !== value) {
         return element.value = value;
       }
@@ -2054,17 +2064,6 @@
     return WidgetActivity;
 
   })(this.Maslosoft.Ko.Balin.WidgetUrl);
-
-  DatePickerHandler = (function() {
-    DatePickerHandler.prototype.options = null;
-
-    function DatePickerHandler(options) {
-      this.options = options;
-    }
-
-    return DatePickerHandler;
-
-  })();
 
   TreeDnd = (function() {
     var t;

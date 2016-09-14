@@ -13,17 +13,22 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 			return value.data
 		return value
 
-	getOptions: (valueAccessor) ->
+	getOptions: (allBindingsAccessor) ->
 		options = {
+			lang: @options.lang
+			sourceFormat: @options.sourceFormat
+			displayFormat: @options.displayFormat
 			# Format of pickadate is not compatible of this of moment
 			format: @options.displayFormat.toLowerCase()
 			forceParse: false
 			todayHighlight: true
 			showOnFocus: false
 		}
-		config = @getValue(valueAccessor) or []
+		config = allBindingsAccessor.get('dateOptions') or []
+		console.log config
+		
 		# Only in long notation set options
-		if config.data
+		if config
 			for name, value of config
 
 				# Skip data
@@ -36,34 +41,35 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 
 				# Special treatment for display format
 				if name is 'format'
-					options.displayFormat = value
+					options.displayFormat = value.toUpperCase()
 				
 				options[name] = value
 		return options
 
 	updateModel: (element, valueAccessor, allBindings) =>
+		options = @getOptions allBindings
 		modelValue = @getData valueAccessor
-		elementValue = @getModelValue element.value
+		elementValue = @getModelValue element.value, options
 		console.log element.value, modelValue, elementValue
-		if ko.isWriteableObservable(valueAccessor) or true
-			# Update only if changed
-			if modelValue isnt elementValue
+		# Update only if changed
+		if modelValue isnt elementValue
+			if valueAccessor().data
+				
+				ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue)
+			else
 				ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue)
-				val = elementValue
-				console.log 'should update model...'
-		else
-			console.log 'not writeabe'
+			console.log 'should update model...'
 
 	#
 	# Get display value from model value according to formatting options
 	# @param string|int value
 	# @return string|int
 	#
-	getDisplayValue: (value) =>
-		if @options.sourceFormat is 'unix'
-			inputValue = moment.unix(value).format(@options.displayFormat)
+	getDisplayValue: (value, options) =>
+		if options.sourceFormat is 'unix'
+			inputValue = moment.unix(value).format(options.displayFormat)
 		else
-			inputValue = moment(value, @options.sourceFormat).format(@options.displayFormat)
+			inputValue = moment(value, options.sourceFormat).format(options.displayFormat)
 		return inputValue
 
 	#
@@ -71,18 +77,22 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 	# @param string|int value
 	# @return string|int
 	#
-	getModelValue: (value) =>
-		if @options.sourceFormat is 'unix'
-			modelValue = moment(value, @options.displayFormat).unix()
+	getModelValue: (value, options) =>
+		if options.sourceFormat is 'unix'
+			modelValue = moment(value, options.displayFormat).unix()
 		else
-			modelValue = moment(value, @options.displayFormat).format(@options.sourceFormat)
+			modelValue = moment(value, options.displayFormat).format(options.sourceFormat)
 		return modelValue
 
+	#
+	# Initialize datepicker
+	#
+	#
 	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 
-		options = @getOptions(valueAccessor)
+		options = @getOptions allBindingsAccessor
 
-		element.value = @getDisplayValue(@getData(valueAccessor))
+		element.value = @getDisplayValue(@getData(valueAccessor), options)
 		
 		input = jQuery(element)
 
@@ -111,10 +121,7 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 		input.on 'change', (e) =>
 			parsedDate = Date.parse(element.value)
 			if parsedDate and not e.isTrigger
-				console.log e.isTrigger
-				console.log "Change and parsed #{element.value}", e
-				console.log "#{parsedDate}"
-				element.value = @getDisplayValue(Math.round(parsedDate.getTime() / 1000))
+				element.value = @getDisplayValue(Math.round(parsedDate.getTime() / 1000), options)
 				@updateModel element, valueAccessor, allBindingsAccessor
 				input.datepicker 'update'
 				return true
@@ -139,8 +146,18 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 			return
 		return
 
-	update: (element, valueAccessor) =>
-		ko.utils.setTextContent(element, valueAccessor())
-		value = @getDisplayValue(@getData(valueAccessor))
+	#
+	# Update input after model change
+	#
+	#
+	update: (element, valueAccessor, allBindingsAccessor) =>
+		if valueAccessor().data
+			console.log 'Long notation...'
+			ko.utils.setTextContent(element, valueAccessor().data)
+		else
+			ko.utils.setTextContent(element, valueAccessor())
+		options = @getOptions allBindingsAccessor
+		value = @getDisplayValue(@getData(valueAccessor), options)
+		console.log "Should update element", value, element.value
 		if element.value isnt value
 			element.value = value

@@ -33,16 +33,9 @@
 #
 @Maslosoft.Ko.Balin.register = (name, handler) ->
 
-	ko.bindingHandlers[name] = handler
-
-	# Lower-case version of binding handler for punches
 	name2 = false
 	if name.match /[A-Z]/
 		name2 = name.toLowerCase()
-		ko.bindingHandlers[name2] = handler
-
-	#Reassign options
-	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
 
 	# Assign two way. Not sure if nessesary in current ko
 	if handler.writable
@@ -50,6 +43,16 @@
 			ko.expressionRewriting.twoWayBindings[name] = true
 			if name2
 				ko.expressionRewriting.twoWayBindings[name2] = true
+
+	ko.bindingHandlers[name] = handler
+
+	# Lower-case version of binding handler for punches
+	if name2
+		ko.bindingHandlers[name2] = handler
+
+	#Reassign options
+	#ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
+
 
 #
 # Register default set of binding handlers, or part of default set
