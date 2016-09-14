@@ -848,26 +848,47 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 	constructor: (options) ->
 		super new Maslosoft.Ko.Balin.DateOptions(options)
 
-	updateModel: (element, valueAccessor) =>
-		accessor = valueAccessor()
-		modelValue = @getValue(valueAccessor)
-		elementValue = element.value
-		console.log elementValue
-		if ko.isWriteableObservable(accessor) or true
-			console.log 'is writeabe', accessor, valueAccessor
+	updateModel: (element, valueAccessor, allBindings) =>
+		modelValue = @getValue valueAccessor
+		elementValue = @getModelValue element.value
+		console.log element.value, modelValue, elementValue
+		if ko.isWriteableObservable(valueAccessor) or true
 			# Update only if changed
 			if modelValue isnt elementValue
-				val = valueAccessor()
+				ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue)
 				val = elementValue
 				console.log 'should update model...'
 		else
 			console.log 'not writeabe'
 
+	#
+	# Get display value from model value according to formatting options
+	# @param string|int value
+	# @return string|int
+	#
+	getDisplayValue: (value) =>
+		if @options.sourceFormat is 'unix'
+			inputValue = moment.unix(value).format(@options.displayFormat)
+		else
+			inputValue = moment(value, @options.sourceFormat).format(@options.displayFormat)
+		return inputValue
+
+	#
+	# Get model value from model value according to formatting options
+	# @param string|int value
+	# @return string|int
+	#
+	getModelValue: (value) =>
+		if @options.sourceFormat is 'unix'
+			modelValue = moment(value, @options.displayFormat).unix()
+		else
+			modelValue = moment(value, @options.displayFormat).format(@options.sourceFormat)
+		return modelValue
+
 	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 
-		value = @getValue(valueAccessor)
-		inputValue = moment[@options.sourceFormat](value).format(@options.displayFormat)
-
+		inputValue = @getDisplayValue(@getValue(valueAccessor))
+		
 		textInput = jQuery(element)
 		textInput.val inputValue
 
@@ -890,6 +911,8 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 		options = {
 			# Format of pickadate is not compatible of this of moment
 			format: @options.displayFormat.toLowerCase()
+			selectMonths: true
+			selectYears: true
 		}
 
 		$inputDate = pickerElement.pickadate(options)
@@ -897,7 +920,7 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 
 		picker.on 'set', =>
 			textInput.val picker.get('value')
-			@updateModel element, valueAccessor
+			@updateModel element, valueAccessor, allBindingsAccessor
 			return
 
 		console.log picker
@@ -913,7 +936,7 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 					parsedDate.getMonth()
 					parsedDate.getDate()
 				]
-				@updateModel element, valueAccessor
+				@updateModel element, valueAccessor, allBindingsAccessor
 			return
 
 		events.keyup = (e) ->
@@ -932,10 +955,13 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 			return
 
 		# Blur of text input
-		events.blur = =>
+		events.blur = (e) =>
+			# Don't hide picker when clicking picker itself
+			if e.relatedTarget
+				return
 			console.log 'Close picker'
 			picker.close()
-			@updateModel element, valueAccessor
+			@updateModel element, valueAccessor, allBindingsAccessor
 			return
 
 		textInput.on events
@@ -956,8 +982,8 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 		return
 
 	update: (element, valueAccessor) =>
-		rawValue = @getValue(valueAccessor)
-		value = moment[@options.sourceFormat](rawValue).format(@options.displayFormat)
+		ko.utils.setTextContent(element, valueAccessor())
+		value = @getDisplayValue(@getValue(valueAccessor))
 		if element.value isnt value
 			element.value = value
 ###

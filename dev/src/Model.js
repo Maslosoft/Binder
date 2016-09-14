@@ -359,7 +359,7 @@
 
     DatePicker.prototype._class = "Maslosoft.Ko.BalinDev.Models.DatePicker";
 
-    DatePicker.prototype.date = 21232323;
+    DatePicker.prototype.date = 1473839950;
 
     return DatePicker;
 
