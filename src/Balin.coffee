@@ -84,10 +84,12 @@
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
-		tooltip: Maslosoft.Ko.Balin.Tooltip
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
 		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		timePicker: Maslosoft.Ko.Balin.TimePicker
+		tooltip: Maslosoft.Ko.Balin.Tooltip
+		treegrid: Maslosoft.Ko.Balin.TreeGrid
+		treegridnode: Maslosoft.Ko.Balin.TreeGridNode
 		selected: Maslosoft.Ko.Balin.Selected
 		validator: Maslosoft.Ko.Balin.Validator
 		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist

@@ -8,6 +8,7 @@ balinBare = [
 	'src/Base/*'
 	'src/BindingHandlers/*',
 	'src/Helpers/*',
+	'src/Widgets/**/*.coffee',
 	'src/Tracker.coffee',
 	'src/Model.coffee',
 ]
@@ -58,6 +59,7 @@ module.exports = (grunt) ->
 					sourceMap: true
 					join: true
 					expand: true
+					extDot: 'last'
 				files: [
 					'dist/ko.balin.js': balin
 				]
@@ -66,6 +68,7 @@ module.exports = (grunt) ->
 					sourceMap: true
 					join: true
 					expand: true
+					extDot: 'last'
 				files: [
 					'dist/ko.balin-noinit.js': balinBare
 				]

@@ -67,6 +67,8 @@ if not @Maslosoft.Ko.Balin
 	@Maslosoft.Ko.Balin = {}
 if not @Maslosoft.Ko.Balin.Helpers
 	@Maslosoft.Ko.Balin.Helpers = {}
+if not @Maslosoft.Ko.Balin.Widgets
+	@Maslosoft.Ko.Balin.Widgets = {}
 
 #
 #
@@ -154,10 +156,12 @@ if not @Maslosoft.Ko.Balin.Helpers
 		src: Maslosoft.Ko.Balin.Src
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
-		tooltip: Maslosoft.Ko.Balin.Tooltip
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
 		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
 		timePicker: Maslosoft.Ko.Balin.TimePicker
+		tooltip: Maslosoft.Ko.Balin.Tooltip
+		treegrid: Maslosoft.Ko.Balin.TreeGrid
+		treegridnode: Maslosoft.Ko.Balin.TreeGridNode
 		selected: Maslosoft.Ko.Balin.Selected
 		validator: Maslosoft.Ko.Balin.Validator
 		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
@@ -1720,6 +1724,57 @@ class @Maslosoft.Ko.Balin.Tree extends @Maslosoft.Ko.Balin.Base
 
 
 
+class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
+
+	makeTemplateValueAccessor = (valueAccessor) ->
+		return () ->
+			modelValue = valueAccessor()
+			unwrappedValue = ko.utils.peekObservable(modelValue)
+			# Unwrap without setting a dependency here
+			# If unwrappedValue is the array, pass in the wrapped value on its own
+			# The value will be unwrapped and tracked within the template binding
+			# (See https://github.com/SteveSanderson/knockout/issues/523)
+			if !unwrappedValue or typeof unwrappedValue.length == 'number'
+				return {
+					'foreach': modelValue
+					'templateEngine': ko.nativeTemplateEngine.instance
+				}
+			# If unwrappedValue.data is the array, preserve all relevant options and unwrap again value so we get updates
+			ko.utils.unwrapObservable modelValue
+			{
+				'foreach': unwrappedValue['data']
+				'as': unwrappedValue['as']
+				'includeDestroyed': unwrappedValue['includeDestroyed']
+				'afterAdd': unwrappedValue['afterAdd']
+				'beforeRemove': unwrappedValue['beforeRemove']
+				'afterRender': unwrappedValue['afterRender']
+				'beforeMove': unwrappedValue['beforeMove']
+				'afterMove': unwrappedValue['afterMove']
+				'templateEngine': ko.nativeTemplateEngine.instance
+			}
+
+	init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
+			return ko.bindingHandlers['template']['init'](element, makeTemplateValueAccessor(valueAccessor));
+
+	update: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
+		return ko.bindingHandlers['template']['update'](element, makeTemplateValueAccessor(valueAccessor), allBindings, viewModel, bindingContext);
+
+
+
+#
+# This is to create "nodes" cell, this is meant to be used with TreeGrid
+# binding handler
+#
+#
+#
+class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
+
+	update: (element, valueAccessor) =>
+
+		return
+
+
+
 #
 #
 # Validation binding handler
@@ -2604,6 +2659,13 @@ class ValidationManager
 				warnings.innerHTML = messages.join '<br />'
 
 		return @
+
+if not @Maslosoft.Ko.Balin.Widgets.TreeGrid
+	@Maslosoft.Ko.Balin.Widgets.TreeGrid = {}
+
+
+class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+
 
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'

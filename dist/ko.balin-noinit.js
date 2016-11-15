@@ -105,6 +105,10 @@
     this.Maslosoft.Ko.Balin.Helpers = {};
   }
 
+  if (!this.Maslosoft.Ko.Balin.Widgets) {
+    this.Maslosoft.Ko.Balin.Widgets = {};
+  }
+
   this.Maslosoft.Ko.debounce = function(func, wait, immediate) {
     var timeout;
     timeout = void 0;
@@ -177,10 +181,12 @@
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
       textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
-      tooltip: Maslosoft.Ko.Balin.Tooltip,
       timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter,
       timeFormatter: Maslosoft.Ko.Balin.TimeFormatter,
       timePicker: Maslosoft.Ko.Balin.TimePicker,
+      tooltip: Maslosoft.Ko.Balin.Tooltip,
+      treegrid: Maslosoft.Ko.Balin.TreeGrid,
+      treegridnode: Maslosoft.Ko.Balin.TreeGridNode,
       selected: Maslosoft.Ko.Balin.Selected,
       validator: Maslosoft.Ko.Balin.Validator,
       videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist,
@@ -1853,6 +1859,67 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.TreeGrid = (function(_super) {
+    var makeTemplateValueAccessor;
+
+    __extends(TreeGrid, _super);
+
+    function TreeGrid() {
+      return TreeGrid.__super__.constructor.apply(this, arguments);
+    }
+
+    makeTemplateValueAccessor = function(valueAccessor) {
+      return function() {
+        var modelValue, unwrappedValue;
+        modelValue = valueAccessor();
+        unwrappedValue = ko.utils.peekObservable(modelValue);
+        if (!unwrappedValue || typeof unwrappedValue.length === 'number') {
+          return {
+            'foreach': modelValue,
+            'templateEngine': ko.nativeTemplateEngine.instance
+          };
+        }
+        ko.utils.unwrapObservable(modelValue);
+        return {
+          'foreach': unwrappedValue['data'],
+          'as': unwrappedValue['as'],
+          'includeDestroyed': unwrappedValue['includeDestroyed'],
+          'afterAdd': unwrappedValue['afterAdd'],
+          'beforeRemove': unwrappedValue['beforeRemove'],
+          'afterRender': unwrappedValue['afterRender'],
+          'beforeMove': unwrappedValue['beforeMove'],
+          'afterMove': unwrappedValue['afterMove'],
+          'templateEngine': ko.nativeTemplateEngine.instance
+        };
+      };
+    };
+
+    TreeGrid.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      return ko.bindingHandlers['template']['init'](element, makeTemplateValueAccessor(valueAccessor));
+    };
+
+    TreeGrid.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      return ko.bindingHandlers['template']['update'](element, makeTemplateValueAccessor(valueAccessor), allBindings, viewModel, bindingContext);
+    };
+
+    return TreeGrid;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.TreeGridNode = (function(_super) {
+    __extends(TreeGridNode, _super);
+
+    function TreeGridNode() {
+      this.update = __bind(this.update, this);
+      return TreeGridNode.__super__.constructor.apply(this, arguments);
+    }
+
+    TreeGridNode.prototype.update = function(element, valueAccessor) {};
+
+    return TreeGridNode;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.Validator = (function(_super) {
     var idCounter;
 
@@ -2648,6 +2715,17 @@
     };
 
     return ValidationManager;
+
+  })();
+
+  if (!this.Maslosoft.Ko.Balin.Widgets.TreeGrid) {
+    this.Maslosoft.Ko.Balin.Widgets.TreeGrid = {};
+  }
+
+  Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView = (function() {
+    function TreeGridView() {}
+
+    return TreeGridView;
 
   })();
 

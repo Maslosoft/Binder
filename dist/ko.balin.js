@@ -105,6 +105,10 @@
     this.Maslosoft.Ko.Balin.Helpers = {};
   }
 
+  if (!this.Maslosoft.Ko.Balin.Widgets) {
+    this.Maslosoft.Ko.Balin.Widgets = {};
+  }
+
   this.Maslosoft.Ko.debounce = function(func, wait, immediate) {
     var timeout;
     timeout = void 0;
@@ -177,10 +181,12 @@
       src: Maslosoft.Ko.Balin.Src,
       textValue: Maslosoft.Ko.Balin.TextValue,
       textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
-      tooltip: Maslosoft.Ko.Balin.Tooltip,
       timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter,
       timeFormatter: Maslosoft.Ko.Balin.TimeFormatter,
       timePicker: Maslosoft.Ko.Balin.TimePicker,
+      tooltip: Maslosoft.Ko.Balin.Tooltip,
+      treegrid: Maslosoft.Ko.Balin.TreeGrid,
+      treegridnode: Maslosoft.Ko.Balin.TreeGridNode,
       selected: Maslosoft.Ko.Balin.Selected,
       validator: Maslosoft.Ko.Balin.Validator,
       videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist,
@@ -1853,6 +1859,154 @@
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.TreeGrid = (function(_super) {
+    __extends(TreeGrid, _super);
+
+    function TreeGrid() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      this.initExpanders = __bind(this.initExpanders, this);
+      this.initDraggable = __bind(this.initDraggable, this);
+      return TreeGrid.__super__.constructor.apply(this, arguments);
+    }
+
+    TreeGrid.prototype.makeTemplateValueAccessor = function(element, valueAccessor, bindingContext) {
+      return function() {
+        var data, depth, depths, modelValue, unwrapRecursive, unwrappedValue;
+        modelValue = valueAccessor();
+        unwrappedValue = ko.utils.peekObservable(modelValue);
+        if (!unwrappedValue || typeof unwrappedValue.length === 'number') {
+          return {
+            'foreach': modelValue,
+            'templateEngine': ko.nativeTemplateEngine.instance
+          };
+        }
+        data = [];
+        depths = [];
+        depth = -1;
+        unwrapRecursive = function(items) {
+          var extras, item, _i, _len, _results;
+          depth++;
+          _results = [];
+          for (_i = 0, _len = items.length; _i < _len; _i++) {
+            item = items[_i];
+            extras = {
+              depth: depth
+            };
+            item._treeGrid = ko.tracker.factory(extras);
+            data.push(item);
+            depths.push(depth);
+            if (item.children.length) {
+              unwrapRecursive(item.children);
+              _results.push(depth--);
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+        };
+        unwrapRecursive(unwrappedValue['data']['children']);
+        ko.utils.unwrapObservable(modelValue);
+        return {
+          'foreach': data,
+          'depths': depths,
+          'as': unwrappedValue['as'],
+          'includeDestroyed': unwrappedValue['includeDestroyed'],
+          'afterAdd': unwrappedValue['afterAdd'],
+          'beforeRemove': unwrappedValue['beforeRemove'],
+          'afterRender': unwrappedValue['afterRender'],
+          'beforeMove': unwrappedValue['beforeMove'],
+          'afterMove': unwrappedValue['afterMove'],
+          'templateEngine': ko.nativeTemplateEngine.instance
+        };
+      };
+    };
+
+    TreeGrid.prototype.initDraggable = function(element, valueAccessor) {
+      var defer;
+      defer = (function(_this) {
+        return function() {
+          var draggableOptions;
+          draggableOptions = {
+            handle: '.tree-grid-drag-handle',
+            revert: true,
+            helper: 'clone'
+          };
+          return jQuery(element).find('> tr').draggable(draggableOptions);
+        };
+      })(this);
+      return setTimeout(defer, 0);
+    };
+
+    TreeGrid.prototype.initExpanders = function(element) {
+      var onClick;
+      onClick = function() {
+        return console.log('Clicked on expander');
+      };
+      return jQuery(element).on('click', '.expander', onClick);
+    };
+
+    TreeGrid.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      this.initDraggable(element, valueAccessor);
+      this.initExpanders(element);
+      ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+        return $(element).draggable("destroy");
+      });
+      ko.bindingHandlers['template']['init'](element, this.makeTemplateValueAccessor(element, valueAccessor, bindingContext));
+      return {
+        controlsDescendantBindings: true
+      };
+    };
+
+    TreeGrid.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      console.log('update - treegrid binding');
+      this.initDraggable(element, valueAccessor);
+      return ko.bindingHandlers['template']['update'](element, this.makeTemplateValueAccessor(element, valueAccessor), allBindings, viewModel, bindingContext);
+    };
+
+    return TreeGrid;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.TreeGridNode = (function(_super) {
+    __extends(TreeGridNode, _super);
+
+    function TreeGridNode() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return TreeGridNode.__super__.constructor.apply(this, arguments);
+    }
+
+    TreeGridNode.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {};
+
+    TreeGridNode.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      var data, defer, extras;
+      ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
+      data = this.getValue(valueAccessor);
+      extras = data._treeGrid;
+      defer = (function(_this) {
+        return function() {
+          var depth, html;
+          html = [];
+          console.log("" + data.title + ": " + extras.depth);
+          if (data.children.length) {
+            depth = extras.depth;
+            html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>▼</a>");
+          } else {
+            depth = extras.depth + 1;
+            html.push("<i class='no-expander' style='margin-left:" + depth + "em;'></i>");
+          }
+          html.push('<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>');
+          return element.innerHTML = html.join('') + element.innerHTML;
+        };
+      })(this);
+      return setTimeout(defer, 0);
+    };
+
+    return TreeGridNode;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.Validator = (function(_super) {
     var idCounter;
 
@@ -2648,6 +2802,17 @@
     };
 
     return ValidationManager;
+
+  })();
+
+  if (!this.Maslosoft.Ko.Balin.Widgets.TreeGrid) {
+    this.Maslosoft.Ko.Balin.Widgets.TreeGrid = {};
+  }
+
+  Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView = (function() {
+    function TreeGridView() {}
+
+    return TreeGridView;
 
   })();
 
