@@ -1891,7 +1891,8 @@
           for (_i = 0, _len = items.length; _i < _len; _i++) {
             item = items[_i];
             extras = {
-              depth: depth
+              depth: depth,
+              hasChilds: !!item.children.length
             };
             item._treeGrid = ko.tracker.factory(extras);
             data.push(item);
@@ -1959,8 +1960,29 @@
     };
 
     TreeGrid.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      var defer;
       console.log('update - treegrid binding');
       this.initDraggable(element, valueAccessor);
+      defer = function() {
+        var d, data, item, items, _i, _len, _results;
+        items = jQuery(element).find('> tr');
+        _results = [];
+        for (_i = 0, _len = items.length; _i < _len; _i++) {
+          item = items[_i];
+          data = ko.contextFor(item);
+          d = data.$data.children.length;
+          if (!!d) {
+            jQuery(item).find('.no-expander').hide();
+            jQuery(item).find('.expander').show();
+          } else {
+            jQuery(item).find('.expander').hide();
+            jQuery(item).find('.no-expander').show();
+          }
+          _results.push(jQuery(item).find('.debug').html(d));
+        }
+        return _results;
+      };
+      setTimeout(defer, 10);
       return ko.bindingHandlers['template']['update'](element, this.makeTemplateValueAccessor(element, valueAccessor), allBindings, viewModel, bindingContext);
     };
 
@@ -1980,22 +2002,19 @@
     TreeGridNode.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {};
 
     TreeGridNode.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var data, defer, extras;
+      var defer;
       ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
-      data = this.getValue(valueAccessor);
-      extras = data._treeGrid;
       defer = (function(_this) {
         return function() {
-          var depth, html;
+          var data, depth, extras, html;
           html = [];
-          console.log("" + data.title + ": " + extras.depth);
-          if (data.children.length) {
-            depth = extras.depth;
-            html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>▼</a>");
-          } else {
-            depth = extras.depth + 1;
-            html.push("<i class='no-expander' style='margin-left:" + depth + "em;'></i>");
-          }
+          data = _this.getValue(valueAccessor);
+          extras = data._treeGrid;
+          console.log("" + data.title + ": " + extras.depth, extras.hasChilds);
+          depth = extras.depth;
+          html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>▼</a>");
+          depth = extras.depth + 1;
+          html.push("<i class='no-expander' style='margin-left:" + depth + "em;'></i>");
           html.push('<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>');
           return element.innerHTML = html.join('') + element.innerHTML;
         };

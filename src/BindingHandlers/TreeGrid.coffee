@@ -24,6 +24,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 				for item in items
 					extras = {
 						depth: depth
+						hasChilds: !!item.children.length
 					}
 					item._treeGrid = ko.tracker.factory extras
 					data.push item
@@ -86,5 +87,22 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		console.log 'update - treegrid binding'
 		@initDraggable(element, valueAccessor)
+
+		defer = () ->
+			items = jQuery(element).find('> tr')
+
+			for item in items
+				data = ko.contextFor item
+				d = data.$data.children.length
+				if !!d
+					jQuery(item).find('.no-expander').hide()
+					jQuery(item).find('.expander').show()
+				else
+					jQuery(item).find('.expander').hide()
+					jQuery(item).find('.no-expander').show()
+				jQuery(item).find('.debug').html d
+
+		setTimeout defer, 10
+
 		return ko.bindingHandlers['template']['update'](element, @makeTemplateValueAccessor(element, valueAccessor), allBindings, viewModel, bindingContext);
 

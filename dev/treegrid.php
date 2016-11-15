@@ -8,6 +8,12 @@
 <div>
 	<a href="#" data-bind="click: addSubSubNode">Add new sub-sub-node programatically</a>
 </div>
+<div>
+	<a href="#" data-bind="click: addSubSubNodeLast">Add new sub-sub-node to last sub-node programatically</a>
+</div>
+<div>
+	<a href="#" data-bind="click: remSubSubNode">Remove all sub-sub-nodes programatically</a>
+</div>
 
 <div data-bind="foreach: app.model.Tree.children">
 	<div data-bind="htmlValue: title"></div>
@@ -21,14 +27,16 @@
 				<th>Nodes</th>
 				<th>Description</th>
 				<th>Misc</th>
+				<th>Debug</th>
 			</tr>
 		</thead>
 		<tbody data-bind="treegrid: {data: app.model.Tree, childrenField: 'children', nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', autoExpand: true}">
 			<tr>
-				<td data-bind="treegridnode: $data, html: $data.title">
+				<td data-bind="treegridnode: $data, html: title">
 				</td>
 				<td data-bind="html: $data.description"></td>
 				<td>Static value</td>
+				<td class="debug"></td>
 			</tr>
 		</tbody>
 	</table>
@@ -64,6 +72,32 @@
 			model.title = 'New sub-sub-node #' + nodeId;
 			model.description = 'Description sub-sub-node #' + nodeId;
 			app.model.Tree.children[0].children[0].children.push(model);
+			if(e){
+				e.stopPropagation();
+				e.preventDefault();
+			}
+		};
+		window.addSubSubNodeLast = function (data, e) {
+			nodeId++;
+			var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+			model.title = 'New sub-sub-node #' + nodeId;
+			model.description = 'Description sub-sub-node #' + nodeId;
+			var idx = 0;
+			if(app.model.Tree.children[0].children.length) {
+				idx = app.model.Tree.children[0].children.length - 1;
+			}
+			app.model.Tree.children[0].children[idx].children.push(model);
+			if(e){
+				e.stopPropagation();
+				e.preventDefault();
+			}
+		};
+		window.remSubSubNode = function (data, e) {
+			nodeId++;
+			var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+			model.title = 'New sub-sub-node #' + nodeId;
+			model.description = 'Description sub-sub-node #' + nodeId;
+			app.model.Tree.children[0].children[0].children = [];
 			if(e){
 				e.stopPropagation();
 				e.preventDefault();
