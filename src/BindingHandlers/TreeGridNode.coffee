@@ -23,13 +23,16 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 #			console.log ko.unwrap bindingContext.$index
 #			if extras.hasChilds
 			depth = extras.depth
-#				html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>►</a>"
-			html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>▼</a>"
+			expanders = []
+			expanders.push "<span class='collapsed' style='display:none;'>►</span>"
+			expanders.push "<span class='expanded'>▼</span>"
+			html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
 #			else
 			depth = extras.depth + 1
 			html.push "<i class='no-expander' style='margin-left:#{depth}em;'></i>"
 			html.push '<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>'
 			element.innerHTML = html.join('') + element.innerHTML
+			
 #			console.log element
 #			console.log bindingContext
 		

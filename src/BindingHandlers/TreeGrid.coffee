@@ -59,6 +59,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 		defer = () =>
 			draggableOptions = {
 				handle: '.tree-grid-drag-handle'
+				cancel: '.expander'
 				revert: true
 				helper: 'clone'
 			}
@@ -68,9 +69,49 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 		setTimeout defer, 0
 
 	initExpanders: (element) =>
-		onClick = () ->
-			console.log 'Clicked on expander'
-		jQuery(element).on 'click', '.expander', onClick
+		handler = (e) ->
+			items = jQuery(element).find('> tr')
+			
+			current = ko.contextFor(e.target).$data
+			
+			depth = -1
+			show = false
+			for item in items
+				data = ko.contextFor(item).$data
+				itemDepth = data._treeGrid.depth
+				if data is current
+					depth = itemDepth
+					el = jQuery(item).find('.expander')
+					if el.find('.expanded:visible').length
+						el.find('.expanded').hide()
+						el.find('.collapsed').show()
+						show = false
+					else
+						el.find('.collapsed').hide()
+						el.find('.expanded').show()
+						show = true
+					# Current item should be left intact, so skip to next item
+					continue
+				
+				# Not found yet, so continue
+				if depth is -1 then continue
+
+				# Found item on same depth, skip further changes
+				if itemDepth is depth
+					return
+
+				# toggle all one depth lower
+				if itemDepth - 1 is depth
+					if show
+						jQuery(item).show()
+					else
+						jQuery(item).hide()
+
+				# TODO 1. Hide also deeper items if perent of them expanded
+				# and show them back if parent of them is expanded
+				
+
+		jQuery(element).on 'mousedown', '.expander', handler
 
 	init: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 	

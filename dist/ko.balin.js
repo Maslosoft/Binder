@@ -1930,6 +1930,7 @@
           var draggableOptions;
           draggableOptions = {
             handle: '.tree-grid-drag-handle',
+            cancel: '.expander',
             revert: true,
             helper: 'clone'
           };
@@ -1940,11 +1941,47 @@
     };
 
     TreeGrid.prototype.initExpanders = function(element) {
-      var onClick;
-      onClick = function() {
-        return console.log('Clicked on expander');
+      var handler;
+      handler = function(e) {
+        var current, data, depth, el, item, itemDepth, items, show, _i, _len;
+        items = jQuery(element).find('> tr');
+        current = ko.contextFor(e.target).$data;
+        depth = -1;
+        show = false;
+        for (_i = 0, _len = items.length; _i < _len; _i++) {
+          item = items[_i];
+          data = ko.contextFor(item).$data;
+          itemDepth = data._treeGrid.depth;
+          if (data === current) {
+            depth = itemDepth;
+            el = jQuery(item).find('.expander');
+            if (el.find('.expanded:visible').length) {
+              el.find('.expanded').hide();
+              el.find('.collapsed').show();
+              show = false;
+            } else {
+              el.find('.collapsed').hide();
+              el.find('.expanded').show();
+              show = true;
+            }
+            continue;
+          }
+          if (depth === -1) {
+            continue;
+          }
+          if (itemDepth === depth) {
+            return;
+          }
+          if (itemDepth - 1 === depth) {
+            if (show) {
+              jQuery(item).show();
+            } else {
+              jQuery(item).hide();
+            }
+          }
+        }
       };
-      return jQuery(element).on('click', '.expander', onClick);
+      return jQuery(element).on('mousedown', '.expander', handler);
     };
 
     TreeGrid.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -2006,13 +2043,16 @@
       ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
       defer = (function(_this) {
         return function() {
-          var data, depth, extras, html;
+          var data, depth, expanders, extras, html;
           html = [];
           data = _this.getValue(valueAccessor);
           extras = data._treeGrid;
           console.log("" + data.title + ": " + extras.depth, extras.hasChilds);
           depth = extras.depth;
-          html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>▼</a>");
+          expanders = [];
+          expanders.push("<span class='collapsed' style='display:none;'>►</span>");
+          expanders.push("<span class='expanded'>▼</span>");
+          html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
           depth = extras.depth + 1;
           html.push("<i class='no-expander' style='margin-left:" + depth + "em;'></i>");
           html.push('<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>');

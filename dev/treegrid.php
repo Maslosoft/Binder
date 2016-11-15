@@ -50,7 +50,7 @@
 			model.title = 'New node #' + nodeId;
 			model.description = 'Description #' + nodeId;
 			app.model.Tree.children.push(model);
-			if(e){
+			if (e) {
 				e.stopPropagation();
 				e.preventDefault();
 			}
@@ -107,6 +107,18 @@
 		var deferAdd = function(){
 			window.addNode();
 			window.addSubNode();
+			window.addSubNode();
+			window.addSubSubNodeLast();
+			window.addSubSubNodeLast();
+			window.addSubSubNodeLast();
+			window.addSubNode();
+			window.addSubSubNodeLast();
+			window.addSubSubNodeLast();
+			window.addSubNode();
+			window.addSubSubNodeLast();
+			window.addSubSubNodeLast();
+			window.addSubSubNodeLast();
+			window.addSubSubNodeLast();
 		};
 
 		setTimeout(deferAdd, 100);
