@@ -65,8 +65,8 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 			}
 
 			jQuery(element).find('> tr').draggable(draggableOptions)
-
-		setTimeout defer, 0
+		defer()
+#		setTimeout defer, 0
 
 	initExpanders: (element) =>
 		handler = (e) ->
@@ -142,8 +142,8 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 					jQuery(item).find('.expander').hide()
 					jQuery(item).find('.no-expander').show()
 				jQuery(item).find('.debug').html d
-
-		setTimeout defer, 10
+		defer()
+		setTimeout defer, 0
 
 		return ko.bindingHandlers['template']['update'](element, @makeTemplateValueAccessor(element, valueAccessor), allBindings, viewModel, bindingContext);
 

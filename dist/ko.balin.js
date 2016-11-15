@@ -1937,7 +1937,7 @@
           return jQuery(element).find('> tr').draggable(draggableOptions);
         };
       })(this);
-      return setTimeout(defer, 0);
+      return defer();
     };
 
     TreeGrid.prototype.initExpanders = function(element) {
@@ -2019,7 +2019,8 @@
         }
         return _results;
       };
-      setTimeout(defer, 10);
+      defer();
+      setTimeout(defer, 0);
       return ko.bindingHandlers['template']['update'](element, this.makeTemplateValueAccessor(element, valueAccessor), allBindings, viewModel, bindingContext);
     };
 
@@ -2054,12 +2055,12 @@
           expanders.push("<span class='expanded'>▼</span>");
           html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
           depth = extras.depth + 1;
-          html.push("<i class='no-expander' style='margin-left:" + depth + "em;'></i>");
+          html.push("<i class='no-expander' style='margin-left:" + depth + "em;display:inline-block;'></i>");
           html.push('<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>');
           return element.innerHTML = html.join('') + element.innerHTML;
         };
       })(this);
-      return setTimeout(defer, 0);
+      return defer();
     };
 
     return TreeGridNode;

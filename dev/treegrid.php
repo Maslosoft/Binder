@@ -32,7 +32,9 @@
 		</thead>
 		<tbody data-bind="treegrid: {data: app.model.Tree, childrenField: 'children', nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', autoExpand: true}">
 			<tr>
-				<td data-bind="treegridnode: $data, html: title">
+				<td>
+					<span data-bind="treegridnode: $data"></span>
+					<span data-bind="html: title"></span>
 				</td>
 				<td data-bind="html: $data.description"></td>
 				<td>Static value</td>
