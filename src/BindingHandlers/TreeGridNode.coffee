@@ -18,14 +18,14 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 			html = []
 			data = @getValue(valueAccessor)
 			extras = data._treeGrid
-			console.log "#{data.title}: #{extras.depth}", extras.hasChilds
+#			console.log "#{data.title}: #{extras.depth}", extras.hasChilds
 #			console.log data
 #			console.log ko.unwrap bindingContext.$index
 #			if extras.hasChilds
 			depth = extras.depth
 			expanders = []
-			expanders.push "<span class='collapsed' style='display:none;'>►</span>"
-			expanders.push "<span class='expanded'>▼</span>"
+			expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>"
+			expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>"
 			html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
 #			else
 			depth = extras.depth + 1

@@ -21,23 +21,27 @@
 </div>
 <hr />
 <div>
-	<table style="font-size: 18px;" class="table table-condensed">
+	<table id="gridView" style="font-size: 18px;" class="table table-condensed">
 		<thead>
 			<tr>
+				<th style="width:.1%;"><input type="checkbox" /></th>
 				<th>Nodes</th>
 				<th>Description</th>
 				<th>Misc</th>
+				<th>Remove</th>
 				<th>Debug</th>
 			</tr>
 		</thead>
-		<tbody data-bind="treegrid: {data: app.model.Tree, childrenField: 'children', nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', autoExpand: true}">
+		<tbody data-bind="treegrid: {data: app.model.Tree, childrenField: 'children', nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', autoExpand: true, dnd: true}">
 			<tr>
+				<td><input type="checkbox" /></td>
 				<td>
 					<span data-bind="treegridnode: $data"></span>
 					<span data-bind="html: title"></span>
 				</td>
-				<td data-bind="html: $data.description"></td>
+				<td data-bind="html: description"></td>
 				<td>Static value</td>
+				<td><a href="#" class="remove">Remove</a></td>
 				<td class="debug"></td>
 			</tr>
 		</tbody>
@@ -63,7 +67,7 @@
 			model.title = 'New sub-node #' + nodeId;
 			model.description = 'Description sub-node #' + nodeId;
 			app.model.Tree.children[0].children.push(model);
-			if(e){
+			if (e) {
 				e.stopPropagation();
 				e.preventDefault();
 			}
@@ -124,6 +128,15 @@
 		};
 
 		setTimeout(deferAdd, 100);
+		var grid = jQuery('#gridView');
+		var gm = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView(grid.find('tbody'));
+		grid.on('click', '.remove', function(e){
+			e.stopPropagation();
+			e.preventDefault();
+			var model = ko.dataFor(this);
+			console.log(model.title);
+			gm.remove(model);
+		});
 
 		data = {
 			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
