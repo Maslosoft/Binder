@@ -76,6 +76,14 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 				callback model, child
 				@visitRecursive callback, child
 
+	getParent: (model) =>
+		found = null
+		one = (parent, data) ->
+			if data is model
+				found = parent
+		@visitRecursive one
+		return found
+
 	remove: (model) =>
 		one = (parent, data) ->
 			if parent and parent.children

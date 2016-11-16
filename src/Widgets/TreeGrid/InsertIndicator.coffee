@@ -50,6 +50,39 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		if not initialized
 			@create()
 
+	hide: () ->
+		indicator.hide()
+
+	show: () ->
+		indicator.show()
+
+	accept: () ->
+		indicator.css 'color': 'green'
+
+	deny: () ->
+		precise.hide()
+		indicator.css 'color': 'red'
+
+	#
+	# Place over element, with hitMode param
+	#
+	#
+	over: (element, hitMode = 'over') ->
+		@show()
+		if hitMode isnt 'over'
+			@precise
+		else
+			@precise false
+			
+		log element
+
+
+	#
+	# Show or hide precise indicator
+	#
+	#
+	precise: (showPrecise = true) ->
+		precise.show()
 
 	create: () ->
 		indicator = jQuery '''
@@ -57,7 +90,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		<span class="tree-grid-insert-indicator-coarse" style="color:green;font-size: 1.5em;">
 			&#9654;
 		</span>
-		<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">
+		<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;display:none;">
 			&#11835;
 		</span>
 		</div>

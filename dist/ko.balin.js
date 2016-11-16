@@ -2787,7 +2787,7 @@
   }
 
   Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd = (function() {
-    var dragged, draggedOver;
+    var dragged, draggedOver, hitMode, prevHitMode;
 
     Dnd.prototype.grid = null;
 
@@ -2799,17 +2799,22 @@
 
     dragged = null;
 
+    hitMode = null;
+
+    prevHitMode = null;
+
     function Dnd(grid) {
       var defer;
       this.grid = grid;
       this.dragHelper = __bind(this.dragHelper, this);
+      this.clear = __bind(this.clear, this);
+      this.move = __bind(this.move, this);
       this.over = __bind(this.over, this);
       this.drop = __bind(this.drop, this);
       this.drag = __bind(this.drag, this);
       this.dragOver = __bind(this.dragOver, this);
       this.dragStop = __bind(this.dragStop, this);
       this.dragStart = __bind(this.dragStart, this);
-      new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator(this.grid);
       if (!this.grid.config.dnd) {
         return;
       }
@@ -2818,6 +2823,7 @@
           this.grid.element.draggable("destroy");
           return this.grid.element.droppable("destroy");
         });
+        this.grid.element.on('mousemove', '> tr', this.move);
       }
       defer = (function(_this) {
         return function() {
@@ -2833,6 +2839,7 @@
             },
             start: _this.dragStart,
             drag: _this.drag,
+            stop: _this.dragStop,
             helper: _this.dragHelper
           };
           droppableOptions = {
@@ -2854,8 +2861,7 @@
     };
 
     Dnd.prototype.dragStop = function(e) {
-      this.helper = null;
-      return this.indicator = null;
+      return this.clear();
     };
 
     Dnd.prototype.dragOver = function(e) {
@@ -2863,10 +2869,11 @@
       data = ko.dataFor(e.target);
       if (this.indicator) {
         if (data.title.toLowerCase().indexOf('t') === -1) {
-          return this.indicator.accept();
+          this.indicator.accept();
         } else {
-          return this.indicator.deny();
+          this.indicator.deny();
         }
+        return this.indicator.precise.over(draggedOver, hitMode);
       }
     };
 
@@ -2875,23 +2882,71 @@
     Dnd.prototype.drop = function(e) {
       var data, overData;
       data = ko.dataFor(dragged);
-      overData = ko.dataFor(draggedOver);
+      overData = ko.dataFor(draggedOver.get(0));
       console.log("Drop " + data.title + " over " + overData.title);
       console.log(arguments);
-      return overData.children.push(data);
+      if (hitMode === 'over') {
+        this.grid.remove(data);
+        overData.children.push(data);
+      }
+      if (hitMode === 'before') {
+        console.log('insert before...');
+      }
+      if (hitMode === 'after') {
+        console.log('insert after...');
+      }
+      return this.clear();
     };
 
     Dnd.prototype.over = function(e) {
       if (e.target.tagName.toLowerCase() === 'tr') {
         if (draggedOver !== e.target) {
-          draggedOver = e.target;
+          draggedOver = jQuery(e.target);
           return this.dragOver(e);
         }
       }
     };
 
+    Dnd.prototype.move = function(e) {
+      var offset, pos, rel;
+      if (draggedOver) {
+        offset = draggedOver.offset();
+        pos = {};
+        pos.x = e.pageX - offset.left;
+        pos.y = e.pageY - offset.top;
+        rel = {};
+        rel.x = pos.x / draggedOver.width();
+        rel.y = pos.y / draggedOver.height();
+        hitMode = 'over';
+        if (rel.y > 0.75) {
+          hitMode = 'after';
+        }
+        if (rel.y <= 0.25) {
+          hitMode = 'before';
+        }
+        if (prevHitMode !== hitMode) {
+          prevHitMode = hitMode;
+          return console.log(hitMode);
+        }
+      }
+    };
+
+    Dnd.prototype.clear = function() {
+      draggedOver = null;
+      dragged = null;
+      if (this.helper) {
+        this.helper.hide();
+        this.helper = null;
+      }
+      if (this.indicator) {
+        this.indicator.hide();
+        return this.indicator = null;
+      }
+    };
+
     Dnd.prototype.dragHelper = function(e) {
       var cell, indicator, item, tbody;
+      log(e.pageX);
       if (this.helper) {
         return this.helper;
       }
@@ -2906,7 +2961,6 @@
       this.helper = jQuery("<div style='white-space:nowrap;'>" + indicator + (item.html()) + "</div>");
       this.helper.css("pointer-events", "none");
       this.indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator(this.grid, this.helper.find('.drop-indicator'));
-      new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator(this.grid);
       return this.helper;
     };
 
@@ -2915,9 +2969,14 @@
   })();
 
   Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator = (function() {
+    var precise;
+
+    precise = null;
+
     function DropIndicator(grid, element) {
       this.grid = grid;
       this.element = element;
+      this.precise = new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator(this.grid);
       this.element.css({
         'font-size': '1.5em'
       });
@@ -2937,6 +2996,16 @@
         'top': '-.35em'
       });
     }
+
+    DropIndicator.prototype.hide = function() {
+      this.element.hide();
+      return this.precise.hide();
+    };
+
+    DropIndicator.prototype.show = function() {
+      this.element.show();
+      return this.precise.show();
+    };
 
     DropIndicator.prototype.accept = function() {
       this.element.html('&check;');
@@ -3079,8 +3148,49 @@
       }
     }
 
+    InsertIndicator.prototype.hide = function() {
+      return indicator.hide();
+    };
+
+    InsertIndicator.prototype.show = function() {
+      return indicator.show();
+    };
+
+    InsertIndicator.prototype.accept = function() {
+      return indicator.css({
+        'color': 'green'
+      });
+    };
+
+    InsertIndicator.prototype.deny = function() {
+      precise.hide();
+      return indicator.css({
+        'color': 'red'
+      });
+    };
+
+    InsertIndicator.prototype.over = function(element, hitMode) {
+      if (hitMode == null) {
+        hitMode = 'over';
+      }
+      this.show();
+      if (hitMode !== 'over') {
+        this.precise;
+      } else {
+        this.precise(false);
+      }
+      return log(element);
+    };
+
+    InsertIndicator.prototype.precise = function(showPrecise) {
+      if (showPrecise == null) {
+        showPrecise = true;
+      }
+      return precise.show();
+    };
+
     InsertIndicator.prototype.create = function() {
-      indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;left:0;top:0;">\n<span class="tree-grid-insert-indicator-coarse" style="color:green;font-size: 1.5em;">\n	&#9654;\n</span>\n<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">\n	&#11835;\n</span>\n</div>');
+      indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;left:0;top:0;">\n<span class="tree-grid-insert-indicator-coarse" style="color:green;font-size: 1.5em;">\n	&#9654;\n</span>\n<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;display:none;">\n	&#11835;\n</span>\n</div>');
       indicator.appendTo('body');
       coarse = indicator.find('.tree-grid-insert-indicator-coarse');
       precise = indicator.find('.tree-grid-insert-indicator-precise');
@@ -3105,6 +3215,7 @@
       }
       this.context = context != null ? context : 'init';
       this.remove = __bind(this.remove, this);
+      this.getParent = __bind(this.getParent, this);
       this.visitRecursive = __bind(this.visitRecursive, this);
       this.element = jQuery(element);
       if (valueAccessor) {
@@ -3157,6 +3268,18 @@
         }
         return _results1;
       }
+    };
+
+    TreeGridView.prototype.getParent = function(model) {
+      var found, one;
+      found = null;
+      one = function(parent, data) {
+        if (data === model) {
+          return found = parent;
+        }
+      };
+      this.visitRecursive(one);
+      return found;
     };
 
     TreeGridView.prototype.remove = function(model) {

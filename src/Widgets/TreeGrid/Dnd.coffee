@@ -24,7 +24,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 
 	#
 	# Element over which currently item is dragged
-	# @var HTMLElement
+	# @var jQuery element
 	#
 	draggedOver = null
 
@@ -34,8 +34,20 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	dragged = null
 
+	#
+	# Hit mode
+	# @var string
+	#
+	hitMode = null
+
+	#
+	# Previous hit mode, this is used for rate limit of hitMode detection
+	# @var string
+	#
+	prevHitMode = null
+
 	constructor: (@grid) ->
-		new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator @grid
+		
 		# DND must be explicitly enabled
 		if not @grid.config.dnd
 			return
@@ -46,6 +58,8 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 				@grid.element.draggable("destroy")
 				@grid.element.droppable("destroy")
 
+			@grid.element.on 'mousemove', '> tr', @move
+
 		defer = () =>
 			draggableOptions = {
 				handle: '.tree-grid-drag-handle'
@@ -55,6 +69,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 				cursorAt: { top: 5, left: 5 }
 				start: @dragStart
 				drag: @drag
+				stop: @dragStop
 				helper: @dragHelper
 			}
 			droppableOptions = {
@@ -80,14 +95,12 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	dragStop: (e) =>
 
-		# Destroy helpers and indicators
-		@helper = null
-		@indicator = null
+		@clear()
 
 	#
-	# On drag over, evaluated only if entering different element
+	# On drag over, evaluated only if entering different element or hit mode
 	#
-	# * Detect over which tree element is cursor
+	# 
 	#
 	#
 	#
@@ -101,33 +114,90 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			else
 				@indicator.deny()
 
+			@indicator.precise.over draggedOver, hitMode
+
 	
 	drag: (e, helper) =>
 #		log e.target
 #		console.log helper
 
 	drop: (e) =>
+		
 		data = ko.dataFor dragged
-		overData = ko.dataFor draggedOver
+		overData = ko.dataFor draggedOver.get(0)
 		console.log "Drop #{data.title} over #{overData.title}"
 		console.log arguments
 
-		overData.children.push data
+		
+		if hitMode is 'over'
+			@grid.remove data
+			overData.children.push data
+		if hitMode is 'before'
+			console.log 'insert before...'
+		if hitMode is 'after'
+			console.log 'insert after...'
+		@clear()
 
 	#
 	# Handle over state to get element to be about to be dropped
+	# This is bound to droppable `over`
 	#
 	over: (e) =>
-		
+	
 		# Dont stop propagation, just detect row
 		if e.target.tagName.toLowerCase() is 'tr'
 
 			# Limit updates to only when dragging over different items
 			if draggedOver isnt e.target
-				draggedOver = e.target
+				draggedOver = jQuery e.target
 				@dragOver e
 
+	#
+	# Move handler for mousemove for precise position calculation
+	# * Detect over which tree element is cursor
+	#
+	move: (e) =>
+		if draggedOver
+			offset = draggedOver.offset()
+
+			pos = {}
+			pos.x = e.pageX - offset.left
+			pos.y = e.pageY - offset.top
+
+			rel = {}
+			rel.x = pos.x / draggedOver.width()
+			rel.y = pos.y / draggedOver.height()
+			hitMode = 'over'
+			if rel.y > 0.75
+				hitMode = 'after'
+			if rel.y <= 0.25
+				hitMode = 'before'
+
+			# Rate limiting for hit mode
+			if prevHitMode isnt hitMode
+				prevHitMode = hitMode
+				#	console.log rel.y
+				console.log hitMode
+
+
+	#
+	# Reset apropriate things on drop
+	#
+	#
+	clear: () =>
+		draggedOver = null
+		dragged = null
+
+		# Destroy helpers and indicators
+		if @helper
+			@helper.hide()
+			@helper = null
+		if @indicator
+			@indicator.hide()
+			@indicator = null
+
 	dragHelper: (e) =>
+		log e.pageX
 		if @helper
 			return @helper
 		tbody = jQuery(e.currentTarget).parent()
@@ -141,5 +211,4 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 		@helper = jQuery("<div style='white-space:nowrap;'>#{indicator}#{item.html()}</div>")
 		@helper.css("pointer-events","none")
 		@indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator @grid, @helper.find('.drop-indicator')
-		new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator @grid
 		return @helper
