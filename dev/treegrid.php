@@ -14,11 +14,11 @@
 <div>
 	<a href="#" data-bind="click: remSubSubNode">Remove all sub-sub-nodes programatically</a>
 </div>
-
+<!-- 
 <div data-bind="foreach: app.model.Tree.children">
 	<div data-bind="htmlValue: title"></div>
 	<div data-bind="htmlValue: description"></div>
-</div>
+</div> -->
 <hr />
 <div>
 	<table id="gridView" style="font-size: 18px;" class="table table-condensed">

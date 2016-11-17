@@ -6,12 +6,19 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
 	# Precise indicator holder
 	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 	#
-	precise = null
+	@precise: null
 
-	constructor: (@grid, @element) ->
+	#
+	# Indicator element instance boud to draggable
+	# @var jQuery element
+	#
+	@element: null
+
+	constructor: (@grid) ->
 
 		@precise = new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator @grid
 
+	attach: (@element) ->
 		@element.css 'font-size': '1.5em'
 		@element.css 'width': '1em'
 		@element.css 'height': '1em'
@@ -32,7 +39,9 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
 	accept: () ->
 		@element.html('&check;')
 		@element.css 'color': 'green'
+		@precise.accept()
 
 	deny: () ->
 		@element.html('&times;')
 		@element.css 'color': 'red'
+		@precise.deny()

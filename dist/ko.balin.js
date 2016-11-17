@@ -2787,13 +2787,13 @@
   }
 
   Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd = (function() {
-    var dragged, draggedOver, hitMode, prevHitMode;
+    var didDrop, dragged, draggedOver, hitMode, indicator, prevHitMode;
 
     Dnd.prototype.grid = null;
 
     Dnd.prototype.helper = null;
 
-    Dnd.prototype.indicator = null;
+    indicator = null;
 
     draggedOver = null;
 
@@ -2803,17 +2803,19 @@
 
     prevHitMode = null;
 
+    didDrop = false;
+
     function Dnd(grid) {
       var defer;
       this.grid = grid;
       this.dragHelper = __bind(this.dragHelper, this);
       this.clear = __bind(this.clear, this);
       this.move = __bind(this.move, this);
+      this.dragOver = __bind(this.dragOver, this);
       this.over = __bind(this.over, this);
       this.drop = __bind(this.drop, this);
+      this.stop = __bind(this.stop, this);
       this.drag = __bind(this.drag, this);
-      this.dragOver = __bind(this.dragOver, this);
-      this.dragStop = __bind(this.dragStop, this);
       this.dragStart = __bind(this.dragStart, this);
       if (!this.grid.config.dnd) {
         return;
@@ -2825,13 +2827,16 @@
         });
         this.grid.element.on('mousemove', '> tr', this.move);
       }
+      if (!indicator) {
+        indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator(this.grid);
+      }
       defer = (function(_this) {
         return function() {
           var draggableOptions, droppableOptions;
           draggableOptions = {
             handle: '.tree-grid-drag-handle',
             cancel: '.expander',
-            revert: true,
+            revert: false,
             cursor: 'pointer',
             cursorAt: {
               top: 5,
@@ -2839,7 +2844,7 @@
             },
             start: _this.dragStart,
             drag: _this.drag,
-            stop: _this.dragStop,
+            stop: _this.stop,
             helper: _this.dragHelper
           };
           droppableOptions = {
@@ -2854,46 +2859,46 @@
     }
 
     Dnd.prototype.dragStart = function(e) {
-      var data;
-      dragged = e.target;
-      data = ko.dataFor(e.target);
-      return console.log("Started " + data.title);
-    };
-
-    Dnd.prototype.dragStop = function(e) {
-      return this.clear();
-    };
-
-    Dnd.prototype.dragOver = function(e) {
-      var data;
-      data = ko.dataFor(e.target);
-      if (this.indicator) {
-        if (data.title.toLowerCase().indexOf('t') === -1) {
-          this.indicator.accept();
-        } else {
-          this.indicator.deny();
-        }
-        return this.indicator.precise.over(draggedOver, hitMode);
-      }
+      return dragged = e.target;
     };
 
     Dnd.prototype.drag = function(e, helper) {};
 
+    Dnd.prototype.stop = function(e) {
+      if (!didDrop) {
+        return this.drop(e);
+      }
+    };
+
     Dnd.prototype.drop = function(e) {
-      var data, overData;
-      data = ko.dataFor(dragged);
-      overData = ko.dataFor(draggedOver.get(0));
-      console.log("Drop " + data.title + " over " + overData.title);
-      console.log(arguments);
+      var current, index, over, overParent;
+      didDrop = true;
+      if (!dragged) {
+        return this.clear();
+      }
+      if (!draggedOver) {
+        return this.clear();
+      }
+      if (!draggedOver.get(0)) {
+        return this.clear();
+      }
+      current = ko.dataFor(dragged);
+      over = ko.dataFor(draggedOver.get(0));
+      overParent = this.grid.getParent(over);
+      this.grid.remove(current);
       if (hitMode === 'over') {
-        this.grid.remove(data);
-        overData.children.push(data);
+        over.children.push(current);
       }
       if (hitMode === 'before') {
-        console.log('insert before...');
+        index = overParent.children.indexOf(over);
+        overParent.children.splice(index, 0, current);
       }
       if (hitMode === 'after') {
-        console.log('insert after...');
+        if (over.children.length) {
+          overParent.children.splice(0, 0, current);
+        } else {
+          overParent.children.push(current);
+        }
       }
       return this.clear();
     };
@@ -2907,18 +2912,39 @@
       }
     };
 
+    Dnd.prototype.dragOver = function(e) {
+      var data;
+      if (indicator) {
+        data = ko.dataFor(draggedOver.get(0));
+        if (data.title.toLowerCase().indexOf('t') === -1) {
+          indicator.accept();
+        } else {
+          indicator.deny();
+        }
+        return indicator.precise.over(draggedOver, hitMode);
+      }
+    };
+
     Dnd.prototype.move = function(e) {
       var offset, pos, rel;
+      if (dragged) {
+        if (e.currentTarget === dragged) {
+          if (!draggedOver || dragged !== draggedOver.get(0)) {
+            e.target = dragged;
+            this.over(e);
+          }
+        }
+      }
       if (draggedOver) {
         offset = draggedOver.offset();
         pos = {};
         pos.x = e.pageX - offset.left;
         pos.y = e.pageY - offset.top;
         rel = {};
-        rel.x = pos.x / draggedOver.width();
-        rel.y = pos.y / draggedOver.height();
+        rel.x = pos.x / draggedOver.outerWidth(true);
+        rel.y = pos.y / draggedOver.outerHeight(true);
         hitMode = 'over';
-        if (rel.y > 0.75) {
+        if (rel.y > 0.65) {
           hitMode = 'after';
         }
         if (rel.y <= 0.25) {
@@ -2926,7 +2952,8 @@
         }
         if (prevHitMode !== hitMode) {
           prevHitMode = hitMode;
-          return console.log(hitMode);
+          e.target = draggedOver;
+          return this.dragOver(e);
         }
       }
     };
@@ -2934,22 +2961,20 @@
     Dnd.prototype.clear = function() {
       draggedOver = null;
       dragged = null;
+      hitMode = null;
+      prevHitMode = null;
+      didDrop = false;
       if (this.helper) {
         this.helper.hide();
         this.helper = null;
       }
-      if (this.indicator) {
-        this.indicator.hide();
-        return this.indicator = null;
+      if (indicator) {
+        return indicator.hide();
       }
     };
 
     Dnd.prototype.dragHelper = function(e) {
-      var cell, indicator, item, tbody;
-      log(e.pageX);
-      if (this.helper) {
-        return this.helper;
-      }
+      var cell, dropIndicator, item, tbody;
       tbody = jQuery(e.currentTarget).parent();
       cell = tbody.find('.tree-grid-drag-handle').parents('td').first();
       item = cell.clone();
@@ -2957,10 +2982,10 @@
       item.find('.expander .collapsed').remove();
       item.find('.expander').remove();
       item.find('.no-expander').remove();
-      indicator = "<span class='drop-indicator'>&times;</span>";
-      this.helper = jQuery("<div style='white-space:nowrap;'>" + indicator + (item.html()) + "</div>");
+      dropIndicator = "<span class='drop-indicator'>&times;</span>";
+      this.helper = jQuery("<div style='white-space:nowrap;'>" + dropIndicator + (item.html()) + "</div>");
       this.helper.css("pointer-events", "none");
-      this.indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator(this.grid, this.helper.find('.drop-indicator'));
+      indicator.attach(this.helper.find('.drop-indicator'));
       return this.helper;
     };
 
@@ -2969,14 +2994,17 @@
   })();
 
   Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator = (function() {
-    var precise;
+    DropIndicator.precise = null;
 
-    precise = null;
+    DropIndicator.element = null;
 
-    function DropIndicator(grid, element) {
+    function DropIndicator(grid) {
       this.grid = grid;
-      this.element = element;
       this.precise = new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator(this.grid);
+    }
+
+    DropIndicator.prototype.attach = function(element) {
+      this.element = element;
       this.element.css({
         'font-size': '1.5em'
       });
@@ -2992,10 +3020,10 @@
       this.element.css({
         'left': '-.75em'
       });
-      this.element.css({
+      return this.element.css({
         'top': '-.35em'
       });
-    }
+    };
 
     DropIndicator.prototype.hide = function() {
       this.element.hide();
@@ -3009,16 +3037,18 @@
 
     DropIndicator.prototype.accept = function() {
       this.element.html('&check;');
-      return this.element.css({
+      this.element.css({
         'color': 'green'
       });
+      return this.precise.accept();
     };
 
     DropIndicator.prototype.deny = function() {
       this.element.html('&times;');
-      return this.element.css({
+      this.element.css({
         'color': 'red'
       });
+      return this.precise.deny();
     };
 
     return DropIndicator;
@@ -3145,6 +3175,7 @@
       this.grid = grid;
       if (!initialized) {
         this.create();
+        initialized = true;
       }
     }
 
@@ -3158,39 +3189,65 @@
 
     InsertIndicator.prototype.accept = function() {
       return indicator.css({
-        'color': 'green'
+        color: 'green'
       });
     };
 
     InsertIndicator.prototype.deny = function() {
-      precise.hide();
       return indicator.css({
-        'color': 'red'
+        color: 'red'
       });
     };
 
     InsertIndicator.prototype.over = function(element, hitMode) {
+      var expander, left, mid, noExpander, node, nodeMid, offset, top, widthOffset;
       if (hitMode == null) {
         hitMode = 'over';
       }
-      this.show();
-      if (hitMode !== 'over') {
-        this.precise;
-      } else {
+      if (hitMode === 'over') {
         this.precise(false);
+      } else {
+        this.precise(true);
       }
-      return log(element);
+      node = element.find('.tree-grid-drag-handle');
+      expander = element.find('.expander');
+      noExpander = element.find('.no-expander');
+      widthOffset = 0;
+      offset = node.offset();
+      mid = indicator.outerHeight(true) / 2;
+      if (hitMode === 'over') {
+        nodeMid = node.outerHeight(true) / 2;
+        top = offset.top + nodeMid - mid;
+      }
+      if (hitMode === 'before') {
+        top = offset.top - mid;
+      }
+      if (hitMode === 'after') {
+        top = offset.top + node.outerHeight(true) - mid;
+      }
+      left = offset.left + widthOffset;
+      indicator.css({
+        left: left
+      });
+      indicator.css({
+        top: top
+      });
+      return this.show();
     };
 
     InsertIndicator.prototype.precise = function(showPrecise) {
       if (showPrecise == null) {
         showPrecise = true;
       }
-      return precise.show();
+      if (showPrecise) {
+        return precise.show();
+      } else {
+        return precise.hide();
+      }
     };
 
     InsertIndicator.prototype.create = function() {
-      indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;left:0;top:0;">\n<span class="tree-grid-insert-indicator-coarse" style="color:green;font-size: 1.5em;">\n	&#9654;\n</span>\n<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;display:none;">\n	&#11835;\n</span>\n</div>');
+      indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;line-height: 1em;">\n	<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">\n		&#9654;\n	</span>\n	<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">\n		&#11835;\n	</span>\n</div>');
       indicator.appendTo('body');
       coarse = indicator.find('.tree-grid-insert-indicator-coarse');
       precise = indicator.find('.tree-grid-insert-indicator-precise');

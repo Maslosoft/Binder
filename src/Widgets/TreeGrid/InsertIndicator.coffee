@@ -49,6 +49,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 
 		if not initialized
 			@create()
+			initialized = true
 
 	hide: () ->
 		indicator.hide()
@@ -57,24 +58,45 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		indicator.show()
 
 	accept: () ->
-		indicator.css 'color': 'green'
+		indicator.css color: 'green'
 
 	deny: () ->
-		precise.hide()
-		indicator.css 'color': 'red'
+		indicator.css color: 'red'
 
 	#
 	# Place over element, with hitMode param
 	#
 	#
 	over: (element, hitMode = 'over') ->
-		@show()
-		if hitMode isnt 'over'
-			@precise
-		else
+		
+		if hitMode is 'over'
 			@precise false
-			
-		log element
+		else
+			@precise true
+
+		node = element.find('.tree-grid-drag-handle')
+		expander = element.find('.expander')
+		noExpander = element.find('.no-expander')
+		widthOffset = 0
+		offset = node.offset()
+		mid = indicator.outerHeight(true) / 2
+		
+		if hitMode is 'over'
+			nodeMid = node.outerHeight(true) / 2
+			top = offset.top + nodeMid - mid
+
+		if hitMode is 'before'
+			top = offset.top - mid
+
+		if hitMode is 'after'
+			top = offset.top + node.outerHeight(true) - mid
+
+		left = offset.left + widthOffset
+
+		indicator.css left: left
+		indicator.css top: top
+
+		@show()
 
 
 	#
@@ -82,17 +104,20 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 	#
 	#
 	precise: (showPrecise = true) ->
-		precise.show()
+		if showPrecise
+			precise.show()
+		else
+			precise.hide()
 
 	create: () ->
 		indicator = jQuery '''
-		<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;left:0;top:0;">
-		<span class="tree-grid-insert-indicator-coarse" style="color:green;font-size: 1.5em;">
-			&#9654;
-		</span>
-		<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;display:none;">
-			&#11835;
-		</span>
+		<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;line-height: 1em;">
+			<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">
+				&#9654;
+			</span>
+			<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">
+				&#11835;
+			</span>
 		</div>
 		'''
 		indicator.appendTo 'body'

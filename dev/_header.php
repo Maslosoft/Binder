@@ -1,3 +1,6 @@
+<?php
+define('KO_BALIN_EMBEDDED', defined('YII_DEBUG'));
+?>
 <!DOCTYPE html>
 <html>
 	<head>
