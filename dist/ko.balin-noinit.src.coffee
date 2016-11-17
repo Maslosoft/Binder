@@ -1726,7 +1726,11 @@ class @Maslosoft.Ko.Balin.Tree extends @Maslosoft.Ko.Balin.Base
 
 class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
-	makeTemplateValueAccessor = (valueAccessor) ->
+	#
+	#
+	# @private
+	#
+	makeValueAccessor = (element, valueAccessor, bindingContext, widget) ->
 		return () ->
 			modelValue = valueAccessor()
 			unwrappedValue = ko.utils.peekObservable(modelValue)
@@ -1739,10 +1743,37 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 					'foreach': modelValue
 					'templateEngine': ko.nativeTemplateEngine.instance
 				}
+
+			data = []
+			depths = []
+			depth = -1
+
+			unwrapRecursive = (items) ->
+				depth++
+				for item in items
+					extras = {
+						depth: depth
+						hasChilds: !!item.children.length
+					}
+					item._treeGrid = ko.tracker.factory extras
+					data.push item
+					depths.push depth
+					if item.children.length
+						unwrapRecursive item.children
+						depth--
+
+			unwrapRecursive unwrappedValue['data']['children']
+			
+			if bindingContext
+				bindingContext.tree = unwrappedValue['data']
+				bindingContext.widget = widget
+
+
 			# If unwrappedValue.data is the array, preserve all relevant options and unwrap again value so we get updates
 			ko.utils.unwrapObservable modelValue
 			{
-				'foreach': unwrappedValue['data']
+				'foreach': data
+				'depths': depths
 				'as': unwrappedValue['as']
 				'includeDestroyed': unwrappedValue['includeDestroyed']
 				'afterAdd': unwrappedValue['afterAdd']
@@ -1753,11 +1784,16 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 				'templateEngine': ko.nativeTemplateEngine.instance
 			}
 
-	init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
-			return ko.bindingHandlers['template']['init'](element, makeTemplateValueAccessor(valueAccessor));
+	init: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 
-	update: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
-		return ko.bindingHandlers['template']['update'](element, makeTemplateValueAccessor(valueAccessor), allBindings, viewModel, bindingContext);
+		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor
+		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
+		return { controlsDescendantBindings: true }
+
+	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
+		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
+
+		return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 
 
 
@@ -1769,9 +1805,36 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 #
 class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 
-	update: (element, valueAccessor) =>
+	init: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 
-		return
+	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
+		ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
+		
+		# Defer icon creation, as other bindings must be evaluated first,
+		# like html, text, etc.
+		defer = () =>
+			html = []
+			data = @getValue(valueAccessor)
+			extras = data._treeGrid
+#			console.log "#{data.title}: #{extras.depth}", extras.hasChilds
+#			console.log data
+#			console.log ko.unwrap bindingContext.$index
+#			if extras.hasChilds
+			depth = extras.depth
+			expanders = []
+			expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>"
+			expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>"
+			html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
+#			else
+			depth = extras.depth + 1
+			html.push "<i class='no-expander' style='margin-left:#{depth}em;display:inline-block;'></i>"
+			html.push '<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>'
+			element.innerHTML = html.join('') + element.innerHTML
+			
+#			console.log element
+#			console.log bindingContext
+		defer()
+#		setTimeout defer, 0
 
 
 
@@ -2664,8 +2727,630 @@ if not @Maslosoft.Ko.Balin.Widgets.TreeGrid
 	@Maslosoft.Ko.Balin.Widgets.TreeGrid = {}
 
 
+class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
+
+	#
+	# Tree grid view instance
+	#
+	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	#
+	grid: null
+
+	#
+	# Drag helper
+	#
+	# @var jQuery element
+	#
+	helper: null
+
+	#
+	# Drop indicator
+	#
+	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
+	#
+	indicator = null
+
+	#
+	# Element over which currently item is dragged
+	# @var jQuery element
+	#
+	draggedOver = null
+
+	#
+	# Element currently dragged
+	# @var HTMLElement
+	#
+	dragged = null
+
+	#
+	# Hit mode
+	# @var string
+	#
+	hitMode = null
+
+	#
+	# Previous hit mode, this is used for rate limit of hitMode detection
+	# @var string
+	#
+	prevHitMode = null
+
+	#
+	# Whether drop event occured, this is required for edge cases
+	# @var boolean
+	#
+	didDrop = false
+
+	constructor: (@grid) ->
+		
+		# DND must be explicitly enabled
+		if not @grid.config.dnd
+			return
+
+		if @grid.context is 'init'
+			# handle disposal
+			ko.utils.domNodeDisposal.addDisposeCallback @grid.element.get(0), () ->
+				@grid.element.draggable("destroy")
+				@grid.element.droppable("destroy")
+
+			@grid.element.on 'mousemove', '> tr', @move
+
+		if not indicator
+			indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator @grid
+
+		defer = () =>
+			draggableOptions = {
+				handle: '.tree-grid-drag-handle'
+				cancel: '.expander'
+				revert: false
+				cursor: 'pointer'
+				cursorAt: { top: 5, left: 5 }
+				start: @dragStart
+				drag: @drag
+				stop: @stop
+				helper: @dragHelper
+			}
+			droppableOptions = {
+				drop: @drop
+				over: @over
+			}
+			@grid.element.find('> tr').draggable(draggableOptions)
+			@grid.element.find('> tr').droppable(droppableOptions)
+
+		setTimeout defer, 0
+
+	#
+	# On drag start
+	#
+	#
+	dragStart: (e) =>
+		dragged = e.target
+		# data = ko.dataFor e.target
+		# console.log "Started #{data.title}"
+
+	drag: (e, helper) =>
+
+	#
+	# Drop if stopped dragging without dropping
+	# This is required when dragging near top or bottom of container
+	#
+	#
+	stop: (e) =>
+		if not didDrop
+			@drop e
+
+	#
+	# Drop in a normal manner, see also `stop` for edge case
+	#
+	#
+	drop: (e) =>
+		didDrop = true
+		if not dragged
+			return @clear()
+		if not draggedOver
+			return @clear()
+		if not draggedOver.get(0)
+			return @clear()
+		current = ko.dataFor dragged
+		over = ko.dataFor draggedOver.get(0)
+		overParent = @grid.getParent over
+		# console.log "Drop #{current.title} over #{over.title}"
+		# console.log arguments
+
+		@grid.remove current
+		
+		if hitMode is 'over'
+			# Most obvious case, when dragged node is directly over
+			# dropped node, inser current node as it's last child
+			over.children.push current
+		if hitMode is 'before'
+			# Insert node before current node, this is case when
+			# insert mark is before dragged over node
+			index = overParent.children.indexOf over
+			overParent.children.splice index, 0, current
+		if hitMode is 'after'
+			# When node has childs, then add just at beginning
+			# to match visual position of dragged node
+			if over.children.length
+				overParent.children.splice 0, 0, current
+			else
+				# When not having childs, it means that node is
+				# last on the level so insert as a last node
+				overParent.children.push current
+		@clear()
+
+	#
+	# Handle over state to get element to be about to be dropped
+	# This is bound to droppable `over`
+	#
+	over: (e) =>
+		# Dont stop propagation, just detect row
+		if e.target.tagName.toLowerCase() is 'tr'
+
+			# Limit updates to only when dragging over different items
+			if draggedOver isnt e.target
+				draggedOver = jQuery e.target
+				@dragOver e
+
+	#
+	# On drag over, evaluated only if entering different element or hit mode
+	#
+	# 
+	#
+	#
+	#
+	dragOver: (e) =>
+		if indicator
+			data = ko.dataFor draggedOver.get(0)
+			# FIXME TEMP Allow dropping only on items not containing `t` in title
+			if data.title.toLowerCase().indexOf('t') is -1
+				indicator.accept()
+			else
+				indicator.deny()
+			indicator.precise.over draggedOver, hitMode
+
+	#
+	# Move handler for mousemove for precise position calculation
+	# * Detect over which tree element is cursor and if it's more
+	# on top/bottom edge or on center
+	#
+	move: (e) =>
+		if dragged
+			# Dragged over itself must be handled here,
+			# as it is not evaluated on `over`
+			if e.currentTarget is dragged
+				if not draggedOver or dragged isnt draggedOver.get(0)
+					# console.log dragged
+					e.target = dragged
+					@over e
+
+		if draggedOver
+			
+			offset = draggedOver.offset()
+
+			pos = {}
+			pos.x = e.pageX - offset.left
+			pos.y = e.pageY - offset.top
+
+			rel = {}
+			rel.x = pos.x / draggedOver.outerWidth(true)
+			rel.y = pos.y / draggedOver.outerHeight(true)
+			hitMode = 'over'
+			if rel.y > 0.65
+				hitMode = 'after'
+			if rel.y <= 0.25
+				hitMode = 'before'
+
+			# Rate limiting for hit mode
+			if prevHitMode isnt hitMode
+				prevHitMode = hitMode
+				e.target = draggedOver
+				@dragOver e
+
+
+	#
+	# Reset apropriate things on drop
+	#
+	#
+	clear: () =>
+		draggedOver = null
+		dragged = null
+		hitMode = null
+		prevHitMode = null
+		didDrop = false
+		# Destroy helpers and indicators
+		if @helper
+			@helper.hide()
+			@helper = null
+		if indicator
+			indicator.hide()
+
+	#
+	# Initialize drag helper
+	#
+	#
+	dragHelper: (e) =>
+		
+		tbody = jQuery(e.currentTarget).parent()
+		cell = tbody.find('.tree-grid-drag-handle').parents('td').first()
+		item = cell.clone()
+		item.find('.expander .expanded').remove()
+		item.find('.expander .collapsed').remove()
+		item.find('.expander').remove()
+		item.find('.no-expander').remove()
+		dropIndicator = "<span class='drop-indicator'>&times;</span>"
+		@helper = jQuery("<div style='white-space:nowrap;'>#{dropIndicator}#{item.html()}</div>")
+		@helper.css("pointer-events","none")
+		
+		indicator.attach @helper.find('.drop-indicator')
+		return @helper
+
+
+class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
+
+	#
+	# Precise indicator holder
+	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
+	#
+	@precise: null
+
+	#
+	# Indicator element instance boud to draggable
+	# @var jQuery element
+	#
+	@element: null
+
+	constructor: (@grid) ->
+
+		@precise = new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator @grid
+
+	attach: (@element) ->
+		@element.css 'font-size': '1.5em'
+		@element.css 'width': '1em'
+		@element.css 'height': '1em'
+		@element.css 'position': 'absolute'
+		# 1/2 of font size
+		@element.css 'left': '-.75em'
+		# 1/4 of font size
+		@element.css 'top': '-.35em'
+
+	hide: () ->
+		@element.hide()
+		@precise.hide()
+
+	show: () ->
+		@element.show()
+		@precise.show()
+
+	accept: () ->
+		@element.html('&check;')
+		@element.css 'color': 'green'
+		@precise.accept()
+
+	deny: () ->
+		@element.html('&times;')
+		@element.css 'color': 'red'
+		@precise.deny()
+
+class Maslosoft.Ko.Balin.Widgets.TreeGrid.Events
+
+	#
+	# Tree grid view instance
+	#
+	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	#
+	grid: null
+
+	constructor: (@grid, context) ->
+	
+		if not @grid.config.on
+			return
+
+class Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
+
+	#
+	# Tree grid view instance
+	#
+	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	#
+	grid: null
+
+	constructor: (@grid, context) ->
+
+		# Expanders explicitly disabled
+		if @grid.config.expanders is false
+			return
+
+		# Initialize click handlers only on init
+		if @grid.context is 'init'
+			@grid.element.on 'mousedown', '.expander', @handler
+
+		if @grid.context is 'update'
+			@updateExpanders()
+
+	updateExpanders: () =>
+
+		one = (item, data) =>
+			hasChildren = !!data.children.length
+			if hasChildren
+				item.find('.no-expander').hide()
+				item.find('.expander').show()
+			else
+				item.find('.expander').hide()
+				item.find('.no-expander').show()
+			item.find('.debug').html data.children.length
+		defer = () =>
+			@grid.visit one
+
+#		defer()
+		setTimeout defer, 0
+
+	handler: (e) =>
+		current = ko.contextFor(e.target).$data
+
+		depth = -1
+		show = false
+
+		log "clicked on expander #{current.title}"
+
+		initOne = (item, data) =>
+			itemDepth = data._treeGrid.depth
+			if data is current
+				depth = itemDepth
+				el = item.find('.expander')
+				if el.find('.expanded:visible').length
+					el.find('.expanded').hide()
+					el.find('.collapsed').show()
+					show = false
+				else
+					el.find('.collapsed').hide()
+					el.find('.expanded').show()
+					show = true
+				# Current item should be left intact, so skip to next item
+				return
+
+			# Not found yet, so continue
+			if depth is -1 then return
+
+			# Found item on same depth, skip further changes
+			if itemDepth is depth
+				depth = -1
+				return
+
+			# toggle all one depth lower
+			if itemDepth - 1 is depth
+				if show
+					item.show()
+				else
+					item.hide()
+
+		# TODO 1. Hide also deeper items if parent of them expanded
+		# and show them back if parent of them is expanded
+
+		@grid.visit initOne
+
+
+#
+# Insert indicator
+#
+#
+#
+
+class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
+
+	#
+	# Tree grid view instance
+	#
+	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	#
+	grid: null
+
+	#
+	#
+	# @private
+	# @static
+	#
+	initialized = false
+
+	#
+	# Indicator main wrapper
+	# @var jQuery element
+	# @private
+	# @static
+	#
+	indicator = null
+
+	#
+	# Indicator coarse item
+	# @var jQuery element
+	# @private
+	# @static
+	#
+	coarse = null
+
+	#
+	# Indicator precise item
+	# @var jQuery element
+	# @private
+	# @static
+	#
+	precise = null
+
+	constructor: (@grid) ->
+
+		if not initialized
+			@create()
+			initialized = true
+
+	hide: () ->
+		indicator.hide()
+
+	show: () ->
+		indicator.show()
+
+	accept: () ->
+		indicator.css color: 'green'
+
+	deny: () ->
+		indicator.css color: 'red'
+
+	#
+	# Place over element, with hitMode param
+	#
+	#
+	over: (element, hitMode = 'over') ->
+		
+		if hitMode is 'over'
+			@precise false
+		else
+			@precise true
+
+		node = element.find('.tree-grid-drag-handle')
+		expander = element.find('.expander')
+		noExpander = element.find('.no-expander')
+		widthOffset = 0
+		offset = node.offset()
+		mid = indicator.outerHeight(true) / 2
+		
+		if hitMode is 'over'
+			nodeMid = node.outerHeight(true) / 2
+			top = offset.top + nodeMid - mid
+
+		if hitMode is 'before'
+			top = offset.top - mid
+
+		if hitMode is 'after'
+			top = offset.top + node.outerHeight(true) - mid
+
+		left = offset.left + widthOffset
+
+		indicator.css left: left
+		indicator.css top: top
+
+		@show()
+
+
+	#
+	# Show or hide precise indicator
+	#
+	#
+	precise: (showPrecise = true) ->
+		if showPrecise
+			precise.show()
+		else
+			precise.hide()
+
+	create: () ->
+		indicator = jQuery '''
+		<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;line-height: 1em;">
+			<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">
+				&#9654;
+			</span>
+			<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">
+				&#11835;
+			</span>
+		</div>
+		'''
+		indicator.appendTo 'body'
+		coarse = indicator.find '.tree-grid-insert-indicator-coarse'
+		precise = indicator.find '.tree-grid-insert-indicator-precise'
+		
+		indicator.show()
+
 class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 
+	#
+	# Plugins for tree grid
+	#
+	# NOTE: Order of plugins *might* be important, especially for built-in plugins
+	#
+	# @var Object[]
+	#
+	@plugins = [
+		Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
+		Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
+		Maslosoft.Ko.Balin.Widgets.TreeGrid.Events
+	]
+
+	#
+	# Tbody element - root of tree
+	#
+	# @var jQuery element
+	#
+	element: null
+
+	#
+	# Configuration of binding
+	#
+	# @var Object
+	#
+	config: null
+
+	constructor: (element, valueAccessor = null, @context = 'init') ->
+
+		@element = jQuery element
+		
+		if valueAccessor
+			@config = {}
+			@config = ko.unwrap(valueAccessor())
+
+			for plugin in TreeGridView.plugins
+				new plugin(@)
+
+#			console.log data
+
+	#
+	# Visit each node and apply callback.
+	# Callback accepts two parameters:
+	#
+	# * element - contains current row jQuery element
+	# * data - contains data attached to element
+	#
+	#
+	visit: (callback) ->
+		items = @element.find('> tr')
+		for item in items
+			data = ko.dataFor(item)
+			callback(jQuery(item), data)
+
+	#
+	# Visit each node starting from tree root and apply callback.
+	# Callback accepts two parameters:
+	#
+	# * parent - contains current element parent item, might be null
+	# * data - contains data attached to element
+	#
+	#
+	visitRecursive: (callback, model = null) =>
+		if not model
+			ctx = ko.contextFor @element.get(0)
+			model = ctx.tree
+			callback null, model
+			for child in model.children
+				callback model, child
+				@visitRecursive callback, child
+		else
+			for child in model.children
+				callback model, child
+				@visitRecursive callback, child
+
+	getParent: (model) =>
+		found = null
+		one = (parent, data) ->
+			if data is model
+				found = parent
+		@visitRecursive one
+		return found
+
+	remove: (model) =>
+		one = (parent, data) ->
+			if parent and parent.children
+				parent.children.remove model
+				
+		@visitRecursive one
+
+	expandAll: () ->
+
+	collapseAll: () ->
 
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
