@@ -112,7 +112,8 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 
 	#
 	# Drop in a normal manner, see also `stop` for edge case
-	#
+	# TODO Freeze cell width containing nodes, or flicker might occur. 
+	# Freeze must be released on timeout
 	#
 	drop: (e) =>
 		didDrop = true
