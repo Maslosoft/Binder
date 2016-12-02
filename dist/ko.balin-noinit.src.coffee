@@ -2742,7 +2742,7 @@ class ValidationManager
 
 			# Show warnings if any
 			if warnings
-				show warning
+				show warnings
 				warnings.innerHTML = messages.join '<br />'
 
 		return @

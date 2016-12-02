@@ -2791,7 +2791,7 @@
           }
         }
         if (warnings) {
-          show(warning);
+          show(warnings);
           warnings.innerHTML = messages.join('<br />');
         }
       }

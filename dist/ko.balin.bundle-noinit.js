@@ -11523,7 +11523,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           }
         }
         if (warnings) {
-          show(warning);
+          show(warnings);
           warnings.innerHTML = messages.join('<br />');
         }
       }
