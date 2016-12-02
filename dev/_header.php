@@ -71,6 +71,8 @@ define('KO_BALIN_EMBEDDED', defined('YII_DEBUG'));
 				font-weight: bold;
 				font-style: italic;
 				margin: .5em;
+				padding: .3em;
+				background: rgba(255, 0,0,.3);
 			}
 			.warning-messages{
 				color:#8a6d3b !important;
@@ -78,6 +80,8 @@ define('KO_BALIN_EMBEDDED', defined('YII_DEBUG'));
 				font-weight: bold;
 				font-style: italic;
 				margin: .5em;
+				padding: .3em;
+				background: rgba(255, 255,0,.3);
 			}
 			.node-title-icon{
 				width: 1em;

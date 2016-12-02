@@ -35,6 +35,14 @@ class ValidationManager
 	# Private
 	toggle = ko.utils.toggleDomNodeCssClass
 
+	hide = (element) ->
+		ko.utils.toggleDomNodeCssClass element, 'hide', true
+
+	show = (element) ->
+		ko.utils.toggleDomNodeCssClass element, 'hide', false
+
+
+
 	#
 	# Initialize validation manager
 	#
@@ -82,7 +90,18 @@ class ValidationManager
 
 		@errors = @parent.querySelector @options.errorMessages
 		@warnings = @parent.querySelector @options.warningMessages
+		hide @errors
+		hide @warnings
 		return @
+
+	#
+	# Initialize element. This sets proper state of helper elements,
+	# like error/warning messages container
+	#
+	# @param element DomElement
+	#
+	init: (element) =>
+		@setElement element
 
 	#
 	# Apply validation of one validator
@@ -119,6 +138,7 @@ class ValidationManager
 
 			# Reset error messages
 			if errors
+				hide errors
 				errors.innerHTML = ''
 			isValid = true
 		else
@@ -140,6 +160,7 @@ class ValidationManager
 
 			# Show error messages
 			if errors and messages
+				show errors
 				errors.innerHTML = messages.join '<br />'
 			isValid = false
 
@@ -159,6 +180,7 @@ class ValidationManager
 			if @options.parentWarning
 				toggle(parent, @options.parentWarning, false);
 		if warnings
+			hide warnings
 			warnings.innerHTML = ''
 
 		return isValid
@@ -196,8 +218,9 @@ class ValidationManager
 				if @options.parentSuccess
 					toggle(parent, @options.parentSuccess, false);
 
-			# Show warnings
+			# Show warnings if any
 			if warnings
+				show warning
 				warnings.innerHTML = messages.join '<br />'
 
 		return @

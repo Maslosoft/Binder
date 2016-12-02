@@ -4,7 +4,8 @@
 	<small>Validates if value will change</small>
 </h3>
 <p>
-	<b>Note:</b> Used validators are for demo purpose, not recommended for production environment
+	<b>Note:</b> Validators used in this example are for demo purpose,
+	not recommended for production environment
 </p>
 
 <div data-bind="with: app.model.txt1" class="form-group">

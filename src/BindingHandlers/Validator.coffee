@@ -57,16 +57,17 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 				error "Parameter `#{classField}` (of type #{name}) must be validator compatible class, binding defined on element:", element
 				continue
 
-			# Store class name first
+			# Store class name first, as it needts to be removed
 			className = config[classField]
 
-			# Remove class key
+			# Remove class key, to not iterrupt validator configuration
 			delete(config[classField])
 
 			# Instantiate validator
 			validators.push new className(config)
 
 		manager = new ValidationManager(validators, @options)
+		manager.init element
 
 		# Generate some id if not set, see notes below why
 		if not element.id

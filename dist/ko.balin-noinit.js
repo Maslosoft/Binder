@@ -2042,6 +2042,7 @@
         validators.push(new className(config));
       }
       manager = new ValidationManager(validators, this.options);
+      manager.init(element);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Balin-Validator-" + (idCounter++);
       }
@@ -2637,7 +2638,7 @@
   })();
 
   ValidationManager = (function() {
-    var toggle;
+    var hide, show, toggle;
 
     ValidationManager.prototype.element = null;
 
@@ -2649,11 +2650,20 @@
 
     toggle = ko.utils.toggleDomNodeCssClass;
 
+    hide = function(element) {
+      return ko.utils.toggleDomNodeCssClass(element, 'hide', true);
+    };
+
+    show = function(element) {
+      return ko.utils.toggleDomNodeCssClass(element, 'hide', false);
+    };
+
     function ValidationManager(validators, options) {
       this.validators = validators;
       this.options = options;
       this.adviseOne = __bind(this.adviseOne, this);
       this.validateOne = __bind(this.validateOne, this);
+      this.init = __bind(this.init, this);
       this.setElement = __bind(this.setElement, this);
       this.validate = __bind(this.validate, this);
     }
@@ -2683,7 +2693,13 @@
       this.parent = jQuery(this.element).parents('.form-group')[0];
       this.errors = this.parent.querySelector(this.options.errorMessages);
       this.warnings = this.parent.querySelector(this.options.warningMessages);
+      hide(this.errors);
+      hide(this.warnings);
       return this;
+    };
+
+    ValidationManager.prototype.init = function(element) {
+      return this.setElement(element);
     };
 
     ValidationManager.prototype.validateOne = function(validator, value) {
@@ -2711,6 +2727,7 @@
           }
         }
         if (errors) {
+          hide(errors);
           errors.innerHTML = '';
         }
         isValid = true;
@@ -2731,6 +2748,7 @@
           }
         }
         if (errors && messages) {
+          show(errors);
           errors.innerHTML = messages.join('<br />');
         }
         isValid = false;
@@ -2744,6 +2762,7 @@
         }
       }
       if (warnings) {
+        hide(warnings);
         warnings.innerHTML = '';
       }
       return isValid;
@@ -2772,6 +2791,7 @@
           }
         }
         if (warnings) {
+          show(warning);
           warnings.innerHTML = messages.join('<br />');
         }
       }
