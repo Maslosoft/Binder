@@ -1,11 +1,16 @@
 {
 	"name": "maslosoft/balin",
 	"description": "Knockout binding handlers",
+	"license": [
+		"AGPL",
+		"Commercial"
+	],
 	"authors": [
 		{
 			"name": "Peter Maselkowski",
 			"email": "pmaselkowski@gmail.com"
 		}
 	],
-	"require": {}
+	"require": {},
+	"homepage": "https://maslosoft.com/balin/"
 }
