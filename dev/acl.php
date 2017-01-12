@@ -12,7 +12,7 @@
 	</p>
 	<p>
 		If updates are not required, even string value can be passed.
-		Values in this demo are purely examples, but might be a good idea
+		Values in this demo are purely exemplary, but might be a good idea
 		for real application. 
 	</p>
 	<br />
