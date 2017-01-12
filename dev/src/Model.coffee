@@ -111,3 +111,8 @@ class @Maslosoft.Ko.BalinDev.Models.Videos extends @Maslosoft.Ko.Balin.Model
 class @Maslosoft.Ko.BalinDev.Models.DatePicker extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.DatePicker"
 	date: 1473839950
+
+
+class @Maslosoft.Ko.BalinDev.Models.AclUser extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.AclUser"
+	isGuest: true

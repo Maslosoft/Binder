@@ -60,6 +60,7 @@
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
+		acl: Maslosoft.Ko.Balin.Acl
 		active: Maslosoft.Ko.Balin.Active
 		action: Maslosoft.Ko.Balin.WidgetAction
 		activity: Maslosoft.Ko.Balin.WidgetActivity

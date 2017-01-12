@@ -132,6 +132,7 @@ if not @Maslosoft.Ko.Balin.Widgets
 @Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
+		acl: Maslosoft.Ko.Balin.Acl
 		active: Maslosoft.Ko.Balin.Active
 		action: Maslosoft.Ko.Balin.WidgetAction
 		activity: Maslosoft.Ko.Balin.WidgetActivity
@@ -727,6 +728,28 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 			rels.push 'virtual'
 
 		element.setAttribute('rel', rels.join(' '))
+#
+# Acl binding
+# This adds class from options if value is true
+#
+class @Maslosoft.Ko.Balin.Acl extends @Maslosoft.Ko.Balin.Base
+	
+	allow = null
+
+	init: () =>
+		if not Maslosoft.Ko.Balin.Acl.allow
+			throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions")
+
+		if typeof(Maslosoft.Ko.Balin.Acl.allow) isnt 'function'
+			throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions")
+
+	update: (element, valueAccessor) =>
+		acl = @getValue(valueAccessor)
+		value = Maslosoft.Ko.Balin.Acl.allow(acl)
+
+		# Forward to visible
+		ko.bindingHandlers.visible.update element, ->
+			value
 #
 # Disabled binding
 # This adds class from options if value is true

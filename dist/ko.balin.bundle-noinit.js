@@ -8889,6 +8889,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       handlers = null;
     }
     config = {
+      acl: Maslosoft.Ko.Balin.Acl,
       active: Maslosoft.Ko.Balin.Active,
       action: Maslosoft.Ko.Balin.WidgetAction,
       activity: Maslosoft.Ko.Balin.WidgetActivity,
@@ -9452,6 +9453,41 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     };
 
     return WidgetUrl;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Acl = (function(_super) {
+    var allow;
+
+    __extends(Acl, _super);
+
+    function Acl() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return Acl.__super__.constructor.apply(this, arguments);
+    }
+
+    allow = null;
+
+    Acl.prototype.init = function() {
+      if (!Maslosoft.Ko.Balin.Acl.allow) {
+        throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions");
+      }
+      if (typeof Maslosoft.Ko.Balin.Acl.allow !== 'function') {
+        throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions");
+      }
+    };
+
+    Acl.prototype.update = function(element, valueAccessor) {
+      var acl, value;
+      acl = this.getValue(valueAccessor);
+      value = Maslosoft.Ko.Balin.Acl.allow(acl);
+      return ko.bindingHandlers.visible.update(element, function() {
+        return value;
+      });
+    };
+
+    return Acl;
 
   })(this.Maslosoft.Ko.Balin.Base);
 

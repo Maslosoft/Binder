@@ -1,5 +1,5 @@
 (function() {
-  var _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -362,6 +362,22 @@
     DatePicker.prototype.date = 1473839950;
 
     return DatePicker;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.AclUser = (function(_super) {
+    __extends(AclUser, _super);
+
+    function AclUser() {
+      _ref18 = AclUser.__super__.constructor.apply(this, arguments);
+      return _ref18;
+    }
+
+    AclUser.prototype._class = "Maslosoft.Ko.BalinDev.Models.AclUser";
+
+    AclUser.prototype.isGuest = true;
+
+    return AclUser;
 
   })(this.Maslosoft.Ko.Balin.Model);
 
