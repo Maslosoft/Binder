@@ -665,9 +665,7 @@
       } else {
         data.params = bindingParams;
       }
-      console.log(data.params);
       data.params = this.getValue(data.params);
-      console.log(data.params);
       if (typeof src === 'string') {
         data[bindingName] = src;
       }
@@ -677,7 +675,6 @@
     WidgetUrl.prototype.createUrl = function(widgetId, action, params, terminator) {
       var args, href, name, value;
       args = [];
-      console.log(typeof params);
       if (typeof params === 'string' || typeof params === 'number') {
         if (params !== "" || typeof params === 'number') {
           args.push("" + params);
@@ -691,7 +688,6 @@
         }
       }
       href = "" + terminator + widgetId + "." + action;
-      console.log(args);
       if (args.length === 0) {
         return href;
       } else {

@@ -678,12 +678,8 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 			data.params = src.params
 		else
 			data.params = bindingParams
-
-		console.log data.params
 		
 		data.params = @getValue(data.params)
-
-		console.log data.params
 
 		if typeof(src) is 'string'
 			data[bindingName] = src
@@ -694,7 +690,7 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 		
 		args = [];
 		# Assign one value params
-		console.log typeof(params)
+		
 		if typeof(params) is 'string' or typeof(params) is 'number'
 			# Skip empty strings
 			if params isnt "" or typeof(params) is 'number'
@@ -706,7 +702,7 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 				args.push "#{name}:#{value}"
 		
 		href = "#{terminator}#{widgetId}.#{action}";
-		console.log args
+		
 		if args.length is 0
 			return href;
 		else
