@@ -14,7 +14,7 @@
 <div>
 	<a href="#" data-bind="click: remSubSubNode">Remove all sub-sub-nodes programatically</a>
 </div>
-<!-- 
+<!--
 <div data-bind="foreach: app.model.Tree.children">
 	<div data-bind="htmlValue: title"></div>
 	<div data-bind="htmlValue: description"></div>
@@ -78,7 +78,7 @@
 			model.title = 'New sub-sub-node #' + nodeId;
 			model.description = 'Description sub-sub-node #' + nodeId;
 			app.model.Tree.children[0].children[0].children.push(model);
-			if(e){
+			if (e) {
 				e.stopPropagation();
 				e.preventDefault();
 			}
@@ -89,11 +89,11 @@
 			model.title = 'New sub-sub-node #' + nodeId;
 			model.description = 'Description sub-sub-node #' + nodeId;
 			var idx = 0;
-			if(app.model.Tree.children[0].children.length) {
+			if (app.model.Tree.children[0].children.length) {
 				idx = app.model.Tree.children[0].children.length - 1;
 			}
 			app.model.Tree.children[0].children[idx].children.push(model);
-			if(e){
+			if (e) {
 				e.stopPropagation();
 				e.preventDefault();
 			}
@@ -104,13 +104,13 @@
 			model.title = 'New sub-sub-node #' + nodeId;
 			model.description = 'Description sub-sub-node #' + nodeId;
 			app.model.Tree.children[0].children[0].children = [];
-			if(e){
+			if (e) {
 				e.stopPropagation();
 				e.preventDefault();
 			}
 		};
 
-		var deferAdd = function(){
+		var deferAdd = function () {
 			window.addNode();
 			window.addSubNode();
 			window.addSubNode();

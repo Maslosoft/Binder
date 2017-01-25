@@ -1994,10 +1994,17 @@
       ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
       defer = (function(_this) {
         return function() {
-          var data, depth, expanders, extras, html;
+          var config, data, depth, expanders, extras, folderIcon, html, nodeIcon;
           html = [];
           data = _this.getValue(valueAccessor);
           extras = data._treeGrid;
+          config = bindingContext.widget.config;
+          console.log(extras.hasChilds);
+          nodeIcon = config.nodeIcon;
+          folderIcon = config.folderIcon;
+          if (folderIcon && extras.hasChilds) {
+            nodeIcon = folderIcon;
+          }
           depth = extras.depth;
           expanders = [];
           expanders.push("<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>");
@@ -2005,7 +2012,7 @@
           html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
           depth = extras.depth + 1;
           html.push("<i class='no-expander' style='margin-left:" + depth + "em;display:inline-block;'></i>");
-          html.push('<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>');
+          html.push("<img src='" + nodeIcon + "' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>");
           return element.innerHTML = html.join('') + element.innerHTML;
         };
       })(this);

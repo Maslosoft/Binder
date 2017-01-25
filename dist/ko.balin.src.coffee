@@ -1835,6 +1835,14 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 			html = []
 			data = @getValue(valueAccessor)
 			extras = data._treeGrid
+			config = bindingContext.widget.config
+			console.log extras.hasChilds
+			# TODO: Just accessing data.children causes havoc...
+			nodeIcon = config.nodeIcon
+			folderIcon = config.folderIcon
+			if folderIcon and extras.hasChilds
+#				console.log 'hmmm'
+				nodeIcon = folderIcon
 #			console.log "#{data.title}: #{extras.depth}", extras.hasChilds
 #			console.log data
 #			console.log ko.unwrap bindingContext.$index
@@ -1847,7 +1855,7 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 #			else
 			depth = extras.depth + 1
 			html.push "<i class='no-expander' style='margin-left:#{depth}em;display:inline-block;'></i>"
-			html.push '<img src="images/pdf.png" style="width: 1em;height:1em;margin-top: -.3em;display: inline-block;"/>'
+			html.push "<img src='#{nodeIcon}' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>"
 			element.innerHTML = html.join('') + element.innerHTML
 			
 #			console.log element
