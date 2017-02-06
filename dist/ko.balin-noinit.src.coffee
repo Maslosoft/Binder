@@ -1836,7 +1836,7 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 			data = @getValue(valueAccessor)
 			extras = data._treeGrid
 			config = bindingContext.widget.config
-			console.log extras.hasChilds
+			#console.log extras.hasChilds
 			# TODO: Just accessing data.children causes havoc...
 			nodeIcon = config.nodeIcon
 			folderIcon = config.folderIcon

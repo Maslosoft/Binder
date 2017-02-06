@@ -1999,7 +1999,6 @@
           data = _this.getValue(valueAccessor);
           extras = data._treeGrid;
           config = bindingContext.widget.config;
-          console.log(extras.hasChilds);
           nodeIcon = config.nodeIcon;
           folderIcon = config.folderIcon;
           if (folderIcon && extras.hasChilds) {
