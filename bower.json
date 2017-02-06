@@ -31,7 +31,8 @@
     "fancytree": "~2",
     "datejs_original": "*",
     "pickadate": "^3.5.6",
-    "bootstrap-datepicker": "^1.6.4"
+    "bootstrap-datepicker": "^1.6.4",
+    "awesome-rating": "^1.0.0"
   },
   "devDependencies": {
     "jquery-ui": "~1",
