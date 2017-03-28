@@ -70,9 +70,11 @@
 		datePicker: Maslosoft.Ko.Balin.DatePicker
 		datePickerPickaDate: Maslosoft.Ko.Balin.PickaDate
 		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
+		decimalFormatter: Maslosoft.Ko.Balin.DecimalFormatter
 		disabled: Maslosoft.Ko.Balin.Disabled
 		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
 		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
+		eval: Maslosoft.Ko.Balin.Eval
 		fancytree: Maslosoft.Ko.Balin.Fancytree
 		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
 		hidden: Maslosoft.Ko.Balin.Hidden

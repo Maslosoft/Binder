@@ -37,6 +37,10 @@ class @Maslosoft.Ko.BalinDev.Models.FileSizeFormatter extends @Maslosoft.Ko.Bali
 	_class: "Maslosoft.Ko.BalinDev.Models.FileSizeFormatter"
 	size: 0
 
+class @Maslosoft.Ko.BalinDev.Models.DecimalFormatter extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.DecimalFormatter"
+	value: 0
+
 class @Maslosoft.Ko.BalinDev.Models.Href extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Href"
 	filename: ''
