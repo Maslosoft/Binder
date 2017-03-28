@@ -8899,9 +8899,11 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
       datePicker: Maslosoft.Ko.Balin.DatePicker,
       datePickerPickaDate: Maslosoft.Ko.Balin.PickaDate,
       dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter,
+      decimalFormatter: Maslosoft.Ko.Balin.DecimalFormatter,
       disabled: Maslosoft.Ko.Balin.Disabled,
       enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter,
       enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
+      "eval": Maslosoft.Ko.Balin.Eval,
       fancytree: Maslosoft.Ko.Balin.Fancytree,
       fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
       hidden: Maslosoft.Ko.Balin.Hidden,
@@ -9801,6 +9803,77 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
   })(this.Maslosoft.Ko.Balin.MomentFormatter);
 
+  this.Maslosoft.Ko.Balin.DecimalFormatter = (function(_super) {
+    __extends(DecimalFormatter, _super);
+
+    function DecimalFormatter() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return DecimalFormatter.__super__.constructor.apply(this, arguments);
+    }
+
+    DecimalFormatter.prototype.precision = 2;
+
+    DecimalFormatter.prototype.decimalSeparator = ',';
+
+    DecimalFormatter.prototype.thousandSeparator = ' ';
+
+    DecimalFormatter.prototype.suffix = '';
+
+    DecimalFormatter.prototype.prefix = '';
+
+    DecimalFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {};
+
+    DecimalFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var bound, config, format, formatted, name, names, value, _i, _len;
+      value = this.getValue(valueAccessor) || 0;
+      value = parseFloat(value);
+      config = {};
+      names = ['precision', 'decimalSeparator', 'thousandSeparator', 'suffix', 'prefix'];
+      for (_i = 0, _len = names.length; _i < _len; _i++) {
+        name = names[_i];
+        config[name] = this[name];
+        bound = allBindingsAccessor.get(name);
+        if (typeof bound !== 'undefined') {
+          config[name] = this.getValue(bound);
+        }
+      }
+
+      /*
+      		 * Number.prototype.format(n, x, s, c)
+      		 * @see http://stackoverflow.com/a/14428340/5444623
+      		 * @param float   number: number to format
+      		 * @param integer n: length of decimal
+      		 * @param integer x: length of whole part
+      		 * @param mixed   s: sections delimiter
+      		 * @param mixed   c: decimal delimiter
+       */
+      format = function(number, n, x, s, c) {
+        var num, re;
+        if (n == null) {
+          n = 2;
+        }
+        if (x == null) {
+          x = 3;
+        }
+        if (s == null) {
+          s = ' ';
+        }
+        if (c == null) {
+          c = ',';
+        }
+        re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')';
+        num = number.toFixed(Math.max(0, ~~n));
+        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
+      };
+      formatted = format(value, config.precision, 3, config.thousandSeparator, config.decimalSeparator);
+      return element.innerHTML = config.prefix + formatted + config.suffix;
+    };
+
+    return DecimalFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.Disabled = (function(_super) {
     __extends(Disabled, _super);
 
@@ -9853,6 +9926,37 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     };
 
     return EnumFormatter;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.Eval = (function(_super) {
+    __extends(Eval, _super);
+
+    function Eval() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return Eval.__super__.constructor.apply(this, arguments);
+    }
+
+    Eval.prototype.init = function(element, valueAccessor) {
+      var allowBindings;
+      allowBindings = this.getValue(valueAccessor);
+      console.log(allowBindings);
+      return {
+        controlsDescendantBindings: !allowBindings
+      };
+    };
+
+    Eval.prototype.update = function(element, valueAccessor) {
+      var allowBindings;
+      allowBindings = this.getValue(valueAccessor);
+      console.log(allowBindings);
+      return {
+        controlsDescendantBindings: !allowBindings
+      };
+    };
+
+    return Eval;
 
   })(this.Maslosoft.Ko.Balin.Base);
 
