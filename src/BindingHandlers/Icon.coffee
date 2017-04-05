@@ -17,6 +17,10 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 			return
 		src = model[iconField]
 
+		isSvg = false
+		if src.match /\.(svg)$/
+			isSvg = true
+
 		nameSuffix = ''
 		if src.match /\.(jpg|jped|gif|png|svg)$/
 			matched = src.match /[^\/]+?\.(jpg|jped|gif|png|svg)$/
@@ -39,6 +43,10 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 			isImage = true
 		else
 			isImage = model.isImage
+
+		# This is to not add scaling params for svg's
+		if isSvg
+			isImage = false
 
 		# TODO This must be configurable with options
 		if isImage

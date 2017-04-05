@@ -10053,7 +10053,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     }
 
     Icon.prototype.update = function(element, valueAccessor, allBindings) {
-      var $element, date, defaultSize, fixedSize, iconField, isImage, matched, model, nameSuffix, regex, size, src;
+      var $element, date, defaultSize, fixedSize, iconField, isImage, isSvg, matched, model, nameSuffix, regex, size, src;
       $element = $(element);
       model = this.getValue(valueAccessor);
       iconField = allBindings.get("iconField") || 'icon';
@@ -10066,6 +10066,10 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         return;
       }
       src = model[iconField];
+      isSvg = false;
+      if (src.match(/\.(svg)$/)) {
+        isSvg = true;
+      }
       nameSuffix = '';
       if (src.match(/\.(jpg|jped|gif|png|svg)$/)) {
         matched = src.match(/[^\/]+?\.(jpg|jped|gif|png|svg)$/);
@@ -10083,6 +10087,9 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         isImage = true;
       } else {
         isImage = model.isImage;
+      }
+      if (isSvg) {
+        isImage = false;
       }
       if (isImage) {
         if (!src.match(new RegExp("/$"))) {

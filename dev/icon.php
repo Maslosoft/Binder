@@ -15,7 +15,9 @@ use Maslosoft\Ilmatar\Components\Controller;
 
 	Size: <input data-bind="textInput: app.model.Icon.iconSize" /><br />
 	<img data-bind="icon: app.model.Icon" />
-
+	<br />
+	Svg example (should not add scaling params):<br/>
+	<img data-bind="icon: app.model.svg" />
 	<br />
 	<div data-bind="text: app.model.Image.icon"></div>
 	<div data-bind="text: app.model.Image.isImage"></div>
@@ -34,6 +36,11 @@ use Maslosoft\Ilmatar\Components\Controller;
 		app.model.Icon = new Maslosoft.Ko.BalinDev.Models.Icon({
 			icon: 'images/maslosoft.png',
 			isImage: false,
+			iconSize: 64
+		});
+		app.model.svg = new Maslosoft.Ko.BalinDev.Models.Icon({
+			icon: 'images/balin.svg',
+			isImage: true,
 			iconSize: 64
 		});
 		ko.applyBindings({model: app.model});
