@@ -28,7 +28,8 @@ use Maslosoft\Ilmatar\Components\Controller;
 		app.model.Image = new Maslosoft.Ko.BalinDev.Models.Icon({
 			icon: 'images/maslosoft.png',
 			isImage: true,
-			iconSize: 64
+			iconSize: 64,
+			updateDate: 123
 		});
 		app.model.Icon = new Maslosoft.Ko.BalinDev.Models.Icon({
 			icon: 'images/maslosoft.png',

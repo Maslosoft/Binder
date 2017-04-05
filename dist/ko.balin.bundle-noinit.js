@@ -10053,7 +10053,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     }
 
     Icon.prototype.update = function(element, valueAccessor, allBindings) {
-      var $element, defaultSize, fixedSize, iconField, isImage, model, regex, size, src;
+      var $element, date, defaultSize, fixedSize, iconField, isImage, matched, model, nameSuffix, regex, size, src;
       $element = $(element);
       model = this.getValue(valueAccessor);
       iconField = allBindings.get("iconField") || 'icon';
@@ -10066,6 +10066,12 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
         return;
       }
       src = model[iconField];
+      nameSuffix = '';
+      if (src.match(/\.(jpg|jped|gif|png|svg)$/)) {
+        matched = src.match(/[^\/]+?\.(jpg|jped|gif|png|svg)$/);
+        nameSuffix = matched[0];
+        src = src.replace(/[^\/]+?\.(jpg|jped|gif|png|svg)$/, "");
+      }
       if (typeof model.iconSize === 'undefined') {
         defaultSize = 16;
       } else {
@@ -10088,7 +10094,18 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           src = src + ("w/" + size + "/h/" + size + "/p/0/");
         }
         if (model.updateDate) {
-          src = src + model.updateDate.sec;
+          date = null;
+          if (model.updateDate.sec) {
+            date = model.updateDate.sec;
+          } else {
+            date = model.updateDate;
+          }
+          if (typeof date === 'number') {
+            src = src + date;
+          }
+          if (typeof date === 'string') {
+            src = src + date;
+          }
         }
       } else {
         fixedSize = 16;
@@ -10102,6 +10119,11 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
           fixedSize = 512;
         }
         src = src.replace(regex, "/" + fixedSize + "/");
+      }
+      if (src.match(/\/$/)) {
+        src = src + nameSuffix;
+      } else {
+        src = src + '/' + nameSuffix;
       }
       if ($element.attr("src") !== src) {
         $element.attr("src", src);
