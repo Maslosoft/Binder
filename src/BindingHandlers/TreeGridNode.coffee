@@ -11,7 +11,13 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
-		
+		#
+		#
+		# FIXME Instead of defer, use observable for depth!
+		# There is still need to be some option to set it... Maybe add to tree item.
+		#
+		#
+		#
 		# Defer icon creation, as other bindings must be evaluated first,
 		# like html, text, etc.
 		defer = () =>

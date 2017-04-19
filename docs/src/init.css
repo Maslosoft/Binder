@@ -1,0 +1,14 @@
+.ui-selected, .selected{
+	background: darkorange;
+	color:white;
+}
+.active{
+	background: lightgreen;
+}
+.disabled{
+	color: silver;
+}
+.custom{
+	color: white;
+	background:black;
+}
