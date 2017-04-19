@@ -1,4 +1,12 @@
+<?php
+
+use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\BootstrapDatepickerPackage;
+?>
 <?php require __DIR__ . '/_header.php'; ?>
+
+<?php if (KO_BALIN_EMBEDDED): ?>
+	<?php new BootstrapDatepickerPackage ?>
+<?php endif; ?>
 <title>Date Picker</title>
 <h1>Date Picker</h1>
 <form class="form">
