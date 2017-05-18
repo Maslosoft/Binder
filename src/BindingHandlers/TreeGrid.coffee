@@ -61,6 +61,16 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 	init: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 
+		value = @getValue valueAccessor
+		activeClass = value.activeClass
+
+		table = jQuery(element)
+		table.on 'click', 'tr', (e) ->
+			# Remove from all instances of `tr` tu support multiple
+			# classes separated with space
+			table.find('tr').removeClass activeClass
+			jQuery(e.currentTarget).addClass activeClass
+
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 		return { controlsDescendantBindings: true }

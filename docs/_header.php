@@ -21,6 +21,21 @@ if (KO_BALIN_EMBEDDED):
 	return;
 endif;
 ?>
+<?php
+if(strpos($_SERVER['SCRIPT_NAME'], 'docs/index.php'))
+{
+	$baseURI = '.';
+}
+else
+{
+	$baseURI = '..';
+}
+$bower = "$baseURI/../bower_components";
+$src = "$baseURI/src";
+$dist = "$baseURI/../dist";
+$images = "$baseURI/images";
+$baseHref = "$baseURI/";
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -50,7 +65,7 @@ endif;
 				padding: 2px;
 			}
 			nav > ul{
-				background: url('./images/menuBg.jpg') no-repeat;
+				background: url('<?= $images; ?>/menuBg.jpg') no-repeat;
 				background-size: cover;
 			}
 			nav ul li{
@@ -99,17 +114,17 @@ endif;
 				background-size: contain;
 			}
 		</style>
-		<link rel="stylesheet" href="../bower_components/highlightjs/styles/monokai_sublime.css" />
-		<link rel="stylesheet" href="../bower_components/fancytree/dist/skin-win7/ui.fancytree.min.css" />
-		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
-		<link rel="stylesheet" href="../bower_components/maslosoft-playlist/dist/playlist.css"/>
-		<link rel="stylesheet" href="../bower_components/pickadate/lib/themes/classic.css"/>
-		<link rel="stylesheet" href="../bower_components/pickadate/lib/themes/classic.date.css"/>
-		<link rel="stylesheet" href="../bower_components/pickadate/lib/themes/classic.time.css"/>
-		<link rel="stylesheet" href="../bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"/>
-		<link rel="stylesheet" href="./src/init.css"/>
+		<link rel="stylesheet" href="<?= $bower; ?>/highlightjs/styles/monokai_sublime.css" />
+		<link rel="stylesheet" href="<?= $bower; ?>/fancytree/dist/skin-win7/ui.fancytree.min.css" />
+		<link rel="stylesheet" href="<?= $bower; ?>/bootstrap/dist/css/bootstrap.css"/>
+		<link rel="stylesheet" href="<?= $bower; ?>/maslosoft-playlist/dist/playlist.css"/>
+		<link rel="stylesheet" href="<?= $bower; ?>/pickadate/lib/themes/classic.css"/>
+		<link rel="stylesheet" href="<?= $bower; ?>/pickadate/lib/themes/classic.date.css"/>
+		<link rel="stylesheet" href="<?= $bower; ?>/pickadate/lib/themes/classic.time.css"/>
+		<link rel="stylesheet" href="<?= $bower; ?>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"/>
+		<link rel="stylesheet" href="<?= $src; ?>/init.css"/>
 		<?php if (isset($mocha)): ?>
-			<link rel="stylesheet" href="../bower_components/mocha/mocha.css"/>
+			<link rel="stylesheet" href="<?= $bower; ?>/mocha/mocha.css"/>
 			<style>
 				#mocha{
 					margin: 0;
@@ -123,38 +138,38 @@ endif;
 			</style>
 		<?php endif; ?>
 		<!--jQuery-->
-		<script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
-		<script type="text/javascript" src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/jquery-ui/jquery-ui.min.js"></script>
 
 		<!--ko-->
-		<script type="text/javascript" src="../bower_components/knockout/dist/knockout.debug.js"></script>
-		<script type="text/javascript" src="../bower_components/knockout-sortable/build/knockout-sortable.js"></script>
-		<script type="text/javascript" src="../bower_components/knockout-es5/dist/knockout-es5.js"></script>
-		<script type="text/javascript" src="../bower_components/knockout.punches/knockout.punches.min.js"></script>
-		<script type="text/javascript" src="../dist/ko.balin.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/knockout/dist/knockout.debug.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/knockout-sortable/build/knockout-sortable.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/knockout-es5/dist/knockout-es5.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/knockout.punches/knockout.punches.min.js"></script>
+		<script type="text/javascript" src="<?= $dist; ?>/ko.balin.js"></script>
 
 		<!--other libs-->
-		<script type="text/javascript" src="../bower_components/datejs_original/date.js"></script>
-		<script type="text/javascript" src="../bower_components/pickadate/lib/compressed/picker.js"></script>
-		<script type="text/javascript" src="../bower_components/pickadate/lib/compressed/picker.date.js"></script>
-		<script type="text/javascript" src="../bower_components/pickadate/lib/compressed/picker.time.js"></script>
-		<script type="text/javascript" src="../bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
-		<script type="text/javascript" src="../bower_components/moment/min/moment-with-locales.min.js"></script>
-		<script type="text/javascript" src="../bower_components/highlightjs/highlight.pack.js"></script>
-		<script type="text/javascript" src="../bower_components/fancytree/dist/jquery.fancytree-all.js"></script>
-		<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
-		<script type="text/javascript" src="../bower_components/maslosoft-playlist/dist/playlist.js"></script>
-		<script type="text/javascript" src="./src/Model.js"></script>
-		<script type="text/javascript" src="./src/RegExpValidator.js"></script>
-		<script type="text/javascript" src="./src/RequiredValidator.js"></script>
-		<script type="text/javascript" src="./src/BogusValidator.js"></script>
-		<script type="text/javascript" src="./src/EmailValidator.js"></script>
-		<script type="text/javascript" src="./src/TitleRenderer.js"></script>
-		<script type="text/javascript" src="./src/init.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/datejs_original/date.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/pickadate/lib/compressed/picker.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/pickadate/lib/compressed/picker.date.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/pickadate/lib/compressed/picker.time.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/moment/min/moment-with-locales.min.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/highlightjs/highlight.pack.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/fancytree/dist/jquery.fancytree-all.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/bootstrap/dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/maslosoft-playlist/dist/playlist.js"></script>
+		<script type="text/javascript" src="<?= $src; ?>/Model.js"></script>
+		<script type="text/javascript" src="<?= $src; ?>/RegExpValidator.js"></script>
+		<script type="text/javascript" src="<?= $src; ?>/RequiredValidator.js"></script>
+		<script type="text/javascript" src="<?= $src; ?>/BogusValidator.js"></script>
+		<script type="text/javascript" src="<?= $src; ?>/EmailValidator.js"></script>
+		<script type="text/javascript" src="<?= $src; ?>/TitleRenderer.js"></script>
+		<script type="text/javascript" src="<?= $src; ?>/init.js"></script>
 
 		<?php if (isset($mocha)): ?>
-			<script type="text/javascript" src="../bower_components/mocha/mocha.js"></script>
-			<script type="text/javascript" src="../bower_components/chai/chai.js"></script>
+			<script type="text/javascript" src="<?= $bower; ?>/mocha/mocha.js"></script>
+			<script type="text/javascript" src="<?= $bower; ?>/chai/chai.js"></script>
 		<?php endif; ?>
 
 
@@ -176,11 +191,16 @@ endif;
 			{
 				continue;
 			}
+			
 			if ($file->getFilename() === 'index.php')
 			{
 				continue;
 			}
-			if ($file->getExtension() != 'php')
+			if($file->isDot())
+			{
+				continue;
+			}
+			if (!$file->isDir())
 			{
 				continue;
 			}
@@ -190,11 +210,11 @@ endif;
 			}
 			if (strstr($file->getFilename(), '-'))
 			{
-				$combined[$file->getFilename()] = substr($file->getFilename(), 0, -4);
+				$combined[$file->getFilename() . '/'] = $file->getFilename();
 			}
 			else
 			{
-				$simple[$file->getFilename()] = substr($file->getFilename(), 0, -4);
+				$simple[$file->getFilename() . '/'] = $file->getFilename();
 			}
 		}
 		foreach (new DirectoryIterator(__DIR__ . '/../test') as $file)
@@ -219,14 +239,14 @@ endif;
 				<?php endif; ?>
 				<ul>
 					<li class="link">
-						<a href="./index.php">Index</a>
+						<a href="<?= $baseHref ; ?>">Index</a>
 					</li>
 					<li class="link">
 						|
 					</li>
 					<?php foreach ($simple as $file => $name): ?>
 						<li class="link">
-							<a href="./<?= $file; ?>"><?= ucfirst($name); ?></a>
+							<a href="<?= $baseHref . $file; ?>"><?= ucfirst($name); ?></a>
 						</li>
 					<?php endforeach; ?>
 					<li class="link">

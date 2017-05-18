@@ -10542,7 +10542,14 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
     };
 
     TreeGrid.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var widget;
+      var activeClass, table, value, widget;
+      value = this.getValue(valueAccessor);
+      activeClass = value.activeClass;
+      table = jQuery(element);
+      table.on('click', 'tr', function(e) {
+        table.find('tr').removeClass(activeClass);
+        return jQuery(e.currentTarget).addClass(activeClass);
+      });
       widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
       ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
       return {

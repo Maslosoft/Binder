@@ -34,7 +34,7 @@
 				<th>Debug</th>
 			</tr>
 		</thead>
-		<tbody data-bind="treegrid: {data: balin.model.Tree, childrenField: 'children', nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', autoExpand: true, dnd: true}">
+		<tbody data-bind="treegrid: {data: balin.model.Tree, childrenField: 'children', nodeIcon: '../images/pdf.png', folderIcon: '../images/zip.png', autoExpand: true, dnd: true, activeClass: 'active success'}">
 			<tr>
 				<td><input type="checkbox" /></td>
 				<td>

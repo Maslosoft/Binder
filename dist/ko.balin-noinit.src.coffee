@@ -1900,6 +1900,16 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 	init: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 
+		value = @getValue valueAccessor
+		activeClass = value.activeClass
+
+		table = jQuery(element)
+		table.on 'click', 'tr', (e) ->
+			# Remove from all instances of `tr` tu support multiple
+			# classes separated with space
+			table.find('tr').removeClass activeClass
+			jQuery(e.currentTarget).addClass activeClass
+
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 		return { controlsDescendantBindings: true }
@@ -1923,7 +1933,13 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
-		
+		#
+		#
+		# FIXME Instead of defer, use observable for depth!
+		# There is still need to be some option to set it... Maybe add to tree item.
+		#
+		#
+		#
 		# Defer icon creation, as other bindings must be evaluated first,
 		# like html, text, etc.
 		defer = () =>
