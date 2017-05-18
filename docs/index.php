@@ -5,8 +5,8 @@
 $textLines = [
 	'These are demos for various binding handlers.<br />',
 	'This text for example is editable, and is automatically updated in javascript view model.<br />',
-	'Hit ctrl + one of <b>b</b>, <i>i</i>, <u>u</u> for <b>bold</b>, <i>italic</i>, <u>underline</u>, or try your other known formatting shortcuts, try drag and drop, paste.<br />',
-	'You can access this text via JavaScript:<br />',
+	'Hit ctrl + <b>b</b>, <i>i</i>, <u>u</u> for <b>bold</b>, <i>italic</i>, <u>underline</u>, or try your other known formatting shortcuts, try drag and drop, paste.<br />',
+	'You can read or modify this text via JavaScript:<br />',
 	'<ol>',
 	'<li>Open a console</li>',
 	'<li>Type `balin.model.intro.text` and press enter. Then change something and try again.</li>',
