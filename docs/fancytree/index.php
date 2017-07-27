@@ -11,26 +11,38 @@
 	See also <a href="../fancytree-dnd/">drag'n'drop example</a> or even more advanced widget of
 	<a href="../treegrid/">Tree Grid</a>.
 </p>
-<!-- /trim -->
 <div>
 	<a href="#" data-bind="click: addNode">Add new node programatically</a>
 </div>
 <div>
 	<a href="#" data-bind="click: addSubNode">Add new sub-node programatically</a>
 </div>
+<!-- /trim -->
 <div data-bind="fancytree: balin.model.Tree">
 </div>
-
-
-
+<!-- trim -->
 <div data-bind="foreach: balin.model.Tree.children">
 	<div data-bind="htmlValue: title"></div>
 </div>
 <hr />
-<div data-bind="fancytree: {data: balin.model.Tree, autoExpand: true, options: {checkbox: true}}">
+<!-- /trim -->
+<div data-bind="
+	fancytree: {
+		data: balin.model.Tree, 
+		autoExpand: true, 
+		options: {
+			checkbox: true
+		}}">
 </div>
+<!-- trim -->
 <hr />
-<div data-bind="fancytree: {data: balin.model.Tree2, options: {checkbox: true}}">
+<!-- /trim -->
+<div data-bind="
+	fancytree: {
+		data: balin.model.Tree2, 
+		options: {
+			checkbox: true
+		}}">
 </div>
 <script>
 	window.onload = (function () {
