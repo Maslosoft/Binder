@@ -13,8 +13,8 @@ $text = str_replace('{', '{<!---->', $text);
 $text = str_replace('}', '<!---->}', $text);
 
 ?>
-<h4><a href="#" onclick="javascript:jQuery('pre').slideToggle();">Relevant code used to create above result:</a></h4>
-<pre class="html"><?= $text ?></pre>
+<h4><a href="#" onclick="jQuery('#relevant-code-block').slideToggle();return false;">Relevant code used to create above result:</a></h4>
+<pre class="html" id="relevant-code-block"><?= $text ?></pre>
 <?php if (KO_BALIN_EMBEDDED): ?>
 	</div>
 	</div>
