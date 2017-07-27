@@ -415,8 +415,8 @@ void function(global, undefined_, undefined){
 }((0, eval)('this'));
 
 /*!
- * Knockout JavaScript library v3.4.0
- * (c) Steven Sanderson - http://knockoutjs.com/
+ * Knockout JavaScript library v3.4.2
+ * (c) The Knockout.js team - http://knockoutjs.com/
  * License: MIT (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -461,7 +461,7 @@ ko.exportSymbol = function(koPath, object) {
 ko.exportProperty = function(owner, publicName, object) {
     owner[publicName] = object;
 };
-ko.version = "3.4.0";
+ko.version = "3.4.2";
 
 ko.exportSymbol('version', ko.version);
 // For any options that may affect various areas of Knockout and aren't directly associated with data binding.
@@ -1605,11 +1605,20 @@ ko.extenders = {
         if (!target._deferUpdates) {
             target._deferUpdates = true;
             target.limit(function (callback) {
-                var handle;
+                var handle,
+                    ignoreUpdates = false;
                 return function () {
-                    ko.tasks.cancel(handle);
-                    handle = ko.tasks.schedule(callback);
-                    target['notifySubscribers'](undefined, 'dirty');
+                    if (!ignoreUpdates) {
+                        ko.tasks.cancel(handle);
+                        handle = ko.tasks.schedule(callback);
+
+                        try {
+                            ignoreUpdates = true;
+                            target['notifySubscribers'](undefined, 'dirty');
+                        } finally {
+                            ignoreUpdates = false;
+                        }
+                    }
                 };
             });
         }
@@ -1695,7 +1704,7 @@ function limitNotifySubscribers(value, event) {
 
 var ko_subscribable_fn = {
     init: function(instance) {
-        instance._subscriptions = {};
+        instance._subscriptions = { "change": [] };
         instance._versionNumber = 1;
     },
 
@@ -1727,9 +1736,10 @@ var ko_subscribable_fn = {
             this.updateVersion();
         }
         if (this.hasSubscriptionsForEvent(event)) {
+            var subs = event === defaultEvent && this._changeSubscriptions || this._subscriptions[event].slice(0);
             try {
                 ko.dependencyDetection.begin(); // Begin suppressing dependency detection (by setting the top frame to undefined)
-                for (var a = this._subscriptions[event].slice(0), i = 0, subscription; subscription = a[i]; ++i) {
+                for (var i = 0, subscription; subscription = subs[i]; ++i) {
                     // In case a subscription was disposed during the arrayForEach cycle, check
                     // for isDisposed on each subscription before invoking its callback
                     if (!subscription.isDisposed)
@@ -1755,7 +1765,7 @@ var ko_subscribable_fn = {
 
     limit: function(limitFunction) {
         var self = this, selfIsObservable = ko.isObservable(self),
-            ignoreBeforeChange, previousValue, pendingValue, beforeChange = 'beforeChange';
+            ignoreBeforeChange, notifyNextChange, previousValue, pendingValue, beforeChange = 'beforeChange';
 
         if (!self._origNotifySubscribers) {
             self._origNotifySubscribers = self["notifySubscribers"];
@@ -1768,15 +1778,19 @@ var ko_subscribable_fn = {
             // If an observable provided a reference to itself, access it to get the latest value.
             // This allows computed observables to delay calculating their value until needed.
             if (selfIsObservable && pendingValue === self) {
-                pendingValue = self();
+                pendingValue = self._evalIfChanged ? self._evalIfChanged() : self();
             }
-            ignoreBeforeChange = false;
-            if (self.isDifferent(previousValue, pendingValue)) {
+            var shouldNotify = notifyNextChange || self.isDifferent(previousValue, pendingValue);
+
+            notifyNextChange = ignoreBeforeChange = false;
+
+            if (shouldNotify) {
                 self._origNotifySubscribers(previousValue = pendingValue);
             }
         });
 
         self._limitChange = function(value) {
+            self._changeSubscriptions = self._subscriptions[defaultEvent].slice(0);
             self._notificationIsPending = ignoreBeforeChange = true;
             pendingValue = value;
             finish();
@@ -1785,6 +1799,11 @@ var ko_subscribable_fn = {
             if (!ignoreBeforeChange) {
                 previousValue = value;
                 self._origNotifySubscribers(value, beforeChange);
+            }
+        };
+        self._notifyNextChangeIfValueIsDifferent = function() {
+            if (self.isDifferent(previousValue, self.peek(true /*evaluate*/))) {
+                notifyNextChange = true;
             }
         };
     },
@@ -2123,6 +2142,7 @@ ko.extenders['trackArrayChanges'] = function(target, options) {
         cachedDiff = null,
         arrayChangeSubscription,
         pendingNotifications = 0,
+        underlyingNotifySubscribersFunction,
         underlyingBeforeSubscriptionAddFunction = target.beforeSubscriptionAdd,
         underlyingAfterSubscriptionRemoveFunction = target.afterSubscriptionRemove;
 
@@ -2139,6 +2159,10 @@ ko.extenders['trackArrayChanges'] = function(target, options) {
         if (underlyingAfterSubscriptionRemoveFunction)
             underlyingAfterSubscriptionRemoveFunction.call(target, event);
         if (event === arrayChangeEventName && !target.hasSubscriptionsForEvent(arrayChangeEventName)) {
+            if (underlyingNotifySubscribersFunction) {
+                target['notifySubscribers'] = underlyingNotifySubscribersFunction;
+                underlyingNotifySubscribersFunction = undefined;
+            }
             arrayChangeSubscription.dispose();
             trackingChanges = false;
         }
@@ -2153,7 +2177,7 @@ ko.extenders['trackArrayChanges'] = function(target, options) {
         trackingChanges = true;
 
         // Intercept "notifySubscribers" to track how many times it was called.
-        var underlyingNotifySubscribersFunction = target['notifySubscribers'];
+        underlyingNotifySubscribersFunction = target['notifySubscribers'];
         target['notifySubscribers'] = function(valueToNotify, event) {
             if (!event || event === defaultEvent) {
                 ++pendingNotifications;
@@ -2271,6 +2295,7 @@ ko.computed = ko.dependentObservable = function (evaluatorFunctionOrOptions, eva
     var state = {
         latestValue: undefined,
         isStale: true,
+        isDirty: true,
         isBeingEvaluated: false,
         suppressDisposalUntilDisposeWhenReturnsFalse: false,
         isDisposed: false,
@@ -2298,7 +2323,7 @@ ko.computed = ko.dependentObservable = function (evaluatorFunctionOrOptions, eva
         } else {
             // Reading the value
             ko.dependencyDetection.registerDependency(computedObservable);
-            if (state.isStale || (state.isSleeping && computedObservable.haveDependenciesChanged())) {
+            if (state.isDirty || (state.isSleeping && computedObservable.haveDependenciesChanged())) {
                 computedObservable.evaluateImmediate();
             }
             return state.latestValue;
@@ -2388,6 +2413,10 @@ function computedBeginDependencyDetectionCallback(subscribable, id) {
             // Brand new subscription - add it
             computedObservable.addDependencyTracking(id, subscribable, state.isSleeping ? { _target: subscribable } : computedObservable.subscribeToDependency(subscribable));
         }
+        // If the observable we've accessed has a pending notification, ensure we get notified of the actual final value (bypass equality checks)
+        if (subscribable._notificationIsPending) {
+            subscribable._notifyNextChangeIfValueIsDifferent();
+        }
     }
 }
 
@@ -2410,7 +2439,7 @@ var computedFn = {
         for (id in dependencyTracking) {
             if (dependencyTracking.hasOwnProperty(id)) {
                 dependency = dependencyTracking[id];
-                if (dependency._target.hasChanged(dependency._version)) {
+                if ((this._evalDelayed && dependency._target._notificationIsPending) || dependency._target.hasChanged(dependency._version)) {
                     return true;
                 }
             }
@@ -2419,16 +2448,19 @@ var computedFn = {
     markDirty: function () {
         // Process "dirty" events if we can handle delayed notifications
         if (this._evalDelayed && !this[computedState].isBeingEvaluated) {
-            this._evalDelayed();
+            this._evalDelayed(false /*isChange*/);
         }
     },
     isActive: function () {
-        return this[computedState].isStale || this[computedState].dependenciesCount > 0;
+        var state = this[computedState];
+        return state.isDirty || state.dependenciesCount > 0;
     },
     respondToChange: function () {
         // Ignore "change" events if we've already scheduled a delayed notification
         if (!this._notificationIsPending) {
             this.evaluatePossiblyAsync();
+        } else if (this[computedState].isDirty) {
+            this[computedState].isStale = true;
         }
     },
     subscribeToDependency: function (target) {
@@ -2455,7 +2487,7 @@ var computedFn = {
                 computedObservable.evaluateImmediate(true /*notifyChange*/);
             }, throttleEvaluationTimeout);
         } else if (computedObservable._evalDelayed) {
-            computedObservable._evalDelayed();
+            computedObservable._evalDelayed(true /*isChange*/);
         } else {
             computedObservable.evaluateImmediate(true /*notifyChange*/);
         }
@@ -2463,7 +2495,8 @@ var computedFn = {
     evaluateImmediate: function (notifyChange) {
         var computedObservable = this,
             state = computedObservable[computedState],
-            disposeWhen = state.disposeWhen;
+            disposeWhen = state.disposeWhen,
+            changed = false;
 
         if (state.isBeingEvaluated) {
             // If the evaluation of a ko.computed causes side effects, it's possible that it will trigger its own re-evaluation.
@@ -2491,7 +2524,7 @@ var computedFn = {
 
         state.isBeingEvaluated = true;
         try {
-            this.evaluateImmediate_CallReadWithDependencyDetection(notifyChange);
+            changed = this.evaluateImmediate_CallReadWithDependencyDetection(notifyChange);
         } finally {
             state.isBeingEvaluated = false;
         }
@@ -2499,6 +2532,8 @@ var computedFn = {
         if (!state.dependenciesCount) {
             computedObservable.dispose();
         }
+
+        return changed;
     },
     evaluateImmediate_CallReadWithDependencyDetection: function (notifyChange) {
         // This function is really just part of the evaluateImmediate logic. You would never call it from anywhere else.
@@ -2506,7 +2541,8 @@ var computedFn = {
         // which contributes to saving about 40% off the CPU overhead of computed evaluation (on V8 at least).
 
         var computedObservable = this,
-            state = computedObservable[computedState];
+            state = computedObservable[computedState],
+            changed = false;
 
         // Initially, we assume that none of the subscriptions are still being used (i.e., all are candidates for disposal).
         // Then, during evaluation, we cross off any that are in fact still being used.
@@ -2535,17 +2571,22 @@ var computedFn = {
             }
 
             state.latestValue = newValue;
+            if (DEBUG) computedObservable._latestValue = newValue;
 
             if (state.isSleeping) {
                 computedObservable.updateVersion();
             } else if (notifyChange) {
                 computedObservable["notifySubscribers"](state.latestValue);
             }
+
+            changed = true;
         }
 
         if (isInitial) {
             computedObservable["notifySubscribers"](state.latestValue, "awake");
         }
+
+        return changed;
     },
     evaluateImmediate_CallReadThenEndDependencyDetection: function (state, dependencyDetectionContext) {
         // This function is really part of the evaluateImmediate_CallReadWithDependencyDetection logic.
@@ -2564,13 +2605,14 @@ var computedFn = {
                 ko.utils.objectForEach(dependencyDetectionContext.disposalCandidates, computedDisposeDependencyCallback);
             }
 
-            state.isStale = false;
+            state.isStale = state.isDirty = false;
         }
     },
-    peek: function () {
-        // Peek won't re-evaluate, except while the computed is sleeping or to get the initial value when "deferEvaluation" is set.
+    peek: function (evaluate) {
+        // By default, peek won't re-evaluate, except while the computed is sleeping or to get the initial value when "deferEvaluation" is set.
+        // Pass in true to evaluate if needed.
         var state = this[computedState];
-        if ((state.isStale && !state.dependenciesCount) || (state.isSleeping && this.haveDependenciesChanged())) {
+        if ((state.isDirty && (evaluate || !state.dependenciesCount)) || (state.isSleeping && this.haveDependenciesChanged())) {
             this.evaluateImmediate();
         }
         return state.latestValue;
@@ -2578,15 +2620,27 @@ var computedFn = {
     limit: function (limitFunction) {
         // Override the limit function with one that delays evaluation as well
         ko.subscribable['fn'].limit.call(this, limitFunction);
-        this._evalDelayed = function () {
+        this._evalIfChanged = function () {
+            if (this[computedState].isStale) {
+                this.evaluateImmediate();
+            } else {
+                this[computedState].isDirty = false;
+            }
+            return this[computedState].latestValue;
+        };
+        this._evalDelayed = function (isChange) {
             this._limitBeforeChange(this[computedState].latestValue);
 
-            this[computedState].isStale = true; // Mark as dirty
+            // Mark as dirty
+            this[computedState].isDirty = true;
+            if (isChange) {
+                this[computedState].isStale = true;
+            }
 
-            // Pass the observable to the "limit" code, which will access it when
+            // Pass the observable to the "limit" code, which will evaluate it when
             // it's time to do the notification.
             this._limitChange(this);
-        }
+        };
     },
     dispose: function () {
         var state = this[computedState];
@@ -2603,6 +2657,7 @@ var computedFn = {
         state.dependenciesCount = 0;
         state.isDisposed = true;
         state.isStale = false;
+        state.isDirty = false;
         state.isSleeping = false;
         state.disposeWhenNodeIsRemoved = null;
     }
@@ -2618,8 +2673,9 @@ var pureComputedOverrides = {
             if (state.isStale || computedObservable.haveDependenciesChanged()) {
                 state.dependencyTracking = null;
                 state.dependenciesCount = 0;
-                state.isStale = true;
-                computedObservable.evaluateImmediate();
+                if (computedObservable.evaluateImmediate()) {
+                    computedObservable.updateVersion();
+                }
             } else {
                 // First put the dependencies in order
                 var dependeciesOrder = [];
@@ -3376,7 +3432,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
 
     // The ko.bindingContext constructor is only called directly to create the root context. For child
     // contexts, use bindingContext.createChildContext or bindingContext.extend.
-    ko.bindingContext = function(dataItemOrAccessor, parentContext, dataItemAlias, extendCallback) {
+    ko.bindingContext = function(dataItemOrAccessor, parentContext, dataItemAlias, extendCallback, options) {
 
         // The binding context object includes static properties for the current, parent, and root view models.
         // If a view model is actually stored in an observable, the corresponding binding context object, and
@@ -3399,10 +3455,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
                 ko.utils.extend(self, parentContext);
 
                 // Because the above copy overwrites our own properties, we need to reset them.
-                // During the first execution, "subscribable" isn't set, so don't bother doing the update then.
-                if (subscribable) {
-                    self._subscribable = subscribable;
-                }
+                self._subscribable = subscribable;
             } else {
                 self['$parents'] = [];
                 self['$root'] = dataItem;
@@ -3432,35 +3485,43 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         var self = this,
             isFunc = typeof(dataItemOrAccessor) == "function" && !ko.isObservable(dataItemOrAccessor),
             nodes,
+            subscribable;
+
+        if (options && options['exportDependencies']) {
+            // The "exportDependencies" option means that the calling code will track any dependencies and re-create
+            // the binding context when they change.
+            updateContext();
+        } else {
             subscribable = ko.dependentObservable(updateContext, null, { disposeWhen: disposeWhen, disposeWhenNodeIsRemoved: true });
 
-        // At this point, the binding context has been initialized, and the "subscribable" computed observable is
-        // subscribed to any observables that were accessed in the process. If there is nothing to track, the
-        // computed will be inactive, and we can safely throw it away. If it's active, the computed is stored in
-        // the context object.
-        if (subscribable.isActive()) {
-            self._subscribable = subscribable;
+            // At this point, the binding context has been initialized, and the "subscribable" computed observable is
+            // subscribed to any observables that were accessed in the process. If there is nothing to track, the
+            // computed will be inactive, and we can safely throw it away. If it's active, the computed is stored in
+            // the context object.
+            if (subscribable.isActive()) {
+                self._subscribable = subscribable;
 
-            // Always notify because even if the model ($data) hasn't changed, other context properties might have changed
-            subscribable['equalityComparer'] = null;
+                // Always notify because even if the model ($data) hasn't changed, other context properties might have changed
+                subscribable['equalityComparer'] = null;
 
-            // We need to be able to dispose of this computed observable when it's no longer needed. This would be
-            // easy if we had a single node to watch, but binding contexts can be used by many different nodes, and
-            // we cannot assume that those nodes have any relation to each other. So instead we track any node that
-            // the context is attached to, and dispose the computed when all of those nodes have been cleaned.
+                // We need to be able to dispose of this computed observable when it's no longer needed. This would be
+                // easy if we had a single node to watch, but binding contexts can be used by many different nodes, and
+                // we cannot assume that those nodes have any relation to each other. So instead we track any node that
+                // the context is attached to, and dispose the computed when all of those nodes have been cleaned.
 
-            // Add properties to *subscribable* instead of *self* because any properties added to *self* may be overwritten on updates
-            nodes = [];
-            subscribable._addNode = function(node) {
-                nodes.push(node);
-                ko.utils.domNodeDisposal.addDisposeCallback(node, function(node) {
-                    ko.utils.arrayRemoveItem(nodes, node);
-                    if (!nodes.length) {
-                        subscribable.dispose();
-                        self._subscribable = subscribable = undefined;
-                    }
-                });
-            };
+                // Add properties to *subscribable* instead of *self* because any properties added to *self* may be overwritten on updates
+                nodes = [];
+                subscribable._addNode = function(node) {
+                    nodes.push(node);
+                    ko.utils.domNodeDisposal.addDisposeCallback(node, function(node) {
+                        ko.utils.arrayRemoveItem(nodes, node);
+                        if (!nodes.length) {
+                            subscribable.dispose();
+                            self._subscribable = subscribable = undefined;
+                        }
+                    });
+                };
+            }
         }
     }
 
@@ -3469,7 +3530,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
     // But this does not mean that the $data value of the child context will also get updated. If the child
     // view model also depends on the parent view model, you must provide a function that returns the correct
     // view model on each update.
-    ko.bindingContext.prototype['createChildContext'] = function (dataItemOrAccessor, dataItemAlias, extendCallback) {
+    ko.bindingContext.prototype['createChildContext'] = function (dataItemOrAccessor, dataItemAlias, extendCallback, options) {
         return new ko.bindingContext(dataItemOrAccessor, this, dataItemAlias, function(self, parentContext) {
             // Extend the context hierarchy by setting the appropriate pointers
             self['$parentContext'] = parentContext;
@@ -3478,7 +3539,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
             self['$parents'].unshift(self['$parent']);
             if (extendCallback)
                 extendCallback(self);
-        });
+        }, options);
     };
 
     // Extend the binding context with new custom properties. This doesn't change the context hierarchy.
@@ -3493,6 +3554,10 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
             self['$rawData'] = parentContext['$rawData'];
             ko.utils.extend(self, typeof(properties) == "function" ? properties() : properties);
         });
+    };
+
+    ko.bindingContext.prototype.createStaticChildContext = function (dataItemOrAccessor, dataItemAlias) {
+        return this['createChildContext'](dataItemOrAccessor, dataItemAlias, null, { "exportDependencies": true });
     };
 
     // Returns the valueAccesor function for a binding value
@@ -4739,7 +4804,8 @@ function makeWithIfBinding(bindingKey, isWith, isNot, makeContextCallback) {
             var didDisplayOnLastUpdate,
                 savedNodes;
             ko.computed(function() {
-                var dataValue = ko.utils.unwrapObservable(valueAccessor()),
+                var rawValue = valueAccessor(),
+                    dataValue = ko.utils.unwrapObservable(rawValue),
                     shouldDisplay = !isNot !== !dataValue, // equivalent to isNot ? !dataValue : !!dataValue
                     isFirstRender = !savedNodes,
                     needsRefresh = isFirstRender || isWith || (shouldDisplay !== didDisplayOnLastUpdate);
@@ -4754,7 +4820,7 @@ function makeWithIfBinding(bindingKey, isWith, isNot, makeContextCallback) {
                         if (!isFirstRender) {
                             ko.virtualElements.setDomNodeChildren(element, ko.utils.cloneNodes(savedNodes));
                         }
-                        ko.applyBindingsToDescendants(makeContextCallback ? makeContextCallback(bindingContext, dataValue) : bindingContext, element);
+                        ko.applyBindingsToDescendants(makeContextCallback ? makeContextCallback(bindingContext, rawValue) : bindingContext, element);
                     } else {
                         ko.virtualElements.emptyNode(element);
                     }
@@ -4774,7 +4840,7 @@ makeWithIfBinding('if');
 makeWithIfBinding('ifnot', false /* isWith */, true /* isNot */);
 makeWithIfBinding('with', true /* isWith */, false /* isNot */,
     function(bindingContext, dataValue) {
-        return bindingContext['createChildContext'](dataValue);
+        return bindingContext.createStaticChildContext(dataValue);
     }
 );
 var captionPlaceholder = {};
@@ -5735,7 +5801,7 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
                     // Ensure we've got a proper binding context to work with
                     var bindingContext = (dataOrBindingContext && (dataOrBindingContext instanceof ko.bindingContext))
                         ? dataOrBindingContext
-                        : new ko.bindingContext(ko.utils.unwrapObservable(dataOrBindingContext));
+                        : new ko.bindingContext(dataOrBindingContext, null, null, null, { "exportDependencies": true });
 
                     var templateName = resolveTemplateName(template, bindingContext['$data'], bindingContext),
                         renderedNodesArray = executeTemplate(targetNodeOrNodeArray, renderMode, templateName, bindingContext, options);
@@ -5836,7 +5902,6 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
         },
         'update': function (element, valueAccessor, allBindings, viewModel, bindingContext) {
             var value = valueAccessor(),
-                dataValue,
                 options = ko.utils.unwrapObservable(value),
                 shouldDisplay = true,
                 templateComputed = null,
@@ -5853,8 +5918,6 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
                     shouldDisplay = ko.utils.unwrapObservable(options['if']);
                 if (shouldDisplay && 'ifnot' in options)
                     shouldDisplay = !ko.utils.unwrapObservable(options['ifnot']);
-
-                dataValue = ko.utils.unwrapObservable(options['data']);
             }
 
             if ('foreach' in options) {
@@ -5866,7 +5929,7 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
             } else {
                 // Render once for this single data point (or use the viewModel if no data was provided)
                 var innerBindingContext = ('data' in options) ?
-                    bindingContext['createChildContext'](dataValue, options['as']) :  // Given an explitit 'data' value, we create a child binding context for it
+                    bindingContext.createStaticChildContext(options['data'], options['as']) :  // Given an explitit 'data' value, we create a child binding context for it
                     bindingContext;                                                        // Given no explicit 'data' value, we retain the same binding context
                 templateComputed = ko.renderTemplate(templateName || element, innerBindingContext, options, element);
             }
@@ -6286,6 +6349,276 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 }());
 })();
 
+/*! WeakMap shim
+ * (The MIT License)
+ *
+ * Copyright (c) 2012 Brandon Benvie <http://bbenvie.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the 'Software'), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included with all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// Original WeakMap implementation by Gozala @ https://gist.github.com/1269991
+// Updated and bugfixed by Raynos @ https://gist.github.com/1638059
+// Expanded by Benvie @ https://github.com/Benvie/harmony-collections
+
+// This is the version used by knockout-es5. Modified by Steve Sanderson as follows:
+// [1] Deleted weakmap.min.js (it's not useful as it would be out of sync with weakmap.js now I'm editing it)
+// [2] Since UglifyJS strips inline function names (and you can't disable that without disabling name mangling
+//     entirely), insert code that re-adds function names
+
+void function(global, undefined_, undefined){
+  var getProps = Object.getOwnPropertyNames,
+      cachedWindowNames = typeof window === 'object' ? Object.getOwnPropertyNames(window) : [],
+      defProp  = Object.defineProperty,
+      toSource = Function.prototype.toString,
+      create   = Object.create,
+      hasOwn   = Object.prototype.hasOwnProperty,
+      funcName = /^\n?function\s?(\w*)?_?\(/;
+
+
+  function define(object, key, value){
+    if (typeof key === 'function') {
+      value = key;
+      key = nameOf(value).replace(/_$/, '');
+    }
+    return defProp(object, key, { configurable: true, writable: true, value: value });
+  }
+
+  function nameOf(func){
+    return typeof func !== 'function'
+          ? '' : '_name' in func
+          ? func._name : 'name' in func
+          ? func.name : toSource.call(func).match(funcName)[1];
+  }
+
+  function namedFunction(name, func) {
+    // Undo the name-stripping that UglifyJS does
+    func._name = name;
+    return func;
+  }
+
+  // ############
+  // ### Data ###
+  // ############
+
+  var Data = (function(){
+    var dataDesc = { value: { writable: true, value: undefined } },
+        uids     = create(null),
+
+        createUID = function(){
+          var key = Math.random().toString(36).slice(2);
+          return key in uids ? createUID() : uids[key] = key;
+        },
+
+        globalID = createUID(),
+
+        storage = function(obj){
+          if (hasOwn.call(obj, globalID))
+            return obj[globalID];
+
+          if (!Object.isExtensible(obj))
+            throw new TypeError("Object must be extensible");
+
+          var store = create(null);
+          defProp(obj, globalID, { value: store });
+          return store;
+        };
+
+    // common per-object storage area made visible by patching getOwnPropertyNames'
+    define(Object, namedFunction('getOwnPropertyNames', function getOwnPropertyNames(obj){
+      // gh-43
+      var coercedObj = Object(obj), props;
+      // Fixes for debuggers:
+      // 1) Some objects lack .toString(), calling it on them make Chrome
+      // debugger fail when inspecting variables.
+      // 2) Window.prototype methods and properties are private in IE11 and
+      // throw 'Invalid calling object'.
+      if (coercedObj !== Window.prototype && 'toString' in coercedObj
+        && coercedObj.toString() === '[object Window]')
+      {
+          try {
+              props = getProps(obj);
+          } catch (e) {
+              props = cachedWindowNames;
+          }
+      } else {
+          props = getProps(obj);
+      }
+      if (hasOwn.call(obj, globalID))
+        props.splice(props.indexOf(globalID), 1);
+      return props;
+    }));
+
+    function Data(){
+      var puid = createUID(),
+          secret = {};
+
+      this.unlock = function(obj){
+        var store = storage(obj);
+        if (hasOwn.call(store, puid))
+          return store[puid](secret);
+
+        var data = create(null, dataDesc);
+        defProp(store, puid, {
+          value: function(key){ if (key === secret) return data; }
+        });
+        return data;
+      }
+    }
+
+    define(Data.prototype, namedFunction('get', function get(o){ return this.unlock(o).value }));
+    define(Data.prototype, namedFunction('set', function set(o, v){ this.unlock(o).value = v }));
+
+    return Data;
+  }());
+
+
+  var WM = (function(data){
+    var validate = function(key){
+      if (key == null || typeof key !== 'object' && typeof key !== 'function')
+        throw new TypeError("Invalid WeakMap key");
+    }
+
+    var wrap = function(collection, value){
+      var store = data.unlock(collection);
+      if (store.value)
+        throw new TypeError("Object is already a WeakMap");
+      store.value = value;
+    }
+
+    var unwrap = function(collection){
+      var storage = data.unlock(collection).value;
+      if (!storage)
+        throw new TypeError("WeakMap is not generic");
+      return storage;
+    }
+
+    var initialize = function(weakmap, iterable){
+      if (iterable !== null && typeof iterable === 'object' && typeof iterable.forEach === 'function') {
+        iterable.forEach(function(item, i){
+          if (item instanceof Array && item.length === 2)
+            set.call(weakmap, iterable[i][0], iterable[i][1]);
+        });
+      }
+    }
+
+
+    function WeakMap(iterable){
+      if (this === global || this == null || this === WeakMap.prototype)
+        return new WeakMap(iterable);
+
+      wrap(this, new Data);
+      initialize(this, iterable);
+    }
+
+    function get(key){
+      validate(key);
+      var value = unwrap(this).get(key);
+      return value === undefined_ ? undefined : value;
+    }
+
+    function set(key, value){
+      validate(key);
+      // store a token for explicit undefined so that "has" works correctly
+      unwrap(this).set(key, value === undefined ? undefined_ : value);
+    }
+
+    function has(key){
+      validate(key);
+      return unwrap(this).get(key) !== undefined;
+    }
+
+    function delete_(key){
+      validate(key);
+      var data = unwrap(this),
+          had = data.get(key) !== undefined;
+      data.set(key, undefined);
+      return had;
+    }
+
+    function toString(){
+      unwrap(this);
+      return '[object WeakMap]';
+    }
+
+    // Undo the function-name stripping that UglifyJS does
+    get._name = 'get';
+    set._name = 'set';
+    has._name = 'has';
+    toString._name = 'toString';
+
+    var src = (''+Object).split('Object');
+    var stringifier = namedFunction('toString', function toString(){
+      return src[0] + nameOf(this) + src[1];
+    });
+
+    define(stringifier, stringifier);
+
+    var prep = { __proto__: [] } instanceof Array
+      ? function(f){ f.__proto__ = stringifier }
+      : function(f){ define(f, stringifier) };
+
+    prep(WeakMap);
+
+    [toString, get, set, has, delete_].forEach(function(method){
+      define(WeakMap.prototype, method);
+      prep(method);
+    });
+
+    return WeakMap;
+  }(new Data));
+
+  var defaultCreator = Object.create
+    ? function(){ return Object.create(null) }
+    : function(){ return {} };
+
+  function createStorage(creator){
+    var weakmap = new WM;
+    creator || (creator = defaultCreator);
+
+    function storage(object, value){
+      if (value || arguments.length === 2) {
+        weakmap.set(object, value);
+      } else {
+        value = weakmap.get(object);
+        if (value === undefined) {
+          value = creator(object);
+          weakmap.set(object, value);
+        }
+      }
+      return value;
+    }
+
+    return storage;
+  }
+
+
+  if (typeof module !== 'undefined') {
+    module.exports = WM;
+  } else if (typeof exports !== 'undefined') {
+    exports.WeakMap = WM;
+  } else if (!('WeakMap' in global)) {
+    global.WeakMap = WM;
+  }
+
+  WM.createStorage = createStorage;
+  if (global.WeakMap)
+    global.WeakMap.createStorage = createStorage;
+}(function(){ return this }());
+
 /*!
  * Knockout ES5 plugin - https://github.com/SteveSanderson/knockout-es5
  * Copyright (c) Steve Sanderson
@@ -6296,6 +6629,10 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
   'use strict';
 
   var ko;
+  
+  // A function that returns a new ES6-compatible WeakMap instance (using ES5 shim if needed).
+  // Instantiated by prepareExports, accounting for which module loader is being used.
+  var weakMapFactory;
 
   // Model tracking
   // --------------
@@ -6391,6 +6728,80 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
       get: observable,
       set: ko.isWriteableObservable(observable) ? observable : undefined
     };
+
+    // Custom Binding Provider
+    // -------------------
+    //
+    // To ensure that when using this plugin any custom bindings are provided with the observable
+    // rather than only the value of the property, a custom binding provider supplies bindings with
+    // actual observable values. The built in bindings use Knockout's internal `_ko_property_writers`
+    // feature to be able to write back to the property, but custom bindings may not be able to use
+    // that, especially if they use an options object.
+
+    function CustomBindingProvider(providerToWrap) {
+       this.bindingCache = {};
+       this._providerToWrap = providerToWrap;
+       this._nativeBindingProvider = new ko.bindingProvider();
+    }
+
+    CustomBindingProvider.prototype.nodeHasBindings = function() {
+       return this._providerToWrap.nodeHasBindings.apply(this._providerToWrap, arguments);
+    };
+
+    CustomBindingProvider.prototype.getBindingAccessors = function(node, bindingContext) {
+       var bindingsString = this._nativeBindingProvider.getBindingsString(node, bindingContext);
+       return bindingsString ? this.parseBindingsString(bindingsString, bindingContext, node, {'valueAccessors':true}) : null;
+    };
+
+    CustomBindingProvider.prototype.parseBindingsString = function(bindingsString, bindingContext, node, options) {
+       try {
+          var bindingFunction = createBindingsStringEvaluatorViaCache(bindingsString, this.bindingCache, options);
+          return bindingFunction(bindingContext, node);
+       } catch (ex) {
+          ex.message = 'Unable to parse bindings.\nBindings value: ' + bindingsString + '\nMessage: ' + ex.message;
+          throw ex;
+       }
+    };
+
+    function preProcessBindings(bindingsStringOrKeyValueArray, bindingOptions) {
+       bindingOptions = bindingOptions || {};
+
+       function processKeyValue(key, val) {
+         // Handle arrays if value starts with bracket
+         if(val.match(/^\[/)){
+           // This is required or will throw errors
+           resultStrings.push(key + ':ko.observableArray(' + val + ')');
+         }else{
+           resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
+         }
+
+       }
+
+       var resultStrings = [],
+          keyValueArray = typeof bindingsStringOrKeyValueArray === 'string' ?
+            ko.expressionRewriting.parseObjectLiteral(bindingsStringOrKeyValueArray) : bindingsStringOrKeyValueArray;
+
+       keyValueArray.forEach(function(keyValue) {
+          processKeyValue(keyValue.key || keyValue.unknown, keyValue.value);
+       });
+       return ko.expressionRewriting.preProcessBindings(resultStrings.join(','), bindingOptions);
+    }
+
+    function createBindingsStringEvaluatorViaCache(bindingsString, cache, options) {
+       var cacheKey = bindingsString + (options && options.valueAccessors || '');
+       return cache[cacheKey] || (cache[cacheKey] = createBindingsStringEvaluator(bindingsString, options));
+    }
+
+    function createBindingsStringEvaluator(bindingsString, options) {
+       var rewrittenBindings = preProcessBindings(bindingsString, options),
+          functionBody = 'with($context){with($data||{}){return{' + rewrittenBindings + '}}}';
+        /* jshint -W054 */
+       return new Function('$context', '$element', functionBody);
+    }
+
+    ko.es5BindingProvider = CustomBindingProvider;
+
+    ko.bindingProvider.instance = new CustomBindingProvider(ko.bindingProvider.instance);
   }
 
   function createLazyPropertyDescriptor(originalValue, prop, map) {
@@ -6673,6 +7084,11 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
     if (allObservablesForObject && propertyName in allObservablesForObject) {
       return allObservablesForObject[propertyName]();
     }
+    
+    var observable = obj[propertyName];
+    if (ko.isObservable(observable)) {
+        return observable;
+    }
 
     return null;
   }
@@ -6707,10 +7123,6 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
   // (currently that's just the WeakMap shim), and then finally attaches itself to whichever
   // instance of Knockout.js it can find.
 
-  // A function that returns a new ES6-compatible WeakMap instance (using ES5 shim if needed).
-  // Instantiated by prepareExports, accounting for which module loader is being used.
-  var weakMapFactory;
-
   // Extends a Knockout instance with Knockout-ES5 functionality
   function attachToKo(ko) {
     ko.track = track;
@@ -6725,80 +7137,6 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
       notifyWhenPresentOrFutureArrayValuesMutate: notifyWhenPresentOrFutureArrayValuesMutate,
       isTracked: isTracked
     };
-
-    // Custom Binding Provider
-    // -------------------
-    //
-    // To ensure that when using this plugin any custom bindings are provided with the observable
-    // rather than only the value of the property, a custom binding provider supplies bindings with
-    // actual observable values. The built in bindings use Knockout's internal `_ko_property_writers`
-    // feature to be able to write back to the property, but custom bindings may not be able to use
-    // that, especially if they use an options object.
-
-    function CustomBindingProvider(providerToWrap) {
-       this.bindingCache = {};
-       this._providerToWrap = providerToWrap;
-       this._nativeBindingProvider = new ko.bindingProvider();
-    }
-
-    CustomBindingProvider.prototype.nodeHasBindings = function() {
-       return this._providerToWrap.nodeHasBindings.apply(this._providerToWrap, arguments);
-    };
-
-    CustomBindingProvider.prototype.getBindingAccessors = function(node, bindingContext) {
-       var bindingsString = this._nativeBindingProvider.getBindingsString(node, bindingContext);
-       return bindingsString ? this.parseBindingsString(bindingsString, bindingContext, node, {'valueAccessors':true}) : null;
-    };
-
-    CustomBindingProvider.prototype.parseBindingsString = function(bindingsString, bindingContext, node, options) {
-       try {
-          var bindingFunction = createBindingsStringEvaluatorViaCache(bindingsString, this.bindingCache, options);
-          return bindingFunction(bindingContext, node);
-       } catch (ex) {
-          ex.message = 'Unable to parse bindings.\nBindings value: ' + bindingsString + '\nMessage: ' + ex.message;
-          throw ex;
-       }
-    };
-
-    function preProcessBindings(bindingsStringOrKeyValueArray, bindingOptions) {
-       bindingOptions = bindingOptions || {};
-
-       function processKeyValue(key, val) {
-         // Handle arrays if value starts with bracket
-         if(val.match(/^\[/)){
-           // This is required or will throw errors
-           resultStrings.push(key + ':ko.observableArray(' + val + ')');
-         }else{
-           resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
-         }
-
-       }
-
-       var resultStrings = [],
-          keyValueArray = typeof bindingsStringOrKeyValueArray === 'string' ?
-            ko.expressionRewriting.parseObjectLiteral(bindingsStringOrKeyValueArray) : bindingsStringOrKeyValueArray;
-
-       keyValueArray.forEach(function(keyValue) {
-          processKeyValue(keyValue.key || keyValue.unknown, keyValue.value);
-       });
-       return ko.expressionRewriting.preProcessBindings(resultStrings.join(','), bindingOptions);
-    }
-
-    function createBindingsStringEvaluatorViaCache(bindingsString, cache, options) {
-       var cacheKey = bindingsString + (options && options.valueAccessors || '');
-       return cache[cacheKey] || (cache[cacheKey] = createBindingsStringEvaluator(bindingsString, options));
-    }
-
-    function createBindingsStringEvaluator(bindingsString, options) {
-       var rewrittenBindings = preProcessBindings(bindingsString, options),
-          functionBody = 'with($context){with($data||{}){return{' + rewrittenBindings + '}}}';
-        /* jshint -W054 */
-       return new Function('$context', '$element', functionBody);
-    }
-
-    ko.es5BindingProvider = CustomBindingProvider;
-
-    ko.bindingProvider.instance = new CustomBindingProvider(ko.bindingProvider.instance);
   }
 
   // Determines which module loading scenario we're in, grabs dependencies, and attaches to KO
@@ -6806,7 +7144,7 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
     if (typeof exports === 'object' && typeof module === 'object') {
       // Node.js case - load KO and WeakMap modules synchronously
       ko = require('knockout');
-      var WM = require('../lib/weakmap');
+      var WM = global.WeakMap || require('../lib/weakmap');
       attachToKo(ko);
       weakMapFactory = function() { return new WM(); };
       module.exports = ko;
@@ -6827,7 +7165,10 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 
   prepareExports();
 
-})(this);
+})(typeof window !== 'undefined' ? window : 
+   typeof global !== 'undefined' ? global :
+   this);
+
 // knockout-sortable 0.12.0 | (c) 2016 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {
     if (typeof define === "function" && define.amd) {

@@ -28,8 +28,8 @@ Fancy tree drag'n'drop example. <br />
 		folderIcon: 'images/zip.png', 
 		nodeRenderer: Maslosoft.Ko.BalinDev.TitleRenderer, 
 		on:{
-			dblclick:balin.log, 
-			drop: Maslosoft.Ko.BalinDev.FancyTreeDropHandler
+			'dblclick':balin.log, 
+			'drop': Maslosoft.Ko.BalinDev.FancyTreeDropHandler
 		}, 
 		dnd: true, 
 		autoExpand: true
@@ -45,7 +45,7 @@ Fancy tree drag'n'drop example. <br />
 <script>
 	window.onload = (function () {
 		// Create tree structure
-		data = {
+		var data = {
 			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 			title: "Some container",
 			children: [
