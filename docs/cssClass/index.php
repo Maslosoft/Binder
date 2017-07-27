@@ -35,7 +35,7 @@
 <h5>Using with punches</h5>
 <p>
 	There is also alternative syntax available, using knockout punches:
-	<pre class="html"><?= htmlspecialchars('<span selected="{{balin.model.selected.isSelected}}">With punches</span>')?></pre>
+	<pre class="html"><?= escapeko('<span selected="{{balin.model.selected.isSelected}}">With punches</span>')?></pre>
 	Notice that there are no data bind attribute, but attribute named same as binding name,
 	with value wrapped with double curly braces.
 </p>

@@ -6,6 +6,13 @@ use Maslosoft\Ilmatar\Components\Helpers\JsFile;
 define('KO_BALIN_EMBEDDED', defined('YII_DEBUG'));
 define('KO_BALIN_STANDALONE', !KO_BALIN_EMBEDDED);
 
+function escapeko($html){
+	$html = htmlspecialchars($html);
+	$html = str_replace('{', '&lbrace;<!---->', $html);
+	$html = str_replace('}', '&rbrace;<!---->', $html);
+	return $html;
+}
+
 if (KO_BALIN_EMBEDDED):
 	new JsFile(__DIR__ . "/src/Model.js");
 	new JsFile(__DIR__ . "/src/RegExpValidator.js");
