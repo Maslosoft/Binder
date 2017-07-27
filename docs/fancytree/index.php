@@ -1,6 +1,17 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Fancytree</title>
 <h1>Fancytree</h1>
+<p>
+	Fancy tree binding handler is a wrapper for <a href="http://wwwendt.de/tech/fancytree/demo/index.html" target="_blank">excellent JavaScript tree library</a>. This binding handler ensures
+	that tree is in-sync with underlying data. It requires tree to have <code>children</code>
+	property containg sub nodes. Example tree structure is included in this example.
+</p>
+<p>
+	See also <a href="../fancytree-dnd/">drag'n'drop example</a> or even more advanced widget of
+	<a href="../treegrid/">Tree Grid</a>.
+</p>
+<!-- /trim -->
 <div>
 	<a href="#" data-bind="click: addNode">Add new node programatically</a>
 </div>

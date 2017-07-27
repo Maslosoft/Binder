@@ -2,7 +2,7 @@
 $text = ob_get_flush();
 
 // Remove trims
-$text = preg_replace("/<!--\s*trim\s*-->.+?<!--\s*\/trim\s*-->/s", '', $text);
+$text = preg_replace("/<!--\s*trim\s*-->.+?<!--\s*\/trim\s*-->\n{0,1}/s", '', $text);
 $text = trim($text);
 
 // Escape HTML so it will be displayed

@@ -1,7 +1,10 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>ACL</title>
 <h1>ACL</h1>
+<!-- /trim -->
 <div>
+<!-- trim -->
 	<p>
 		This binding will check if users is allowed action,
 		and hide element if not. Before use, action need to be defined
@@ -18,16 +21,19 @@
 		for real application.
 	</p>
 	<br />
+<!-- /trim -->
 	<div data-bind="acl: {'action.one': balin.model.AclUser}">Should be visible</div>
 	<div>Below div should <b>not</b> be visible if not allowed</div>
 	<div data-bind="acl: {'action.two': balin.model.AclUser}">Should be hidden</div>
-	<button class="btn btn-success" id="allow">Allow</button>
-	<button class="btn btn-danger" id="deny">Deny</button>
+	<button class="btn btn-success" id="allow">Allow Access</button>
+	<button class="btn btn-danger" id="deny">Deny Access</button>
 </div>
 
 <script>
 	window.onload = (function () {
 		var actionAllowed = '';
+
+		// This is example function to check access
 		balin.myAcl = function (acl) {
 			console.log("Checking acl: ", acl);
 			if (acl['action.one']) {
@@ -40,12 +46,16 @@
 			}
 			return false;
 		};
+
+		// Click handlers for buttons
 		jQuery('#allow').click(function () {
 			balin.model.AclUser.isGuest = false;
 		});
 		jQuery('#deny').click(function () {
 			balin.model.AclUser.isGuest = true;
 		});
+
+		// Apply bindings
 		Maslosoft.Ko.Balin.Acl.allow = balin.myAcl
 		balin.model.AclUser = new Maslosoft.Ko.BalinDev.Models.AclUser();
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));

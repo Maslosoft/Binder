@@ -1,9 +1,20 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Sortable HTML Values</title>
 <h1>Sortable HTML Values</h1>
+<p>
+	This demo combines ability to track nested structures of objects
+	together with <code>contenteditable</code> editable elements support.
+</p>
+<p>
+	Try to rearrange nodes by handle or to change names directly editing - or
+	via text input. Notice how second non-sortable list stays in sync
+	with editable one.
+</p>
 <div>
 	<a href="#" data-bind="click: addNode">Add new node programatically</a>
 </div>
+<!-- /trim -->
 <div data-bind="with: balin.model.SortableHtmlValues">
 	<div>Sortable: <input data-bind="textInput: title"/> <span data-bind="htmlValue: title"></span></div>
 	<div id="dev" data-bind="sortable: {data: items, connectClass: 'Names', options: {distance: 10}}">
@@ -62,8 +73,6 @@
 		};
 		balin.model.SortableHtmlValues = new Maslosoft.Ko.BalinDev.Models.SortableHtmlValues(data);
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
-		// See http://stackoverflow.com/questions/3390786/jquery-ui-sortable-selectable
-//				jQuery('#dev').selectable();
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

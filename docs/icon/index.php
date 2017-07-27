@@ -10,10 +10,16 @@ use Maslosoft\Ilmatar\Components\Controller;
 ?>
 
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Icon</title>
 <h1>Icon</h1>
+<p>
+	Icon binding handler is meant to display icon, depending on it's size.
+	This is specifically usefull with <a href="/ilmatar-widgets/">Ilmatar Widgets</a> project
+	to display optimally sized and up-to-date icons.
+</p>
+<!-- /trim -->
 <div>
-	Note: src atrtibute will be broken in this example<br />
 	<img data-bind="icon: balin.model.Image" /><br />
 
 	Size: <input data-bind="textInput: balin.model.Icon.iconSize" /><br />
@@ -22,6 +28,9 @@ use Maslosoft\Ilmatar\Components\Controller;
 	Svg example (should not add scaling params):<br/>
 	<img data-bind="icon: balin.model.svg" />
 	<br />
+	<p>
+		Parameters:
+	</p>
 	<div data-bind="text: balin.model.Image.icon"></div>
 	<div data-bind="text: balin.model.Image.isImage"></div>
 	<div data-bind="text: balin.model.Image.iconSize"></div>

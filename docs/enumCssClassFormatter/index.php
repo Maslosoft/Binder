@@ -1,8 +1,18 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Enum CSS Formatter</title>
 <h1>Enum CSS Formatter</h1>
+<p>
+	This binding handler is specifically created to apply CSS classes depending on
+	enumerable bindable value. Use case include but are not limited to
+	displaying different colors for different status of data.
+</p>
+<!-- /trim -->
 <div>
-	Status: <input data-bind="textInput: balin.model.Enum.status"/> (0, 1, 2, 3) <br />
+	<label>
+	Raw Status Value <input data-bind="textInput: balin.model.Enum.status"/> (0, 1, 2, 3)
+	</label>
+	<br />
 	<label>
 		<input type="radio" data-bind="checked: balin.model.Enum.status, checkedValue: 0" value="0" />
 		Status Zero

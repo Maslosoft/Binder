@@ -7,8 +7,25 @@ use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\BootstrapDatepickerPackage;
 <?php if (KO_BALIN_EMBEDDED): ?>
 	<?php new BootstrapDatepickerPackage ?>
 <?php endif; ?>
+<!-- trim -->
 <title>Date Picker</title>
 <h1>Date Picker</h1>
+<p>
+	Bootstrap datepicker based. Picker is meant to be used additionally, leaving input
+	for typing with keyboard.
+</p>
+<p>
+	This component is enchanced with Date JS, so it has some ninja
+	features. Try to type "now", "sunday", "next monday" into date inputs and then press <kbd>Enter</kbd>.
+	Other options include, but are not limited to:
+	<ul>
+		<li>+1 day</li>
+		<li>+5 weeks</li>
+		<li>-2 years</li>
+		<li>+2 y</li>
+	</ul>
+</p>
+<!-- /trim -->
 <form class="form">
 	<div class="form-group">
 		<div class="input-group col-md-4 col-sm-6">

@@ -1,6 +1,31 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Tree Grid</title>
 <h1>Tree Grid</h1>
+<p>
+	Tree Grid is a complex component, featuring HTMl table as it's base.
+	But it uses one of table columns to display nested structure along with
+	folding controls. The result is a tree like display, but with
+	optional properties. Tree Grid also supports Drag and Drop of nodes
+	to arrange them as You like.
+</p>
+<p>
+	Setting up Tree Grid is no different than configuring table to be
+	fed with <code>foreach</code> binding. Each column can have it's
+	own rendering logic. The difference is that <code>treegrid</code>
+	binding must be used instead of said <code>foreach</code>.
+</p>
+<p>
+	It is recommended to place <code>treegrid</code> binding on <code>tbody</code>
+	tag, so that table headers can be added too. To display nested structer
+	with folding controls, add span with <code>treegridnode</code> binding to
+	choosen column. It does not have to be first one, any will do.
+</p>
+<p>
+	This design approach gives great freedom of arranging Tree Grid. It looks
+	like it require a lot of HTML markup, but it is old plain table with
+	extra <code>data-bind</code> attrbiutes.
+</p>
 <div>
 	<a href="#" data-bind="click: addNode">Add new node programatically</a>
 </div>
@@ -16,12 +41,9 @@
 <div>
 	<a href="#" data-bind="click: remSubSubNode">Remove all sub-sub-nodes programatically</a>
 </div>
-<!--
-<div data-bind="foreach: balin.model.Tree.children">
-	<div data-bind="htmlValue: title"></div>
-	<div data-bind="htmlValue: description"></div>
-</div> -->
+
 <hr />
+<!-- /trim -->
 <div>
 	<table id="gridView" style="font-size: 18px;" class="table table-condensed">
 		<thead>
@@ -34,7 +56,17 @@
 				<th>Debug</th>
 			</tr>
 		</thead>
-		<tbody data-bind="treegrid: {data: balin.model.Tree, childrenField: 'children', nodeIcon: '../images/pdf.png', folderIcon: '../images/zip.png', autoExpand: true, dnd: true, activeClass: 'active success'}">
+		<tbody 
+		data-bind="
+			treegrid: {
+				data: balin.model.Tree, 
+				childrenField: 'children',
+				nodeIcon: '../images/pdf.png',
+				folderIcon: '../images/zip.png',
+				autoExpand: true,
+				dnd: true,
+				activeClass: 'active success'
+				}">
 			<tr>
 				<td><input type="checkbox" /></td>
 				<td>

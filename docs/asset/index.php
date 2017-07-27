@@ -1,6 +1,8 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Asset</title>
 <h1>Asset</h1>
+<!-- /trim -->
 <div>
 	NOTE: Image resizing is simulated here, src points to static image<br />
 	<img data-bind="asset: balin.model.Asset, w:32, h:32, p:true"/>

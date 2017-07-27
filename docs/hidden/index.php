@@ -1,6 +1,12 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Hidden</title>
 <h1>Hidden</h1>
+<p>
+	Hidden binding handler is opposite to built into knockout JS <code>visible</code> binding.
+	This will hide element when value evaluates to true.
+</p>
+<!-- /trim -->
 <div>
 	<label>
 		<input type="checkbox" data-bind="checked: balin.model.Hidden.show, checkedValue: true, uncheckValue: false" value="0" />

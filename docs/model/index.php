@@ -1,15 +1,15 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Data Model Attribute</title>
 <h1>Data Model Attribute</h1>
 <h3>
 	Model data binding<br />
 	<small>Will apply data-model attribute with optionally selected fields</small>
 </h3>
-<p>
-<div data-bind="model: balin.model.txt1">This div should have data-model with all fields</div>
-<div data-bind="model: balin.model.txt2, fields: ['text']">This div should have data-model with text field</div>
-<div data-bind="model: balin.model.txt2, fields: ['text', 'bogus']">This div should have data-model with text field and ignore `bogus` field (should console warn)</div>
-</p>
+<!-- /trim -->
+<div data-bind="model: balin.model.txt1">Should have data-model with all fields</div>
+<div data-bind="model: balin.model.txt2, fields: ['text']">Should have data-model with text field</div>
+<div data-bind="model: balin.model.txt2, fields: ['text', 'bogus']">Should have data-model with text field and ignore `bogus` field (should console warn)</div>
 
 <script>
 	window.onload = (function () {

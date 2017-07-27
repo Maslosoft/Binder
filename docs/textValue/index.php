@@ -1,10 +1,24 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Text Value</title>
 <h1>Text Value</h1>
-<b class="warn">WARNING: This binding <i>require</i> parent context, like here with `with` binding</b>
+<p>
+	Text Value binding handler is similar to <a href="../htmlValue/">HTML Value</a> binding,
+	but it will not allow HTML. All tags will be converted to it's entities values.
+</p>
+<p>
+	In other words, placing <code>textValue</code> binding handler on any element will
+	make it behave like a text input.
+</p>
+<p class="alert alert-danger">
+	WARNING: This binding <i>require</i> parent context, like here with <code>with</code> binding
+</p>
+
+<!-- /trim -->
 <div data-bind="with: balin.model.TextValue">
 	Standard input field: <input data-bind="textInput: text" style="width:50%;"/> <br />
-	This should be editable and ignore any html from above input: <span data-bind="textValue: text"></span> <br />
+	Below block should be editable and ignore any html from above input: 
+	<div data-bind="textValue: text" class="well"></div>
 </div>
 
 <script>

@@ -1,27 +1,35 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Nested Tracking</title>
 <h1>Nested Tracking</h1>
-<style>
-	input, textarea, .result p{
-		width: 300px;
-		display:inline-block;
-	}
-</style>
+<p>
+	This demo shows ability to track arbitrarily nested models.
+	In this case, both name and descriprion properties of models
+	contain values in many languages - stored as a sub objects.
+	These properties are tracked for changes just like direct
+	object property.
+</p>
+<p>
+	Objects in this example are even more complex, containing
+	also arrays of objects.
+</p>
+<!-- /trim -->
 <div data-bind="with: balin.model.Nested">
 	<div>
-		<input type="text" data-bind="textInput: rawI18N.name.en" />
-		<input type="text" data-bind="textInput: rawI18N.name.pl" />
+		<input type="text" data-bind="textInput: rawI18N.name.en" class="col-xs-6" />
+		<input type="text" data-bind="textInput: rawI18N.name.pl" class="col-xs-6" />
 	</div>
 	<div>
-		<textarea data-bind="textInput: rawI18N.description.en"></textarea>
-		<textarea data-bind="textInput: rawI18N.description.pl"></textarea>
+		<textarea data-bind="textInput: rawI18N.description.en" class="col-xs-6"></textarea>
+		<textarea data-bind="textInput: rawI18N.description.pl" class="col-xs-6"></textarea>
 	</div>
-	<div class="result">
-		<p data-bind="html: '<b>' + rawI18N.name.en + '</b>: ' + rawI18N.description.en"></p>
-		<p data-bind="html: '<b>' + rawI18N.name.pl + '</b>: ' + rawI18N.description.pl"></p>
-	</div>
+	<div class="clearfix"></div>
+	<hr />
+	<div data-bind="html: '<b>' + rawI18N.name.en + '</b>: ' + rawI18N.description.en" class="col-xs-6" ></div>
+	<div data-bind="html: '<b>' + rawI18N.name.pl + '</b>: ' + rawI18N.description.pl" class="col-xs-6" ></div>
 </div>
-
+<div class="clearfix"></div>
+<hr />
 <script type="text/javascript">
 	window.onload = (function () {
 

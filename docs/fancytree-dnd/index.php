@@ -1,7 +1,7 @@
 <?php require __DIR__ . '/../_header.php'; ?>
 <!-- trim -->
 <title>Fancytree - dnd</title>
-<h1>Fancytree - dnd</h1>
+<h1>Fancytree - Drag and Drop</h1>
 Fancy tree drag'n'drop example. <br />
 <p>
 	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee

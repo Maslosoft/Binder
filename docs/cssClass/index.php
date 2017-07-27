@@ -1,4 +1,5 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>CSS Class</title>
 <h1>CSS Class</h1>
 <p>
@@ -13,19 +14,22 @@
 	class is substituted with <code>btn-danger</code>, by following code:<br />
 	<code>ko.bindingHandlers.selected.options.className = "btn-danger"</code>
 </p>
+<!-- /trim -->
 <?php foreach (['selected', 'active', 'disabled', 'custom'] as $type): ?>
-	<p>
-		Div below should be <span data-bind="<?= $type; ?>: true"><?= $type; ?></span> if `isSelected` evaluates to true <br />
-		<label class="pad-sides" data-bind="<?= $type; ?>: balin.model.<?= $type; ?>.isSelected">
-			<input type="checkbox" data-bind="checked: balin.model.<?= $type; ?>.isSelected" />
-			<?= $type; ?>
-		</label>
-	<div  class="pad-sides" data-bind="<?= $type; ?>: balin.model.<?= $type; ?>.isSelected">
-		Test Area (<span data-bind="text: balin.model.<?= $type; ?>.isSelected"></span>)
-	</div>
-	</p>
+<hr />
+Should be <span data-bind="<?= $type; ?>: true" class="badge"><?= $type; ?></span> if `isSelected` evaluates to true <br />
+<label class="btn pad-sides" 
+	data-bind="<?= $type; ?>: balin.model.<?= $type; ?>.isSelected">
+	<input type="checkbox" 
+		data-bind="checked: balin.model.<?= $type; ?>.isSelected" />
+	<?= $type . PHP_EOL; ?>
+</label>
+<span  class="btn pad-sides" 
+	data-bind="<?= $type; ?>: balin.model.<?= $type; ?>.isSelected">
+	Test Area (<span data-bind="text: balin.model.<?= $type; ?>.isSelected"></span>)
+</span>
 <?php endforeach; ?>
-
+<hr />
 <script>
 	window.onload = (function () {
 		// Define custom binding

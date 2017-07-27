@@ -1,8 +1,15 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>HTML Tree</title>
 <h1>HTML Tree</h1>
-HTML tree example. <br />
-It builds nested HTML list out of tree structure.
+<p>
+	HTML Tree Binding handler builds nested HTML list out of tree structure.
+</p>
+<p>
+	Tree structure should contain nested nodes in property <code>children</code>,
+	example structure is included in this example.
+</p>
+<!-- /trim -->
 <ul data-bind="htmlTree: balin.model.Tree">
 </ul>
 

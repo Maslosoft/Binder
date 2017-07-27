@@ -1,6 +1,13 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Enum Formatter</title>
 <h1>Enum Formatter</h1>
+<p>
+	Enum formatter binding handler is specifically created to display human readable text depending on
+	enumerable bindable value. Use case include but are not limited to
+	displaying different status texts for different data.
+</p>
+<!-- /trim -->
 <div>
 	Status: <input data-bind="textInput: balin.model.Enum.status"/> (0, 1, 2, 3) <br />
 	<label>
