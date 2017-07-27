@@ -24,7 +24,7 @@
 <p>
 	This design approach gives great freedom of arranging Tree Grid. It looks
 	like it require a lot of HTML markup, but it is old plain table with
-	extra <code>data-bind</code> attrbiutes.
+	extra <code>data-bind</code> attributes.
 </p>
 <div>
 	<a href="#" data-bind="click: addNode">Add new node programatically</a>
@@ -73,7 +73,7 @@
 					<span data-bind="treegridnode: $data"></span>
 					<span data-bind="html: title"></span>
 				</td>
-				<td data-bind="html: description"></td>
+				<td data-bind="html: description, tooltip: title"></td>
 				<td>Static value</td>
 				<td><a href="#" class="remove">Remove</a></td>
 				<td class="debug"></td>

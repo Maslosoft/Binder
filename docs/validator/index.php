@@ -1,15 +1,59 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Validator</title>
 <h1>Validator</h1>
 <h3>
 	Bootstrap styled<br />
 	<small>Validates if value will change</small>
 </h3>
-<p>
+<p class="alert alert-warning">
 	<b>Note:</b> Validators used in this example are for demo purpose,
 	not recommended for production environment
 </p>
+<p>
+	Validator binding handler is designed to handle validation to specialized
+	classes, let alone providing only means to perform validation. To
+	use <code>validator</code> annotation, it is required to prepare
+	validation class first.
+</p>
+<p>
+	It is designed to require minimal effort to add new validation classes. Theese
+	should extend from <code>Maslosoft.Ko.Balin.BaseValidator</code>, and only required
+	method to implement is <code>isValid(value)</code>, which should return <code>true</code>
+	on valid value and <code>false</code> on bogus value.
+</p>
+<p>
+	Additionally any property set on <code>validator</code> binding will be passed to
+	instance of validation class. This allows configuring those classes. Validator
+	binding accepts single class configuration or array of configuration to allow
+	multiple validation rules combined.
+</p>
+<p>
+	When class is not found, error message will be shown in console, however validator
+	binding handler will do it's best to continue to work on remaining validator.
+</p>
+<p>
+	Most simple example of regular expression validation class, written in coffescript:
+</p>
+<pre class="coffescript">
+class @Maslosoft.Ko.BalinDev.RegExpValidator extends @Maslosoft.Ko.Balin.BaseValidator
 
+	pattern: ''
+
+	flags: ''
+
+	allowEmpty: true
+
+	isValid: (value) ->
+		if @allowEmpty and not value
+			return true
+		regexp = new RegExp @pattern, @flags
+		valid = regexp.test(value)
+		if not valid
+			@addError "Should match #{@pattern}"
+		return valid
+</pre>
+<!-- /trim -->
 <div data-bind="with: balin.model.txt1" class="form-group">
 	<label class="control-label" for="txt1">Validate input if it's only a-z:</label>
 	<input class="form-control" id="txt1" data-bind="textInput: text, validator: {_class: Maslosoft.Ko.BalinDev.RegExpValidator, pattern: '^[a-z]+$', allowEmpty: false}" style="width:50%;"/>
