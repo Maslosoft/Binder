@@ -1,11 +1,20 @@
 <?php
-$text = htmlspecialchars(ob_get_flush());
+$text = ob_get_flush();
+
+// Remove trims
+$text = preg_replace("/<!--\s*trim\s*-->.+?<!--\s*\/trim\s*-->/s", '', $text);
+$text = trim($text);
+
+// Escape HTML so it will be displayed
+$text = htmlspecialchars($text);
+
 // Avoid parsing punches
 $text = str_replace('{', '{<!---->', $text);
 $text = str_replace('}', '<!---->}', $text);
+
 ?>
 <h4><a href="#" onclick="javascript:jQuery('pre').slideToggle();">Relevant code used to create above result:</a></h4>
-<pre><?= $text ?></pre>
+<pre class="html"><?= $text ?></pre>
 <?php if (KO_BALIN_EMBEDDED): ?>
 	</div>
 	</div>

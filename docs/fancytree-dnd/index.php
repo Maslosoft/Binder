@@ -1,4 +1,5 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Fancytree - dnd</title>
 <h1>Fancytree - dnd</h1>
 Fancy tree drag'n'drop example. <br />
@@ -19,15 +20,31 @@ Fancy tree drag'n'drop example. <br />
 	<a href="javascript: balin.decreaseFont();">Decrease</a> /
 	<a href="javascript: balin.resetFont();">Reset</a>
 </p>
-<div class="fancy-tree"data-bind="fancytree: {data: balin.model.Tree, nodeIcon: 'images/pdf.png', folderIcon: 'images/zip.png', nodeRenderer: Maslosoft.Ko.BalinDev.TitleRenderer, on:{dblclick:balin.log, drop: Maslosoft.Ko.BalinDev.FancyTreeDropHandler}, dnd: true, autoExpand: true}">
+<!-- /trim -->
+<div class="fancy-tree"
+	data-bind="fancytree: {
+		data: balin.model.Tree, 
+		nodeIcon: 'images/pdf.png', 
+		folderIcon: 'images/zip.png', 
+		nodeRenderer: Maslosoft.Ko.BalinDev.TitleRenderer, 
+		on:{
+			dblclick:balin.log, 
+			drop: Maslosoft.Ko.BalinDev.FancyTreeDropHandler
+		}, 
+		dnd: true, 
+		autoExpand: true
+	}">
 </div>
+<!-- trim -->
 <style type="text/css">
 	ul.fancytree-container{
 		font-size: 1.6em;
 	}
 </style>
+<!-- /trim -->
 <script>
 	window.onload = (function () {
+		// Create tree structure
 		data = {
 			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
 			title: "Some container",
