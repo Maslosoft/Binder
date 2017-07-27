@@ -20,7 +20,9 @@
 	It is designed to require minimal effort to add new validation classes. Theese
 	should extend from <code>Maslosoft.Ko.Balin.BaseValidator</code>, and only required
 	method to implement is <code>isValid(value)</code>, which should return <code>true</code>
-	on valid value and <code>false</code> on bogus value.
+	on valid value and <code>false</code> on bogus value. This base class also exposes
+	method <code>addError</code> to provide error message, which can be displayed
+	under form input.
 </p>
 <p>
 	Additionally any property set on <code>validator</code> binding will be passed to
@@ -33,7 +35,7 @@
 	binding handler will do it's best to continue to work on remaining validator.
 </p>
 <p>
-	Most simple example of regular expression validation class, written in coffescript:
+	Example of configurable regular expression validation class, written in coffescript:
 </p>
 <pre class="coffescript">
 class @Maslosoft.Ko.BalinDev.RegExpValidator extends @Maslosoft.Ko.Balin.BaseValidator

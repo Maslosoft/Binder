@@ -1,29 +1,53 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<?php
+use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\VideoPlaylist;
+if(true) {
+	new VideoPlaylist;
+}
+?>
+<!-- trim -->
 <title>Video Playlist</title>
 <h1>Video Playlist</h1>
-<div>
-	Videos
-</div>
-<div data-bind="foreach: balin.model.list.videos">
-	<div>
+<p>
+	Video Playlist is a wrapper for Maslosoft Video Playlist JavaScript library
+	for creating sequential player out of video links from YouTube, Vimeo
+	and possibly other providers.
+</p>
+<p>
+	This example features also <code>videoThumb</code> binding, which will
+	set element background image to video thumbnail extracted from provided video URL.
+</p>
+<p class="alert alert-warning">
+	NOTE: CSS is not included in this package!
+</p>
+<!-- /trim -->
+<table data-bind="foreach: balin.model.list.videos" class="table table-condensed">
+<tr>
+	<td class="col-xs-1">
 		<div data-bind="videoThumb: url" style="height:67px;width:100px;background-size:cover;display:inline-block;">
-		</div>
+		</div>		
+	</td>
+	<td>
 		<input data-bind="textInput: url" style="width: 50%;"/>
+	</td>
+	<td class="col-xs-1">
 		<a href="#" class="remove">Remove</a>
-	</div>
-</div>
+	</td>
+</tr>
+</table>
+<!-- trim -->
 <div>
 	Fill url into field below to add video
 </div>
 <div>
 	<input id="newVideo" value="https://www.youtube.com/watch?v=IxGvm6btP1A" style="width: 50%;"/> <a href="#" class="add">Add</a>
 </div>
-<p>
-	NOTE: CSS is not included in package!
-</p>
+
 <div data-bind="if: !balin.model.list.videos.length">
 	<b>Add some videos to initialize playlist</b>
 </div>
+<hr />
+<!-- /trim -->
 <!--A bit of layout to make player smaller-->
 <div class="row">
 	<div class="col-md-6 col-xs-12 col-sm-8">

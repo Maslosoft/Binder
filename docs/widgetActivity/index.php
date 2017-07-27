@@ -1,8 +1,14 @@
 <?php require __DIR__ . '/../_header.php'; ?>
+<!-- trim -->
 <title>Widget Activity</title>
 <h1>Widget Activity</h1>
+<p>
+	Widget Action Binding Hanler creates widget activity url dynamically. The widget
+	activity is a standard formatted URL from <a href="/ilmatar-widgets/">Ilmatar Widgets</a>
+	project to feed non-data-changing actions.
+</p>
+<!-- /trim -->
 <div>
-	This creates widget action url dynamically.<br/>
 	<a href="" data-bind="widgetId: 'ms_1', activity: 'sort', params: {name: 'asc'}">Acitivity link</a><br />
 	<a href="" data-bind="widget: balin.model.Widget, activity: 'sort', params: {name: 'asc'}">Widget Activity link</a><br />
 	<a href="" data-bind="widget: balin.model.Widget, activity: 'sort', params: 'sss'">Widget Activity link simple param</a><br />
