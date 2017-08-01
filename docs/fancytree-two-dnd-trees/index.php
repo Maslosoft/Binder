@@ -3,9 +3,15 @@
 <title>Fancytree Drag'n'Drop Between Trees</title>
 <h1>Fancytree Drag and Drop Between Trees</h1>
 <div>
-	Fancy tree drag'n'drop example. <br />
-	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee <br />
-	<b class="error">NOTE: This is currently broken</b>
+<p>
+	Fancy tree drag and drop between two trees example.
+</p>
+	<p class="alert alert-warning">
+	<b>Make sure that <code>children</code> field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in <code>docs/src/Model.coffee</code>	
+	</p>
+	<p class="alert alert-danger">
+		This is currently broken
+	</p>
 </div>
 <!-- /trim -->
 <div class="row">

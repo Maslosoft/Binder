@@ -7,8 +7,13 @@
 	enumerable bindable value. Use case include but are not limited to
 	displaying different colors for different status of data.
 </p>
+<h4>Live Example</h4>
+<p>
+	In this example proper color is displayed based on numeric value. Additionally
+	label is has text value set via <a href="../enumFormatter/">Enum Formatter</a>
+</p>
+<div class="well">
 <!-- /trim -->
-<div>
 	<label>
 	Raw Status Value <input data-bind="textInput: balin.model.Enum.status"/> (0, 1, 2, 3)
 	</label>
@@ -32,8 +37,13 @@
 	<br />
 	Formatted: <span class="label" data-bind="enumCssClassFormatter: {data: balin.model.Enum.status, values:['label-danger', 'label-warning', 'label-info', 'label-success']}, enumFormatter: {data: balin.model.Enum.status, values:['Zero', 'One', 'Two', 'Three']}"></span>
 	<br />
-	NOTE: <code>checkedValue</code> is required here, as status values are integers.
+<!-- trim -->
+
 </div>
+<p class="alert alert-warning">
+	<code>checkedValue</code> in this example is required here, as status values are integers.
+</p>
+<!-- /trim -->
 
 <script>
 	window.onload = (function(){

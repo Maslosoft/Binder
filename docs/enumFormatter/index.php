@@ -7,9 +7,16 @@
 	enumerable bindable value. Use case include but are not limited to
 	displaying different status texts for different data.
 </p>
+<h4>Live Example</h4>
+<p>
+	In this example numeric enumerable data is displayed in human readable text value.
+</p>
+<div class="well">
 <!-- /trim -->
-<div>
-	Status: <input data-bind="textInput: balin.model.Enum.status"/> (0, 1, 2, 3) <br />
+	<label>
+	Raw Status: <input data-bind="textInput: balin.model.Enum.status"/> (0, 1, 2, 3) <br />
+	</label>
+	<br />
 	<label>
 		<input type="radio" data-bind="checked: balin.model.Enum.status, checkedValue: 0" value="0" />
 		Status Zero
@@ -28,9 +35,13 @@
 	</label>
 	<br />
 	Formatted: <span data-bind="enumFormatter: {data: balin.model.Enum.status, values:['Zero', 'One', 'Two', 'Three']}"></span>
-	<br />
-	NOTE: <code>checkedValue</code> is required here, as status values are integers.
+	
+<!-- trim -->
+<br />
 </div>
+<p class="alert alert-warning">
+	NOTE: <code>checkedValue</code> is required in this example, as status values are integers.
+</p>
 
 <script>
 	window.onload = (function(){

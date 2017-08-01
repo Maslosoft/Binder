@@ -7,6 +7,7 @@
 	values. This includes setting precision, decimal separator, thousand separator
 	as well allows adding prefixes and suffixes - mostly for currencies displaying.
 </p>
+<h4>Live Example</h4>
 <!-- /trim -->
 <table class="table table-condensed">
 	<tr>
