@@ -23,22 +23,22 @@
     settings = new Maslosoft.Ko.BalinDev.Models.Settings;
     settings.lang.en = 'English';
     settings.lang.pl = 'Polish';
-    app.model.settings = settings;
-    ko.track(app.model);
+    balin.model.settings = settings;
+    ko.track(balin.model);
     ko.applyBindings({
-      model: app.model
+      model: balin.model
     }, document.getElementById('ko-balin'));
     doRound = function() {
       var index, json, model, res, results;
-      json = JSON.stringify(app.model);
+      json = JSON.stringify(balin.model);
       res = JSON.parse(json);
       results = [];
       for (index in res) {
         model = res[index];
-        if (!!app.model[index]) {
-          results.push(ko.tracker.fromJs(app.model[index], res[index]));
+        if (!!balin.model[index]) {
+          results.push(ko.tracker.fromJs(balin.model[index], res[index]));
         } else {
-          results.push(app.model[index] = ko.tracker.factory(res[index]));
+          results.push(balin.model[index] = ko.tracker.factory(res[index]));
         }
       }
       return results;
@@ -46,7 +46,7 @@
     elem = jQuery('#dynamicPropertiesTest');
     return describe('Test if will allow use of dynamic properties and do round-trip', function() {
       it('if will allow adding element', function() {
-        settings = app.model.settings;
+        settings = balin.model.settings;
         assert.equal(Object.keys(settings.lang).length, 2);
         settings.lang.fr = 'Francaise';
         settings.lang.de = 'Deutch';
@@ -57,7 +57,7 @@
         return assert.equal(elem.find('div').length, 4, 'That DOM elements are 4 after round trip');
       });
       return it('if will allow removing element', function() {
-        settings = app.model.settings;
+        settings = balin.model.settings;
         assert.equal(Object.keys(settings.lang).length, 4);
         delete settings.lang.fr;
         delete settings.lang.de;

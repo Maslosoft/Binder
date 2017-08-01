@@ -95,14 +95,14 @@ JS;
 	<?php else:?>
 		<script src="../../test/<?= $testId ?>.js"></script>
 	<?php endif;?>
+	<script>
+		window.onload = (function () {
+			setTimeout(function(){
+				mocha.checkLeaks();
+				mocha.globals(['jQuery']);
+				mocha.run();
+			}, 1500);
+		});
+	</script>
 <?php endif; ?>
-<script>
-	window.onload = (function () {
-		setTimeout(function(){
-			mocha.checkLeaks();
-			mocha.globals(['jQuery']);
-			mocha.run();
-		}, 1500);
-	});
-</script>
 <?php require __DIR__ . '/../_footer.php'; ?>

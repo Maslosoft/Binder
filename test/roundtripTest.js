@@ -4,28 +4,28 @@
 
   test = function() {
     var doRound;
-    app.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({
+    balin.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({
       filename: 'maslosoft.png'
     });
     ko.applyBindings({
-      model: app.model
+      model: balin.model
     }, document.getElementById('ko-balin'));
     doRound = function() {
       var index, json, model, res, results;
-      json = JSON.stringify(app.model);
+      json = JSON.stringify(balin.model);
       res = JSON.parse(json);
       results = [];
       for (index in res) {
         model = res[index];
-        results.push(app.model[index] = ko.tracker.factory(res[index]));
+        results.push(balin.model[index] = ko.tracker.factory(res[index]));
       }
       return results;
     };
     return describe('Test if will allow roundtrip of simple value, using new', function() {
       return it('should have same value after getting data from JSON', function() {
-        assert.equal(app.model.Src.filename, 'maslosoft.png');
+        assert.equal(balin.model.Src.filename, 'maslosoft.png');
         doRound();
-        return assert.equal(app.model.Src.filename, 'maslosoft.png');
+        return assert.equal(balin.model.Src.filename, 'maslosoft.png');
       });
     });
   };

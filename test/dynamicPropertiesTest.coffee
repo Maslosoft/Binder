@@ -7,29 +7,29 @@ test = () ->
 	settings.lang.en = 'English'
 	settings.lang.pl = 'Polish'
 
-	app.model.settings = settings
+	balin.model.settings = settings
 
-	ko.track app.model
+	ko.track balin.model
 
-	ko.applyBindings({model: app.model}, document.getElementById('ko-balin'))
+	ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'))
 
 	doRound = () ->
-		json = JSON.stringify app.model
+		json = JSON.stringify balin.model
 		res = JSON.parse json
 
 		# Update or create new models
 		for index, model of res
-			if !!app.model[index]
-				ko.tracker.fromJs(app.model[index], res[index])
+			if !!balin.model[index]
+				ko.tracker.fromJs(balin.model[index], res[index])
 			else
-				app.model[index] = ko.tracker.factory res[index]
+				balin.model[index] = ko.tracker.factory res[index]
 
 	elem = jQuery('#dynamicPropertiesTest')
 
 	describe 'Test if will allow use of dynamic properties and do round-trip', ->
 
 		it 'if will allow adding element', ->
-			settings = app.model.settings
+			settings = balin.model.settings
 			assert.equal Object.keys(settings.lang).length, 2
 			settings.lang.fr = 'Francaise'
 			settings.lang.de = 'Deutch'
@@ -41,7 +41,7 @@ test = () ->
 			assert.equal elem.find('div').length, 4, 'That DOM elements are 4 after round trip'
 
 		it 'if will allow removing element', ->
-			settings = app.model.settings
+			settings = balin.model.settings
 			assert.equal Object.keys(settings.lang).length, 4
 
 			delete settings.lang.fr
