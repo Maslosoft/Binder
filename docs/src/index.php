@@ -6,15 +6,22 @@
 	Src binding handler is a shorthand for elements which require <code>src</code>
 	attribute to be dynamically updated. This applies to images and iframes.
 </p>
+<h4>Live example</h4>
+<p class="alert alert-success">
+	In this example <code>with</code> binding is used, making HTML code even more clean.
+</p>
 <!-- /trim -->
-<div data-bind="with: balin.model.Src">
+<p data-bind="with: balin.model.Src">
 	Filename: <input data-bind="textInput: filename" style="width:50%;"/> <br />
-	<a href="#" onclick="balin.model.Src.filename = 'images/maslosoft.png';return false;">Set to image 1</a> |
-	<a href="#" onclick="balin.model.Src.filename = 'images/maslosoft2.png';return false;">Set to image 2</a> <br />
-	Image: <img data-bind="src: filename"></img> <br />
-	Image with punches: <img src="{{filename}}"></img> <br />
-</div>
-
+	Image with src binding: <img data-bind="src: filename"></img> <br />
+	Image with src punches: <img src="{{filename}}"></img> <br />
+</p>
+<!-- trim -->
+<p>
+	<a href="#" onclick="balin.model.Src.filename = 'images/maslosoft.png';return false;" class="btn btn-success">Set to image 1</a>
+	<a href="#" onclick="balin.model.Src.filename = 'images/maslosoft2.png';return false;"  class="btn btn-success">Set to image 2</a>
+</p>
+<!-- /trim -->
 <script>
 	window.onload = (function(){
 		balin.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({filename: 'images/maslosoft.png'});
