@@ -22,6 +22,11 @@ if (KO_BALIN_EMBEDDED):
 	new JsFile(__DIR__ . "/src/TitleRenderer.js");
 	new JsFile(__DIR__ . "/src/init.js");
 	new CssFile(__DIR__ . "/src/init.css");
+
+	// Mocha and chai
+	new JsFile(__DIR__ . '/src/mocha/mocha.js');
+	new JsFile(__DIR__ . '/src/chai/chai.js');
+	new CssFile(__DIR__ . '/src/mocha/mocha.css');
 	echo "<div data-bind='eval:false'>
 	<div id='ko-balin'>";
 	ob_start();

@@ -17,8 +17,10 @@ $text = str_replace('{', '{<!---->', $text);
 $text = str_replace('}', '<!---->}', $text);
 
 ?>
+<?php if(empty($mocha)):?>
 <h4><a href="#" onclick="jQuery('#relevant-code-block').slideToggle();return false;">Relevant code used in examples:</a></h4>
 <pre class="html" id="relevant-code-block"><?= $text ?></pre>
+<?php endif;?>
 <?php if (KO_BALIN_EMBEDDED): ?>
 	</div>
 	</div>
