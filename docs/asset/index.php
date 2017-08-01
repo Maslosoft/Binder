@@ -2,6 +2,10 @@
 <!-- trim -->
 <title>Asset</title>
 <h1>Asset</h1>
+<p>
+	Asset is used to generate URLs to resizable images. Resizing is done
+	on server side, via properly formatted URL.
+</p>
 <!-- /trim -->
 <div>
 	NOTE: Image resizing is simulated here, src points to static image<br />

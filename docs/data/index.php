@@ -6,26 +6,40 @@
 	Data dynamic binding<br />
 	<small>Will apply data-* attributes</small> <br/>
 </h3>
+<h4>Binding Data Attributes</h4>
+<p>
+	This binding handler will attach any observable value to HTML data attribute. The
+	attribute to bound to is choosed by adding suffix to bindable name.
+</p>
+<p>
+	For instance, applying binding named <code>data.name</code> will set HTML attribut <code>data-name</code>
+	to passed observable value.
+</p>
+<p>
+	The following code:
+</p>
+<pre class="html">
+<?= escapeko('<span data-bind="data.name: myObservable"></span>');?>
+</pre>
+<p>
+	Will result in element having <code>data-name</code> attribute added:
+</p>
+<pre class="html">
+<?= escapeko('<span data-bind="data.name: myObservable" data-name="My Observable Value"></span>');?>
+</pre>
+<h4>Live Example</h4>
 <p>Results are not visible, try inspecting elements to verify that bindings have been applied.</p>
 <!-- /trim -->
-<div data-bind="data.title: balin.model.txt1.text">Should have data-title of a simple string value</div>
-<div data-bind="data.model: balin.model.txt1">Should have data-model of json encoded object value</div>
+<span data-bind="data.title: balin.model.txt1.text" class="label label-success">Should have <code>data-title</code> HTML attribute of a simple string value</span>
+<span data-bind="data.full: balin.model.txt1" class="label label-success">Should have <code>data-full</code> HTML attribute of json encoded object value</span>
 
 <script>
 	window.onload = (function () {
 		var data1 = {
 			text: 'Val1'
 		};
-		var data2 = {
-			text: 'Val2'
-		};
-		var data3 = {
-			text: 'Val3'
-		};
 
 		balin.model.txt1 = new Maslosoft.Ko.BalinDev.Models.TextValue(data1);
-		balin.model.txt2 = new Maslosoft.Ko.BalinDev.Models.TextValue(data2);
-		balin.model.txt3 = new Maslosoft.Ko.BalinDev.Models.TextValue(data3);
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
