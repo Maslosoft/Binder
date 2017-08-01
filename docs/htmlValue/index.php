@@ -9,10 +9,26 @@
 	JavaScript via observables, as any other bindings.
 </p>
 <p>
-	Only drawback of this binding handler is that it requires parent binding. This limitation comes
-	from event handling design - that the events cannot be attached to <code>contenteditable</code>
+	HTML Value binding handler supports observable value updates in many editing cases, including:
+	<ul>
+		<li>Pasting text with <kbd>ctrl+v</kbd> as well with mouse drag and drop</li>
+		<li>Cutting text with <kbd>ctrl+x</kbd></li>
+		<li>Dragging selected part of text</li>
+		<li>Cut and paste from context menu</li>
+		<li>Via keyboard typing</li>
+	</ul>
+</p>
+<h4>Limitations</h4>
+<p>
+	HTML Value binding handler requires parent binding. Be it <code>with</code>, or <code>foreach</code>. This limitation comes
+	from browsers event handling design - that the events cannot be attached to <code>contenteditable</code>
 	elements.
 </p>
+<p>
+	This binding handler does not clean up anything. What browser will generate, this will be passed
+	to observable value.
+</p>
+<h4>Live Example</h4>
 <!-- /trim -->
 <table data-bind="with: balin.model.HtmlValue" class="table table-condensed">
 	<tr>
@@ -32,8 +48,8 @@
 </table>
 <!-- trim -->
 <p>
-	<a href="#" id="replaceAction">Replace text via arbitrary action</a> <br />
-	<a href="#" id="restoreAction">Restore text via arbitrary action</a> <br />
+	<a href="#" id="replaceAction" class="btn btn-success">Replace text via arbitrary action</a>
+	<a href="#" id="restoreAction" class="btn btn-success">Restore text via arbitrary action</a> <br />
 </p>
 <!-- trim -->
 <script>
