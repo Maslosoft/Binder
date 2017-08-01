@@ -15,9 +15,14 @@
 <div data-bind="text: balin.model.datePicker.date">
 
 </div>
-<a href="#" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000) - 200000;}">Set a bit to past</a> <br/>
-<a href="#" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000);}">Set date to now</a> <br />
-<a href="#" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000) + 200000;}">Set a bit to future</a>
+<!-- trim -->
+<p>
+<br />
+<a href="#" class="btn btn-success" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000) - 200000;}">Set a bit to past</a>
+<a href="#" class="btn btn-success" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000);}">Set date to now</a>
+<a href="#" class="btn btn-success" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000) + 200000;}">Set a bit to future</a>
+</p>
+<!-- /trim -->
 <script>
 	window.onload = (function(){
 		balin.model.datePicker = new Maslosoft.Ko.BalinDev.Models.DatePicker;
