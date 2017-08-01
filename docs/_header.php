@@ -266,7 +266,7 @@ $baseHref = "$baseURI/";
 					</li>
 					<?php foreach ((array) $combined as $file => $name): ?>
 						<li class="link">
-							<a href="./<?= $file; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
+							<a href="<?= $baseHref . $file; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
 						</li>
 					<?php endforeach; ?>
 					<li class="link">
@@ -277,7 +277,7 @@ $baseHref = "$baseURI/";
 					</li>
 					<?php foreach ($test as $file => $name): ?>
 						<li class="link">
-							<a href="./runTest.php?test=<?= $name; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
+							<a href="<?= $baseHref;?>runTest/?test=<?= $name; ?>"><?= str_replace('-', ' - ', ucfirst($name)); ?></a>
 						</li>
 					<?php endforeach; ?>
 				</ul>
