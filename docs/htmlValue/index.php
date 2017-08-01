@@ -16,6 +16,7 @@
 		<li>Dragging selected part of text</li>
 		<li>Cut and paste from context menu</li>
 		<li>Via keyboard typing</li>
+		<li>When HTML element is updated via JavaScript user action</li>
 	</ul>
 </p>
 <h4>Limitations</h4>
@@ -51,12 +52,13 @@
 	<a href="#" id="replaceAction" class="btn btn-success">Replace text via arbitrary action</a>
 	<a href="#" id="restoreAction" class="btn btn-success">Restore text via arbitrary action</a> <br />
 </p>
-<!-- trim -->
+<!-- /trim -->
 <script>
 	window.onload = (function () {
-		balin.model.HtmlValue = new Maslosoft.Ko.BalinDev.Models.HtmlValue({text: 'Editable text <b>with</b> <abbr title="HyperText Markup Language">HTML</abbr>'});
+		var data = {text: 'Editable text <b>with</b> <abbr title="HyperText Markup Language">HTML</abbr>'};
+		balin.model.HtmlValue = new Maslosoft.Ko.BalinDev.Models.HtmlValue(data);
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
-
+		// trim
 		// These are helpers for this page only, irrelevant for real usage
 		var original = '';
 		var f = $('#editableField');
@@ -78,6 +80,7 @@
 			}
 			stop(e)
 		})
+		// /trim
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>
