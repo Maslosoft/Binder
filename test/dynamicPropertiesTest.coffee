@@ -28,7 +28,7 @@ test = () ->
 
 	describe 'Test if will allow use of dynamic properties and do round-trip', ->
 
-		it 'if will allow adding element', ->
+		it 'Should allow adding property', ->
 			settings = balin.model.settings
 			assert.equal Object.keys(settings.lang).length, 2
 			settings.lang.fr = 'Francaise'
@@ -40,7 +40,7 @@ test = () ->
 			assert.equal Object.keys(settings.lang).length, 4, 'That there are still 4 languages'
 			assert.equal elem.find('div').length, 4, 'That DOM elements are 4 after round trip'
 
-		it 'if will allow removing element', ->
+		it 'Should allow removing property', ->
 			settings = balin.model.settings
 			assert.equal Object.keys(settings.lang).length, 4
 

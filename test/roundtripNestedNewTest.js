@@ -39,13 +39,12 @@
     elem = jQuery('#roundtripNestedNewTest');
     console.log("Starting test...");
     return describe('Test if will allow roundtrip of nested arrays, using new', function() {
-      it('should not fail', function() {});
-      it('should have name', function() {
+      it('Should have same title after getting data from JSON', function() {
         assert.equal(balin.model.sortable.title, 'Names Collection');
         doRound();
         return assert.equal(balin.model.sortable.title, 'Names Collection');
       });
-      it('should allow pop', function() {
+      it('Should allow pop', function() {
         assert.equal(balin.model.sortable.items.length, 5);
         assert.equal(elem.find('div').length, 5);
         balin.model.sortable.items.pop();
@@ -57,7 +56,7 @@
         assert.equal(balin.model.sortable.items.length, 4, 'That one element remains removed from array');
         return assert.equal(elem.find('div').length, 4, 'That DOM elements are 4 too');
       });
-      return it('should allow push', function() {
+      return it('Should allow push', function() {
         var model;
         model = balin.model.sortable;
         assert.equal(model.items.length, 4);

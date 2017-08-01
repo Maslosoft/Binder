@@ -45,7 +45,7 @@
     };
     elem = jQuery('#dynamicPropertiesTest');
     return describe('Test if will allow use of dynamic properties and do round-trip', function() {
-      it('if will allow adding element', function() {
+      it('Should allow adding property', function() {
         settings = balin.model.settings;
         assert.equal(Object.keys(settings.lang).length, 2);
         settings.lang.fr = 'Francaise';
@@ -56,7 +56,7 @@
         assert.equal(Object.keys(settings.lang).length, 4, 'That there are still 4 languages');
         return assert.equal(elem.find('div').length, 4, 'That DOM elements are 4 after round trip');
       });
-      return it('if will allow removing element', function() {
+      return it('Should allow removing property', function() {
         settings = balin.model.settings;
         assert.equal(Object.keys(settings.lang).length, 4);
         delete settings.lang.fr;

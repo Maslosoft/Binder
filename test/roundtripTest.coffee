@@ -11,7 +11,7 @@ test = () ->
 			balin.model[index] = ko.tracker.factory res[index]
 
 	describe 'Test if will allow roundtrip of simple value, using new', ->			
-		it 'should have same value after getting data from JSON', ->
+		it 'Should have same value after getting data from JSON', ->
 			assert.equal balin.model.Src.filename, 'maslosoft.png'
 			doRound()
 			assert.equal balin.model.Src.filename, 'maslosoft.png'

@@ -22,7 +22,7 @@
       return results;
     };
     return describe('Test if will allow roundtrip of simple value, using new', function() {
-      return it('should have same value after getting data from JSON', function() {
+      return it('Should have same value after getting data from JSON', function() {
         assert.equal(balin.model.Src.filename, 'maslosoft.png');
         doRound();
         return assert.equal(balin.model.Src.filename, 'maslosoft.png');

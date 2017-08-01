@@ -42,15 +42,13 @@ test = () ->
 	console.log "Starting test..."
 
 	describe 'Test if will allow roundtrip of nested arrays, using new', ->
-		it 'should not fail', ->
-
-
-		it 'should have name', ->
+		
+		it 'Should have same title after getting data from JSON', ->
 			assert.equal balin.model.sortable.title, 'Names Collection'
 			doRound()
 			assert.equal balin.model.sortable.title, 'Names Collection'
 
-		it 'should allow pop', ->
+		it 'Should allow pop', ->
 			assert.equal balin.model.sortable.items.length, 5
 			assert.equal elem.find('div').length, 5
 			balin.model.sortable.items.pop()
@@ -65,7 +63,7 @@ test = () ->
 			assert.equal balin.model.sortable.items.length, 4, 'That one element remains removed from array'
 			assert.equal elem.find('div').length, 4, 'That DOM elements are 4 too'
 
-		it 'should allow push', ->
+		it 'Should allow push', ->
 			model = balin.model.sortable
 			assert.equal model.items.length, 4
 			model.items.push new Maslosoft.Ko.BalinDev.Models.HtmlValue({text: 'new'})
