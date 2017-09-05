@@ -40,7 +40,12 @@ if(strpos($_SERVER['SCRIPT_NAME'], 'docs/index.php'))
 }
 else
 {
-	$baseURI = '..';
+	$search = 'docs/';
+	$pos = strpos($_SERVER['SCRIPT_NAME'], $search);
+	$relPath = substr($_SERVER['SCRIPT_NAME'], $pos + strlen($search));
+	$relPath = str_replace('/index.php', '', $relPath);
+	$relPath = implode('/', array_fill(0, count(explode('/', $relPath)), '..'));
+	$baseURI = $relPath;
 }
 $bower = "$baseURI/../bower_components";
 $src = "$baseURI/src";
@@ -134,6 +139,7 @@ $baseHref = "$baseURI/";
 		<link rel="stylesheet" href="<?= $bower; ?>/pickadate/lib/themes/classic.date.css"/>
 		<link rel="stylesheet" href="<?= $bower; ?>/pickadate/lib/themes/classic.time.css"/>
 		<link rel="stylesheet" href="<?= $bower; ?>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"/>
+		<link rel="stylesheet" href="<?= $bower; ?>/select2/dist/css/select2.css"/>
 		<link rel="stylesheet" href="<?= $src; ?>/init.css"/>
 		<?php if (isset($mocha)): ?>
 			<link rel="stylesheet" href="<?= $bower; ?>/mocha/mocha.css"/>
@@ -166,6 +172,7 @@ $baseHref = "$baseURI/";
 		<script type="text/javascript" src="<?= $bower; ?>/pickadate/lib/compressed/picker.date.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/pickadate/lib/compressed/picker.time.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+		<script type="text/javascript" src="<?= $bower; ?>/select2/dist/js/select2.full.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/moment/min/moment-with-locales.min.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/highlightjs/highlight.pack.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/fancytree/dist/jquery.fancytree-all.js"></script>

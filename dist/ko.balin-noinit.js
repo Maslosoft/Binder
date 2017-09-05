@@ -191,6 +191,7 @@
       treegrid: Maslosoft.Ko.Balin.TreeGrid,
       treegridnode: Maslosoft.Ko.Balin.TreeGridNode,
       selected: Maslosoft.Ko.Balin.Selected,
+      select2: Maslosoft.Ko.Balin.Select2,
       validator: Maslosoft.Ko.Balin.Validator,
       videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist,
       videoThumb: Maslosoft.Ko.Balin.VideoThumb
@@ -1854,6 +1855,103 @@
     return PickaDate;
 
   })(this.Maslosoft.Ko.Balin.Picker);
+
+
+  /*
+  Select2
+   */
+
+  this.Maslosoft.Ko.Balin.Select2 = (function(_super) {
+    var bindingName, dataBindingName, init, triggerChangeQuietly;
+
+    __extends(Select2, _super);
+
+    function Select2() {
+      this.init = __bind(this.init, this);
+      return Select2.__super__.constructor.apply(this, arguments);
+    }
+
+    bindingName = 'select2';
+
+    dataBindingName = "" + bindingName + "Data";
+
+    triggerChangeQuietly = function(element, binding) {
+      var isObservable, originalEqualityComparer;
+      isObservable = ko.isObservable(binding);
+      originalEqualityComparer = void 0;
+      if (isObservable) {
+        originalEqualityComparer = binding.equalityComparer;
+        binding.equalityComparer = function() {
+          return true;
+        };
+      }
+      $(element).trigger('change');
+      if (isObservable) {
+        binding.equalityComparer = originalEqualityComparer;
+      }
+    };
+
+    init = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      var allBindings, bindingValue, dataChangeHandler, ignoreChange, subscription;
+      bindingValue = ko.unwrap(valueAccessor());
+      allBindings = allBindingsAccessor();
+      ignoreChange = false;
+      dataChangeHandler = null;
+      subscription = null;
+      $(element).on('select2:selecting select2:unselecting', function() {
+        ignoreChange = true;
+      });
+      $(element).on('select2:select select2:unselect', function() {
+        ignoreChange = false;
+      });
+      if (ko.isObservable(allBindings.value)) {
+        subscription = allBindings.value.subscribe(function(value) {
+          if (ignoreChange) {
+            return;
+          }
+          triggerChangeQuietly(element, this._target || this.target);
+        });
+      } else if (ko.isObservable(allBindings.selectedOptions)) {
+        subscription = allBindings.selectedOptions.subscribe(function(value) {
+          if (ignoreChange) {
+            return;
+          }
+          triggerChangeQuietly(element, this._target || this.target);
+        });
+      }
+      if (ko.isWriteableObservable(allBindings[dataBindingName])) {
+        dataChangeHandler = function() {
+          if (!$(element).data('select2')) {
+            return;
+          }
+          allBindings[dataBindingName]($(element).select2('data'));
+        };
+        $(element).on('change', dataChangeHandler);
+      }
+      $(element).select2(bindingValue);
+      ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+        $(element).select2('destroy');
+        if (dataChangeHandler !== null) {
+          $(element).off('change', dataChangeHandler);
+        }
+        if (subscription !== null) {
+          subscription.dispose();
+        }
+      });
+    };
+
+    Select2.prototype.init = function() {
+      var args, to;
+      args = arguments;
+      to = function() {
+        return init.apply(null, args);
+      };
+      return setTimeout(to, 0);
+    };
+
+    return Select2;
+
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.Selected = (function(_super) {
     __extends(Selected, _super);

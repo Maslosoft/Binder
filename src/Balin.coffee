@@ -94,6 +94,7 @@
 		treegrid: Maslosoft.Ko.Balin.TreeGrid
 		treegridnode: Maslosoft.Ko.Balin.TreeGridNode
 		selected: Maslosoft.Ko.Balin.Selected
+		select2: Maslosoft.Ko.Balin.Select2
 		validator: Maslosoft.Ko.Balin.Validator
 		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
 		videoThumb: Maslosoft.Ko.Balin.VideoThumb

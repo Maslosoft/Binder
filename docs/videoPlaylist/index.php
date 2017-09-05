@@ -1,7 +1,7 @@
 <?php require __DIR__ . '/../_header.php'; ?>
 <?php
 use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\VideoPlaylist;
-if(true) {
+if(KO_BALIN_EMBEDDED) {
 	new VideoPlaylist;
 }
 ?>

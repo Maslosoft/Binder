@@ -120,3 +120,7 @@ class @Maslosoft.Ko.BalinDev.Models.DatePicker extends @Maslosoft.Ko.Balin.Model
 class @Maslosoft.Ko.BalinDev.Models.AclUser extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.AclUser"
 	isGuest: true
+
+class @Maslosoft.Ko.BalinDev.Models.Options extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.Options"
+	selected: null
