@@ -1911,7 +1911,7 @@
           }
           triggerChangeQuietly(element, this._target || this.target);
         });
-      } else if (ko.isObservable(allBindings.selectedOptions)) {
+      } else if (ko.isObservable(allBindings.selectedOptions) || true) {
         subscription = allBindings.selectedOptions.subscribe(function(value) {
           if (ignoreChange) {
             return;

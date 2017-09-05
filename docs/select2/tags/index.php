@@ -28,22 +28,36 @@
 				tokenSeparators: [',', ' '],
 				minimumResultsForSearch: 5,
 				dropdownCssClass: 'hideSearch',
+				data: balin.model.options.selected
 			},
+			options: balin.model.options.selected,
 			selectedOptions: balin.model.options.selected
 		"
 		class="form-control">
 	</select>
 </div>
 <div data-bind="text: balin.model.options.selected"></div>
+<a id="changeIt" href="#">Change programatically to [yes, no, maybe]</a>
 <script>
 	window.onload = (function(){
-
 		$('#select2').on('select2:opening select2:close', function(e){
 				$('body').toggleClass('kill-all-select2-dropdowns', e.type=='select2:opening');
 		  });
 
-		balin.model.options = new Maslosoft.Ko.BalinDev.Models.Options;
+		balin.model.options = new Maslosoft.Ko.BalinDev.Models.Options();
+		balin.model.options.selected = ['noisy', 'loud'];
+		
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		// trim
+		$('#changeIt').on('click', function(e){
+			var opts = ['yes', 'no', 'maybe'];
+
+			balin.model.options.selected = opts;
+			
+			console.log(balin.model.options.selected);
+			e.preventDefault();
+		});
+		// /trim
 	});
 </script>
 

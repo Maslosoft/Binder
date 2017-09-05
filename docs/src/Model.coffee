@@ -123,4 +123,9 @@ class @Maslosoft.Ko.BalinDev.Models.AclUser extends @Maslosoft.Ko.Balin.Model
 
 class @Maslosoft.Ko.BalinDev.Models.Options extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Options"
-	selected: null
+	selected: []
+
+	constructor: (data = null) ->
+		# Dereference
+		@selected = new Array
+		super data

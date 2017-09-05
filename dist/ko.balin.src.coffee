@@ -1795,6 +1795,10 @@ class @Maslosoft.Ko.Balin.Select2 extends @Maslosoft.Ko.Balin.Base
 			$(element).on 'change', dataChangeHandler
 		# Apply select2
 		$(element).select2 bindingValue
+
+		if allBindings.selectedOptions
+			$(element).val(allBindings.selectedOptions).trigger('change')
+
 		# Destroy select2 on element disposal
 		ko.utils.domNodeDisposal.addDisposeCallback element, ->
 			$(element).select2 'destroy'
@@ -1810,6 +1814,14 @@ class @Maslosoft.Ko.Balin.Select2 extends @Maslosoft.Ko.Balin.Base
 		to = () ->
 			init.apply null, args
 		setTimeout to, 0
+
+	update: (element, valueAccessor, allBindingsAccessor) =>
+		return
+		value = @getValue(valueAccessor)
+		if element.value isnt value.data
+			copy = JSON.parse JSON.stringify value.data
+			$(element).val(copy);
+			console.log "Update what?", element, value
 #
 # Selected binding
 # This adds class from options if value is true

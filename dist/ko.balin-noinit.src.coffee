@@ -1776,7 +1776,7 @@ class @Maslosoft.Ko.Balin.Select2 extends @Maslosoft.Ko.Balin.Base
 				triggerChangeQuietly element, @_target or @target
 				return
 			)
-		else if ko.isObservable(allBindings.selectedOptions)
+		else if ko.isObservable(allBindings.selectedOptions) or true
 			subscription = allBindings.selectedOptions.subscribe((value) ->
 				if ignoreChange
 					return
