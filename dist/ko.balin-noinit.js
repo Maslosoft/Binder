@@ -1867,6 +1867,7 @@
     __extends(Select2, _super);
 
     function Select2() {
+      this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
       return Select2.__super__.constructor.apply(this, arguments);
     }
@@ -1911,7 +1912,7 @@
           }
           triggerChangeQuietly(element, this._target || this.target);
         });
-      } else if (ko.isObservable(allBindings.selectedOptions) || true) {
+      } else if (ko.isObservable(allBindings.selectedOptions)) {
         subscription = allBindings.selectedOptions.subscribe(function(value) {
           if (ignoreChange) {
             return;
@@ -1929,6 +1930,9 @@
         $(element).on('change', dataChangeHandler);
       }
       $(element).select2(bindingValue);
+      if (allBindings.selectedOptions) {
+        $(element).val(allBindings.selectedOptions).trigger('change');
+      }
       ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
         $(element).select2('destroy');
         if (dataChangeHandler !== null) {
@@ -1947,6 +1951,17 @@
         return init.apply(null, args);
       };
       return setTimeout(to, 0);
+    };
+
+    Select2.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
+      var copy, value;
+      return;
+      value = this.getValue(valueAccessor);
+      if (element.value !== value.data) {
+        copy = JSON.parse(JSON.stringify(value.data));
+        $(element).val(copy);
+        return console.log("Update what?", element, value);
+      }
     };
 
     return Select2;
