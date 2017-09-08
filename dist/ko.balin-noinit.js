@@ -2028,7 +2028,6 @@
 
     Tags.prototype.setTags = function(el, tags) {
       var index, opt, options, tag, _i, _len, _results;
-      console.log(el.find('option'));
       options = el.find('option');
       if (options.length) {
         options.remove();
@@ -2050,7 +2049,6 @@
         throw new Error("Tags binding must be placed on `select` element");
       }
       if (once) {
-        console.log(once, dropdownKillStyles);
         jQuery(dropdownKillStyles).appendTo('head');
         once = false;
       }
@@ -2074,7 +2072,6 @@
             for (index = _i = 0, _len = elementValue.length; _i < _len; index = ++_i) {
               tag = elementValue[index];
               tag = tag.replace(',', '').replace(' ', '').trim();
-              console.log(tag);
               if (!tag) {
                 continue;
               }
@@ -2126,8 +2123,7 @@
           }
           modelTags = value.join(',');
           if (elementTags !== modelTags) {
-            _this.setTags(el, copy);
-            return console.log("Update what?", elementTags, modelTags);
+            return _this.setTags(el, copy);
           }
         };
       })(this);

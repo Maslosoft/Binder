@@ -1,7 +1,7 @@
 <?php require __DIR__ . '/../../_header.php'; ?>
 <!-- trim -->
-<title>Select2</title>
-<h1>Select2</h1>
+<title>Select2 Tags</title>
+<h1>Select2 Tags</h1>
 <p>
 	<a href="https://select2.github.io/">Select2</a> is a library enchancing select element.
 	This binding handler will demonstrate tags option. This binding handler also
@@ -9,16 +9,14 @@
 	for tags to not pop-up empty results.
 </p>
 <p>
-	This binding cooperates with <code>options</code> binding handler. To obtain
-	value back to observable use <code>value</code> binding handler for single
-	selection, or <code>selectedOptions</code> for multiple selector.
+	This binding handler converts select2 to tags selector.
 </p>
 <h4>Live example</h4>
 <p class="alert alert-warning">
 	Select2 package is not bundled with this package
 </p>
 <!-- /trim -->
-<div class="form-group have-tags">
+<div class="form-group">
 	<select
 		id="select2"
 		data-bind="

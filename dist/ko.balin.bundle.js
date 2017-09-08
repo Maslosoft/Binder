@@ -12849,7 +12849,6 @@ module.exports = function (element) {
 
     Tags.prototype.setTags = function(el, tags) {
       var index, opt, options, tag, _i, _len, _results;
-      console.log(el.find('option'));
       options = el.find('option');
       if (options.length) {
         options.remove();
@@ -12871,7 +12870,6 @@ module.exports = function (element) {
         throw new Error("Tags binding must be placed on `select` element");
       }
       if (once) {
-        console.log(once, dropdownKillStyles);
         jQuery(dropdownKillStyles).appendTo('head');
         once = false;
       }
@@ -12895,7 +12893,6 @@ module.exports = function (element) {
             for (index = _i = 0, _len = elementValue.length; _i < _len; index = ++_i) {
               tag = elementValue[index];
               tag = tag.replace(',', '').replace(' ', '').trim();
-              console.log(tag);
               if (!tag) {
                 continue;
               }
@@ -12947,8 +12944,7 @@ module.exports = function (element) {
           }
           modelTags = value.join(',');
           if (elementTags !== modelTags) {
-            _this.setTags(el, copy);
-            return console.log("Update what?", elementTags, modelTags);
+            return _this.setTags(el, copy);
           }
         };
       })(this);

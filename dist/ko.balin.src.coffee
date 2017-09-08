@@ -1870,7 +1870,7 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 	once = true
 
 	setTags: (el, tags) =>
-		console.log el.find('option')
+
 		options = el.find('option')
 		if options.length
 			options.remove()
@@ -1889,7 +1889,7 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 			throw new Error "Tags binding must be placed on `select` element"
 
 		if once
-			console.log once, dropdownKillStyles
+
 			jQuery(dropdownKillStyles).appendTo 'head'
 			once = false
 
@@ -1914,7 +1914,7 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 				for tag, index in elementValue
 					# Sometimes some comas and spaces might pop in
 					tag = tag.replace(',', '').replace(' ', '').trim()
-					console.log tag
+
 					if not tag then continue
 					value.push tag
 
@@ -1960,7 +1960,7 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 
 			if elementTags isnt modelTags
 				@setTags el, copy
-				console.log "Update what?", elementTags, modelTags
+
 
 		setTimeout maybeSet, 0
 #
