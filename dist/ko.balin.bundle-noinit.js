@@ -11003,6 +11003,7 @@ module.exports = function (element) {
       log: Maslosoft.Ko.Balin.Log,
       model: Maslosoft.Ko.Balin.DataModel,
       src: Maslosoft.Ko.Balin.Src,
+      tags: Maslosoft.Ko.Balin.Tags,
       textValue: Maslosoft.Ko.Balin.TextValue,
       textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
       timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter,
@@ -12822,6 +12823,139 @@ module.exports = function (element) {
     };
 
     return Src;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+
+  /*
+  Select2
+   */
+
+  this.Maslosoft.Ko.Balin.Tags = (function(_super) {
+    var dropdownKillStyles, once;
+
+    __extends(Tags, _super);
+
+    function Tags() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      this.setTags = __bind(this.setTags, this);
+      return Tags.__super__.constructor.apply(this, arguments);
+    }
+
+    dropdownKillStyles = '<style>\n	body.kill-all-select2-dropdowns .select2-dropdown {\n		display: none !important;\n	}\n	body.kill-all-select2-dropdowns .select2-container--default.select2-container--open.select2-container--below .select2-selection--single, .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple\n	{\n		border-bottom-left-radius: 4px;\n		border-bottom-right-radius: 4px;\n	}\n	.select2-container--default.select2-container--focus .select2-selection--multiple {\n		border-color: #66afe9;\n		outline: 0;\n		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);\n		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);\n	}\n</style>';
+
+    once = true;
+
+    Tags.prototype.setTags = function(el, tags) {
+      var index, opt, options, tag, _i, _len, _results;
+      console.log(el.find('option'));
+      options = el.find('option');
+      if (options.length) {
+        options.remove();
+      }
+      _results = [];
+      for (index = _i = 0, _len = tags.length; _i < _len; index = ++_i) {
+        tag = tags[index];
+        opt = jQuery("<option selected='true'></option>");
+        opt.val(tag);
+        opt.text(tag);
+        _results.push(el.append(opt));
+      }
+      return _results;
+    };
+
+    Tags.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      var build, config, copy, dropDownKill, el, handler, value;
+      if (element.tagName.toLowerCase() !== 'select') {
+        throw new Error("Tags binding must be placed on `select` element");
+      }
+      if (once) {
+        console.log(once, dropdownKillStyles);
+        jQuery(dropdownKillStyles).appendTo('head');
+        once = false;
+      }
+      value = this.getValue(valueAccessor);
+      copy = JSON.parse(JSON.stringify(value));
+      el = jQuery(element);
+      el.data('tags', true);
+      el.attr('multiple', true);
+      this.setTags(el, copy);
+      config = {
+        tags: true,
+        tokenSeparators: [',', ' ']
+      };
+      handler = (function(_this) {
+        return function() {
+          var elementValue, index, tag, _i, _len, _results;
+          value.removeAll();
+          elementValue = el.val();
+          if (elementValue) {
+            _results = [];
+            for (index = _i = 0, _len = elementValue.length; _i < _len; index = ++_i) {
+              tag = elementValue[index];
+              tag = tag.replace(',', '').replace(' ', '').trim();
+              console.log(tag);
+              if (!tag) {
+                continue;
+              }
+              _results.push(value.push(tag));
+            }
+            return _results;
+          }
+        };
+      })(this);
+      dropDownKill = (function(_this) {
+        return function(e) {
+          var haveTags;
+          haveTags = jQuery(e.target).data();
+          if (haveTags) {
+            return jQuery('body').toggleClass('kill-all-select2-dropdowns', e.type === 'select2:opening');
+          }
+        };
+      })(this);
+      build = (function(_this) {
+        return function() {
+          el.select2(config);
+          el.on('change', handler);
+          el.on('select2:select select2:unselect', handler);
+          el.on('select2:opening select2:close', dropDownKill);
+          return ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+            el.select2('destroy');
+            if (handler !== null) {
+              el.off('change', handler);
+              return el.off('select2:select select2:unselect', handler);
+            }
+          });
+        };
+      })(this);
+      return setTimeout(build, 0);
+    };
+
+    Tags.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
+      var copy, el, maybeSet, value;
+      value = this.getValue(valueAccessor);
+      copy = JSON.parse(JSON.stringify(value));
+      el = jQuery(element);
+      maybeSet = (function(_this) {
+        return function() {
+          var elementTags, modelTags;
+          if (el.val() === null) {
+            elementTags = '';
+          } else {
+            elementTags = el.val().join(',').replace(/(,+)/g, ',').replace(/(\s+)/g, ' ');
+          }
+          modelTags = value.join(',');
+          if (elementTags !== modelTags) {
+            _this.setTags(el, copy);
+            return console.log("Update what?", elementTags, modelTags);
+          }
+        };
+      })(this);
+      return setTimeout(maybeSet, 0);
+    };
+
+    return Tags;
 
   })(this.Maslosoft.Ko.Balin.Base);
 

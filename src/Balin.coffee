@@ -85,6 +85,7 @@
 		log: Maslosoft.Ko.Balin.Log
 		model: Maslosoft.Ko.Balin.DataModel
 		src: Maslosoft.Ko.Balin.Src
+		tags: Maslosoft.Ko.Balin.Tags
 		textValue: Maslosoft.Ko.Balin.TextValue
 		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
 		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
