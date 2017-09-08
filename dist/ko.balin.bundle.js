@@ -6729,6 +6729,7 @@ void function(global, undefined_, undefined){
       set: ko.isWriteableObservable(observable) ? observable : undefined
     };
 
+
     // Custom Binding Provider
     // -------------------
     //
@@ -6772,6 +6773,11 @@ void function(global, undefined_, undefined){
            // This is required or will throw errors
            resultStrings.push(key + ':ko.observableArray(' + val + ')');
          }else{
+           // Trim out whitespace after opening brackets (might be in some cases), 
+           // or it would will cause parse error in createBindingsStringEvaluator
+           if(val.match(/^\{\s*/)){
+             val = val.replace(/^\{\s*/, '{');
+           }
            resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
          }
 
@@ -6803,6 +6809,7 @@ void function(global, undefined_, undefined){
 
     ko.bindingProvider.instance = new CustomBindingProvider(ko.bindingProvider.instance);
   }
+
 
   function createLazyPropertyDescriptor(originalValue, prop, map) {
     if (ko.isObservable(originalValue)) {
