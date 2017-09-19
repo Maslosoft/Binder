@@ -1625,9 +1625,9 @@
       }
       nameSuffix = '';
       if (src.match(/\.(jpg|jped|gif|png|svg)$/)) {
-        matched = src.match(/[^\/]+?\.(jpg|jped|gif|png|svg)$/);
+        matched = src.match(/[^\/]*?\.(jpg|jped|gif|png|svg)$/);
         nameSuffix = matched[0];
-        src = src.replace(/[^\/]+?\.(jpg|jped|gif|png|svg)$/, "");
+        src = src.replace(/[^\/]*?\.(jpg|jped|gif|png|svg)$/, "");
       }
       if (typeof model.iconSize === 'undefined') {
         defaultSize = 16;
