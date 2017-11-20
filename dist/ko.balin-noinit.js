@@ -2597,9 +2597,20 @@
     }
 
     Widget.prototype.init = function(element, valueAccessor, allBindings, context) {
-      var className, name, params, ref, value, widget;
+      var Error, className, name, params, ref, value, widget;
       className = this.getValue(valueAccessor);
-      widget = new className;
+      if (typeof className !== 'function') {
+        return;
+      }
+      if (typeof className.constructor !== 'function') {
+        return;
+      }
+      try {
+        widget = new className;
+      } catch (_error) {
+        Error = _error;
+        return;
+      }
       params = allBindings.get('params');
       if (params) {
         for (name in params) {

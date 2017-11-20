@@ -4,7 +4,15 @@ class @Maslosoft.Ko.Balin.Widget extends @Maslosoft.Ko.Balin.Base
 	init: (element, valueAccessor, allBindings, context) =>
 		
 		className = @getValue valueAccessor
-		widget = new className
+		
+		if typeof(className) isnt 'function' then return
+		
+		if typeof(className.constructor) isnt 'function' then return
+		
+		try
+			widget = new className
+		catch Error
+			return
 		
 		params = allBindings.get 'params'
 		
