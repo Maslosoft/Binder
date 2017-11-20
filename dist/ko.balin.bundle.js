@@ -13163,8 +13163,9 @@ module.exports = function (element) {
         }
       }
       ref = allBindings.get('ref');
-      setRefByName(ref, widget);
-      console.log(ref);
+      if (ref) {
+        setRefByName(ref, widget);
+      }
       if (ref) {
         ref = widget;
       }
