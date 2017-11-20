@@ -58,6 +58,17 @@ if !Object.keys
           i++
       result
 
+setRefByName = (name, value, context = window) ->
+	args = Array.prototype.slice.call(arguments, 2)
+	ns = name.split "."
+	func = context
+	for n, i in ns
+		console.log i
+		if i == ns.length - 1
+			console.log n
+			func[n] = value
+		func = func[n]
+	return func
 "use strict"
 if not @Maslosoft
 	@Maslosoft = {}
@@ -171,6 +182,7 @@ if not @Maslosoft.Ko.Balin.Widgets
 		validator: Maslosoft.Ko.Balin.Validator
 		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
 		videoThumb: Maslosoft.Ko.Balin.VideoThumb
+		widget: Maslosoft.Ko.Balin.Widget
 	}
 
 	if handlers isnt null
@@ -2338,6 +2350,34 @@ class @Maslosoft.Ko.Balin.VideoThumb extends @Maslosoft.Ko.Balin.Video
 				
 
 		
+
+class @Maslosoft.Ko.Balin.Widget extends @Maslosoft.Ko.Balin.Base
+	
+	init: (element, valueAccessor, allBindings, context) =>
+		
+		className = @getValue valueAccessor
+		widget = new className
+		
+		params = allBindings.get 'params'
+		
+		if params
+			for name, value of params
+				widget[name] = value
+		
+		ref = allBindings.get 'ref'
+		setRefByName ref, widget
+		console.log ref
+		
+		if ref
+			ref = widget
+		
+		if typeof(widget.init) is 'function'
+			widget.init(element)
+		
+		if typeof(widget.dispose) is 'function'
+			ko.utils.domNodeDisposal.addDisposeCallback element, widget.dispose
+		
+	update: (element, valueAccessor) =>
 
 class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
 

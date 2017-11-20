@@ -4,6 +4,8 @@ if not @Maslosoft.Ko.BalinDev
 	@Maslosoft.Ko.BalinDev = {}
 if not @Maslosoft.Ko.BalinDev.Models
 	@Maslosoft.Ko.BalinDev.Models = {}
+if not @Maslosoft.Ko.BalinDev.Widgets
+	@Maslosoft.Ko.BalinDev.Widgets = {}
 
 class @Maslosoft.Ko.BalinDev.FancyTreeDropHandler
 
@@ -20,11 +22,9 @@ class @Maslosoft.Ko.BalinDev.Models.TreeItem extends @Maslosoft.Ko.Balin.Model
 	id: 0
 	title: ''
 	description: ''
-	children: []
+	children: null
 
 	constructor: (data = null) ->
-		# Dereference 
-		@children = new Array
 		super data
 		@id = TreeItem.idCounter++
 
@@ -123,9 +123,33 @@ class @Maslosoft.Ko.BalinDev.Models.AclUser extends @Maslosoft.Ko.Balin.Model
 
 class @Maslosoft.Ko.BalinDev.Models.Options extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.Options"
-	selected: []
+	selected: null
 
 	constructor: (data = null) ->
-		# Dereference
-		@selected = new Array
 		super data
+		
+class @Maslosoft.Ko.BalinDev.Widgets.MyWidget
+	
+	i = 0
+	
+	originalTitle = ''
+	
+	title: ''
+	
+	
+	constructor: () ->
+		@log "Create"
+	
+	init: (element) =>
+		if not originalTitle
+			originalTitle = @title
+		@title = "#{originalTitle} ##{i}"
+		element.innerHTML = @title
+		@log "Init"
+		
+	dispose: (element) =>
+		@log "Dispose"
+		
+	log: (message) =>
+		i++
+		jQuery('#widgetLog').append "<div>#{i}. #{message}</div>"

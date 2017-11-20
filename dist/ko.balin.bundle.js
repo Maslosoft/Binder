@@ -10544,7 +10544,7 @@ module.exports = function (element) {
 
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, warn,
+  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, setRefByName, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -10630,6 +10630,26 @@ module.exports = function (element) {
       };
     })();
   }
+
+  setRefByName = function(name, value, context) {
+    var args, func, i, n, ns, _i, _len;
+    if (context == null) {
+      context = window;
+    }
+    args = Array.prototype.slice.call(arguments, 2);
+    ns = name.split(".");
+    func = context;
+    for (i = _i = 0, _len = ns.length; _i < _len; i = ++_i) {
+      n = ns[i];
+      console.log(i);
+      if (i === ns.length - 1) {
+        console.log(n);
+        func[n] = value;
+      }
+      func = func[n];
+    }
+    return func;
+  };
 
   "use strict";
 
@@ -10739,7 +10759,8 @@ module.exports = function (element) {
       select2: Maslosoft.Ko.Balin.Select2,
       validator: Maslosoft.Ko.Balin.Validator,
       videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist,
-      videoThumb: Maslosoft.Ko.Balin.VideoThumb
+      videoThumb: Maslosoft.Ko.Balin.VideoThumb,
+      widget: Maslosoft.Ko.Balin.Widget
     };
     if (handlers !== null) {
       _results = [];
@@ -13109,6 +13130,46 @@ module.exports = function (element) {
     return VideoThumb;
 
   })(this.Maslosoft.Ko.Balin.Video);
+
+  this.Maslosoft.Ko.Balin.Widget = (function(_super) {
+    __extends(Widget, _super);
+
+    function Widget() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return Widget.__super__.constructor.apply(this, arguments);
+    }
+
+    Widget.prototype.init = function(element, valueAccessor, allBindings, context) {
+      var className, name, params, ref, value, widget;
+      className = this.getValue(valueAccessor);
+      widget = new className;
+      params = allBindings.get('params');
+      if (params) {
+        for (name in params) {
+          value = params[name];
+          widget[name] = value;
+        }
+      }
+      ref = allBindings.get('ref');
+      setRefByName(ref, widget);
+      console.log(ref);
+      if (ref) {
+        ref = widget;
+      }
+      if (typeof widget.init === 'function') {
+        widget.init(element);
+      }
+      if (typeof widget.dispose === 'function') {
+        return ko.utils.domNodeDisposal.addDisposeCallback(element, widget.dispose);
+      }
+    };
+
+    Widget.prototype.update = function(element, valueAccessor) {};
+
+    return Widget;
+
+  })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.WidgetAction = (function(_super) {
     __extends(WidgetAction, _super);

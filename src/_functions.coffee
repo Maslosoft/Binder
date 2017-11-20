@@ -57,3 +57,15 @@ if !Object.keys
             result.push dontEnums[i]
           i++
       result
+
+setRefByName = (name, value, context = window) ->
+	args = Array.prototype.slice.call(arguments, 2)
+	ns = name.split "."
+	func = context
+	for n, i in ns
+		console.log i
+		if i == ns.length - 1
+			console.log n
+			func[n] = value
+		func = func[n]
+	return func

@@ -99,6 +99,7 @@
 		validator: Maslosoft.Ko.Balin.Validator
 		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
 		videoThumb: Maslosoft.Ko.Balin.VideoThumb
+		widget: Maslosoft.Ko.Balin.Widget
 	}
 
 	if handlers isnt null

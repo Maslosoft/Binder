@@ -3,7 +3,7 @@
 <title>Widget Activity</title>
 <h1>Widget Activity</h1>
 <p>
-	Widget Action Binding Hanler creates widget activity url dynamically. The widget
+	Widget Action Binding Handler creates widget activity url dynamically. The widget
 	activity is a standard formatted URL from <a href="/ilmatar-widgets/">Ilmatar Widgets</a>
 	project to feed non-data-changing actions.
 </p>
