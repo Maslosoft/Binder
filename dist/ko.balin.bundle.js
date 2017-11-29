@@ -12116,7 +12116,7 @@ module.exports = function (element) {
     };
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var deferHandler, handler;
+      var deferHandler, dispose, handler;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Balin-HtmlValue-" + (idCounter++);
@@ -12146,8 +12146,13 @@ module.exports = function (element) {
           return setTimeout(handler, 0);
         };
       })(this);
-      ko.utils.registerEventHandler(element, "keyup, input", handler);
-      ko.utils.registerEventHandler(document, "mouseup", deferHandler);
+      jQuery(element).on("keyup, input", handler);
+      jQuery(document).on("mouseup", deferHandler);
+      dispose = function(toDispose) {
+        jQuery(toDispose).off("keyup, input", handler);
+        return jQuery(document).off("mouseup", deferHandler);
+      };
+      ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
     };
 
     HtmlValue.prototype.update = function(element, valueAccessor, allBindings) {

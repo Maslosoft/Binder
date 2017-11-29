@@ -1454,7 +1454,6 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 
 		# Handle update immediatelly
 		handler = (e) =>
-		
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 
@@ -1476,10 +1475,17 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 			setTimeout handler, 0
 		
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
-		ko.utils.registerEventHandler element, "keyup, input", handler
+		jQuery(element).on "keyup, input", handler
 
 		# This is to allow interation with tools which could modify content, also to work with drag and drop
-		ko.utils.registerEventHandler document, "mouseup", deferHandler
+		jQuery(document).on "mouseup", deferHandler
+
+		dispose = (toDispose) ->
+			jQuery(toDispose).off "keyup, input", handler
+			jQuery(document).off "mouseup", deferHandler
+
+		ko.utils.domNodeDisposal.addDisposeCallback element, dispose
+
 		return
 
 	update: (element, valueAccessor, allBindings) =>
@@ -3633,7 +3639,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		noExpander = element.find('.no-expander')
 		widthOffset = 0
 		midFactor = 1.5
-		
+
 		offset = node.offset()
 		mid = indicator.outerHeight(true) / midFactor
 		
