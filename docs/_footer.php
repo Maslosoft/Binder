@@ -29,9 +29,10 @@ $text = str_replace('}', '<!---->}', $text);
 	</div>
 	<script type="text/javascript" >
 		jQuery(document).ready(function () {
-			hljs.configure({languages: ['html']});
-			hljs.highlightBlock(document.getElementsByTagName('pre')[0]);
-
+		    if(jQuery('pre').length) {
+                hljs.configure({languages: ['html']});
+                hljs.highlightBlock(document.getElementsByTagName('pre')[0]);
+            }
 			jQuery('body').tooltip({
 				selector: '[rel~="tooltip"]'
 			});
