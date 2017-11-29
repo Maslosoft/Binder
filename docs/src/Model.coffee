@@ -79,6 +79,7 @@ class @Maslosoft.Ko.BalinDev.Models.Icon extends @Maslosoft.Ko.Balin.Model
 	icon: ''
 	isImage: true
 	iconSize: 64
+	filename: ''
 	updateDate: {
 		sec: 21232323
 	}

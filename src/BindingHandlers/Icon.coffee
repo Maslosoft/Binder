@@ -27,6 +27,9 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 			nameSuffix = matched[0]
 			src = src.replace /[^\/]*?\.(jpg|jped|gif|png|svg)$/, ""
 
+		if not nameSuffix and model.filename
+			nameSuffix = model.filename
+
 		# Get icon size
 		# TODO This should be configurable with options
 		if typeof model.iconSize is 'undefined'

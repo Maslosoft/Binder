@@ -12194,6 +12194,9 @@ module.exports = function (element) {
         nameSuffix = matched[0];
         src = src.replace(/[^\/]*?\.(jpg|jped|gif|png|svg)$/, "");
       }
+      if (!nameSuffix && model.filename) {
+        nameSuffix = model.filename;
+      }
       if (typeof model.iconSize === 'undefined') {
         defaultSize = 16;
       } else {
