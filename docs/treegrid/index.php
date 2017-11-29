@@ -59,7 +59,7 @@
 		<tbody 
 		data-bind="
 			treegrid: {
-				data: balin.model.Tree, 
+				'data': balin.model.Tree,
 				childrenField: 'children',
 				nodeIcon: '../images/pdf.png',
 				folderIcon: '../images/zip.png',

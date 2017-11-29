@@ -14261,7 +14261,7 @@ module.exports = function (element) {
     };
 
     InsertIndicator.prototype.over = function(element, hitMode) {
-      var expander, left, mid, noExpander, node, nodeMid, offset, top, widthOffset;
+      var expander, left, mid, midFactor, noExpander, node, nodeMid, offset, top, widthOffset;
       if (hitMode == null) {
         hitMode = 'over';
       }
@@ -14274,10 +14274,11 @@ module.exports = function (element) {
       expander = element.find('.expander');
       noExpander = element.find('.no-expander');
       widthOffset = 0;
+      midFactor = 1.5;
       offset = node.offset();
-      mid = indicator.outerHeight(true) / 2;
+      mid = indicator.outerHeight(true) / midFactor;
       if (hitMode === 'over') {
-        nodeMid = node.outerHeight(true) / 2;
+        nodeMid = node.outerHeight(true) / midFactor;
         top = offset.top + nodeMid - mid;
       }
       if (hitMode === 'before') {
@@ -14308,7 +14309,7 @@ module.exports = function (element) {
     };
 
     InsertIndicator.prototype.create = function() {
-      indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;line-height: 1em;">\n	<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">\n		&#9654;\n	</span>\n	<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">\n		&#11835;\n	</span>\n</div>');
+      indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;z-index: 10000;color:green;line-height: 1em;">\n	<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">\n		&#9654;\n	</span>\n	<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">\n		&#11835;\n	</span>\n</div>');
       indicator.appendTo('body');
       coarse = indicator.find('.tree-grid-insert-indicator-coarse');
       precise = indicator.find('.tree-grid-insert-indicator-precise');

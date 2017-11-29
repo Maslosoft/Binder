@@ -3632,11 +3632,13 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		expander = element.find('.expander')
 		noExpander = element.find('.no-expander')
 		widthOffset = 0
+		midFactor = 1.5
+		
 		offset = node.offset()
-		mid = indicator.outerHeight(true) / 2
+		mid = indicator.outerHeight(true) / midFactor
 		
 		if hitMode is 'over'
-			nodeMid = node.outerHeight(true) / 2
+			nodeMid = node.outerHeight(true) / midFactor
 			top = offset.top + nodeMid - mid
 
 		if hitMode is 'before'
@@ -3665,7 +3667,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 
 	create: () ->
 		indicator = jQuery '''
-		<div class="tree-grid-insert-indicator" style="display:none;position:absolute;color:green;line-height: 1em;">
+		<div class="tree-grid-insert-indicator" style="display:none;position:absolute;z-index: 10000;color:green;line-height: 1em;">
 			<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">
 				&#9654;
 			</span>

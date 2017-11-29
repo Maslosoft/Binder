@@ -54,6 +54,7 @@
       if (data == null) {
         data = null;
       }
+      this.children = [];
       TreeItem.__super__.constructor.call(this, data);
       this.id = TreeItem.idCounter++;
     }
