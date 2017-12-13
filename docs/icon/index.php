@@ -22,11 +22,14 @@ use Maslosoft\Ilmatar\Components\Controller;
     Scaling parameters are simulated here by created directory structures.
 </p>
 <p>
-    This binding does not have configuration parameters, is will behave depending on context.
+    This binding does not have configuration parameters, is will behave depending on context. However
+    setting extra binding value of <code>cachebusting</code> with value <code>true</code>
+    will add timestamp to logo to ensure that always fresh copy is loaded. This is useful
+    for dynamic images.
 </p>
 <div>
     <div class="well">
-    <p>Image with timestamp example and scaling parameters:</p>
+    <p>Image with timestamp example and scaling parameters with cachebusting enabled:</p>
     <p>
         <ul>
         <li><code>isImages</code> is set to <code>true</code></li>
@@ -36,7 +39,7 @@ use Maslosoft\Ilmatar\Components\Controller;
     </ul>
     </p>
     <!-- /trim -->
-	<img data-bind="icon: balin.model.Image" />
+	<img data-bind="icon: balin.model.Image, cachebusting: true" />
     <!-- trim -->
 
         <p>

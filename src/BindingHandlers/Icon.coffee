@@ -8,6 +8,8 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 		$element = $(element)
 		model = @getValue(valueAccessor)
 
+		extra = @getValue(allBindings)
+
 		iconField = allBindings.get("iconField") or 'icon'
 		if not model
 			if console
@@ -90,6 +92,9 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 			src = src + nameSuffix
 		else
 			src = src + '/' + nameSuffix
+
+		if extra.cachebusting
+			src = src + '?' + new Date().getTime()
 
 		# Update src only if changed
 		if $element.attr("src") != src

@@ -1632,9 +1632,10 @@
     }
 
     Icon.prototype.update = function(element, valueAccessor, allBindings) {
-      var $element, date, defaultSize, fixedSize, iconField, isImage, isSvg, matched, model, nameSuffix, regex, size, src;
+      var $element, date, defaultSize, extra, fixedSize, iconField, isImage, isSvg, matched, model, nameSuffix, regex, size, src;
       $element = $(element);
       model = this.getValue(valueAccessor);
+      extra = this.getValue(allBindings);
       iconField = allBindings.get("iconField") || 'icon';
       if (!model) {
         if (console) {
@@ -1713,6 +1714,9 @@
         src = src + nameSuffix;
       } else {
         src = src + '/' + nameSuffix;
+      }
+      if (extra.cachebusting) {
+        src = src + '?' + new Date().getTime();
       }
       if ($element.attr("src") !== src) {
         $element.attr("src", src);
