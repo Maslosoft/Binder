@@ -2073,7 +2073,7 @@
     };
 
     Tags.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      var build, config, copy, dropDownKill, el, handler, value;
+      var build, config, copy, data, dropDownKill, el, handler, updateCSS, value;
       if (element.tagName.toLowerCase() !== 'select') {
         throw new Error("Tags binding must be placed on `select` element");
       }
@@ -2081,33 +2081,60 @@
         jQuery(dropdownKillStyles).appendTo('head');
         once = false;
       }
-      value = this.getValue(valueAccessor);
+      data = this.getValue(valueAccessor);
+      if (data.data) {
+        value = data.data;
+      } else {
+        value = data;
+      }
       copy = JSON.parse(JSON.stringify(value));
       el = jQuery(element);
       el.data('tags', true);
       el.attr('multiple', true);
       this.setTags(el, copy);
       config = {
+        placeholder: 'Add tag',
         tags: true,
         tokenSeparators: [',', ' ']
       };
+      updateCSS = function() {
+        var tags;
+        if (data.inputCss) {
+          tags = el.parent().find('.select2-search__field');
+          return tags.addClass(data.inputCss);
+        }
+      };
+      if (data.tagCss) {
+        config.templateSelection = function(selection, element) {
+          element.removeClass('select2-selection__choice');
+          element.addClass(data.tagCss);
+          if (selection.selected) {
+            return jQuery("<span>" + selection.text + "</span>");
+          } else {
+            return jQuery("<span>" + selection.text + "</span>");
+          }
+        };
+      }
       handler = (function(_this) {
         return function() {
-          var elementValue, index, tag, _i, _len, _results;
-          value.removeAll();
+          var elementValue, index, tag, _i, _len;
+          if (value.removeAll) {
+            value.removeAll();
+          } else {
+            value = [];
+          }
           elementValue = el.val();
           if (elementValue) {
-            _results = [];
             for (index = _i = 0, _len = elementValue.length; _i < _len; index = ++_i) {
               tag = elementValue[index];
               tag = tag.replace(',', '').replace(' ', '').trim();
               if (!tag) {
                 continue;
               }
-              _results.push(value.push(tag));
+              value.push(tag);
             }
-            return _results;
           }
+          return updateCSS();
         };
       })(this);
       dropDownKill = (function(_this) {
@@ -2122,6 +2149,7 @@
       build = (function(_this) {
         return function() {
           el.select2(config);
+          updateCSS();
           el.on('change', handler);
           el.on('select2:select select2:unselect', handler);
           el.on('select2:opening select2:close', dropDownKill);
@@ -2138,8 +2166,13 @@
     };
 
     Tags.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
-      var copy, el, maybeSet, value;
-      value = this.getValue(valueAccessor);
+      var copy, data, el, maybeSet, value;
+      data = this.getValue(valueAccessor);
+      if (data.data) {
+        value = data.data;
+      } else {
+        value = data;
+      }
       copy = JSON.parse(JSON.stringify(value));
       el = jQuery(element);
       maybeSet = (function(_this) {

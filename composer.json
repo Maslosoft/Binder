@@ -12,5 +12,8 @@
 		}
 	],
 	"require": {},
-	"homepage": "https://maslosoft.com/balin/"
+	"homepage": "https://maslosoft.com/balin/",
+	"require-dev": {
+		"maslosoft/zamm": "*"
+	}
 }

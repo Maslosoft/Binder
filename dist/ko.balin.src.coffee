@@ -1914,7 +1914,14 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 			jQuery(dropdownKillStyles).appendTo 'head'
 			once = false
 
-		value = @getValue valueAccessor
+		data = @getValue valueAccessor
+
+		if data.data
+			value = data.data
+		else
+			# Assume direct data passing
+			value = data
+
 		copy = JSON.parse JSON.stringify value
 
 		el = jQuery element
@@ -1924,12 +1931,32 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 		@setTags el, copy
 		
 		config = {
+				placeholder: 'Add tag'
 				tags: true
-				tokenSeparators: [',', ' '],
+				tokenSeparators: [',', ' ']
 			}
-		
+
+		updateCSS = () ->
+			if data.inputCss
+				tags = el.parent().find('.select2-search__field')
+				tags.addClass(data.inputCss);
+
+		if data.tagCss
+			config.templateSelection = (selection, element) ->
+				element.removeClass 'select2-selection__choice'
+				element.addClass data.tagCss
+				if selection.selected
+					return jQuery "<span>#{selection.text}</span>"
+				else
+					return jQuery "<span>#{selection.text}</span>"
+
+
 		handler = =>
-			value.removeAll()
+			if value.removeAll
+				value.removeAll()
+			else
+				value = []
+
 			elementValue = el.val()
 			if elementValue
 				for tag, index in elementValue
@@ -1938,6 +1965,7 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 
 					if not tag then continue
 					value.push tag
+			updateCSS()
 
 
 		# This prevents dropdown for tags
@@ -1950,6 +1978,8 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 
 			# Apply select2
 			el.select2 config
+
+			updateCSS()
 
 			el.on 'change', handler
 			el.on 'select2:select select2:unselect', handler
@@ -1965,7 +1995,14 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 		setTimeout build, 0
 
 	update: (element, valueAccessor, allBindingsAccessor) =>
-		value = @getValue(valueAccessor)
+		data = @getValue(valueAccessor)
+
+		if data.data
+			value = data.data
+		else
+			# Assume direct data passing
+			value = data
+
 		copy = JSON.parse JSON.stringify value
 
 		el = jQuery element
