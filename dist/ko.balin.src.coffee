@@ -1931,15 +1931,16 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 		@setTags el, copy
 		
 		config = {
-				placeholder: 'Add tag'
+				placeholder: data.placeholder
 				tags: true
 				tokenSeparators: [',', ' ']
 			}
 
 		updateCSS = () ->
 			if data.inputCss
-				tags = el.parent().find('.select2-search__field')
-				tags.addClass(data.inputCss);
+				input = el.parent().find('.select2-search__field')
+				input.addClass(data.inputCss);
+				input.attr 'placeholder', data.placeholder
 
 		if data.tagCss
 			config.templateSelection = (selection, element) ->

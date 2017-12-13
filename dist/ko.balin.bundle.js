@@ -12637,15 +12637,16 @@ module.exports = function (element) {
       el.attr('multiple', true);
       this.setTags(el, copy);
       config = {
-        placeholder: 'Add tag',
+        placeholder: data.placeholder,
         tags: true,
         tokenSeparators: [',', ' ']
       };
       updateCSS = function() {
-        var tags;
+        var input;
         if (data.inputCss) {
-          tags = el.parent().find('.select2-search__field');
-          return tags.addClass(data.inputCss);
+          input = el.parent().find('.select2-search__field');
+          input.addClass(data.inputCss);
+          return input.attr('placeholder', data.placeholder);
         }
       };
       if (data.tagCss) {

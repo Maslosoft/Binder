@@ -34,6 +34,7 @@ use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\Select2Package;
     .tag-input{
         margin-top: .15em !important;
         margin-left: .3em !important;
+        min-width: 6em;
     }
 </style>
 <!-- /trim -->
@@ -44,7 +45,8 @@ use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\Select2Package;
 			tags: {
 			    'data': balin.model.options.selected,
 			    'tagCss': 'btn btn-default btn-tag',
-			    'inputCss': 'form-control tag-input'
+			    'inputCss': 'form-control tag-input',
+			    'placeholder': 'Select tag...'
 			}
 		"
 		class="form-control">
