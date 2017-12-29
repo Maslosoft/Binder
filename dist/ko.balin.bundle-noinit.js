@@ -13191,7 +13191,6 @@ module.exports = function (element) {
       var Error, className, name, params, ref, value, widget;
       className = this.getValue(valueAccessor);
       ref = allBindings.get('ref');
-      console.log(ref, typeof ref);
       if (typeof ref === 'string' || !ref) {
         if (typeof className !== 'function') {
           return;
@@ -13212,8 +13211,6 @@ module.exports = function (element) {
           ref = widget;
         }
       } else {
-        console.log('By ref...');
-        console.log(ref, typeof ref);
         if (typeof ref === 'object') {
           widget = ref;
         }

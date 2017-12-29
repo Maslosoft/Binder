@@ -2411,9 +2411,8 @@ class @Maslosoft.Ko.Balin.Widget extends @Maslosoft.Ko.Balin.Base
 		className = @getValue valueAccessor
 
 		ref = allBindings.get 'ref'
-		console.log ref, typeof(ref)
 
-		# Ref is string, trye to create new widget and set ref
+		# Ref is string, try to create new widget and set ref
 		if typeof(ref) is 'string' or not ref
 
 			if typeof(className) isnt 'function' then return
@@ -2431,9 +2430,10 @@ class @Maslosoft.Ko.Balin.Widget extends @Maslosoft.Ko.Balin.Base
 			if ref
 				ref = widget
 		else
-			console.log 'By ref...'
-			console.log ref, typeof(ref)
+#			console.log 'By ref...'
+#			console.log ref, typeof(ref)
 			if typeof(ref) is 'object'
+#				console.log 'Assign ref...'
 				widget = ref
 
 		params = allBindings.get 'params'
