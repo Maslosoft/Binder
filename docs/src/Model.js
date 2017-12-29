@@ -439,4 +439,44 @@
 
   })();
 
+  this.Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget = (function() {
+    var i, originalTitle;
+
+    i = 0;
+
+    originalTitle = '';
+
+    MyOtherWidget.prototype.title = '';
+
+    function MyOtherWidget() {
+      this.log = bind(this.log, this);
+      this.dispose = bind(this.dispose, this);
+      this.init = bind(this.init, this);
+      this.log("Create other");
+    }
+
+    MyOtherWidget.prototype.init = function(element) {
+      if (!originalTitle) {
+        originalTitle = this.title;
+      }
+      if (i > 1) {
+        this.title = originalTitle + " #" + i;
+      }
+      element.innerHTML = this.title;
+      return this.log("Init other");
+    };
+
+    MyOtherWidget.prototype.dispose = function(element) {
+      return this.log("Dispose other");
+    };
+
+    MyOtherWidget.prototype.log = function(message) {
+      i++;
+      return jQuery('#widgetLog2').append("<div>" + i + ". " + message + "</div>");
+    };
+
+    return MyOtherWidget;
+
+  })();
+
 }).call(this);

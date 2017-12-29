@@ -1,5 +1,6 @@
 window.balin = {};
 window.balin.model = {};
+window.balin.widget = {};
 var app = window.app;
 var body = jQuery('body');
 var defaultFontSize = false;

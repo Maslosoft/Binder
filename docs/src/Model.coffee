@@ -155,3 +155,30 @@ class @Maslosoft.Ko.BalinDev.Widgets.MyWidget
 	log: (message) =>
 		i++
 		jQuery('#widgetLog').append "<div>#{i}. #{message}</div>"
+
+class @Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget
+
+	i = 0
+
+	originalTitle = ''
+
+	title: ''
+
+
+	constructor: () ->
+		@log "Create other"
+
+	init: (element) =>
+		if not originalTitle
+			originalTitle = @title
+		if i > 1
+			@title = "#{originalTitle} ##{i}"
+		element.innerHTML = @title
+		@log "Init other"
+
+	dispose: (element) =>
+		@log "Dispose other"
+
+	log: (message) =>
+		i++
+		jQuery('#widgetLog2').append "<div>#{i}. #{message}</div>"

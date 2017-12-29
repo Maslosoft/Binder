@@ -201,6 +201,7 @@
       icon: Maslosoft.Ko.Balin.Icon,
       log: Maslosoft.Ko.Balin.Log,
       model: Maslosoft.Ko.Balin.DataModel,
+      ref: Maslosoft.Ko.Balin.Widget,
       src: Maslosoft.Ko.Balin.Src,
       tags: Maslosoft.Ko.Balin.Tags,
       textValue: Maslosoft.Ko.Balin.TextValue,
@@ -2645,17 +2646,33 @@
     Widget.prototype.init = function(element, valueAccessor, allBindings, context) {
       var Error, className, name, params, ref, value, widget;
       className = this.getValue(valueAccessor);
-      if (typeof className !== 'function') {
-        return;
-      }
-      if (typeof className.constructor !== 'function') {
-        return;
-      }
-      try {
-        widget = new className;
-      } catch (_error) {
-        Error = _error;
-        return;
+      ref = allBindings.get('ref');
+      console.log(ref, typeof ref);
+      if (typeof ref === 'string' || !ref) {
+        if (typeof className !== 'function') {
+          return;
+        }
+        if (typeof className.constructor !== 'function') {
+          return;
+        }
+        try {
+          widget = new className;
+        } catch (_error) {
+          Error = _error;
+          return;
+        }
+        if (ref) {
+          setRefByName(ref, widget);
+        }
+        if (ref) {
+          ref = widget;
+        }
+      } else {
+        console.log('By ref...');
+        console.log(ref, typeof ref);
+        if (typeof ref === 'object') {
+          widget = ref;
+        }
       }
       params = allBindings.get('params');
       if (params) {
@@ -2663,13 +2680,6 @@
           value = params[name];
           widget[name] = value;
         }
-      }
-      ref = allBindings.get('ref');
-      if (ref) {
-        setRefByName(ref, widget);
-      }
-      if (ref) {
-        ref = widget;
       }
       if (typeof widget.init === 'function') {
         widget.init(element);

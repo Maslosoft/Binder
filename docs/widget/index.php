@@ -21,6 +21,10 @@
     path to javascript reference. Using this parameter it is possible to use widget
     outside Knockout JS scope.
 </p>
+<p>
+    However when <code>ref</code> is object, and no <code>widget</code> param is present,
+    this binding will reuse existing object.
+</p>
 <h5>Example Widget Output:</h5>
 <a href="javascript://" onclick="balin.model.toggle.enabled = !balin.model.toggle.enabled">Toggle Widget</a>
 |
@@ -36,10 +40,23 @@
 <div id="widgetLog" class="well">
 
 </div>
+    <h5>Example Widget With <code>ref</code> reusing existing object:</h5>
+<!-- /trim -->
+    <div data-bind="ref: balin.widget.other" class="well">
+
+    </div>
+<!-- trim -->
+    <h5>Widget log of second widget:</h5>
+    <div id="widgetLog2" class="well">
+
+    </div>
 <!-- /trim -->
 <script>
 	window.onload = (function () {
 		balin.model.toggle = ko.tracker.factory({enabled: true});
+
+		balin.widget.other = new Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget();
+        balin.widget.other.title = 'Title set in JavaScript';
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 		jQuery('body').tooltip({

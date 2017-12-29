@@ -84,6 +84,7 @@
 		icon: Maslosoft.Ko.Balin.Icon
 		log: Maslosoft.Ko.Balin.Log
 		model: Maslosoft.Ko.Balin.DataModel
+		ref: Maslosoft.Ko.Balin.Widget
 		src: Maslosoft.Ko.Balin.Src
 		tags: Maslosoft.Ko.Balin.Tags
 		textValue: Maslosoft.Ko.Balin.TextValue
