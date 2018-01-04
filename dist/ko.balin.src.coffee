@@ -2139,23 +2139,29 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 			unwrapRecursive = (items) ->
 				depth++
 				for item in items
+					hasChilds = item.children and item.children.length and item.children.length > 0
 					extras = {
 						depth: depth
-						hasChilds: !!item.children.length
+						hasChilds: hasChilds
 					}
 					item._treeGrid = ko.tracker.factory extras
 					data.push item
 					depths.push depth
-					if item.children.length
+					if hasChilds
 						unwrapRecursive item.children
 						depth--
 
-			unwrapRecursive unwrappedValue['data']['children']
+#			log unwrappedValue['data']
+			if unwrappedValue['data']['children']
+#				log('model init')
+				unwrapRecursive unwrappedValue['data']['children']
+			else
+#				log('array init')
+				unwrapRecursive unwrappedValue['data']
 			
 			if bindingContext
 				bindingContext.tree = unwrappedValue['data']
 				bindingContext.widget = widget
-
 
 			# If unwrappedValue.data is the array, preserve all relevant options and unwrap again value so we get updates
 			ko.utils.unwrapObservable modelValue
@@ -2178,11 +2184,17 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 		activeClass = value.activeClass
 
 		table = jQuery(element)
-		table.on 'click', 'tr', (e) ->
+		activeClassHandler = (e) ->
 			# Remove from all instances of `tr` tu support multiple
 			# classes separated with space
 			table.find('tr').removeClass activeClass
 			jQuery(e.currentTarget).addClass activeClass
+		table.on 'click', 'tr', activeClassHandler
+
+		dispose = (toDispose) ->
+			jQuery(toDispose).off "click", 'tr', activeClassHandler
+
+		ko.utils.domNodeDisposal.addDisposeCallback element, dispose
 
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
@@ -2190,7 +2202,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
-
+		log 'update'
 		return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 
 
@@ -3316,16 +3328,16 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	# This is required when dragging near top or bottom of container
 	#
 	#
-	stop: (e) =>
+	stop: (e, ui) =>
 		if not didDrop
-			@drop e
+			@drop e, ui
 
 	#
 	# Drop in a normal manner, see also `stop` for edge case
 	# TODO Freeze cell width containing nodes, or flicker might occur. 
 	# Freeze must be released on timeout
 	#
-	drop: (e) =>
+	drop: (e, ui) =>
 		didDrop = true
 		if not dragged
 			return @clear()
@@ -3333,32 +3345,51 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			return @clear()
 		if not draggedOver.get(0)
 			return @clear()
+		log e
+		log ui
+		from = ko.dataFor ui.draggable.context
+		fromParent = @grid.getParent from
 		current = ko.dataFor dragged
 		over = ko.dataFor draggedOver.get(0)
 		overParent = @grid.getParent over
 		# console.log "Drop #{current.title} over #{over.title}"
 		# console.log arguments
+		log "FROM " + from.title
+		log "FRMP " , fromParent
+		log "CURR " + current.title
+		log "OVER " + over.title
+		log "PRNT " + overParent.title
+		log "HITM " + hitMode
+
+		if overParent.children
+			# Model initialized
+			parentChilds = overParent.children
+		else
+			# Array initialized
+			parentChilds = overParent
 
 		@grid.remove current
 		
 		if hitMode is 'over'
 			# Most obvious case, when dragged node is directly over
-			# dropped node, inser current node as it's last child
+			# dropped node, insert current node as it's last child
 			over.children.push current
+
 		if hitMode is 'before'
 			# Insert node before current node, this is case when
 			# insert mark is before dragged over node
-			index = overParent.children.indexOf over
-			overParent.children.splice index, 0, current
+			index = parentChilds.indexOf over
+			parentChilds.splice index, 0, current
+
 		if hitMode is 'after'
 			# When node has childs, then add just at beginning
 			# to match visual position of dragged node
 			if over.children.length
-				overParent.children.splice 0, 0, current
+				parentChilds.splice 0, 0, current
 			else
 				# When not having childs, it means that node is
 				# last on the level so insert as a last node
-				overParent.children.push current
+				parentChilds.push current
 		@clear()
 
 	#
@@ -3553,14 +3584,14 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
 	updateExpanders: () =>
 
 		one = (item, data) =>
-			hasChildren = !!data.children.length
+			hasChildren = data.children && data.children.length
 			if hasChildren
 				item.find('.no-expander').hide()
 				item.find('.expander').show()
 			else
 				item.find('.expander').hide()
 				item.find('.no-expander').show()
-			item.find('.debug').html data.children.length
+#			item.find('.debug').html data.children.length
 		defer = () =>
 			@grid.visit one
 
@@ -3810,16 +3841,23 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 			ctx = ko.contextFor @element.get(0)
 			model = ctx.tree
 			callback null, model
-			for child in model.children
-				callback model, child
-				@visitRecursive callback, child
+			if model.children and model.children.length
+				for child in model.children
+					callback model, child
+					@visitRecursive callback, child
 		else
-			for child in model.children
-				callback model, child
-				@visitRecursive callback, child
+			if model.children and model.children.length
+				for child in model.children
+					callback model, child
+					@visitRecursive callback, child
 
 	getParent: (model) =>
 		found = null
+
+		# Array initialized, default parent is array of nodes
+		if not @config.data.children
+			found = @config.data
+
 		one = (parent, data) ->
 			if data is model
 				found = parent

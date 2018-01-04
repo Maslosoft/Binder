@@ -24,14 +24,14 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
 	updateExpanders: () =>
 
 		one = (item, data) =>
-			hasChildren = !!data.children.length
+			hasChildren = data.children && data.children.length
 			if hasChildren
 				item.find('.no-expander').hide()
 				item.find('.expander').show()
 			else
 				item.find('.expander').hide()
 				item.find('.no-expander').show()
-			item.find('.debug').html data.children.length
+#			item.find('.debug').html data.children.length
 		defer = () =>
 			@grid.visit one
 

@@ -68,16 +68,23 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 			ctx = ko.contextFor @element.get(0)
 			model = ctx.tree
 			callback null, model
-			for child in model.children
-				callback model, child
-				@visitRecursive callback, child
+			if model.children and model.children.length
+				for child in model.children
+					callback model, child
+					@visitRecursive callback, child
 		else
-			for child in model.children
-				callback model, child
-				@visitRecursive callback, child
+			if model.children and model.children.length
+				for child in model.children
+					callback model, child
+					@visitRecursive callback, child
 
 	getParent: (model) =>
 		found = null
+
+		# Array initialized, default parent is array of nodes
+		if not @config.data.children
+			found = @config.data
+
 		one = (parent, data) ->
 			if data is model
 				found = parent

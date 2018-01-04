@@ -26,23 +26,29 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 			unwrapRecursive = (items) ->
 				depth++
 				for item in items
+					hasChilds = item.children and item.children.length and item.children.length > 0
 					extras = {
 						depth: depth
-						hasChilds: !!item.children.length
+						hasChilds: hasChilds
 					}
 					item._treeGrid = ko.tracker.factory extras
 					data.push item
 					depths.push depth
-					if item.children.length
+					if hasChilds
 						unwrapRecursive item.children
 						depth--
 
-			unwrapRecursive unwrappedValue['data']['children']
+#			log unwrappedValue['data']
+			if unwrappedValue['data']['children']
+#				log('model init')
+				unwrapRecursive unwrappedValue['data']['children']
+			else
+#				log('array init')
+				unwrapRecursive unwrappedValue['data']
 			
 			if bindingContext
 				bindingContext.tree = unwrappedValue['data']
 				bindingContext.widget = widget
-
 
 			# If unwrappedValue.data is the array, preserve all relevant options and unwrap again value so we get updates
 			ko.utils.unwrapObservable modelValue
@@ -65,11 +71,17 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 		activeClass = value.activeClass
 
 		table = jQuery(element)
-		table.on 'click', 'tr', (e) ->
+		activeClassHandler = (e) ->
 			# Remove from all instances of `tr` tu support multiple
 			# classes separated with space
 			table.find('tr').removeClass activeClass
 			jQuery(e.currentTarget).addClass activeClass
+		table.on 'click', 'tr', activeClassHandler
+
+		dispose = (toDispose) ->
+			jQuery(toDispose).off "click", 'tr', activeClassHandler
+
+		ko.utils.domNodeDisposal.addDisposeCallback element, dispose
 
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
@@ -77,6 +89,6 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
-
+		log 'update'
 		return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 

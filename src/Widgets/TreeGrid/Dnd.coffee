@@ -106,16 +106,16 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	# This is required when dragging near top or bottom of container
 	#
 	#
-	stop: (e) =>
+	stop: (e, ui) =>
 		if not didDrop
-			@drop e
+			@drop e, ui
 
 	#
 	# Drop in a normal manner, see also `stop` for edge case
 	# TODO Freeze cell width containing nodes, or flicker might occur. 
 	# Freeze must be released on timeout
 	#
-	drop: (e) =>
+	drop: (e, ui) =>
 		didDrop = true
 		if not dragged
 			return @clear()
@@ -123,32 +123,51 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			return @clear()
 		if not draggedOver.get(0)
 			return @clear()
+		log e
+		log ui
+		from = ko.dataFor ui.draggable.context
+		fromParent = @grid.getParent from
 		current = ko.dataFor dragged
 		over = ko.dataFor draggedOver.get(0)
 		overParent = @grid.getParent over
 		# console.log "Drop #{current.title} over #{over.title}"
 		# console.log arguments
+		log "FROM " + from.title
+		log "FRMP " , fromParent
+		log "CURR " + current.title
+		log "OVER " + over.title
+		log "PRNT " + overParent.title
+		log "HITM " + hitMode
+
+		if overParent.children
+			# Model initialized
+			parentChilds = overParent.children
+		else
+			# Array initialized
+			parentChilds = overParent
 
 		@grid.remove current
 		
 		if hitMode is 'over'
 			# Most obvious case, when dragged node is directly over
-			# dropped node, inser current node as it's last child
+			# dropped node, insert current node as it's last child
 			over.children.push current
+
 		if hitMode is 'before'
 			# Insert node before current node, this is case when
 			# insert mark is before dragged over node
-			index = overParent.children.indexOf over
-			overParent.children.splice index, 0, current
+			index = parentChilds.indexOf over
+			parentChilds.splice index, 0, current
+
 		if hitMode is 'after'
 			# When node has childs, then add just at beginning
 			# to match visual position of dragged node
 			if over.children.length
-				overParent.children.splice 0, 0, current
+				parentChilds.splice 0, 0, current
 			else
 				# When not having childs, it means that node is
 				# last on the level so insert as a last node
-				overParent.children.push current
+				parentChilds.push current
 		@clear()
 
 	#
