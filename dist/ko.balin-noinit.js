@@ -3942,8 +3942,12 @@
     TreeGridView.prototype.remove = function(model) {
       var one;
       one = function(parent, data) {
-        if (parent && parent.children) {
-          return parent.children.remove(model);
+        if (parent) {
+          if (parent.children) {
+            return parent.children.remove(model);
+          } else {
+            return parent.remove(model);
+          }
         }
       };
       return this.visitRecursive(one);

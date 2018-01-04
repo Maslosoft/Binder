@@ -3866,8 +3866,13 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 
 	remove: (model) =>
 		one = (parent, data) ->
-			if parent and parent.children
-				parent.children.remove model
+			if parent
+				# Model initialized
+				if parent.children
+					parent.children.remove model
+				# Array initialized
+				else
+					parent.remove model
 				
 		@visitRecursive one
 

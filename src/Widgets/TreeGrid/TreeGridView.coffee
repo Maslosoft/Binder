@@ -72,10 +72,18 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 				for child in model.children
 					callback model, child
 					@visitRecursive callback, child
+			# Array node
+			if model.length
+				for child in model
+					@visitRecursive callback, child
 		else
 			if model.children and model.children.length
 				for child in model.children
 					callback model, child
+					@visitRecursive callback, child
+			# Array node
+			if model.length
+				for child in model
 					@visitRecursive callback, child
 
 	getParent: (model) =>
@@ -93,8 +101,13 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 
 	remove: (model) =>
 		one = (parent, data) ->
-			if parent and parent.children
-				parent.children.remove model
+			if parent
+				# Model initialized
+				if parent.children
+					parent.children.remove model
+				# Array initialized
+				else
+					parent.remove model
 				
 		@visitRecursive one
 

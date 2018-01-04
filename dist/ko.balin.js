@@ -3892,7 +3892,7 @@
     };
 
     TreeGridView.prototype.visitRecursive = function(callback, model) {
-      var child, ctx, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
+      var child, ctx, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _results, _results1;
       if (model == null) {
         model = null;
       }
@@ -3902,10 +3902,16 @@
         callback(null, model);
         if (model.children && model.children.length) {
           _ref = model.children;
-          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             child = _ref[_i];
             callback(model, child);
+            this.visitRecursive(callback, child);
+          }
+        }
+        if (model.length) {
+          _results = [];
+          for (_j = 0, _len1 = model.length; _j < _len1; _j++) {
+            child = model[_j];
             _results.push(this.visitRecursive(callback, child));
           }
           return _results;
@@ -3913,10 +3919,16 @@
       } else {
         if (model.children && model.children.length) {
           _ref1 = model.children;
-          _results1 = [];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            child = _ref1[_j];
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            child = _ref1[_k];
             callback(model, child);
+            this.visitRecursive(callback, child);
+          }
+        }
+        if (model.length) {
+          _results1 = [];
+          for (_l = 0, _len3 = model.length; _l < _len3; _l++) {
+            child = model[_l];
             _results1.push(this.visitRecursive(callback, child));
           }
           return _results1;
@@ -3942,8 +3954,12 @@
     TreeGridView.prototype.remove = function(model) {
       var one;
       one = function(parent, data) {
-        if (parent && parent.children) {
-          return parent.children.remove(model);
+        if (parent) {
+          if (parent.children) {
+            return parent.children.remove(model);
+          } else {
+            return parent.remove(model);
+          }
         }
       };
       return this.visitRecursive(one);
