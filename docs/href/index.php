@@ -17,8 +17,8 @@
 <!-- /trim -->
 <table class="table table-condensed">
 	<tr>
-		<th>Raw Link href</th>
-		<td>
+		<th class="col-xs-6">Raw Link href</th>
+		<td class="col-xs-6">
 			<input data-bind="textInput: balin.model.Href.filename"/>
 		</td>
 	</tr>
@@ -28,6 +28,12 @@
 			<a data-bind="href: balin.model.Href.filename">This should point to above url</a>
 		</td>
 	</tr>
+    <tr>
+        <th>Will wear-out inner <code>a</code> tags. Useful with user provided data.</th>
+        <td>
+            <a data-bind="href: balin.model.Href.filename"><span data-bind="html: balin.model.Inner.filename"></span></a>
+        </td>
+    </tr>
 	<tr>
 		<th>Link with punches</th>
 		<td>
@@ -71,6 +77,7 @@
 <script>
 	window.onload = (function(){
 		balin.model.Href = new Maslosoft.Ko.BalinDev.Models.Href({filename: 'http://example.com/'});
+        balin.model.Inner = new Maslosoft.Ko.BalinDev.Models.Href({filename: '<a href="http://example.org/">Should not have inner link inside</a>'});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

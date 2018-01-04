@@ -1452,6 +1452,8 @@
   })(this.Maslosoft.Ko.Balin.Base);
 
   this.Maslosoft.Ko.Balin.Href = (function(_super) {
+    var bustLinks;
+
     __extends(Href, _super);
 
     function Href() {
@@ -1459,6 +1461,22 @@
       this.init = __bind(this.init, this);
       return Href.__super__.constructor.apply(this, arguments);
     }
+
+    bustLinks = function(element) {
+      var defer;
+      defer = function() {
+        var $il, innerLink, _i, _len, _ref, _results;
+        _ref = jQuery(element).find('a');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          innerLink = _ref[_i];
+          $il = jQuery(innerLink);
+          _results.push($il.replaceWith($il.contents()));
+        }
+        return _results;
+      };
+      return setTimeout(defer, 0);
+    };
 
     Href.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var stopPropagation;
@@ -1468,6 +1486,7 @@
       if (element.tagName.toLowerCase() !== 'a') {
         console.warn('href binding should be used only on `a` tags');
       }
+      bustLinks(element);
       stopPropagation = allBindingsAccessor.get('stopPropagation') || false;
       if (stopPropagation) {
         return ko.utils.registerEventHandler(element, "click", function(e) {
@@ -1478,6 +1497,7 @@
 
     Href.prototype.update = function(element, valueAccessor, allBindings) {
       var href, target;
+      bustLinks(element);
       href = this.getValue(valueAccessor);
       target = allBindings.get('target') || '';
       if (element.href !== href) {
