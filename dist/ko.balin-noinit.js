@@ -2357,7 +2357,7 @@
             'templateEngine': ko.nativeTemplateEngine.instance
           };
         }
-        data = [];
+        data = ko.observableArray([]);
         depths = [];
         depth = -1;
         unwrapRecursive = function(items) {
