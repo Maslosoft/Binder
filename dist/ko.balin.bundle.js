@@ -12901,7 +12901,7 @@ module.exports = function (element) {
             'templateEngine': ko.nativeTemplateEngine.instance
           };
         }
-        data = ko.observableArray([]);
+        data = [];
         depths = [];
         depth = -1;
         unwrapRecursive = function(items) {
@@ -12976,7 +12976,6 @@ module.exports = function (element) {
     TreeGrid.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
       var widget;
       widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView(element, valueAccessor, 'update');
-      log('update');
       return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
     };
 
@@ -13993,7 +13992,7 @@ module.exports = function (element) {
     };
 
     Dnd.prototype.drop = function(e, ui) {
-      var current, from, fromParent, index, over, overParent, parentChilds;
+      var current, index, over, overParent, parentChilds;
       didDrop = true;
       if (!dragged) {
         return this.clear();
@@ -14004,15 +14003,15 @@ module.exports = function (element) {
       if (!draggedOver.get(0)) {
         return this.clear();
       }
-      log(e);
-      log(ui);
-      from = ko.dataFor(ui.draggable.context);
-      fromParent = this.grid.getParent(from);
       current = ko.dataFor(dragged);
       over = ko.dataFor(draggedOver.get(0));
+      if (current === over) {
+        return this.clear();
+      }
+      if (this.grid.have(current, over)) {
+        return this.clear();
+      }
       overParent = this.grid.getParent(over);
-      log("FROM " + from.title);
-      log("FRMP ", fromParent);
       log("CURR " + current.title);
       log("OVER " + over.title);
       log("PRNT " + overParent.title);
@@ -14050,15 +14049,8 @@ module.exports = function (element) {
     };
 
     Dnd.prototype.dragOver = function(e) {
-      var data;
       if (indicator) {
-        data = ko.dataFor(draggedOver.get(0));
-        if (data.title.toLowerCase().indexOf('t') === -1) {
-          indicator.accept();
-        } else {
-          indicator.deny();
-        }
-        return indicator.precise.over(draggedOver, hitMode);
+        return indicator.precise.over(dragged, draggedOver, hitMode, indicator);
       }
     };
 
@@ -14335,19 +14327,31 @@ module.exports = function (element) {
       });
     };
 
-    InsertIndicator.prototype.over = function(element, hitMode) {
-      var expander, left, mid, midFactor, noExpander, node, nodeMid, offset, top, widthOffset;
+    InsertIndicator.prototype.over = function(dragged, draggedOver, hitMode, accepter) {
+      var current, left, mid, midFactor, node, nodeMid, offset, over, top, widthOffset;
       if (hitMode == null) {
         hitMode = 'over';
       }
+      this.accept();
+      accepter.accept();
       if (hitMode === 'over') {
         this.precise(false);
       } else {
         this.precise(true);
       }
-      node = element.find('.tree-grid-drag-handle');
-      expander = element.find('.expander');
-      noExpander = element.find('.no-expander');
+      current = ko.dataFor(dragged);
+      over = ko.dataFor(draggedOver.get(0));
+      log(current.title);
+      log(over.title);
+      if (current === over) {
+        this.deny();
+        accepter.deny();
+      }
+      if (this.grid.have(current, over)) {
+        this.deny();
+        accepter.deny();
+      }
+      node = draggedOver.find('.tree-grid-drag-handle');
       widthOffset = 0;
       midFactor = 1.5;
       offset = node.offset();
@@ -14409,6 +14413,7 @@ module.exports = function (element) {
       }
       this.context = context != null ? context : 'init';
       this.remove = __bind(this.remove, this);
+      this.have = __bind(this.have, this);
       this.getParent = __bind(this.getParent, this);
       this.visitRecursive = __bind(this.visitRecursive, this);
       this.element = jQuery(element);
@@ -14456,6 +14461,7 @@ module.exports = function (element) {
           _results = [];
           for (_j = 0, _len1 = model.length; _j < _len1; _j++) {
             child = model[_j];
+            callback(model, child);
             _results.push(this.visitRecursive(callback, child));
           }
           return _results;
@@ -14473,6 +14479,7 @@ module.exports = function (element) {
           _results1 = [];
           for (_l = 0, _len3 = model.length; _l < _len3; _l++) {
             child = model[_l];
+            callback(model, child);
             _results1.push(this.visitRecursive(callback, child));
           }
           return _results1;
@@ -14483,15 +14490,24 @@ module.exports = function (element) {
     TreeGridView.prototype.getParent = function(model) {
       var found, one;
       found = null;
-      if (!this.config.data.children) {
-        found = this.config.data;
-      }
       one = function(parent, data) {
         if (data === model) {
           return found = parent;
         }
       };
       this.visitRecursive(one);
+      return found;
+    };
+
+    TreeGridView.prototype.have = function(parent, child) {
+      var found, one;
+      found = false;
+      one = function(parent, data) {
+        if (data === child) {
+          return found = true;
+        }
+      };
+      this.visitRecursive(one, parent);
       return found;
     };
 

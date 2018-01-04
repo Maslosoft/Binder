@@ -75,6 +75,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 			# Array node
 			if model.length
 				for child in model
+					callback model, child
 					@visitRecursive callback, child
 		else
 			if model.children and model.children.length
@@ -84,19 +85,33 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 			# Array node
 			if model.length
 				for child in model
+					callback model, child
 					@visitRecursive callback, child
 
 	getParent: (model) =>
 		found = null
 
-		# Array initialized, default parent is array of nodes
-		if not @config.data.children
-			found = @config.data
-
 		one = (parent, data) ->
 			if data is model
 				found = parent
+		# Don't set model here to start from root
 		@visitRecursive one
+		return found
+
+	#
+	# Check if parent have child
+	#
+	#
+	have: (parent, child) =>
+
+		found = false
+
+		one = (parent, data) ->
+			if data is child
+				found = true
+
+		# Start from parent here
+		@visitRecursive one, parent
 		return found
 
 	remove: (model) =>
@@ -108,7 +123,8 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 				# Array initialized
 				else
 					parent.remove model
-				
+
+		# Don't set model here to start from root
 		@visitRecursive one
 
 	expandAll: () ->

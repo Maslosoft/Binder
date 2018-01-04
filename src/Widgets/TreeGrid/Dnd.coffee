@@ -123,17 +123,22 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			return @clear()
 		if not draggedOver.get(0)
 			return @clear()
-		log e
-		log ui
-		from = ko.dataFor ui.draggable.context
-		fromParent = @grid.getParent from
 		current = ko.dataFor dragged
 		over = ko.dataFor draggedOver.get(0)
+
+		# Forbid dropping on itself
+		if current is over
+			return @clear()
+
+		# Forbid dropping on children of current node
+		if @grid.have current, over
+			return @clear()
+
 		overParent = @grid.getParent over
+
+
 		# console.log "Drop #{current.title} over #{over.title}"
 		# console.log arguments
-		log "FROM " + from.title
-		log "FRMP " , fromParent
 		log "CURR " + current.title
 		log "OVER " + over.title
 		log "PRNT " + overParent.title
@@ -192,13 +197,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	dragOver: (e) =>
 		if indicator
-			data = ko.dataFor draggedOver.get(0)
-			# FIXME TEMP Allow dropping only on items not containing `t` in title
-			if data.title.toLowerCase().indexOf('t') is -1
-				indicator.accept()
-			else
-				indicator.deny()
-			indicator.precise.over draggedOver, hitMode
+			indicator.precise.over dragged, draggedOver, hitMode, indicator
 
 	#
 	# Move handler for mousemove for precise position calculation

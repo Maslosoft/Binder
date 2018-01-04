@@ -2132,7 +2132,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 					'templateEngine': ko.nativeTemplateEngine.instance
 				}
 
-			data = ko.observableArray []
+			data = []
 			depths = []
 			depth = -1
 
@@ -2202,7 +2202,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
-		log 'update'
+
 		return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 
 
@@ -3345,17 +3345,22 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			return @clear()
 		if not draggedOver.get(0)
 			return @clear()
-		log e
-		log ui
-		from = ko.dataFor ui.draggable.context
-		fromParent = @grid.getParent from
 		current = ko.dataFor dragged
 		over = ko.dataFor draggedOver.get(0)
+
+		# Forbid dropping on itself
+		if current is over
+			return @clear()
+
+		# Forbid dropping on children of current node
+		if @grid.have current, over
+			return @clear()
+
 		overParent = @grid.getParent over
+
+
 		# console.log "Drop #{current.title} over #{over.title}"
 		# console.log arguments
-		log "FROM " + from.title
-		log "FRMP " , fromParent
 		log "CURR " + current.title
 		log "OVER " + over.title
 		log "PRNT " + overParent.title
@@ -3414,13 +3419,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	dragOver: (e) =>
 		if indicator
-			data = ko.dataFor draggedOver.get(0)
-			# FIXME TEMP Allow dropping only on items not containing `t` in title
-			if data.title.toLowerCase().indexOf('t') is -1
-				indicator.accept()
-			else
-				indicator.deny()
-			indicator.precise.over draggedOver, hitMode
+			indicator.precise.over dragged, draggedOver, hitMode, indicator
 
 	#
 	# Move handler for mousemove for precise position calculation
@@ -3711,16 +3710,36 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 	# Place over element, with hitMode param
 	#
 	#
-	over: (element, hitMode = 'over') ->
-		
+	over: (dragged, draggedOver, hitMode = 'over', accepter) ->
+
+		@accept()
+		accepter.accept()
+
 		if hitMode is 'over'
 			@precise false
 		else
 			@precise true
 
-		node = element.find('.tree-grid-drag-handle')
-		expander = element.find('.expander')
-		noExpander = element.find('.no-expander')
+		# Check if can actually drop on draggedOver
+		current = ko.dataFor dragged
+		over = ko.dataFor draggedOver.get(0)
+
+		log current.title
+		log over.title
+
+		# Forbid dropping on itself
+		if current is over
+			@deny()
+			accepter.deny()
+
+		# Forbid dropping on children of current node
+		if @grid.have current, over
+			@deny()
+			accepter.deny()
+
+		node = draggedOver.find('.tree-grid-drag-handle')
+#		expander = draggedOver.find('.expander')
+#		noExpander = draggedOver.find('.no-expander')
 		widthOffset = 0
 		midFactor = 1.5
 
@@ -3848,6 +3867,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 			# Array node
 			if model.length
 				for child in model
+					callback model, child
 					@visitRecursive callback, child
 		else
 			if model.children and model.children.length
@@ -3857,19 +3877,33 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 			# Array node
 			if model.length
 				for child in model
+					callback model, child
 					@visitRecursive callback, child
 
 	getParent: (model) =>
 		found = null
 
-		# Array initialized, default parent is array of nodes
-		if not @config.data.children
-			found = @config.data
-
 		one = (parent, data) ->
 			if data is model
 				found = parent
+		# Don't set model here to start from root
 		@visitRecursive one
+		return found
+
+	#
+	# Check if parent have child
+	#
+	#
+	have: (parent, child) =>
+
+		found = false
+
+		one = (parent, data) ->
+			if data is child
+				found = true
+
+		# Start from parent here
+		@visitRecursive one, parent
 		return found
 
 	remove: (model) =>
@@ -3881,7 +3915,8 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 				# Array initialized
 				else
 					parent.remove model
-				
+
+		# Don't set model here to start from root
 		@visitRecursive one
 
 	expandAll: () ->

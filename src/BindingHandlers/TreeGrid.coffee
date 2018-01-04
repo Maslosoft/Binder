@@ -19,7 +19,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 					'templateEngine': ko.nativeTemplateEngine.instance
 				}
 
-			data = ko.observableArray []
+			data = []
 			depths = []
 			depth = -1
 
@@ -89,6 +89,6 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
-		log 'update'
+
 		return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 
