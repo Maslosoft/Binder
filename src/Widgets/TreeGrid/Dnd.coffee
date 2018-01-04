@@ -117,6 +117,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	drop: (e, ui) =>
 		didDrop = true
+		@grid.freeze()
 		if not dragged
 			return @clear()
 		if not draggedOver
@@ -126,12 +127,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 		current = ko.dataFor dragged
 		over = ko.dataFor draggedOver.get(0)
 
-		# Forbid dropping on itself
-		if current is over
-			return @clear()
-
-		# Forbid dropping on children of current node
-		if @grid.have current, over
+		if not @grid.canDrop dragged, draggedOver, hitMode
 			return @clear()
 
 		overParent = @grid.getParent over
@@ -139,10 +135,10 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 
 		# console.log "Drop #{current.title} over #{over.title}"
 		# console.log arguments
-		log "CURR " + current.title
-		log "OVER " + over.title
-		log "PRNT " + overParent.title
-		log "HITM " + hitMode
+#		log "CURR " + current.title
+#		log "OVER " + over.title
+#		log "PRNT " + overParent.title
+#		log "HITM " + hitMode
 
 		if overParent.children
 			# Model initialized
@@ -151,36 +147,57 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			# Array initialized
 			parentChilds = overParent
 
-		@grid.remove current
-		
-		if hitMode is 'over'
-			# Most obvious case, when dragged node is directly over
-			# dropped node, insert current node as it's last child
-			over.children.push current
+		dropDelay = () =>
 
-		if hitMode is 'before'
-			# Insert node before current node, this is case when
-			# insert mark is before dragged over node
-			index = parentChilds.indexOf over
-			parentChilds.splice index, 0, current
+			@grid.remove current
 
-		if hitMode is 'after'
-			# When node has childs, then add just at beginning
-			# to match visual position of dragged node
-			if over.children.length
-				parentChilds.splice 0, 0, current
-			else
-				# When not having childs, it means that node is
-				# last on the level so insert as a last node
-				parentChilds.push current
-		@clear()
+			if hitMode is 'over'
+				# Most obvious case, when dragged node is directly over
+				# dropped node, insert current node as it's last child
+				over.children.push current
+
+			if hitMode is 'before'
+				# Insert node before current node, this is case when
+				# insert mark is before dragged over node
+				index = parentChilds.indexOf over
+				parentChilds.splice index, 0, current
+
+			if hitMode is 'after'
+
+				# When node has children, then add just at beginning
+				# to match visual position of dragged node
+				if over.children.length
+					parentChilds.splice 0, 0, current
+				else
+					# When not having children, it means that node is
+					# last on the level so insert as a last node
+					parentChilds.push current
+
+			# Special case for last item. This allow adding node to top
+			# level on the end of tree. Without this, it would be
+			# impossible to move node to the end if last node is not top node.
+			#
+			# TODO for some reason view does not update on push
+			#
+			if hitMode is 'last'
+#				log "Drop on end of table..."
+				root = @grid.getRoot()
+				if root.children
+					root.children.push current
+				else
+					root.push current
+			@clear()
+
+		# Delay a bit to reduce flickering
+		# See also TreeGridView.thaw() - this value should be lower than that in thaw
+		setTimeout dropDelay, 50
 
 	#
 	# Handle over state to get element to be about to be dropped
-	# This is bound to droppable `over`
+	# This is bound to dropable `over`
 	#
 	over: (e) =>
-		# Dont stop propagation, just detect row
+		# Don't stop propagation, just detect row
 		if e.target.tagName.toLowerCase() is 'tr'
 
 			# Limit updates to only when dragging over different items
@@ -231,6 +248,11 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			if rel.y <= 0.25
 				hitMode = 'before'
 
+			if hitMode is 'after'
+				# Last elem and after - switch to last hitmode
+				if @grid.isLast(ko.dataFor(draggedOver.get(0)))
+					hitMode = 'last'
+
 			# Rate limiting for hit mode
 			if prevHitMode isnt hitMode
 				prevHitMode = hitMode
@@ -243,6 +265,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	#
 	clear: () =>
+		@grid.thaw()
 		draggedOver = null
 		dragged = null
 		hitMode = null
@@ -274,3 +297,4 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 		
 		indicator.attach @helper.find('.drop-indicator')
 		return @helper
+

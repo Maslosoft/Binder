@@ -77,26 +77,15 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		else
 			@precise true
 
-		# Check if can actually drop on draggedOver
-		current = ko.dataFor dragged
-		over = ko.dataFor draggedOver.get(0)
-
-		log current.title
-		log over.title
-
-		# Forbid dropping on itself
-		if current is over
-			@deny()
-			accepter.deny()
-
-		# Forbid dropping on children of current node
-		if @grid.have current, over
+		if @grid.canDrop dragged, draggedOver, hitMode
+			@accept()
+			accepter.accept()
+		else
 			@deny()
 			accepter.deny()
 
 		node = draggedOver.find('.tree-grid-drag-handle')
-#		expander = draggedOver.find('.expander')
-#		noExpander = draggedOver.find('.no-expander')
+
 		widthOffset = 0
 		midFactor = 1.5
 

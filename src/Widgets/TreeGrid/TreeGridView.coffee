@@ -65,8 +65,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 	#
 	visitRecursive: (callback, model = null) =>
 		if not model
-			ctx = ko.contextFor @element.get(0)
-			model = ctx.tree
+			model = @getRoot()
 			callback null, model
 			if model.children and model.children.length
 				for child in model.children
@@ -98,6 +97,10 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 		@visitRecursive one
 		return found
 
+	getRoot: () =>
+		ctx = ko.contextFor @element.get(0)
+		return ctx.tree
+
 	#
 	# Check if parent have child
 	#
@@ -113,6 +116,45 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 		# Start from parent here
 		@visitRecursive one, parent
 		return found
+
+	#
+	# Check if it is last on list of table rows
+	#
+	#
+	isLast: (model) =>
+		lastRow = @element.find('> tr:last()')
+		last = ko.dataFor lastRow.get(0)
+		if model is last
+			return true
+		return false
+
+	#
+	# Check if can actually drop on draggedOver
+	#
+	canDrop: (dragged, draggedOver, hitMode) =>
+		current = ko.dataFor dragged
+		over = ko.dataFor draggedOver.get(0)
+
+#		log current.title
+#		log over.title
+
+		# Allow adding to the end of table
+		if hitMode is 'last'
+			return true
+
+		# Allow adding to the end of list
+		if hitMode is 'after'
+			return true
+
+		# Forbid dropping on itself
+		if current is over
+			return false;
+
+		# Forbid dropping on children of current node
+		if @have current, over
+			return false
+
+		return true
 
 	remove: (model) =>
 		one = (parent, data) ->
@@ -130,3 +172,39 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 	expandAll: () ->
 
 	collapseAll: () ->
+
+
+	cellsStyles = []
+
+	#
+	# Set widths of table cells to strict values.
+	# This prevents flickering table when moving nodes.
+	#
+	#
+	freeze: () =>
+
+		# Reset stored width values
+		cellsStyles = []
+		cells = @element.find('> tr:first() td')
+
+		for cell in cells
+#			log cell
+			cellsStyles.push cell.style
+			$cell = jQuery cell
+#			log $cell.width()
+			$cell.css 'width', $cell.width() + 'px'
+
+
+	#
+	# Set widths of table cells back to original style, set by freeze()
+	#
+	#
+	thaw: () =>
+		defer = () =>
+			cells = @element.find('> tr:first-child() td')
+
+			for cell, index in cells
+				cell.style = cellsStyles[index]
+		# Unfreezing takes some time...
+		# This needs to be delayed a bit or flicker will still occur
+		setTimeout defer, 150

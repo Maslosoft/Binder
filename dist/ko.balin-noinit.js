@@ -2357,7 +2357,7 @@
             'templateEngine': ko.nativeTemplateEngine.instance
           };
         }
-        data = [];
+        data = ko.observableArray([]);
         depths = [];
         depth = -1;
         unwrapRecursive = function(items) {
@@ -2451,32 +2451,26 @@
     TreeGridNode.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {};
 
     TreeGridNode.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var defer;
+      var config, data, depth, expanders, extras, folderIcon, html, nodeIcon;
       ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
-      defer = (function(_this) {
-        return function() {
-          var config, data, depth, expanders, extras, folderIcon, html, nodeIcon;
-          html = [];
-          data = _this.getValue(valueAccessor);
-          extras = data._treeGrid;
-          config = bindingContext.widget.config;
-          nodeIcon = config.nodeIcon;
-          folderIcon = config.folderIcon;
-          if (folderIcon && extras.hasChilds) {
-            nodeIcon = folderIcon;
-          }
-          depth = extras.depth;
-          expanders = [];
-          expanders.push("<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>");
-          expanders.push("<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>");
-          html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
-          depth = extras.depth + 1;
-          html.push("<i class='no-expander' style='margin-left:" + depth + "em;display:inline-block;'></i>");
-          html.push("<img src='" + nodeIcon + "' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>");
-          return element.innerHTML = html.join('') + element.innerHTML;
-        };
-      })(this);
-      return defer();
+      html = [];
+      data = this.getValue(valueAccessor);
+      extras = data._treeGrid;
+      config = bindingContext.widget.config;
+      nodeIcon = config.nodeIcon;
+      folderIcon = config.folderIcon;
+      if (folderIcon && extras.hasChilds) {
+        nodeIcon = folderIcon;
+      }
+      depth = extras.depth;
+      expanders = [];
+      expanders.push("<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>");
+      expanders.push("<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>");
+      html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
+      depth = extras.depth + 1;
+      html.push("<i class='no-expander' style='margin-left:" + depth + "em;display:inline-block;'></i>");
+      html.push("<img src='" + nodeIcon + "' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>");
+      return element.innerHTML = html.join('') + element.innerHTML;
     };
 
     return TreeGridNode;
@@ -3448,8 +3442,9 @@
     };
 
     Dnd.prototype.drop = function(e, ui) {
-      var current, index, over, overParent, parentChilds;
+      var current, dropDelay, over, overParent, parentChilds;
       didDrop = true;
+      this.grid.freeze();
       if (!dragged) {
         return this.clear();
       }
@@ -3461,38 +3456,45 @@
       }
       current = ko.dataFor(dragged);
       over = ko.dataFor(draggedOver.get(0));
-      if (current === over) {
-        return this.clear();
-      }
-      if (this.grid.have(current, over)) {
+      if (!this.grid.canDrop(dragged, draggedOver, hitMode)) {
         return this.clear();
       }
       overParent = this.grid.getParent(over);
-      log("CURR " + current.title);
-      log("OVER " + over.title);
-      log("PRNT " + overParent.title);
-      log("HITM " + hitMode);
       if (overParent.children) {
         parentChilds = overParent.children;
       } else {
         parentChilds = overParent;
       }
-      this.grid.remove(current);
-      if (hitMode === 'over') {
-        over.children.push(current);
-      }
-      if (hitMode === 'before') {
-        index = parentChilds.indexOf(over);
-        parentChilds.splice(index, 0, current);
-      }
-      if (hitMode === 'after') {
-        if (over.children.length) {
-          parentChilds.splice(0, 0, current);
-        } else {
-          parentChilds.push(current);
-        }
-      }
-      return this.clear();
+      dropDelay = (function(_this) {
+        return function() {
+          var index, root;
+          _this.grid.remove(current);
+          if (hitMode === 'over') {
+            over.children.push(current);
+          }
+          if (hitMode === 'before') {
+            index = parentChilds.indexOf(over);
+            parentChilds.splice(index, 0, current);
+          }
+          if (hitMode === 'after') {
+            if (over.children.length) {
+              parentChilds.splice(0, 0, current);
+            } else {
+              parentChilds.push(current);
+            }
+          }
+          if (hitMode === 'last') {
+            root = _this.grid.getRoot();
+            if (root.children) {
+              root.children.push(current);
+            } else {
+              root.push(current);
+            }
+          }
+          return _this.clear();
+        };
+      })(this);
+      return setTimeout(dropDelay, 50);
     };
 
     Dnd.prototype.over = function(e) {
@@ -3535,6 +3537,11 @@
         if (rel.y <= 0.25) {
           hitMode = 'before';
         }
+        if (hitMode === 'after') {
+          if (this.grid.isLast(ko.dataFor(draggedOver.get(0)))) {
+            hitMode = 'last';
+          }
+        }
         if (prevHitMode !== hitMode) {
           prevHitMode = hitMode;
           e.target = draggedOver;
@@ -3544,6 +3551,7 @@
     };
 
     Dnd.prototype.clear = function() {
+      this.grid.thaw();
       draggedOver = null;
       dragged = null;
       hitMode = null;
@@ -3784,7 +3792,7 @@
     };
 
     InsertIndicator.prototype.over = function(dragged, draggedOver, hitMode, accepter) {
-      var current, left, mid, midFactor, node, nodeMid, offset, over, top, widthOffset;
+      var left, mid, midFactor, node, nodeMid, offset, top, widthOffset;
       if (hitMode == null) {
         hitMode = 'over';
       }
@@ -3795,15 +3803,10 @@
       } else {
         this.precise(true);
       }
-      current = ko.dataFor(dragged);
-      over = ko.dataFor(draggedOver.get(0));
-      log(current.title);
-      log(over.title);
-      if (current === over) {
-        this.deny();
-        accepter.deny();
-      }
-      if (this.grid.have(current, over)) {
+      if (this.grid.canDrop(dragged, draggedOver, hitMode)) {
+        this.accept();
+        accepter.accept();
+      } else {
         this.deny();
         accepter.deny();
       }
@@ -3856,6 +3859,8 @@
   })();
 
   Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView = (function() {
+    var cellsStyles;
+
     TreeGridView.plugins = [Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders, Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd, Maslosoft.Ko.Balin.Widgets.TreeGrid.Events];
 
     TreeGridView.prototype.element = null;
@@ -3868,8 +3873,13 @@
         valueAccessor = null;
       }
       this.context = context != null ? context : 'init';
+      this.thaw = __bind(this.thaw, this);
+      this.freeze = __bind(this.freeze, this);
       this.remove = __bind(this.remove, this);
+      this.canDrop = __bind(this.canDrop, this);
+      this.isLast = __bind(this.isLast, this);
       this.have = __bind(this.have, this);
+      this.getRoot = __bind(this.getRoot, this);
       this.getParent = __bind(this.getParent, this);
       this.visitRecursive = __bind(this.visitRecursive, this);
       this.element = jQuery(element);
@@ -3897,13 +3907,12 @@
     };
 
     TreeGridView.prototype.visitRecursive = function(callback, model) {
-      var child, ctx, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _results, _results1;
+      var child, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _results, _results1;
       if (model == null) {
         model = null;
       }
       if (!model) {
-        ctx = ko.contextFor(this.element.get(0));
-        model = ctx.tree;
+        model = this.getRoot();
         callback(null, model);
         if (model.children && model.children.length) {
           _ref = model.children;
@@ -3955,6 +3964,12 @@
       return found;
     };
 
+    TreeGridView.prototype.getRoot = function() {
+      var ctx;
+      ctx = ko.contextFor(this.element.get(0));
+      return ctx.tree;
+    };
+
     TreeGridView.prototype.have = function(parent, child) {
       var found, one;
       found = false;
@@ -3965,6 +3980,35 @@
       };
       this.visitRecursive(one, parent);
       return found;
+    };
+
+    TreeGridView.prototype.isLast = function(model) {
+      var last, lastRow;
+      lastRow = this.element.find('> tr:last()');
+      last = ko.dataFor(lastRow.get(0));
+      if (model === last) {
+        return true;
+      }
+      return false;
+    };
+
+    TreeGridView.prototype.canDrop = function(dragged, draggedOver, hitMode) {
+      var current, over;
+      current = ko.dataFor(dragged);
+      over = ko.dataFor(draggedOver.get(0));
+      if (hitMode === 'last') {
+        return true;
+      }
+      if (hitMode === 'after') {
+        return true;
+      }
+      if (current === over) {
+        return false;
+      }
+      if (this.have(current, over)) {
+        return false;
+      }
+      return true;
     };
 
     TreeGridView.prototype.remove = function(model) {
@@ -3984,6 +4028,39 @@
     TreeGridView.prototype.expandAll = function() {};
 
     TreeGridView.prototype.collapseAll = function() {};
+
+    cellsStyles = [];
+
+    TreeGridView.prototype.freeze = function() {
+      var $cell, cell, cells, _i, _len, _results;
+      cellsStyles = [];
+      cells = this.element.find('> tr:first() td');
+      _results = [];
+      for (_i = 0, _len = cells.length; _i < _len; _i++) {
+        cell = cells[_i];
+        cellsStyles.push(cell.style);
+        $cell = jQuery(cell);
+        _results.push($cell.css('width', $cell.width() + 'px'));
+      }
+      return _results;
+    };
+
+    TreeGridView.prototype.thaw = function() {
+      var defer;
+      defer = (function(_this) {
+        return function() {
+          var cell, cells, index, _i, _len, _results;
+          cells = _this.element.find('> tr:first-child() td');
+          _results = [];
+          for (index = _i = 0, _len = cells.length; _i < _len; index = ++_i) {
+            cell = cells[index];
+            _results.push(cell.style = cellsStyles[index]);
+          }
+          return _results;
+        };
+      })(this);
+      return setTimeout(defer, 150);
+    };
 
     return TreeGridView;
 

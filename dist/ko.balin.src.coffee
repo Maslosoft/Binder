@@ -2132,7 +2132,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 					'templateEngine': ko.nativeTemplateEngine.instance
 				}
 
-			data = []
+			data = ko.observableArray []
 			depths = []
 			depth = -1
 
@@ -2219,46 +2219,33 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
-		#
-		#
-		# FIXME Instead of defer, use observable for depth!
-		# There is still need to be some option to set it... Maybe add to tree item.
-		#
-		#
+
 		#
 		# Defer icon creation, as other bindings must be evaluated first,
 		# like html, text, etc.
-		defer = () =>
-			html = []
-			data = @getValue(valueAccessor)
-			extras = data._treeGrid
-			config = bindingContext.widget.config
-			#console.log extras.hasChilds
-			# TODO: Just accessing data.children causes havoc...
-			nodeIcon = config.nodeIcon
-			folderIcon = config.folderIcon
-			if folderIcon and extras.hasChilds
+		html = []
+		data = @getValue(valueAccessor)
+		extras = data._treeGrid
+		config = bindingContext.widget.config
+		#console.log extras.hasChilds
+		# TODO: Just accessing data.children causes havoc...
+		nodeIcon = config.nodeIcon
+		folderIcon = config.folderIcon
+		if folderIcon and extras.hasChilds
 #				console.log 'hmmm'
-				nodeIcon = folderIcon
+			nodeIcon = folderIcon
 #			console.log "#{data.title}: #{extras.depth}", extras.hasChilds
 #			console.log data
 #			console.log ko.unwrap bindingContext.$index
-#			if extras.hasChilds
-			depth = extras.depth
-			expanders = []
-			expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>"
-			expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>"
-			html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
-#			else
-			depth = extras.depth + 1
-			html.push "<i class='no-expander' style='margin-left:#{depth}em;display:inline-block;'></i>"
-			html.push "<img src='#{nodeIcon}' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>"
-			element.innerHTML = html.join('') + element.innerHTML
-			
-#			console.log element
-#			console.log bindingContext
-		defer()
-#		setTimeout defer, 0
+		depth = extras.depth
+		expanders = []
+		expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>"
+		expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>"
+		html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
+		depth = extras.depth + 1
+		html.push "<i class='no-expander' style='margin-left:#{depth}em;display:inline-block;'></i>"
+		html.push "<img src='#{nodeIcon}' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>"
+		element.innerHTML = html.join('') + element.innerHTML
 
 
 
@@ -3339,6 +3326,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	drop: (e, ui) =>
 		didDrop = true
+		@grid.freeze()
 		if not dragged
 			return @clear()
 		if not draggedOver
@@ -3348,12 +3336,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 		current = ko.dataFor dragged
 		over = ko.dataFor draggedOver.get(0)
 
-		# Forbid dropping on itself
-		if current is over
-			return @clear()
-
-		# Forbid dropping on children of current node
-		if @grid.have current, over
+		if not @grid.canDrop dragged, draggedOver, hitMode
 			return @clear()
 
 		overParent = @grid.getParent over
@@ -3361,10 +3344,10 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 
 		# console.log "Drop #{current.title} over #{over.title}"
 		# console.log arguments
-		log "CURR " + current.title
-		log "OVER " + over.title
-		log "PRNT " + overParent.title
-		log "HITM " + hitMode
+#		log "CURR " + current.title
+#		log "OVER " + over.title
+#		log "PRNT " + overParent.title
+#		log "HITM " + hitMode
 
 		if overParent.children
 			# Model initialized
@@ -3373,36 +3356,57 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			# Array initialized
 			parentChilds = overParent
 
-		@grid.remove current
-		
-		if hitMode is 'over'
-			# Most obvious case, when dragged node is directly over
-			# dropped node, insert current node as it's last child
-			over.children.push current
+		dropDelay = () =>
 
-		if hitMode is 'before'
-			# Insert node before current node, this is case when
-			# insert mark is before dragged over node
-			index = parentChilds.indexOf over
-			parentChilds.splice index, 0, current
+			@grid.remove current
 
-		if hitMode is 'after'
-			# When node has childs, then add just at beginning
-			# to match visual position of dragged node
-			if over.children.length
-				parentChilds.splice 0, 0, current
-			else
-				# When not having childs, it means that node is
-				# last on the level so insert as a last node
-				parentChilds.push current
-		@clear()
+			if hitMode is 'over'
+				# Most obvious case, when dragged node is directly over
+				# dropped node, insert current node as it's last child
+				over.children.push current
+
+			if hitMode is 'before'
+				# Insert node before current node, this is case when
+				# insert mark is before dragged over node
+				index = parentChilds.indexOf over
+				parentChilds.splice index, 0, current
+
+			if hitMode is 'after'
+
+				# When node has children, then add just at beginning
+				# to match visual position of dragged node
+				if over.children.length
+					parentChilds.splice 0, 0, current
+				else
+					# When not having children, it means that node is
+					# last on the level so insert as a last node
+					parentChilds.push current
+
+			# Special case for last item. This allow adding node to top
+			# level on the end of tree. Without this, it would be
+			# impossible to move node to the end if last node is not top node.
+			#
+			# TODO for some reason view does not update on push
+			#
+			if hitMode is 'last'
+#				log "Drop on end of table..."
+				root = @grid.getRoot()
+				if root.children
+					root.children.push current
+				else
+					root.push current
+			@clear()
+
+		# Delay a bit to reduce flickering
+		# See also TreeGridView.thaw() - this value should be lower than that in thaw
+		setTimeout dropDelay, 50
 
 	#
 	# Handle over state to get element to be about to be dropped
-	# This is bound to droppable `over`
+	# This is bound to dropable `over`
 	#
 	over: (e) =>
-		# Dont stop propagation, just detect row
+		# Don't stop propagation, just detect row
 		if e.target.tagName.toLowerCase() is 'tr'
 
 			# Limit updates to only when dragging over different items
@@ -3453,6 +3457,11 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			if rel.y <= 0.25
 				hitMode = 'before'
 
+			if hitMode is 'after'
+				# Last elem and after - switch to last hitmode
+				if @grid.isLast(ko.dataFor(draggedOver.get(0)))
+					hitMode = 'last'
+
 			# Rate limiting for hit mode
 			if prevHitMode isnt hitMode
 				prevHitMode = hitMode
@@ -3465,6 +3474,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	#
 	clear: () =>
+		@grid.thaw()
 		draggedOver = null
 		dragged = null
 		hitMode = null
@@ -3496,6 +3506,8 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 		
 		indicator.attach @helper.find('.drop-indicator')
 		return @helper
+
+
 
 
 class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
@@ -3720,26 +3732,15 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		else
 			@precise true
 
-		# Check if can actually drop on draggedOver
-		current = ko.dataFor dragged
-		over = ko.dataFor draggedOver.get(0)
-
-		log current.title
-		log over.title
-
-		# Forbid dropping on itself
-		if current is over
-			@deny()
-			accepter.deny()
-
-		# Forbid dropping on children of current node
-		if @grid.have current, over
+		if @grid.canDrop dragged, draggedOver, hitMode
+			@accept()
+			accepter.accept()
+		else
 			@deny()
 			accepter.deny()
 
 		node = draggedOver.find('.tree-grid-drag-handle')
-#		expander = draggedOver.find('.expander')
-#		noExpander = draggedOver.find('.no-expander')
+
 		widthOffset = 0
 		midFactor = 1.5
 
@@ -3857,8 +3858,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 	#
 	visitRecursive: (callback, model = null) =>
 		if not model
-			ctx = ko.contextFor @element.get(0)
-			model = ctx.tree
+			model = @getRoot()
 			callback null, model
 			if model.children and model.children.length
 				for child in model.children
@@ -3890,6 +3890,10 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 		@visitRecursive one
 		return found
 
+	getRoot: () =>
+		ctx = ko.contextFor @element.get(0)
+		return ctx.tree
+
 	#
 	# Check if parent have child
 	#
@@ -3905,6 +3909,45 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 		# Start from parent here
 		@visitRecursive one, parent
 		return found
+
+	#
+	# Check if it is last on list of table rows
+	#
+	#
+	isLast: (model) =>
+		lastRow = @element.find('> tr:last()')
+		last = ko.dataFor lastRow.get(0)
+		if model is last
+			return true
+		return false
+
+	#
+	# Check if can actually drop on draggedOver
+	#
+	canDrop: (dragged, draggedOver, hitMode) =>
+		current = ko.dataFor dragged
+		over = ko.dataFor draggedOver.get(0)
+
+#		log current.title
+#		log over.title
+
+		# Allow adding to the end of table
+		if hitMode is 'last'
+			return true
+
+		# Allow adding to the end of list
+		if hitMode is 'after'
+			return true
+
+		# Forbid dropping on itself
+		if current is over
+			return false;
+
+		# Forbid dropping on children of current node
+		if @have current, over
+			return false
+
+		return true
 
 	remove: (model) =>
 		one = (parent, data) ->
@@ -3923,6 +3966,41 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 
 	collapseAll: () ->
 
+
+	cellsStyles = []
+
+	#
+	# Set widths of table cells to strict values.
+	# This prevents flickering table when moving nodes.
+	#
+	#
+	freeze: () =>
+
+		# Reset stored width values
+		cellsStyles = []
+		cells = @element.find('> tr:first() td')
+
+		for cell in cells
+#			log cell
+			cellsStyles.push cell.style
+			$cell = jQuery cell
+#			log $cell.width()
+			$cell.css 'width', $cell.width() + 'px'
+
+
+	#
+	# Set widths of table cells back to original style, set by freeze()
+	#
+	#
+	thaw: () =>
+		defer = () =>
+			cells = @element.find('> tr:first-child() td')
+
+			for cell, index in cells
+				cell.style = cellsStyles[index]
+		# Unfreezing takes some time...
+		# This needs to be delayed a bit or flicker will still occur
+		setTimeout defer, 150
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

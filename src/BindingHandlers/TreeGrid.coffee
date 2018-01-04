@@ -19,7 +19,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 					'templateEngine': ko.nativeTemplateEngine.instance
 				}
 
-			data = []
+			data = ko.observableArray []
 			depths = []
 			depth = -1
 
