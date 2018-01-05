@@ -3426,7 +3426,7 @@
           var draggableOptions, droppableOptions;
           draggableOptions = {
             handle: '.tree-grid-drag-handle',
-            cancel: '.expander, input, [contenteditable]',
+            cancel: '.expander, input, *[contenteditable]',
             revert: false,
             cursor: 'pointer',
             cursorAt: {
