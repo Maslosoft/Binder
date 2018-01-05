@@ -13970,7 +13970,7 @@ module.exports = function (element) {
           var draggableOptions, droppableOptions;
           draggableOptions = {
             handle: '.tree-grid-drag-handle',
-            cancel: '.expander',
+            cancel: '.expander, input, *[contenteditable], .no-drag',
             revert: false,
             cursor: 'pointer',
             cursorAt: {
@@ -14008,7 +14008,6 @@ module.exports = function (element) {
     Dnd.prototype.drop = function(e, ui) {
       var current, dropDelay, over, overParent, parentChilds;
       didDrop = true;
-      this.grid.freeze();
       if (!dragged) {
         return this.clear();
       }
@@ -14023,6 +14022,7 @@ module.exports = function (element) {
       if (!this.grid.canDrop(dragged, draggedOver, hitMode)) {
         return this.clear();
       }
+      this.grid.freeze();
       overParent = this.grid.getParent(over);
       if (overParent.children) {
         parentChilds = overParent.children;
