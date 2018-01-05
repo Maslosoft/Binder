@@ -3293,7 +3293,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 		defer = () =>
 			draggableOptions = {
 				handle: '.tree-grid-drag-handle'
-				cancel: '.expander'
+				cancel: '.expander, input, [contenteditable]'
 				revert: false
 				cursor: 'pointer'
 				cursorAt: { top: 5, left: 5 }
