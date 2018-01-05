@@ -3464,7 +3464,6 @@
     Dnd.prototype.drop = function(e, ui) {
       var current, dropDelay, over, overParent, parentChilds;
       didDrop = true;
-      this.grid.freeze();
       if (!dragged) {
         return this.clear();
       }
@@ -3479,6 +3478,7 @@
       if (!this.grid.canDrop(dragged, draggedOver, hitMode)) {
         return this.clear();
       }
+      this.grid.freeze();
       overParent = this.grid.getParent(over);
       if (overParent.children) {
         parentChilds = overParent.children;
