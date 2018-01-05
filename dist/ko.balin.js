@@ -2433,15 +2433,18 @@
       value = this.getValue(valueAccessor);
       activeClass = value.activeClass;
       table = jQuery(element);
-      activeClassHandler = function(e) {
-        table.find('tr').removeClass(activeClass);
-        return jQuery(e.currentTarget).addClass(activeClass);
-      };
-      table.on('click', 'tr', activeClassHandler);
-      dispose = function(toDispose) {
-        return jQuery(toDispose).off("click", 'tr', activeClassHandler);
-      };
-      ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
+      if (activeClass) {
+        activeClassHandler = function(e) {
+          table.find('tr').removeClass(activeClass);
+          jQuery(e.currentTarget).addClass(activeClass);
+          return true;
+        };
+        table.on('click', 'tr', activeClassHandler);
+        dispose = function(toDispose) {
+          return jQuery(toDispose).off("click", 'tr', activeClassHandler);
+        };
+        ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
+      }
       widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
       ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
       return {
