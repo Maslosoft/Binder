@@ -14,6 +14,7 @@
 	<a href="" data-bind="widget: balin.model.Widget, action: 'sort', params: 'sss'">Widget Action link simple param</a><br />
 	<a href="" data-bind="widget: balin.model.Widget, action: 'status', params: 0">Widget Action link simple numeric param</a><br />
 	<a href="" rel="tooltip" title="My tooltip" data-bind="widget: balin.model.Widget, action: 'sort'">Widget Action link no params with tooltip</a><br />
+    <a href="" rel="plain" data-bind="widgetId: 'ms_1', action: 'sort', params: {name: 'asc'}">Plain link</a><br />
 </div>
 
 <script>

@@ -729,15 +729,18 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 	setRel: (element) =>
 
 		hasRel = false
+		isPlain = false
 		rels = []
 		rel = element.getAttribute('rel')
 		if rel
 			rels = rel.split(' ')
 			for relValue in rels
+				if relValue is 'plain'
+					isPlain = true
 				if relValue is 'virtual'
 					hasRel = true
 
-		if not hasRel
+		if not hasRel and not isPlain
 			rels.push 'virtual'
 
 		element.setAttribute('rel', rels.join(' '))

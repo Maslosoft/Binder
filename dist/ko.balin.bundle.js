@@ -11267,20 +11267,24 @@ module.exports = function (element) {
     };
 
     WidgetUrl.prototype.setRel = function(element) {
-      var hasRel, rel, relValue, rels, _i, _len;
+      var hasRel, isPlain, rel, relValue, rels, _i, _len;
       hasRel = false;
+      isPlain = false;
       rels = [];
       rel = element.getAttribute('rel');
       if (rel) {
         rels = rel.split(' ');
         for (_i = 0, _len = rels.length; _i < _len; _i++) {
           relValue = rels[_i];
+          if (relValue === 'plain') {
+            isPlain = true;
+          }
           if (relValue === 'virtual') {
             hasRel = true;
           }
         }
       }
-      if (!hasRel) {
+      if (!hasRel && !isPlain) {
         rels.push('virtual');
       }
       return element.setAttribute('rel', rels.join(' '));
