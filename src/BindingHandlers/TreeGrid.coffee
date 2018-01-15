@@ -20,7 +20,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 				}
 
 			data = ko.observableArray []
-			depths = []
+			depths = ko.observableArray []
 			depth = -1
 
 			unwrapRecursive = (items) ->
@@ -48,6 +48,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 			
 			if bindingContext
 				bindingContext.tree = unwrappedValue['data']
+				bindingContext.data = data
 				bindingContext.widget = widget
 
 			# If unwrappedValue.data is the array, preserve all relevant options and unwrap again value so we get updates

@@ -101,6 +101,9 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 		ctx = ko.contextFor @element.get(0)
 		return ctx.tree
 
+	getContext: () =>
+		return ko.contextFor @element.get(0)
+
 	#
 	# Check if parent have child
 	#

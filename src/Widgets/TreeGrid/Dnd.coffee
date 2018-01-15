@@ -131,7 +131,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 		@grid.freeze()
 
 		overParent = @grid.getParent over
-
+		root = @grid.getRoot()
 
 		# console.log "Drop #{current.title} over #{over.title}"
 		# console.log arguments
@@ -180,17 +180,27 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			# TODO for some reason view does not update on push
 			#
 			if hitMode is 'last'
-#				log "Drop on end of table..."
-				root = @grid.getRoot()
+#				log "Delayed Drop on end of table..."
 				if root.children
 					root.children.push current
 				else
+					#
+					#
+					# TODO Neither push or splice at end works!
+					# It *does* add to view model but does not update UI!
+					# However splice at beginning works properly!!!111
+					#
+					#
+
+#					root.splice root.length, 0, current
 					root.push current
+
 			@clear()
 
 		# Delay a bit to reduce flickering
 		# See also TreeGridView.thaw() - this value should be lower than that in thaw
-		setTimeout dropDelay, 50
+		dropDelay()
+#		setTimeout dropDelay, 50
 
 	#
 	# Handle over state to get element to be about to be dropped

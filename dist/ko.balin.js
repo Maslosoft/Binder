@@ -2382,7 +2382,7 @@
           };
         }
         data = ko.observableArray([]);
-        depths = [];
+        depths = ko.observableArray([]);
         depth = -1;
         unwrapRecursive = function(items) {
           var extras, hasChilds, item, _i, _len, _results;
@@ -2414,6 +2414,7 @@
         }
         if (bindingContext) {
           bindingContext.tree = unwrappedValue['data'];
+          bindingContext.data = data;
           bindingContext.widget = widget;
         }
         ko.utils.unwrapObservable(modelValue);
@@ -3469,7 +3470,7 @@
     };
 
     Dnd.prototype.drop = function(e, ui) {
-      var current, dropDelay, over, overParent, parentChilds;
+      var current, dropDelay, over, overParent, parentChilds, root;
       didDrop = true;
       if (!dragged) {
         return this.clear();
@@ -3487,6 +3488,7 @@
       }
       this.grid.freeze();
       overParent = this.grid.getParent(over);
+      root = this.grid.getRoot();
       if (overParent.children) {
         parentChilds = overParent.children;
       } else {
@@ -3494,7 +3496,7 @@
       }
       dropDelay = (function(_this) {
         return function() {
-          var index, root;
+          var index;
           _this.grid.remove(current);
           if (hitMode === 'over') {
             over.children.push(current);
@@ -3511,7 +3513,6 @@
             }
           }
           if (hitMode === 'last') {
-            root = _this.grid.getRoot();
             if (root.children) {
               root.children.push(current);
             } else {
@@ -3521,7 +3522,7 @@
           return _this.clear();
         };
       })(this);
-      return setTimeout(dropDelay, 50);
+      return dropDelay();
     };
 
     Dnd.prototype.over = function(e) {
@@ -3906,6 +3907,7 @@
       this.canDrop = __bind(this.canDrop, this);
       this.isLast = __bind(this.isLast, this);
       this.have = __bind(this.have, this);
+      this.getContext = __bind(this.getContext, this);
       this.getRoot = __bind(this.getRoot, this);
       this.getParent = __bind(this.getParent, this);
       this.visitRecursive = __bind(this.visitRecursive, this);
@@ -3995,6 +3997,10 @@
       var ctx;
       ctx = ko.contextFor(this.element.get(0));
       return ctx.tree;
+    };
+
+    TreeGridView.prototype.getContext = function() {
+      return ko.contextFor(this.element.get(0));
     };
 
     TreeGridView.prototype.have = function(parent, child) {
