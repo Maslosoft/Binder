@@ -1,9 +1,16 @@
 {
 	"name": "maslosoft/balin",
 	"description": "Knockout binding handlers",
+	"keywords": [
+		"javascript",
+		"mvvm",
+		"model",
+		"view",
+		"knockout"
+	],
 	"license": [
-		"AGPL",
-		"Commercial"
+ 		"AGPL-3.0-only",
+ 		"proprietary"
 	],
 	"authors": [
 		{
