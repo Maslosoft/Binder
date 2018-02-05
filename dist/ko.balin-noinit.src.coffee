@@ -3290,9 +3290,12 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			# handle disposal
 			element = @grid.element
 			ko.utils.domNodeDisposal.addDisposeCallback @grid.element.get(0), () ->
-				if element
-					element.draggable("destroy")
-					element.droppable("destroy")
+				try
+					if element
+						element.draggable("destroy")
+						element.droppable("destroy")
+				catch e
+					console.log e.message
 
 			@grid.element.on 'mousemove', '> tr', @move
 

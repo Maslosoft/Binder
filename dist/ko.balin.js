@@ -3422,9 +3422,15 @@
       if (this.grid.context === 'init') {
         element = this.grid.element;
         ko.utils.domNodeDisposal.addDisposeCallback(this.grid.element.get(0), function() {
-          if (element) {
-            element.draggable("destroy");
-            return element.droppable("destroy");
+          var e;
+          try {
+            if (element) {
+              element.draggable("destroy");
+              return element.droppable("destroy");
+            }
+          } catch (_error) {
+            e = _error;
+            return console.log(e.message);
           }
         });
         this.grid.element.on('mousemove', '> tr', this.move);
