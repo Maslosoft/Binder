@@ -13949,7 +13949,7 @@ module.exports = function (element) {
     didDrop = false;
 
     function Dnd(grid) {
-      var defer;
+      var defer, element;
       this.grid = grid;
       this.dragHelper = __bind(this.dragHelper, this);
       this.clear = __bind(this.clear, this);
@@ -13964,9 +13964,12 @@ module.exports = function (element) {
         return;
       }
       if (this.grid.context === 'init') {
+        element = this.grid.element;
         ko.utils.domNodeDisposal.addDisposeCallback(this.grid.element.get(0), function() {
-          this.grid.element.draggable("destroy");
-          return this.grid.element.droppable("destroy");
+          if (element) {
+            element.draggable("destroy");
+            return element.droppable("destroy");
+          }
         });
         this.grid.element.on('mousemove', '> tr', this.move);
       }
