@@ -3359,12 +3359,11 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 
 		if @grid.context is 'init'
 			# handle disposal
-			element = @grid.element
 			ko.utils.domNodeDisposal.addDisposeCallback @grid.element.get(0), () ->
 				try
-					if element
-						element.draggable("destroy")
-						element.droppable("destroy")
+					if @grid.element
+						@grid.element.draggable("destroy")
+						@grid.element.droppable("destroy")
 				catch e
 					console.log e.message
 

@@ -1,7 +1,7 @@
 <?php
 
-use Maslosoft\Ilmatar\Components\Helpers\CssFile;
-use Maslosoft\Ilmatar\Components\Helpers\JsFile;
+use Maslosoft\Components\Helpers\CssFile;
+use Maslosoft\Components\Helpers\JsFile;
 
 define('KO_BALIN_EMBEDDED', defined('YII_DEBUG'));
 define('KO_BALIN_STANDALONE', !KO_BALIN_EMBEDDED);

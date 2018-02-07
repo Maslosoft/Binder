@@ -14043,7 +14043,7 @@ module.exports = function (element) {
     didDrop = false;
 
     function Dnd(grid) {
-      var defer, element;
+      var defer;
       this.grid = grid;
       this.dragHelper = __bind(this.dragHelper, this);
       this.clear = __bind(this.clear, this);
@@ -14058,13 +14058,12 @@ module.exports = function (element) {
         return;
       }
       if (this.grid.context === 'init') {
-        element = this.grid.element;
         ko.utils.domNodeDisposal.addDisposeCallback(this.grid.element.get(0), function() {
           var e;
           try {
-            if (element) {
-              element.draggable("destroy");
-              return element.droppable("destroy");
+            if (this.grid.element) {
+              this.grid.element.draggable("destroy");
+              return this.grid.element.droppable("destroy");
             }
           } catch (_error) {
             e = _error;
