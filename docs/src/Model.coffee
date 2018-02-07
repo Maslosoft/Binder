@@ -156,6 +156,51 @@ class @Maslosoft.Ko.BalinDev.Widgets.MyWidget
 		i++
 		jQuery('#widgetLog').append "<div>#{i}. #{message}</div>"
 
+class @Maslosoft.Ko.BalinDev.Models.Columns  extends @Maslosoft.Ko.Balin.Model
+
+	#
+	#
+	# @var Maslosoft.Ko.BalinDev.Models.UiColumns
+	#
+	columns: null
+
+	#
+	#
+	# @var Maslosoft.Ko.BalinDev.Models.UiColumns
+	#
+	sizes: null
+
+class @Maslosoft.Ko.BalinDev.Models.UiColumns extends @Maslosoft.Ko.Balin.Model
+
+	#
+	# On HD displays
+	#
+	# @var integer
+	#
+	lg: 4
+
+	#
+	# On laptops
+	#
+	# @var integer
+	#
+	md: 4
+
+	#
+	# On tablets
+	#
+	# @var integer
+	#
+	sm: 2
+
+	#
+	# On small mobile
+	#
+	# @var integer
+	#
+	xs: 2
+
+
 class @Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget
 
 	i = 0

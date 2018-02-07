@@ -439,6 +439,40 @@
 
   })();
 
+  this.Maslosoft.Ko.BalinDev.Models.Columns = (function(superClass) {
+    extend(Columns, superClass);
+
+    function Columns() {
+      return Columns.__super__.constructor.apply(this, arguments);
+    }
+
+    Columns.prototype.columns = null;
+
+    Columns.prototype.sizes = null;
+
+    return Columns;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
+  this.Maslosoft.Ko.BalinDev.Models.UiColumns = (function(superClass) {
+    extend(UiColumns, superClass);
+
+    function UiColumns() {
+      return UiColumns.__super__.constructor.apply(this, arguments);
+    }
+
+    UiColumns.prototype.lg = 4;
+
+    UiColumns.prototype.md = 4;
+
+    UiColumns.prototype.sm = 2;
+
+    UiColumns.prototype.xs = 2;
+
+    return UiColumns;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
   this.Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget = (function() {
     var i, originalTitle;
 

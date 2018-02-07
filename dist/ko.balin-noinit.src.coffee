@@ -148,6 +148,8 @@ if not @Maslosoft.Ko.Balin.Widgets
 		action: Maslosoft.Ko.Balin.WidgetAction
 		activity: Maslosoft.Ko.Balin.WidgetActivity
 		asset: Maslosoft.Ko.Balin.Asset
+		cssColumnSizes: Maslosoft.Ko.Balin.CssColumnSizes
+		cssColumns: Maslosoft.Ko.Balin.CssColumns
 		data: Maslosoft.Ko.Balin.Data
 		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
 		datePicker: Maslosoft.Ko.Balin.DatePicker
@@ -607,6 +609,28 @@ class @Maslosoft.Ko.Balin.CssClass extends @Maslosoft.Ko.Balin.Base
 		return
 
 #
+# CSS class binding
+# This adds class from options if value is true
+#
+class @Maslosoft.Ko.Balin.CssColumnsBase extends @Maslosoft.Ko.Balin.Base
+
+	writable: false
+
+	applyColumns: (element, sizes, config) =>
+
+		newClasses = []
+		for size, name of config
+		# Remove previously set classes
+			reName = name.replace '{num}', '\\d'
+			name = name.replace '{num}', ''
+			re = new RegExp("(?:^|\\s)#{reName}+(?!\\S)", 'g')
+			element.className = element.className.replace(re, '')
+			newClasses.push name + sizes[size];
+
+		jQuery(element).addClass newClasses.join ' '
+		return
+
+#
 # Moment formatter class
 #
 class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
@@ -826,6 +850,53 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 		if $element.attr("src") != src
 			$element.attr "src", src
 		return
+
+#
+# Enum css class handler
+#
+class @Maslosoft.Ko.Balin.CssColumnSizes extends @Maslosoft.Ko.Balin.CssColumnsBase
+
+	@columns = {
+		'xs': 'col-xs-{num}',
+		'sm': 'col-sm-{num}',
+		'md': 'col-md-{num}',
+		'lg': 'col-lg-{num}'
+	}
+
+	init: (element, valueAccessor) =>
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		sizes = @getValue valueAccessor
+		@applyColumns element, sizes, CssColumnSizes.columns
+
+
+
+
+#
+# Enum css class handler
+#
+class @Maslosoft.Ko.Balin.CssColumns extends @Maslosoft.Ko.Balin.CssColumnsBase
+
+	@columns = {
+		'xs': 'col-xs-{num}',
+		'sm': 'col-sm-{num}',
+		'md': 'col-md-{num}',
+		'lg': 'col-lg-{num}'
+	}
+
+	init: (element, valueAccessor) =>
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		columns = @getValue valueAccessor
+
+		sizes = {}
+
+		for size, name of CssColumns.columns
+			value = parseInt columns[size]
+			cols = parseInt 12 / value
+			sizes[size] = cols
+
+		@applyColumns element, sizes, CssColumns.columns
 
 #
 # Data binding handler
@@ -1126,7 +1197,7 @@ class @Maslosoft.Ko.Balin.EnumCssClassFormatter extends @Maslosoft.Ko.Balin.Base
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		config = @getValue valueAccessor
 		
-		# Remove previosly set classes
+		# Remove previously set classes
 		for name in config.values
 			re = new RegExp("(?:^|\\s)#{name}(?!\\S)", 'g')
 			element.className = element.className.replace(re, '')

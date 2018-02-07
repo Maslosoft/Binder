@@ -10726,6 +10726,8 @@ module.exports = function (element) {
       action: Maslosoft.Ko.Balin.WidgetAction,
       activity: Maslosoft.Ko.Balin.WidgetActivity,
       asset: Maslosoft.Ko.Balin.Asset,
+      cssColumnSizes: Maslosoft.Ko.Balin.CssColumnSizes,
+      cssColumns: Maslosoft.Ko.Balin.CssColumns,
       data: Maslosoft.Ko.Balin.Data,
       dateFormatter: Maslosoft.Ko.Balin.DateFormatter,
       datePicker: Maslosoft.Ko.Balin.DatePicker,
@@ -11125,6 +11127,34 @@ module.exports = function (element) {
 
   })(this.Maslosoft.Ko.Balin.Base);
 
+  this.Maslosoft.Ko.Balin.CssColumnsBase = (function(_super) {
+    __extends(CssColumnsBase, _super);
+
+    function CssColumnsBase() {
+      this.applyColumns = __bind(this.applyColumns, this);
+      return CssColumnsBase.__super__.constructor.apply(this, arguments);
+    }
+
+    CssColumnsBase.prototype.writable = false;
+
+    CssColumnsBase.prototype.applyColumns = function(element, sizes, config) {
+      var name, newClasses, re, reName, size;
+      newClasses = [];
+      for (size in config) {
+        name = config[size];
+        reName = name.replace('{num}', '\\d');
+        name = name.replace('{num}', '');
+        re = new RegExp("(?:^|\\s)" + reName + "+(?!\\S)", 'g');
+        element.className = element.className.replace(re, '');
+        newClasses.push(name + sizes[size]);
+      }
+      jQuery(element).addClass(newClasses.join(' '));
+    };
+
+    return CssColumnsBase;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
   this.Maslosoft.Ko.Balin.MomentFormatter = (function(_super) {
     __extends(MomentFormatter, _super);
 
@@ -11385,6 +11415,70 @@ module.exports = function (element) {
     return Asset;
 
   })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.CssColumnSizes = (function(_super) {
+    __extends(CssColumnSizes, _super);
+
+    function CssColumnSizes() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return CssColumnSizes.__super__.constructor.apply(this, arguments);
+    }
+
+    CssColumnSizes.columns = {
+      'xs': 'col-xs-{num}',
+      'sm': 'col-sm-{num}',
+      'md': 'col-md-{num}',
+      'lg': 'col-lg-{num}'
+    };
+
+    CssColumnSizes.prototype.init = function(element, valueAccessor) {};
+
+    CssColumnSizes.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var sizes;
+      sizes = this.getValue(valueAccessor);
+      return this.applyColumns(element, sizes, CssColumnSizes.columns);
+    };
+
+    return CssColumnSizes;
+
+  })(this.Maslosoft.Ko.Balin.CssColumnsBase);
+
+  this.Maslosoft.Ko.Balin.CssColumns = (function(_super) {
+    __extends(CssColumns, _super);
+
+    function CssColumns() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return CssColumns.__super__.constructor.apply(this, arguments);
+    }
+
+    CssColumns.columns = {
+      'xs': 'col-xs-{num}',
+      'sm': 'col-sm-{num}',
+      'md': 'col-md-{num}',
+      'lg': 'col-lg-{num}'
+    };
+
+    CssColumns.prototype.init = function(element, valueAccessor) {};
+
+    CssColumns.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var cols, columns, name, size, sizes, value, _ref;
+      columns = this.getValue(valueAccessor);
+      sizes = {};
+      _ref = CssColumns.columns;
+      for (size in _ref) {
+        name = _ref[size];
+        value = parseInt(columns[size]);
+        cols = parseInt(12 / value);
+        sizes[size] = cols;
+      }
+      return this.applyColumns(element, sizes, CssColumns.columns);
+    };
+
+    return CssColumns;
+
+  })(this.Maslosoft.Ko.Balin.CssColumnsBase);
 
   this.Maslosoft.Ko.Balin.Data = (function(_super) {
     __extends(Data, _super);
