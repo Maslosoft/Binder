@@ -1,8 +1,8 @@
 <?php
 
-use Maslosoft\Ilmatar\Components\Helpers\CssFile;
-use Maslosoft\Ilmatar\Components\Helpers\JsFile;
-use Maslosoft\Ilmatar\Components\Helpers\JsInline;
+use Maslosoft\Components\Helpers\CssFile;
+use Maslosoft\Components\Helpers\JsFile;
+use Maslosoft\Components\Helpers\JsInline;
 ?>
 <?php $mocha = true; ?>
 <?php require __DIR__ . '/../_header.php'; ?>

@@ -1,6 +1,6 @@
 <?php
 use Maslosoft\Zamm\Widgets\DocNavRecursive;
-use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\Select2Package;
+use Maslosoft\Widgets\JavaScript\Packages\Select2Package;
 ?>
 <?php require __DIR__ . '/../../_header.php'; ?>
 <?php if(KO_BALIN_EMBEDDED):?>

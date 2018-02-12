@@ -45,7 +45,7 @@
 				"lastName": "",
 				"fullName": "",
 				"avatarUrl": "\/uac\/user\/getAvatar\/id\/54c7bb28c79fda522c8b45a9\/",
-				"_class": "Maslosoft\\Ilmatar\\Modules\\Ua\\Vm\\WebUserVm"
+				"_class": "Maslosoft\\Modules\\Ua\\Vm\\WebUserVm"
 		  },
 		  "Content": {
 				"PageMenu": {

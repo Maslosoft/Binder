@@ -1,7 +1,7 @@
 <?php
 
-use Maslosoft\Ilmatar\Widgets\Form\ActiveForm;
-use Maslosoft\Ilmatar\Components\Controller;
+use Maslosoft\Widgets\Form\ActiveForm;
+use Maslosoft\Components\Controller;
 ?>
 <?php
 

@@ -1,6 +1,6 @@
 <?php
 
-use Maslosoft\Ilmatar\Widgets\JavaScript\Packages\BootstrapDatepickerPackage;
+use Maslosoft\Widgets\JavaScript\Packages\BootstrapDatepickerPackage;
 ?>
 <?php require __DIR__ . '/../_header.php'; ?>
 
