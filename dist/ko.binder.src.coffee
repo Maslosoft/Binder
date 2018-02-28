@@ -74,6 +74,8 @@ if not @Maslosoft
 	@Maslosoft = {}
 if not @Maslosoft.Ko
 	@Maslosoft.Ko = {}
+if not @Maslosoft.Ko.Balin
+	@Maslosoft.Ko.Balin = {}
 if not @Maslosoft.Binder
 	@Maslosoft.Binder = {}
 if not @Maslosoft.Binder.Helpers
@@ -4288,5 +4290,7 @@ class @Maslosoft.Binder.Model
 				@[name] = new Proxy(@[name], new ModelProxyHandler(@, name))
 		ko.track(@, {deep: true})
 
+# For backward compatibility
+@Maslosoft.Ko.Balin = @Maslosoft.Binder
 @Maslosoft.Binder.registerDefaults()
 ko.punches.enableAll()

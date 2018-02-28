@@ -11,6 +11,7 @@ binderBare = [
 	'src/Widgets/**/*.coffee',
 	'src/Tracker.coffee',
 	'src/Model.coffee',
+	'src/_finish.coffee',
 ]
 
 # Shallow clone array with slice

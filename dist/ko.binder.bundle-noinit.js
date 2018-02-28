@@ -10661,6 +10661,10 @@ module.exports = function (element) {
     this.Maslosoft.Ko = {};
   }
 
+  if (!this.Maslosoft.Ko.Balin) {
+    this.Maslosoft.Ko.Balin = {};
+  }
+
   if (!this.Maslosoft.Binder) {
     this.Maslosoft.Binder = {};
   }
@@ -14989,6 +14993,8 @@ module.exports = function (element) {
     return Model;
 
   })();
+
+  this.Maslosoft.Ko.Balin = this.Maslosoft.Binder;
 
 }).call(this);
 
