@@ -117,16 +117,16 @@
     this.Maslosoft.Ko = {};
   }
 
-  if (!this.Maslosoft.Ko.Balin) {
-    this.Maslosoft.Ko.Balin = {};
+  if (!this.Maslosoft.Binder) {
+    this.Maslosoft.Binder = {};
   }
 
-  if (!this.Maslosoft.Ko.Balin.Helpers) {
-    this.Maslosoft.Ko.Balin.Helpers = {};
+  if (!this.Maslosoft.Binder.Helpers) {
+    this.Maslosoft.Binder.Helpers = {};
   }
 
-  if (!this.Maslosoft.Ko.Balin.Widgets) {
-    this.Maslosoft.Ko.Balin.Widgets = {};
+  if (!this.Maslosoft.Binder.Widgets) {
+    this.Maslosoft.Binder.Widgets = {};
   }
 
   this.Maslosoft.Ko.debounce = function(func, wait, immediate) {
@@ -151,7 +151,7 @@
     };
   };
 
-  this.Maslosoft.Ko.Balin.register = function(name, handler) {
+  this.Maslosoft.Binder.register = function(name, handler) {
     var name2;
     name2 = false;
     if (name.match(/[A-Z]/)) {
@@ -171,75 +171,75 @@
     }
   };
 
-  this.Maslosoft.Ko.Balin.registerDefaults = function(handlers) {
+  this.Maslosoft.Binder.registerDefaults = function(handlers) {
     var config, index, value, _results, _results1;
     if (handlers == null) {
       handlers = null;
     }
     config = {
-      acl: Maslosoft.Ko.Balin.Acl,
-      active: Maslosoft.Ko.Balin.Active,
-      action: Maslosoft.Ko.Balin.WidgetAction,
-      activity: Maslosoft.Ko.Balin.WidgetActivity,
-      asset: Maslosoft.Ko.Balin.Asset,
-      cssClasses: Maslosoft.Ko.Balin.CssClasses,
-      cssColumnSizes: Maslosoft.Ko.Balin.CssColumnSizes,
-      cssColumns: Maslosoft.Ko.Balin.CssColumns,
-      data: Maslosoft.Ko.Balin.Data,
-      dateFormatter: Maslosoft.Ko.Balin.DateFormatter,
-      datePicker: Maslosoft.Ko.Balin.DatePicker,
-      datePickerPickaDate: Maslosoft.Ko.Balin.PickaDate,
-      dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter,
-      decimalFormatter: Maslosoft.Ko.Balin.DecimalFormatter,
-      disabled: Maslosoft.Ko.Balin.Disabled,
-      enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter,
-      enumFormatter: Maslosoft.Ko.Balin.EnumFormatter,
-      "eval": Maslosoft.Ko.Balin.Eval,
-      fancytree: Maslosoft.Ko.Balin.Fancytree,
-      fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter,
-      hidden: Maslosoft.Ko.Balin.Hidden,
-      href: Maslosoft.Ko.Balin.Href,
-      htmlTree: Maslosoft.Ko.Balin.HtmlTree,
-      htmlValue: Maslosoft.Ko.Balin.HtmlValue,
-      icon: Maslosoft.Ko.Balin.Icon,
-      log: Maslosoft.Ko.Balin.Log,
-      model: Maslosoft.Ko.Balin.DataModel,
-      ref: Maslosoft.Ko.Balin.Widget,
-      src: Maslosoft.Ko.Balin.Src,
-      tags: Maslosoft.Ko.Balin.Tags,
-      textValue: Maslosoft.Ko.Balin.TextValue,
-      textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS,
-      timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter,
-      timeFormatter: Maslosoft.Ko.Balin.TimeFormatter,
-      timePicker: Maslosoft.Ko.Balin.TimePicker,
-      tooltip: Maslosoft.Ko.Balin.Tooltip,
-      treegrid: Maslosoft.Ko.Balin.TreeGrid,
-      treegridnode: Maslosoft.Ko.Balin.TreeGridNode,
-      selected: Maslosoft.Ko.Balin.Selected,
-      select2: Maslosoft.Ko.Balin.Select2,
-      validator: Maslosoft.Ko.Balin.Validator,
-      videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist,
-      videoThumb: Maslosoft.Ko.Balin.VideoThumb,
-      widget: Maslosoft.Ko.Balin.Widget
+      acl: Maslosoft.Binder.Acl,
+      active: Maslosoft.Binder.Active,
+      action: Maslosoft.Binder.WidgetAction,
+      activity: Maslosoft.Binder.WidgetActivity,
+      asset: Maslosoft.Binder.Asset,
+      cssClasses: Maslosoft.Binder.CssClasses,
+      cssColumnSizes: Maslosoft.Binder.CssColumnSizes,
+      cssColumns: Maslosoft.Binder.CssColumns,
+      data: Maslosoft.Binder.Data,
+      dateFormatter: Maslosoft.Binder.DateFormatter,
+      datePicker: Maslosoft.Binder.DatePicker,
+      datePickerPickaDate: Maslosoft.Binder.PickaDate,
+      dateTimeFormatter: Maslosoft.Binder.DateTimeFormatter,
+      decimalFormatter: Maslosoft.Binder.DecimalFormatter,
+      disabled: Maslosoft.Binder.Disabled,
+      enumCssClassFormatter: Maslosoft.Binder.EnumCssClassFormatter,
+      enumFormatter: Maslosoft.Binder.EnumFormatter,
+      "eval": Maslosoft.Binder.Eval,
+      fancytree: Maslosoft.Binder.Fancytree,
+      fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter,
+      hidden: Maslosoft.Binder.Hidden,
+      href: Maslosoft.Binder.Href,
+      htmlTree: Maslosoft.Binder.HtmlTree,
+      htmlValue: Maslosoft.Binder.HtmlValue,
+      icon: Maslosoft.Binder.Icon,
+      log: Maslosoft.Binder.Log,
+      model: Maslosoft.Binder.DataModel,
+      ref: Maslosoft.Binder.Widget,
+      src: Maslosoft.Binder.Src,
+      tags: Maslosoft.Binder.Tags,
+      textValue: Maslosoft.Binder.TextValue,
+      textValueHlJs: Maslosoft.Binder.TextValueHLJS,
+      timeAgoFormatter: Maslosoft.Binder.TimeAgoFormatter,
+      timeFormatter: Maslosoft.Binder.TimeFormatter,
+      timePicker: Maslosoft.Binder.TimePicker,
+      tooltip: Maslosoft.Binder.Tooltip,
+      treegrid: Maslosoft.Binder.TreeGrid,
+      treegridnode: Maslosoft.Binder.TreeGridNode,
+      selected: Maslosoft.Binder.Selected,
+      select2: Maslosoft.Binder.Select2,
+      validator: Maslosoft.Binder.Validator,
+      videoPlaylist: Maslosoft.Binder.VideoPlaylist,
+      videoThumb: Maslosoft.Binder.VideoThumb,
+      widget: Maslosoft.Binder.Widget
     };
     if (handlers !== null) {
       _results = [];
       for (index in handlers) {
         value = handlers[index];
-        _results.push(Maslosoft.Ko.Balin.register(value, new config[value]));
+        _results.push(Maslosoft.Binder.register(value, new config[value]));
       }
       return _results;
     } else {
       _results1 = [];
       for (index in config) {
         value = config[index];
-        _results1.push(Maslosoft.Ko.Balin.register(index, new value));
+        _results1.push(Maslosoft.Binder.register(index, new value));
       }
       return _results1;
     }
   };
 
-  this.Maslosoft.Ko.Balin.registerEvents = function(handlers) {
+  this.Maslosoft.Binder.registerEvents = function(handlers) {
     var config, index, value, _results, _results1;
     if (handlers == null) {
       handlers = null;
@@ -255,20 +255,20 @@
       _results = [];
       for (index in handlers) {
         value = handlers[index];
-        _results.push(Maslosoft.Ko.Balin.makeEventHandlerShortcut(value));
+        _results.push(Maslosoft.Binder.makeEventHandlerShortcut(value));
       }
       return _results;
     } else {
       _results1 = [];
       for (index in config) {
         value = config[index];
-        _results1.push(Maslosoft.Ko.Balin.makeEventHandlerShortcut(value));
+        _results1.push(Maslosoft.Binder.makeEventHandlerShortcut(value));
       }
       return _results1;
     }
   };
 
-  this.Maslosoft.Ko.Balin.makeEventHandlerShortcut = function(eventName) {
+  this.Maslosoft.Binder.makeEventHandlerShortcut = function(eventName) {
     ko.bindingHandlers[eventName] = {
       init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         var newValueAccessor;
@@ -283,7 +283,7 @@
     };
   };
 
-  this.Maslosoft.Ko.Balin.Base = (function() {
+  this.Maslosoft.Binder.Base = (function() {
     Base.prototype.writable = true;
 
     Base.prototype.options = {};
@@ -328,7 +328,7 @@
 
   })();
 
-  this.Maslosoft.Ko.Balin.Options = (function() {
+  this.Maslosoft.Binder.Options = (function() {
     Options.prototype.valueField = null;
 
     Options.prototype.ec5 = null;
@@ -356,7 +356,7 @@
 
   })();
 
-  this.Maslosoft.Ko.Balin.CssOptions = (function(_super) {
+  this.Maslosoft.Binder.CssOptions = (function(_super) {
     __extends(CssOptions, _super);
 
     function CssOptions() {
@@ -367,9 +367,9 @@
 
     return CssOptions;
 
-  })(this.Maslosoft.Ko.Balin.Options);
+  })(this.Maslosoft.Binder.Options);
 
-  this.Maslosoft.Ko.Balin.DateOptions = (function(_super) {
+  this.Maslosoft.Binder.DateOptions = (function(_super) {
     __extends(DateOptions, _super);
 
     function DateOptions() {
@@ -384,9 +384,9 @@
 
     return DateOptions;
 
-  })(this.Maslosoft.Ko.Balin.Options);
+  })(this.Maslosoft.Binder.Options);
 
-  this.Maslosoft.Ko.Balin.DateTimeOptions = (function(_super) {
+  this.Maslosoft.Binder.DateTimeOptions = (function(_super) {
     __extends(DateTimeOptions, _super);
 
     function DateTimeOptions() {
@@ -401,9 +401,9 @@
 
     return DateTimeOptions;
 
-  })(this.Maslosoft.Ko.Balin.Options);
+  })(this.Maslosoft.Binder.Options);
 
-  this.Maslosoft.Ko.Balin.TimeAgoOptions = (function(_super) {
+  this.Maslosoft.Binder.TimeAgoOptions = (function(_super) {
     __extends(TimeAgoOptions, _super);
 
     function TimeAgoOptions() {
@@ -418,9 +418,9 @@
 
     return TimeAgoOptions;
 
-  })(this.Maslosoft.Ko.Balin.Options);
+  })(this.Maslosoft.Binder.Options);
 
-  this.Maslosoft.Ko.Balin.TimeOptions = (function(_super) {
+  this.Maslosoft.Binder.TimeOptions = (function(_super) {
     __extends(TimeOptions, _super);
 
     function TimeOptions() {
@@ -435,9 +435,9 @@
 
     return TimeOptions;
 
-  })(this.Maslosoft.Ko.Balin.Options);
+  })(this.Maslosoft.Binder.Options);
 
-  this.Maslosoft.Ko.Balin.ValidatorOptions = (function(_super) {
+  this.Maslosoft.Binder.ValidatorOptions = (function(_super) {
     __extends(ValidatorOptions, _super);
 
     function ValidatorOptions() {
@@ -466,9 +466,9 @@
 
     return ValidatorOptions;
 
-  })(this.Maslosoft.Ko.Balin.Options);
+  })(this.Maslosoft.Binder.Options);
 
-  this.Maslosoft.Ko.Balin.BaseValidator = (function() {
+  this.Maslosoft.Binder.BaseValidator = (function() {
     BaseValidator.prototype.label = '';
 
     BaseValidator.prototype.model = null;
@@ -560,7 +560,7 @@
 
   })();
 
-  this.Maslosoft.Ko.Balin.CssClass = (function(_super) {
+  this.Maslosoft.Binder.CssClass = (function(_super) {
     __extends(CssClass, _super);
 
     function CssClass() {
@@ -582,9 +582,9 @@
 
     return CssClass;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.CssColumnsBase = (function(_super) {
+  this.Maslosoft.Binder.CssColumnsBase = (function(_super) {
     __extends(CssColumnsBase, _super);
 
     function CssColumnsBase() {
@@ -610,9 +610,9 @@
 
     return CssColumnsBase;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.MomentFormatter = (function(_super) {
+  this.Maslosoft.Binder.MomentFormatter = (function(_super) {
     __extends(MomentFormatter, _super);
 
     function MomentFormatter() {
@@ -633,9 +633,9 @@
 
     return MomentFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Picker = (function(_super) {
+  this.Maslosoft.Binder.Picker = (function(_super) {
     __extends(Picker, _super);
 
     function Picker() {
@@ -644,9 +644,9 @@
 
     return Picker;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Video = (function(_super) {
+  this.Maslosoft.Binder.Video = (function(_super) {
     var adapters, options;
 
     __extends(Video, _super);
@@ -696,9 +696,9 @@
 
     return Video;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.WidgetUrl = (function(_super) {
+  this.Maslosoft.Binder.WidgetUrl = (function(_super) {
     __extends(WidgetUrl, _super);
 
     function WidgetUrl() {
@@ -779,9 +779,9 @@
 
     return WidgetUrl;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Acl = (function(_super) {
+  this.Maslosoft.Binder.Acl = (function(_super) {
     var allow;
 
     __extends(Acl, _super);
@@ -795,18 +795,18 @@
     allow = null;
 
     Acl.prototype.init = function() {
-      if (!Maslosoft.Ko.Balin.Acl.allow) {
-        throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions");
+      if (!Maslosoft.Binder.Acl.allow) {
+        throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions");
       }
-      if (typeof Maslosoft.Ko.Balin.Acl.allow !== 'function') {
-        throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions");
+      if (typeof Maslosoft.Binder.Acl.allow !== 'function') {
+        throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions");
       }
     };
 
     Acl.prototype.update = function(element, valueAccessor) {
       var acl, value;
       acl = this.getValue(valueAccessor);
-      value = Maslosoft.Ko.Balin.Acl.allow(acl);
+      value = Maslosoft.Binder.Acl.allow(acl);
       return ko.bindingHandlers.visible.update(element, function() {
         return value;
       });
@@ -814,22 +814,22 @@
 
     return Acl;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Active = (function(_super) {
+  this.Maslosoft.Binder.Active = (function(_super) {
     __extends(Active, _super);
 
     function Active(options) {
-      Active.__super__.constructor.call(this, new Maslosoft.Ko.Balin.CssOptions({
+      Active.__super__.constructor.call(this, new Maslosoft.Binder.CssOptions({
         className: 'active'
       }));
     }
 
     return Active;
 
-  })(this.Maslosoft.Ko.Balin.CssClass);
+  })(this.Maslosoft.Binder.CssClass);
 
-  this.Maslosoft.Ko.Balin.Asset = (function(_super) {
+  this.Maslosoft.Binder.Asset = (function(_super) {
     __extends(Asset, _super);
 
     function Asset() {
@@ -871,9 +871,9 @@
 
     return Asset;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.CssClasses = (function(_super) {
+  this.Maslosoft.Binder.CssClasses = (function(_super) {
     __extends(CssClasses, _super);
 
     function CssClasses() {
@@ -919,9 +919,9 @@
 
     return CssClasses;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.CssColumnSizes = (function(_super) {
+  this.Maslosoft.Binder.CssColumnSizes = (function(_super) {
     __extends(CssColumnSizes, _super);
 
     function CssColumnSizes() {
@@ -947,9 +947,9 @@
 
     return CssColumnSizes;
 
-  })(this.Maslosoft.Ko.Balin.CssColumnsBase);
+  })(this.Maslosoft.Binder.CssColumnsBase);
 
-  this.Maslosoft.Ko.Balin.CssColumns = (function(_super) {
+  this.Maslosoft.Binder.CssColumns = (function(_super) {
     __extends(CssColumns, _super);
 
     function CssColumns() {
@@ -983,9 +983,9 @@
 
     return CssColumns;
 
-  })(this.Maslosoft.Ko.Balin.CssColumnsBase);
+  })(this.Maslosoft.Binder.CssColumnsBase);
 
-  this.Maslosoft.Ko.Balin.Data = (function(_super) {
+  this.Maslosoft.Binder.Data = (function(_super) {
     __extends(Data, _super);
 
     function Data() {
@@ -1009,9 +1009,9 @@
 
     return Data;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.DataModel = (function(_super) {
+  this.Maslosoft.Binder.DataModel = (function(_super) {
     __extends(DataModel, _super);
 
     function DataModel() {
@@ -1051,25 +1051,25 @@
 
     return DataModel;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.DateFormatter = (function(_super) {
+  this.Maslosoft.Binder.DateFormatter = (function(_super) {
     __extends(DateFormatter, _super);
 
     function DateFormatter(options) {
-      DateFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateOptions(options));
+      DateFormatter.__super__.constructor.call(this, new Maslosoft.Binder.DateOptions(options));
     }
 
     return DateFormatter;
 
-  })(this.Maslosoft.Ko.Balin.MomentFormatter);
+  })(this.Maslosoft.Binder.MomentFormatter);
 
 
   /*
   Date picker
    */
 
-  this.Maslosoft.Ko.Balin.DatePicker = (function(_super) {
+  this.Maslosoft.Binder.DatePicker = (function(_super) {
     __extends(DatePicker, _super);
 
     function DatePicker(options) {
@@ -1078,7 +1078,7 @@
       this.getModelValue = __bind(this.getModelValue, this);
       this.getDisplayValue = __bind(this.getDisplayValue, this);
       this.updateModel = __bind(this.updateModel, this);
-      DatePicker.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateOptions(options));
+      DatePicker.__super__.constructor.call(this, new Maslosoft.Binder.DateOptions(options));
     }
 
     DatePicker.prototype.getData = function(valueAccessor) {
@@ -1224,25 +1224,25 @@
 
     return DatePicker;
 
-  })(this.Maslosoft.Ko.Balin.Picker);
+  })(this.Maslosoft.Binder.Picker);
 
 
   /*
   One-way date/time formatter
    */
 
-  this.Maslosoft.Ko.Balin.DateTimeFormatter = (function(_super) {
+  this.Maslosoft.Binder.DateTimeFormatter = (function(_super) {
     __extends(DateTimeFormatter, _super);
 
     function DateTimeFormatter(options) {
-      DateTimeFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateTimeOptions(options));
+      DateTimeFormatter.__super__.constructor.call(this, new Maslosoft.Binder.DateTimeOptions(options));
     }
 
     return DateTimeFormatter;
 
-  })(this.Maslosoft.Ko.Balin.MomentFormatter);
+  })(this.Maslosoft.Binder.MomentFormatter);
 
-  this.Maslosoft.Ko.Balin.DecimalFormatter = (function(_super) {
+  this.Maslosoft.Binder.DecimalFormatter = (function(_super) {
     __extends(DecimalFormatter, _super);
 
     function DecimalFormatter() {
@@ -1311,22 +1311,22 @@
 
     return DecimalFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Disabled = (function(_super) {
+  this.Maslosoft.Binder.Disabled = (function(_super) {
     __extends(Disabled, _super);
 
     function Disabled(options) {
-      Disabled.__super__.constructor.call(this, new Maslosoft.Ko.Balin.CssOptions({
+      Disabled.__super__.constructor.call(this, new Maslosoft.Binder.CssOptions({
         className: 'disabled'
       }));
     }
 
     return Disabled;
 
-  })(this.Maslosoft.Ko.Balin.CssClass);
+  })(this.Maslosoft.Binder.CssClass);
 
-  this.Maslosoft.Ko.Balin.EnumCssClassFormatter = (function(_super) {
+  this.Maslosoft.Binder.EnumCssClassFormatter = (function(_super) {
     __extends(EnumCssClassFormatter, _super);
 
     function EnumCssClassFormatter() {
@@ -1348,9 +1348,9 @@
 
     return EnumCssClassFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.EnumFormatter = (function(_super) {
+  this.Maslosoft.Binder.EnumFormatter = (function(_super) {
     __extends(EnumFormatter, _super);
 
     function EnumFormatter() {
@@ -1366,9 +1366,9 @@
 
     return EnumFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Eval = (function(_super) {
+  this.Maslosoft.Binder.Eval = (function(_super) {
     __extends(Eval, _super);
 
     function Eval() {
@@ -1397,9 +1397,9 @@
 
     return Eval;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Fancytree = (function(_super) {
+  this.Maslosoft.Binder.Fancytree = (function(_super) {
     __extends(Fancytree, _super);
 
     function Fancytree() {
@@ -1492,9 +1492,9 @@
 
     return Fancytree;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.FileSizeFormatter = (function(_super) {
+  this.Maslosoft.Binder.FileSizeFormatter = (function(_super) {
     __extends(FileSizeFormatter, _super);
 
     function FileSizeFormatter() {
@@ -1556,9 +1556,9 @@
 
     return FileSizeFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.GMap = (function(_super) {
+  this.Maslosoft.Binder.GMap = (function(_super) {
     __extends(GMap, _super);
 
     function GMap() {
@@ -1576,9 +1576,9 @@
 
     return GMap;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Hidden = (function(_super) {
+  this.Maslosoft.Binder.Hidden = (function(_super) {
     __extends(Hidden, _super);
 
     function Hidden() {
@@ -1596,9 +1596,9 @@
 
     return Hidden;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Href = (function(_super) {
+  this.Maslosoft.Binder.Href = (function(_super) {
     var bustLinks;
 
     __extends(Href, _super);
@@ -1657,9 +1657,9 @@
 
     return Href;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.HtmlTree = (function(_super) {
+  this.Maslosoft.Binder.HtmlTree = (function(_super) {
     __extends(HtmlTree, _super);
 
     function HtmlTree() {
@@ -1710,9 +1710,9 @@
 
     return HtmlTree;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.HtmlValue = (function(_super) {
+  this.Maslosoft.Binder.HtmlValue = (function(_super) {
     var idCounter;
 
     __extends(HtmlValue, _super);
@@ -1743,7 +1743,7 @@
       var deferHandler, dispose, handler;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
-        element.id = "Maslosoft-Ko-Balin-HtmlValue-" + (idCounter++);
+        element.id = "Maslosoft-Ko-Binder-HtmlValue-" + (idCounter++);
       }
       handler = (function(_this) {
         return function(e) {
@@ -1789,9 +1789,9 @@
 
     return HtmlValue;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Icon = (function(_super) {
+  this.Maslosoft.Binder.Icon = (function(_super) {
     __extends(Icon, _super);
 
     function Icon() {
@@ -1898,9 +1898,9 @@
 
     return Icon;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Log = (function(_super) {
+  this.Maslosoft.Binder.Log = (function(_super) {
     __extends(Log, _super);
 
     function Log() {
@@ -1919,7 +1919,7 @@
 
     return Log;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
 
   /*
@@ -1927,7 +1927,7 @@
   NOTE: Not recommended, as Pick A Date is not maintanted
    */
 
-  this.Maslosoft.Ko.Balin.PickaDate = (function(_super) {
+  this.Maslosoft.Binder.PickaDate = (function(_super) {
     __extends(PickaDate, _super);
 
     function PickaDate(options) {
@@ -1936,7 +1936,7 @@
       this.getModelValue = __bind(this.getModelValue, this);
       this.getDisplayValue = __bind(this.getDisplayValue, this);
       this.updateModel = __bind(this.updateModel, this);
-      PickaDate.__super__.constructor.call(this, new Maslosoft.Ko.Balin.DateOptions(options));
+      PickaDate.__super__.constructor.call(this, new Maslosoft.Binder.DateOptions(options));
     }
 
     PickaDate.prototype.updateModel = function(element, valueAccessor, allBindings) {
@@ -2056,14 +2056,14 @@
 
     return PickaDate;
 
-  })(this.Maslosoft.Ko.Balin.Picker);
+  })(this.Maslosoft.Binder.Picker);
 
 
   /*
   Select2
    */
 
-  this.Maslosoft.Ko.Balin.Select2 = (function(_super) {
+  this.Maslosoft.Binder.Select2 = (function(_super) {
     var bindingName, dataBindingName, init, triggerChangeQuietly;
 
     __extends(Select2, _super);
@@ -2168,22 +2168,22 @@
 
     return Select2;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Selected = (function(_super) {
+  this.Maslosoft.Binder.Selected = (function(_super) {
     __extends(Selected, _super);
 
     function Selected(options) {
-      Selected.__super__.constructor.call(this, new Maslosoft.Ko.Balin.CssOptions({
+      Selected.__super__.constructor.call(this, new Maslosoft.Binder.CssOptions({
         className: 'selected'
       }));
     }
 
     return Selected;
 
-  })(this.Maslosoft.Ko.Balin.CssClass);
+  })(this.Maslosoft.Binder.CssClass);
 
-  this.Maslosoft.Ko.Balin.Src = (function(_super) {
+  this.Maslosoft.Binder.Src = (function(_super) {
     __extends(Src, _super);
 
     function Src() {
@@ -2204,14 +2204,14 @@
 
     return Src;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
 
   /*
   Select2
    */
 
-  this.Maslosoft.Ko.Balin.Tags = (function(_super) {
+  this.Maslosoft.Binder.Tags = (function(_super) {
     var dropdownKillStyles, once;
 
     __extends(Tags, _super);
@@ -2367,9 +2367,9 @@
 
     return Tags;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.TextValue = (function(_super) {
+  this.Maslosoft.Binder.TextValue = (function(_super) {
     __extends(TextValue, _super);
 
     function TextValue() {
@@ -2391,9 +2391,9 @@
 
     return TextValue;
 
-  })(this.Maslosoft.Ko.Balin.HtmlValue);
+  })(this.Maslosoft.Binder.HtmlValue);
 
-  this.Maslosoft.Ko.Balin.TextValueHLJS = (function(_super) {
+  this.Maslosoft.Binder.TextValueHLJS = (function(_super) {
     __extends(TextValueHLJS, _super);
 
     function TextValueHLJS() {
@@ -2421,14 +2421,14 @@
 
     return TextValueHLJS;
 
-  })(this.Maslosoft.Ko.Balin.HtmlValue);
+  })(this.Maslosoft.Binder.HtmlValue);
 
-  this.Maslosoft.Ko.Balin.TimeAgoFormatter = (function(_super) {
+  this.Maslosoft.Binder.TimeAgoFormatter = (function(_super) {
     __extends(TimeAgoFormatter, _super);
 
     function TimeAgoFormatter(options) {
       this.update = __bind(this.update, this);
-      TimeAgoFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.TimeAgoOptions(options));
+      TimeAgoFormatter.__super__.constructor.call(this, new Maslosoft.Binder.TimeAgoOptions(options));
     }
 
     TimeAgoFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
@@ -2439,25 +2439,25 @@
 
     return TimeAgoFormatter;
 
-  })(this.Maslosoft.Ko.Balin.MomentFormatter);
+  })(this.Maslosoft.Binder.MomentFormatter);
 
-  this.Maslosoft.Ko.Balin.TimeFormatter = (function(_super) {
+  this.Maslosoft.Binder.TimeFormatter = (function(_super) {
     __extends(TimeFormatter, _super);
 
     function TimeFormatter(options) {
-      TimeFormatter.__super__.constructor.call(this, new Maslosoft.Ko.Balin.TimeOptions(options));
+      TimeFormatter.__super__.constructor.call(this, new Maslosoft.Binder.TimeOptions(options));
     }
 
     return TimeFormatter;
 
-  })(this.Maslosoft.Ko.Balin.MomentFormatter);
+  })(this.Maslosoft.Binder.MomentFormatter);
 
 
   /*
   Time picker
    */
 
-  this.Maslosoft.Ko.Balin.TimePicker = (function(_super) {
+  this.Maslosoft.Binder.TimePicker = (function(_super) {
     __extends(TimePicker, _super);
 
     function TimePicker() {
@@ -2466,9 +2466,9 @@
 
     return TimePicker;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Tooltip = (function(_super) {
+  this.Maslosoft.Binder.Tooltip = (function(_super) {
     __extends(Tooltip, _super);
 
     function Tooltip() {
@@ -2486,9 +2486,9 @@
 
     return Tooltip;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Tree = (function(_super) {
+  this.Maslosoft.Binder.Tree = (function(_super) {
     __extends(Tree, _super);
 
     function Tree() {
@@ -2500,9 +2500,9 @@
 
     return Tree;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.TreeGrid = (function(_super) {
+  this.Maslosoft.Binder.TreeGrid = (function(_super) {
     var makeValueAccessor;
 
     __extends(TreeGrid, _super);
@@ -2593,7 +2593,7 @@
         };
         ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
       }
-      widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
+      widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
       ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
       return {
         controlsDescendantBindings: true
@@ -2602,15 +2602,15 @@
 
     TreeGrid.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
       var widget;
-      widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView(element, valueAccessor, 'update');
+      widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor, 'update');
       return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
     };
 
     return TreeGrid;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.TreeGridNode = (function(_super) {
+  this.Maslosoft.Binder.TreeGridNode = (function(_super) {
     __extends(TreeGridNode, _super);
 
     function TreeGridNode() {
@@ -2646,9 +2646,9 @@
 
     return TreeGridNode;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.Validator = (function(_super) {
+  this.Maslosoft.Binder.Validator = (function(_super) {
     var idCounter;
 
     __extends(Validator, _super);
@@ -2658,7 +2658,7 @@
     function Validator(options) {
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
-      Validator.__super__.constructor.call(this, new Maslosoft.Ko.Balin.ValidatorOptions());
+      Validator.__super__.constructor.call(this, new Maslosoft.Binder.ValidatorOptions());
     }
 
     Validator.prototype.getElementValue = function(element) {
@@ -2708,7 +2708,7 @@
       manager = new ValidationManager(validators, this.options);
       manager.init(element);
       if (!element.id) {
-        element.id = "Maslosoft-Ko-Balin-Validator-" + (idCounter++);
+        element.id = "Maslosoft-Ko-Binder-Validator-" + (idCounter++);
       }
       initialVal = this.getElementValue(element);
       handler = (function(_this) {
@@ -2736,9 +2736,9 @@
 
     return Validator;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.VideoPlaylist = (function(_super) {
+  this.Maslosoft.Binder.VideoPlaylist = (function(_super) {
     __extends(VideoPlaylist, _super);
 
     function VideoPlaylist() {
@@ -2786,9 +2786,9 @@
 
     return VideoPlaylist;
 
-  })(this.Maslosoft.Ko.Balin.Video);
+  })(this.Maslosoft.Binder.Video);
 
-  this.Maslosoft.Ko.Balin.VideoThumb = (function(_super) {
+  this.Maslosoft.Binder.VideoThumb = (function(_super) {
     __extends(VideoThumb, _super);
 
     function VideoThumb() {
@@ -2807,9 +2807,9 @@
 
     return VideoThumb;
 
-  })(this.Maslosoft.Ko.Balin.Video);
+  })(this.Maslosoft.Binder.Video);
 
-  this.Maslosoft.Ko.Balin.Widget = (function(_super) {
+  this.Maslosoft.Binder.Widget = (function(_super) {
     __extends(Widget, _super);
 
     function Widget() {
@@ -2865,9 +2865,9 @@
 
     return Widget;
 
-  })(this.Maslosoft.Ko.Balin.Base);
+  })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Ko.Balin.WidgetAction = (function(_super) {
+  this.Maslosoft.Binder.WidgetAction = (function(_super) {
     __extends(WidgetAction, _super);
 
     function WidgetAction() {
@@ -2885,9 +2885,9 @@
 
     return WidgetAction;
 
-  })(this.Maslosoft.Ko.Balin.WidgetUrl);
+  })(this.Maslosoft.Binder.WidgetUrl);
 
-  this.Maslosoft.Ko.Balin.WidgetActivity = (function(_super) {
+  this.Maslosoft.Binder.WidgetActivity = (function(_super) {
     __extends(WidgetActivity, _super);
 
     function WidgetActivity() {
@@ -2905,7 +2905,7 @@
 
     return WidgetActivity;
 
-  })(this.Maslosoft.Ko.Balin.WidgetUrl);
+  })(this.Maslosoft.Binder.WidgetUrl);
 
   TreeDnd = (function() {
     var t;
@@ -3524,11 +3524,11 @@
 
   })();
 
-  if (!this.Maslosoft.Ko.Balin.Widgets.TreeGrid) {
-    this.Maslosoft.Ko.Balin.Widgets.TreeGrid = {};
+  if (!this.Maslosoft.Binder.Widgets.TreeGrid) {
+    this.Maslosoft.Binder.Widgets.TreeGrid = {};
   }
 
-  Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd = (function() {
+  Maslosoft.Binder.Widgets.TreeGrid.Dnd = (function() {
     var didDrop, dragged, draggedOver, hitMode, indicator, prevHitMode;
 
     Dnd.prototype.grid = null;
@@ -3578,7 +3578,7 @@
         this.grid.element.on('mousemove', '> tr', this.move);
       }
       if (!indicator) {
-        indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator(this.grid);
+        indicator = new Maslosoft.Binder.Widgets.TreeGrid.DropIndicator(this.grid);
       }
       defer = (function(_this) {
         return function() {
@@ -3765,14 +3765,14 @@
 
   })();
 
-  Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator = (function() {
+  Maslosoft.Binder.Widgets.TreeGrid.DropIndicator = (function() {
     DropIndicator.precise = null;
 
     DropIndicator.element = null;
 
     function DropIndicator(grid) {
       this.grid = grid;
-      this.precise = new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator(this.grid);
+      this.precise = new Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator(this.grid);
     }
 
     DropIndicator.prototype.attach = function(element) {
@@ -3827,7 +3827,7 @@
 
   })();
 
-  Maslosoft.Ko.Balin.Widgets.TreeGrid.Events = (function() {
+  Maslosoft.Binder.Widgets.TreeGrid.Events = (function() {
     Events.prototype.grid = null;
 
     function Events(grid, context) {
@@ -3841,7 +3841,7 @@
 
   })();
 
-  Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders = (function() {
+  Maslosoft.Binder.Widgets.TreeGrid.Expanders = (function() {
     Expanders.prototype.grid = null;
 
     function Expanders(grid, context) {
@@ -3929,7 +3929,7 @@
 
   })();
 
-  Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator = (function() {
+  Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator = (function() {
     var coarse, indicator, initialized, precise;
 
     InsertIndicator.prototype.grid = null;
@@ -4037,10 +4037,10 @@
 
   })();
 
-  Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView = (function() {
+  Maslosoft.Binder.Widgets.TreeGrid.TreeGridView = (function() {
     var cellsStyles;
 
-    TreeGridView.plugins = [Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders, Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd, Maslosoft.Ko.Balin.Widgets.TreeGrid.Events];
+    TreeGridView.plugins = [Maslosoft.Binder.Widgets.TreeGrid.Expanders, Maslosoft.Binder.Widgets.TreeGrid.Dnd, Maslosoft.Binder.Widgets.TreeGrid.Events];
 
     TreeGridView.prototype.element = null;
 
@@ -4401,7 +4401,7 @@
     initMap = new Map();
   }
 
-  this.Maslosoft.Ko.Balin.Model = (function() {
+  this.Maslosoft.Binder.Model = (function() {
     function Model(data) {
       var initialized, name, value;
       if (data == null) {
@@ -4448,4 +4448,4 @@
 
 }).call(this);
 
-//# sourceMappingURL=ko.balin-noinit.js.map
+//# sourceMappingURL=ko.binder-noinit.js.map

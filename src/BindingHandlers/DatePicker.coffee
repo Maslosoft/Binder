@@ -1,10 +1,10 @@
 ###
 Date picker
 ###
-class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
+class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateOptions(options)
+		super new Maslosoft.Binder.DateOptions(options)
 	
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}

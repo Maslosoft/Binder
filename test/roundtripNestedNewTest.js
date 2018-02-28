@@ -21,44 +21,44 @@
     item5 = new Maslosoft.Koe.HtmlValue;
     item5.text = 'Joseph';
     sortable.items.push(item5);
-    balin.model.sortable = sortable;
-    ko.track(balin.model);
+    binder.model.sortable = sortable;
+    ko.track(binder.model);
     ko.applyBindings({
-      model: balin.model
-    }, document.getElementById('ko-balin'));
+      model: binder.model
+    }, document.getElementById('ko-binder'));
     doRound = function() {
       var index, json, model, res;
-      json = JSON.stringify(balin.model);
+      json = JSON.stringify(binder.model);
       res = JSON.parse(json);
       for (index in res) {
         model = res[index];
-        balin.model[index] = ko.tracker.factory(res[index]);
+        binder.model[index] = ko.tracker.factory(res[index]);
       }
-      return console.log(balin.model);
+      return console.log(binder.model);
     };
     elem = jQuery('#roundtripNestedNewTest');
     console.log("Starting test...");
     return describe('Test if will allow roundtrip of nested arrays, using new', function() {
       it('Should have same title after getting data from JSON', function() {
-        assert.equal(balin.model.sortable.title, 'Names Collection');
+        assert.equal(binder.model.sortable.title, 'Names Collection');
         doRound();
-        return assert.equal(balin.model.sortable.title, 'Names Collection');
+        return assert.equal(binder.model.sortable.title, 'Names Collection');
       });
       it('Should allow pop', function() {
-        assert.equal(balin.model.sortable.items.length, 5);
+        assert.equal(binder.model.sortable.items.length, 5);
         assert.equal(elem.find('div').length, 5);
-        balin.model.sortable.items.pop();
-        assert.equal(balin.model.sortable.items[0].text, 'Frank', 'That first item is Frank');
-        assert.equal(balin.model.sortable.items.length, 4, 'That one element was removed from array');
+        binder.model.sortable.items.pop();
+        assert.equal(binder.model.sortable.items[0].text, 'Frank', 'That first item is Frank');
+        assert.equal(binder.model.sortable.items.length, 4, 'That one element was removed from array');
         assert.equal(elem.find('div').length, 4, 'That DOM elements are 4 too');
         doRound();
-        assert.equal(balin.model.sortable.items[0].text, 'Frank', 'That first item is still Frank');
-        assert.equal(balin.model.sortable.items.length, 4, 'That one element remains removed from array');
+        assert.equal(binder.model.sortable.items[0].text, 'Frank', 'That first item is still Frank');
+        assert.equal(binder.model.sortable.items.length, 4, 'That one element remains removed from array');
         return assert.equal(elem.find('div').length, 4, 'That DOM elements are 4 too');
       });
       return it('Should allow push', function() {
         var model;
-        model = balin.model.sortable;
+        model = binder.model.sortable;
         assert.equal(model.items.length, 4);
         model.items.push(new Maslosoft.Koe.HtmlValue({
           text: 'new'

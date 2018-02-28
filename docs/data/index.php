@@ -30,8 +30,8 @@
 <h4>Live Example</h4>
 <p>Results are not visible, try inspecting elements to verify that bindings have been applied.</p>
 <!-- /trim -->
-<span data-bind="data.title: balin.model.txt1.text" class="label label-success">Should have <code>data-title</code> HTML attribute of a simple string value</span>
-<span data-bind="data.full: balin.model.txt1" class="label label-success">Should have <code>data-full</code> HTML attribute of json encoded object value</span>
+<span data-bind="data.title: binder.model.txt1.text" class="label label-success">Should have <code>data-title</code> HTML attribute of a simple string value</span>
+<span data-bind="data.full: binder.model.txt1" class="label label-success">Should have <code>data-full</code> HTML attribute of json encoded object value</span>
 
 <script>
 	window.onload = (function () {
@@ -39,9 +39,9 @@
 			text: 'Val1'
 		};
 
-		balin.model.txt1 = new Maslosoft.Koe.TextValue(data1);
+		binder.model.txt1 = new Maslosoft.Koe.TextValue(data1);
 
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

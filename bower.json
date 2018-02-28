@@ -1,11 +1,11 @@
 {
-  "name": "maslosoft-ko-balin",
+  "name": "binder",
   "version": "0.0.6",
   "authors": [
     "Peter Maselkowski <pmaselkowski@gmail.com>"
   ],
   "description": "Binding handlers for knockut js",
-  "main": "dist/ko.balin.min.js",
+  "main": "dist/ko.binder.min.js",
   "moduleType": [
     "globals"
   ],
@@ -16,7 +16,7 @@
     "binding-handlers"
   ],
   "license": "MIT",
-  "homepage": "http://maslosoft.com/balin/",
+  "homepage": "http://maslosoft.com/binder/",
   "ignore": [
     "**/.*",
     "dev",

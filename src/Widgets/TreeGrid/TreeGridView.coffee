@@ -1,5 +1,5 @@
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 
 	#
 	# Plugins for tree grid
@@ -9,9 +9,9 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 	# @var Object[]
 	#
 	@plugins = [
-		Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
-		Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
-		Maslosoft.Ko.Balin.Widgets.TreeGrid.Events
+		Maslosoft.Binder.Widgets.TreeGrid.Expanders
+		Maslosoft.Binder.Widgets.TreeGrid.Dnd
+		Maslosoft.Binder.Widgets.TreeGrid.Events
 	]
 
 	#

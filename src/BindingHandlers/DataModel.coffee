@@ -2,7 +2,7 @@
 # Model binding handler
 # This is to bind selected model properties to data-model field
 #
-class @Maslosoft.Ko.Balin.DataModel extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.DataModel extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindings) =>
 		

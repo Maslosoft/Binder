@@ -23,20 +23,20 @@
 	New binding handlers can be added easily, as show in this example with <code>custom</code>
 	binding. This can be done using just one line, passing binding handler name as first
 	parameter to <code>register</code> method, and apropriatelly cofigured instance of
-	<code>Maslosoft.Ko.Balin.CssClass</code>. The syntax is as following:<br />
+	<code>Maslosoft.Binder.CssClass</code>. The syntax is as following:<br />
 </p>
-<pre class="javascript">Maslosoft.Ko.Balin.register(
+<pre class="javascript">Maslosoft.Binder.register(
             'myBindingName',
-            new Maslosoft.Ko.Balin.CssClass({
+            new Maslosoft.Binder.CssClass({
             className: 'css-class-name'
         }));</pre>
 <h3>Using CSS Class bindings</h3>
 <p>
 	To use this binding on element, place apropriate data bind attribute:<br />
 </p>
-<pre class="javascript">data-bind="selected: balin.model.selected.isSelected"</pre>
+<pre class="javascript">data-bind="selected: binder.model.selected.isSelected"</pre>
 <p>
-	When <code>balin.model.selected.isSelected</code> value evaluates to <code>true</code>,
+	When <code>binder.model.selected.isSelected</code> value evaluates to <code>true</code>,
 	CSS Class configured for <code>selected</code> binding will be added, in this case
 	knockout will add <code>btn-danger</code>
 </p>
@@ -44,7 +44,7 @@
 <p>
 	There is also alternative syntax available, using knockout punches:
 </p>
-<pre class="html"><?= escapeko('<span selected="{{balin.model.selected.isSelected}}">With punches</span>')?></pre>
+<pre class="html"><?= escapeko('<span selected="{{binder.model.selected.isSelected}}">With punches</span>')?></pre>
 <p>
 	Notice that there are no data bind attribute, but attribute named same as binding name,
 	with value wrapped with double curly braces.
@@ -57,17 +57,17 @@
     Should be <span style="width: 6em;display: inline-block;text-align: center;" data-bind="<?= $type; ?>: true"><?= $type; ?></span> if <code>isSelected</code> evaluates to true.
 </p>
 <label class="btn"
-	data-bind="<?= $type; ?>: balin.model.<?= $type; ?>.isSelected">
+	data-bind="<?= $type; ?>: binder.model.<?= $type; ?>.isSelected">
 
 	<input type="checkbox" 
-		data-bind="checked: balin.model.<?= $type; ?>.isSelected" />
+		data-bind="checked: binder.model.<?= $type; ?>.isSelected" />
 	<?= $type . PHP_EOL; ?>
 </label>
 <!-- /trim -->
-<span data-bind="<?= $type; ?>: balin.model.<?= $type; ?>.isSelected" class="btn">
+<span data-bind="<?= $type; ?>: binder.model.<?= $type; ?>.isSelected" class="btn">
 	Test Area
 </span>
-<span <?= $type;?>="{{balin.model.<?= $type; ?>.isSelected}}" class="btn">With punches</span>
+<span <?= $type;?>="{{binder.model.<?= $type; ?>.isSelected}}" class="btn">With punches</span>
 <!-- trim -->
 <p></p>
 <!-- /trim -->
@@ -78,19 +78,19 @@
 <script>
 	window.onload = (function () {
 		// Define custom binding
-		Maslosoft.Ko.Balin.register(
+		Maslosoft.Binder.register(
 		    'custom',
-            new Maslosoft.Ko.Balin.CssClass({
+            new Maslosoft.Binder.CssClass({
                 className: 'custom'
             }));
 
-		balin.model.selected = new Maslosoft.Koe.Selected({isSelected: true});
-		balin.model.active = new Maslosoft.Koe.Selected({isSelected: false});
-		balin.model.disabled = new Maslosoft.Koe.Selected({isSelected: false});
-		balin.model.custom = new Maslosoft.Koe.Selected({isSelected: false});
+		binder.model.selected = new Maslosoft.Koe.Selected({isSelected: true});
+		binder.model.active = new Maslosoft.Koe.Selected({isSelected: false});
+		binder.model.disabled = new Maslosoft.Koe.Selected({isSelected: false});
+		binder.model.custom = new Maslosoft.Koe.Selected({isSelected: false});
 		// Re-style selected binding
 		ko.bindingHandlers.selected.options.className = "btn-danger";
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

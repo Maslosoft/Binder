@@ -1,7 +1,7 @@
 #
 # Hidden binding handler, opposite to visible
 #
-class @Maslosoft.Ko.Balin.Hidden extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Hidden extends @Maslosoft.Binder.Base
 	
 	update: (element, valueAccessor) =>
 		value = not @getValue(valueAccessor)

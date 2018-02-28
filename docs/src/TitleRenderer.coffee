@@ -1,9 +1,9 @@
 if not @Maslosoft
 	@Maslosoft = {}
-if not @Maslosoft.Ko.BalinDev
-	@Maslosoft.Ko.BalinDev = {}
+if not @Maslosoft.BinderDev
+	@Maslosoft.BinderDev = {}
 
-class @Maslosoft.Ko.BalinDev.TitleRenderer
+class @Maslosoft.BinderDev.TitleRenderer
 
 	constructor: (tree, options) ->
 		

@@ -1,7 +1,7 @@
 #
 # Enum css class handler
 #
-class @Maslosoft.Ko.Balin.CssColumns extends @Maslosoft.Ko.Balin.CssColumnsBase
+class @Maslosoft.Binder.CssColumns extends @Maslosoft.Binder.CssColumnsBase
 
 	@columns = {
 		'xs': 'col-xs-{num}',

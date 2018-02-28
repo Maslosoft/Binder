@@ -22,20 +22,20 @@ test = () ->
 	item5.text = 'Joseph'
 	sortable.items.push item5
 
-	balin.model.sortable = sortable
+	binder.model.sortable = sortable
 
-	ko.track balin.model
+	ko.track binder.model
 
-	ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'))
+	ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'))
 
 	doRound = () ->
-		json = JSON.stringify balin.model
+		json = JSON.stringify binder.model
 		res = JSON.parse json
 
 		for index, model of res
-			balin.model[index] = ko.tracker.factory res[index]
+			binder.model[index] = ko.tracker.factory res[index]
 
-		console.log balin.model
+		console.log binder.model
 
 	elem = jQuery('#roundtripNestedNewTest')
 
@@ -44,27 +44,27 @@ test = () ->
 	describe 'Test if will allow roundtrip of nested arrays, using new', ->
 		
 		it 'Should have same title after getting data from JSON', ->
-			assert.equal balin.model.sortable.title, 'Names Collection'
+			assert.equal binder.model.sortable.title, 'Names Collection'
 			doRound()
-			assert.equal balin.model.sortable.title, 'Names Collection'
+			assert.equal binder.model.sortable.title, 'Names Collection'
 
 		it 'Should allow pop', ->
-			assert.equal balin.model.sortable.items.length, 5
+			assert.equal binder.model.sortable.items.length, 5
 			assert.equal elem.find('div').length, 5
-			balin.model.sortable.items.pop()
+			binder.model.sortable.items.pop()
 
-			assert.equal balin.model.sortable.items[0].text, 'Frank', 'That first item is Frank'
-			assert.equal balin.model.sortable.items.length, 4, 'That one element was removed from array'
+			assert.equal binder.model.sortable.items[0].text, 'Frank', 'That first item is Frank'
+			assert.equal binder.model.sortable.items.length, 4, 'That one element was removed from array'
 			assert.equal elem.find('div').length, 4, 'That DOM elements are 4 too'
 
 			doRound()
 
-			assert.equal balin.model.sortable.items[0].text, 'Frank', 'That first item is still Frank'
-			assert.equal balin.model.sortable.items.length, 4, 'That one element remains removed from array'
+			assert.equal binder.model.sortable.items[0].text, 'Frank', 'That first item is still Frank'
+			assert.equal binder.model.sortable.items.length, 4, 'That one element remains removed from array'
 			assert.equal elem.find('div').length, 4, 'That DOM elements are 4 too'
 
 		it 'Should allow push', ->
-			model = balin.model.sortable
+			model = binder.model.sortable
 			assert.equal model.items.length, 4
 			model.items.push new Maslosoft.Koe.HtmlValue({text: 'new'})
 

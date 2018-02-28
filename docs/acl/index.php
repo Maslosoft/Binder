@@ -11,7 +11,7 @@
 	<p>
 		This binding will check if users is allowed action,
 		and hide element if denied. Before use, action need to be defined
-		by static property <code>Maslosoft.Ko.Balin.Acl.allow</code> 
+		by static property <code>Maslosoft.Binder.Acl.allow</code> 
 		of ACL binding handler. This property should contain Access Control
 		checking function. This function need to return boolean <code>true</code> or <code>false</code>
 	</p>
@@ -28,7 +28,7 @@
 	<p>
 		This binding requires observable value to allow updates. However
 		format of value is not strict, as it's simply passed to
-		checking function defined as <code>Maslosoft.Ko.Balin.Acl.allow</code>.
+		checking function defined as <code>Maslosoft.Binder.Acl.allow</code>.
 	</p>
 	<p>In this example ACL consist of roles as a object keys and user observable object instance as a value:</p>
 <pre class="html">
@@ -47,8 +47,8 @@
 	</p>
 <div class="well">
 <!-- /trim -->
-	<span data-bind="acl: {'action.one': balin.model.AclUser}" class="label label-warning">Should be visible always</span>
-	<span data-bind="acl: {'action.two': balin.model.AclUser}" class="label label-success">Should be visible for registered</span>
+	<span data-bind="acl: {'action.one': binder.model.AclUser}" class="label label-warning">Should be visible always</span>
+	<span data-bind="acl: {'action.two': binder.model.AclUser}" class="label label-success">Should be visible for registered</span>
 	<br />
 	<br />
 	<button class="btn btn-success" id="allow">Allow Access</button>
@@ -62,7 +62,7 @@
 		var actionAllowed = '';
 
 		// This is example function to check access
-		balin.myAcl = function (acl) {
+		binder.myAcl = function (acl) {
 			console.log("Checking acl: ", acl);
 			if (acl['action.one']) {
 				console.log('Allow action.one');
@@ -77,16 +77,16 @@
 		// trim
 		// Click handlers for buttons
 		jQuery('#allow').click(function () {
-			balin.model.AclUser.isGuest = false;
+			binder.model.AclUser.isGuest = false;
 		});
 		jQuery('#deny').click(function () {
-			balin.model.AclUser.isGuest = true;
+			binder.model.AclUser.isGuest = true;
 		});
 		// /trim
 		// Apply bindings
-		Maslosoft.Ko.Balin.Acl.allow = balin.myAcl
-		balin.model.AclUser = new Maslosoft.Koe.AclUser();
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		Maslosoft.Binder.Acl.allow = binder.myAcl
+		binder.model.AclUser = new Maslosoft.Koe.AclUser();
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

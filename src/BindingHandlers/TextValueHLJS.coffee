@@ -2,7 +2,7 @@
 # Html text value binding
 # WARNING This MUST have parent context, or will not work
 #
-class @Maslosoft.Ko.Balin.TextValueHLJS extends @Maslosoft.Ko.Balin.HtmlValue
+class @Maslosoft.Binder.TextValueHLJS extends @Maslosoft.Binder.HtmlValue
 
 	getElementValue: (element) ->
 		return element.textContent || element.innerText || ""

@@ -1,7 +1,7 @@
 #
 # Enum css class handler
 #
-class @Maslosoft.Ko.Balin.CssClasses extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.CssClasses extends @Maslosoft.Binder.Base
 
 	getClassList: (valueAccessor) =>
 		classes = @getValue valueAccessor

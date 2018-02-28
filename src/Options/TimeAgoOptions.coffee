@@ -1,7 +1,7 @@
 #
 # Configuration class for time bindings
 #
-class @Maslosoft.Ko.Balin.TimeAgoOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.TimeAgoOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Language for locale formatting

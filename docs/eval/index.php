@@ -12,10 +12,10 @@
 	Place those on parent element, or via doc comment notation<br />
 </p>
 <label>
-	<input type="checkbox" name="isSelected" data-bind="checked: balin.model.eval.isSelected">
+	<input type="checkbox" name="isSelected" data-bind="checked: binder.model.eval.isSelected">
 	Enable bindings
 </label>
-<div data-bind="with: balin.model">
+<div data-bind="with: binder.model">
 	<p data-bind="eval: eval.isSelected">
 	<div data-bind="text: txt.text">This is text put in HTML</div>
 </p>
@@ -27,10 +27,10 @@
 			text: 'This is text provided via javascript'
 		};
 
-		balin.model.txt = new Maslosoft.Koe.TextValue(data);
-		balin.model.eval = new Maslosoft.Koe.Selected({isSelected: false});
+		binder.model.txt = new Maslosoft.Koe.TextValue(data);
+		binder.model.eval = new Maslosoft.Koe.Selected({isSelected: false});
 
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

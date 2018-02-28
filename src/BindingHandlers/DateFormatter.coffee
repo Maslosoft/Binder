@@ -1,8 +1,8 @@
 #
 # Date formatter
 #
-class @Maslosoft.Ko.Balin.DateFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+class @Maslosoft.Binder.DateFormatter extends @Maslosoft.Binder.MomentFormatter
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateOptions(options)
+		super new Maslosoft.Binder.DateOptions(options)
 

@@ -2,7 +2,7 @@
 # Html value binding
 # WARNING This MUST have parent context, or will not work
 #
-class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 	#
 	# Counter for id generator
@@ -44,7 +44,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		
 		# Generate some id if not set, see notes below why
 		if not element.id
-			element.id = "Maslosoft-Ko-Balin-HtmlValue-#{idCounter++}"
+			element.id = "Maslosoft-Ko-Binder-HtmlValue-#{idCounter++}"
 
 		# Handle update immediatelly
 		handler = (e) =>

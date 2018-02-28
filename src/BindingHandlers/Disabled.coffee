@@ -2,7 +2,7 @@
 # Disabled binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.Disabled extends @Maslosoft.Ko.Balin.CssClass
+class @Maslosoft.Binder.Disabled extends @Maslosoft.Binder.CssClass
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.CssOptions({className: 'disabled'})
+		super new Maslosoft.Binder.CssOptions({className: 'disabled'})

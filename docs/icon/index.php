@@ -39,7 +39,7 @@ use Maslosoft\Components\Controller;
     </ul>
     </p>
     <!-- /trim -->
-	<img data-bind="icon: balin.model.Image, cachebusting: true" />
+	<img data-bind="icon: binder.model.Image, cachebusting: true" />
     <!-- trim -->
 
         <p>
@@ -49,21 +49,21 @@ use Maslosoft\Components\Controller;
             <label>
                 Icon value
             </label>
-            <select data-bind="options: ['images/maslosoft.png', 'images/balin-128.png', 'images/ilmatar-widgets-128.png'], value: balin.model.Image.icon" class="form-control">
+            <select data-bind="options: ['images/maslosoft.png', 'images/binder-128.png', 'images/ilmatar-widgets-128.png'], value: binder.model.Image.icon" class="form-control">
             </select>
         </div>
         <div class="form-group">
             <label>
                 Is image
 
-        <input data-bind="checked: balin.model.Image.isImage" type="checkbox" class="form-control"/>
+        <input data-bind="checked: binder.model.Image.isImage" type="checkbox" class="form-control"/>
             </label>
         </div>
         <div class="form-group">
             <label>
                 Icon size
             </label>
-            <select data-bind="options: [64, 128], value: balin.model.Image.iconSize" class="form-control">
+            <select data-bind="options: [64, 128], value: binder.model.Image.iconSize" class="form-control">
                 <option>64</option>
                 <option>128</option>
             </select>
@@ -76,10 +76,10 @@ use Maslosoft\Components\Controller;
     Static icon example with scaling. The <code>isImage</code> is set to <code>false</code>:
     </p>
     <p>
-	Size: <input data-bind="textInput: balin.model.Icon.iconSize" /><br />
+	Size: <input data-bind="textInput: binder.model.Icon.iconSize" /><br />
     </p>
     <!-- /trim -->
-	<img data-bind="icon: balin.model.Icon" />
+	<img data-bind="icon: binder.model.Icon" />
     <!-- trim -->
     </div>
 
@@ -88,43 +88,43 @@ use Maslosoft\Components\Controller;
     <abbr title="Scalable Vecror Graphics">SVG</abbr> example. Should not add scaling params because it is SVG:<br/>
     </p>
     <!-- /trim -->
-	<img data-bind="icon: balin.model.svg" />
+	<img data-bind="icon: binder.model.svg" />
     <!-- trim -->
     </div>
 
     <div class="well">
         <p>Example with <code>filename</code> value and scaling params:</p>
     <!-- /trim -->
-    <img data-bind="icon: balin.model.withFilename" />
+    <img data-bind="icon: binder.model.withFilename" />
     <!-- trim -->
     </div>
 </div>
 <!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.Image = new Maslosoft.Koe.Icon({
+		binder.model.Image = new Maslosoft.Koe.Icon({
 			icon: 'images/maslosoft.png',
 			isImage: true,
 			iconSize: 64,
 			updateDate: 123
 		});
-		balin.model.Icon = new Maslosoft.Koe.Icon({
+		binder.model.Icon = new Maslosoft.Koe.Icon({
 			icon: 'images/maslosoft.png',
 			isImage: false,
 			iconSize: 64
 		});
-		balin.model.svg = new Maslosoft.Koe.Icon({
-			icon: 'images/balin.svg',
+		binder.model.svg = new Maslosoft.Koe.Icon({
+			icon: 'images/binder.svg',
 			isImage: true,
 			iconSize: 64
 		});
-        balin.model.withFilename = new Maslosoft.Koe.Icon({
+        binder.model.withFilename = new Maslosoft.Koe.Icon({
             icon: 'images/subdir/',
             filename: 'msft.png',
             isImage: true,
             iconSize: 64
         });
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

@@ -1,7 +1,7 @@
 #
 # Configuration class for css bindings
 #
-class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.ValidatorOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Field for class name

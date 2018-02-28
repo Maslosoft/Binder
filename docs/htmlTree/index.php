@@ -10,7 +10,7 @@
 	example structure is included in this example.
 </p>
 <!-- /trim -->
-<ul data-bind="htmlTree: balin.model.Tree">
+<ul data-bind="htmlTree: binder.model.Tree">
 </ul>
 
 <script>
@@ -50,9 +50,9 @@
 				}
 			]
 		};
-		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
+		binder.model.Tree = new Maslosoft.Koe.TreeItem(data);
 
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

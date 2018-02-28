@@ -14,7 +14,7 @@ $textLines = [
 	'You can read or modify this text via JavaScript:<br />',
 	'<ol>',
 	'<li>Open a console</li>',
-	'<li>Type <code>balin.model.intro.text</code> and press enter. Then ',
+	'<li>Type <code>binder.model.intro.text</code> and press enter. Then ',
 	'change something and try again.</li>',
 	'<li>This text should appear also below second time, ',
 	'but without editing mode. However any changes will be updated instantly</li>',
@@ -26,7 +26,7 @@ array_walk($textLines, function(&$value, $index)
 	$value = json_encode($value);
 });
 ?>
-<div data-bind="with: balin.model.intro">
+<div data-bind="with: binder.model.intro">
 	<div data-bind="htmlValue: text"></div>
 	<hr />
 	<div data-bind="html: text"></div>
@@ -38,10 +38,10 @@ array_walk($textLines, function(&$value, $index)
 <?= implode(",\n\t\t\t\t", $textLines) . "\n"; ?>
 			].join("\n")
 		// /trim
-		balin.model.intro = new Maslosoft.Koe.Intro({
+		binder.model.intro = new Maslosoft.Koe.Intro({
 			text: introText
 		});
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	};
 </script>
 <?php require __DIR__ . '/_footer.php'; ?>

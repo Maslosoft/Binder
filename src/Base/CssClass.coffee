@@ -2,7 +2,7 @@
 # CSS class binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.CssClass extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.CssClass extends @Maslosoft.Binder.Base
 
 	writable: false
 

@@ -1,14 +1,14 @@
 {
-  "name": "maslosoft-ko-balin",
+  "name": "maslosoft-ko-binder",
   "version": "0.0.0",
   "description": "Binding handlers for knockut js",
-  "main": "ko.balin.js",
+  "main": "ko.binder.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Maslosoft/KoBalin.git"
+    "url": "git://github.com/Maslosoft/Binder.git"
   },
   "keywords": [
     "knockout",
@@ -18,7 +18,7 @@
   "author": "Peter Maselkowski <pmaselkowski@gmail.com>",
   "license": "AGPL/Commercial",
   "bugs": {
-    "url": "https://github.com/Maslosoft/KoBalin/issues"
+    "url": "https://github.com/Maslosoft/Binder/issues"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

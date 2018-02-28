@@ -1,5 +1,5 @@
 {
-	"name": "maslosoft/balin",
+	"name": "maslosoft/binder",
 	"description": "Knockout binding handlers",
 	"keywords": [
 		"javascript",
@@ -19,7 +19,7 @@
 		}
 	],
 	"require": {},
-	"homepage": "https://maslosoft.com/balin/",
+	"homepage": "https://maslosoft.com/binder/",
 	"require-dev": {
 		"maslosoft/zamm": "*"
 	}

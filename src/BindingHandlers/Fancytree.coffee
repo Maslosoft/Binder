@@ -6,7 +6,7 @@
 # data-bind="fancytree: {data: data, options: <fancyTree-options>, autoExpand: true|false}"
 # TODO When using two or more trees from same data, only first one works properly
 #
-class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Fancytree extends @Maslosoft.Binder.Base
 
 	tree: null
 	element: null

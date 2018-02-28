@@ -1,7 +1,7 @@
 #
 # Tooltip binding handler
 #
-class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Tooltip extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor) =>
 		title = @getValue(valueAccessor)

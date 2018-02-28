@@ -1,7 +1,7 @@
 #
 # Enum css class handler
 #
-class @Maslosoft.Ko.Balin.EnumCssClassFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.EnumCssClassFormatter extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		config = @getValue valueAccessor

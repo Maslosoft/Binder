@@ -1,5 +1,5 @@
 
-class @Maslosoft.Ko.Balin.Widget extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Widget extends @Maslosoft.Binder.Base
 	
 	init: (element, valueAccessor, allBindings, context) =>
 		

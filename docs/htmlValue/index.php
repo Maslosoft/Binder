@@ -31,7 +31,7 @@
 </p>
 <h4>Live Example</h4>
 <!-- /trim -->
-<table data-bind="with: balin.model.HtmlValue" class="table table-condensed">
+<table data-bind="with: binder.model.HtmlValue" class="table table-condensed">
 	<tr>
 		<th class="col-xs-4">Standard input field</th>
 		<td>
@@ -56,8 +56,8 @@
 <script>
 	window.onload = (function () {
 		var data = {text: 'Editable text <b>with</b> <abbr title="HyperText Markup Language">HTML</abbr>'};
-		balin.model.HtmlValue = new Maslosoft.Koe.HtmlValue(data);
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.HtmlValue = new Maslosoft.Koe.HtmlValue(data);
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 		// trim
 		// These are helpers for this page only, irrelevant for real usage
 		var original = '';

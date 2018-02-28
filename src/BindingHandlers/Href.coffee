@@ -1,7 +1,7 @@
 #
 # Href binding handler
 #
-class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 
 	bustLinks = (element) ->
 		defer = () ->

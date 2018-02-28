@@ -1,5 +1,5 @@
 
-class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
+class @Maslosoft.Binder.WidgetAction extends @Maslosoft.Binder.WidgetUrl
 
 	update: (element, valueAccessor, allBindings) =>
 

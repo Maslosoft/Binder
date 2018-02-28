@@ -7,7 +7,7 @@
 </p>
 <p class="alert alert-danger">WARNING: This binding <i>require</i> parent context, like here with <code>with</code> binding</p>
 <!-- /trim -->
-<div data-bind="with: balin.model.TextValue">
+<div data-bind="with: binder.model.TextValue">
 	Standard input field: <input data-bind="textInput: text" style="width:50%;"/> <br />
 	Below should be editable and ignore any html from above input and have highlight: <div data-bind="textValueHlJs: text"></div>
 </div>
@@ -17,8 +17,8 @@
 		var data = {
 			text: 'Some text, also <b>with</b> <abbr title="HyperText Markup Language">HTML</abbr>'
 		};
-		balin.model.TextValue = new Maslosoft.Koe.TextValue(data);
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.TextValue = new Maslosoft.Koe.TextValue(data);
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

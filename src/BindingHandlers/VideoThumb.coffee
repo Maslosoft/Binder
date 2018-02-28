@@ -1,7 +1,7 @@
 #
 # Video PLaylist binding handler
 #
-class @Maslosoft.Ko.Balin.VideoThumb extends @Maslosoft.Ko.Balin.Video
+class @Maslosoft.Binder.VideoThumb extends @Maslosoft.Binder.Video
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		

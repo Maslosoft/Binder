@@ -18,17 +18,17 @@
 	<a href="#" data-bind="click: addSubNode">Add new sub-node programatically</a>
 </div>
 <!-- /trim -->
-<div data-bind="fancytree: balin.model.Tree">
+<div data-bind="fancytree: binder.model.Tree">
 </div>
 <!-- trim -->
-<div data-bind="foreach: balin.model.Tree.children">
+<div data-bind="foreach: binder.model.Tree.children">
 	<div data-bind="htmlValue: title"></div>
 </div>
 <hr />
 <!-- /trim -->
 <div data-bind="
 	fancytree: {
-		data: balin.model.Tree, 
+		data: binder.model.Tree, 
 		autoExpand: true, 
 		options: {
 			checkbox: true
@@ -39,7 +39,7 @@
 <!-- /trim -->
 <div data-bind="
 	fancytree: {
-		data: balin.model.Tree2, 
+		data: binder.model.Tree2, 
 		options: {
 			checkbox: true
 		}}">
@@ -51,7 +51,7 @@
 			nodeId++;
 			var model = new Maslosoft.Koe.TreeItem;
 			model.title = 'New node #' + nodeId;
-			balin.model.Tree.children.push(model);
+			binder.model.Tree.children.push(model);
 			e.stopPropagation();
 			e.preventDefault();
 		};
@@ -59,7 +59,7 @@
 			nodeId++;
 			var model = new Maslosoft.Koe.TreeItem;
 			model.title = 'New sub-node #' + nodeId;
-			balin.model.Tree.children[0].children.push(model);
+			binder.model.Tree.children[0].children.push(model);
 			e.stopPropagation();
 			e.preventDefault();
 		};
@@ -105,9 +105,9 @@
 			]
 			}]
 		};
-		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
-		balin.model.Tree2 = new Maslosoft.Koe.TreeItem(data);
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.Tree = new Maslosoft.Koe.TreeItem(data);
+		binder.model.Tree2 = new Maslosoft.Koe.TreeItem(data);
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

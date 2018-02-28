@@ -5,12 +5,12 @@
 #
 #
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
+class Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 

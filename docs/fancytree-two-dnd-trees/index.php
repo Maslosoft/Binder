@@ -17,18 +17,18 @@
 <div class="row">
 	<div class="col-sm-4">
 		<h4>Drag only list</h4>
-		<ul  data-bind="foreach: {data: balin.model.list.children}">
+		<ul  data-bind="foreach: {data: binder.model.list.children}">
 			<li data-bind="draggable: {data: $data, options: {connectToFancytree: true}}">{{title}}</li>
 		</ul>
 	</div>
 	<div class="col-sm-4">
 		<h4>Drag only</h4>
-		<div data-bind="fancytree: {data: balin.model.Tree, drag: true, autoExpand: true, options: balin.model.options}">
+		<div data-bind="fancytree: {data: binder.model.Tree, drag: true, autoExpand: true, options: binder.model.options}">
 		</div>
 	</div>
 	<div class="col-sm-4">
 		<h4>Drop target and DND tree</h4>
-		<div data-bind="fancytree: {data: balin.model.Tree2, dnd: true, autoExpand: true, options: balin.model.options}">
+		<div data-bind="fancytree: {data: binder.model.Tree2, dnd: true, autoExpand: true, options: binder.model.options}">
 		</div>
 	</div>
 </div>
@@ -67,7 +67,7 @@
 				}
 			]
 		}
-		balin.model.list = new Maslosoft.Koe.TreeItem(listData);
+		binder.model.list = new Maslosoft.Koe.TreeItem(listData);
 		var data = {
 			_class: 'Maslosoft.Koe.TreeItem',
 			title: "Dogs",
@@ -107,7 +107,7 @@
 				}
 			]
 		};
-		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
+		binder.model.Tree = new Maslosoft.Koe.TreeItem(data);
 		data2 = {
 			_class: 'Maslosoft.Koe.TreeItem',
 			title: "Cats",
@@ -147,15 +147,15 @@
 				}
 			]
 		};
-		balin.model.Tree2 = new Maslosoft.Koe.TreeItem(data2);
-		balin.model.options = {
+		binder.model.Tree2 = new Maslosoft.Koe.TreeItem(data2);
+		binder.model.options = {
 			dnd:{
 				draggable: {
 					scroll: false
 				}
 			}
 		};
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

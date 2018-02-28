@@ -1,2 +1,2 @@
-@Maslosoft.Ko.Balin.registerDefaults()
+@Maslosoft.Binder.registerDefaults()
 ko.punches.enableAll()

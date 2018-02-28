@@ -1,7 +1,7 @@
 #
 # One-way decimal formatter
 #
-class @Maslosoft.Ko.Balin.DecimalFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.DecimalFormatter extends @Maslosoft.Binder.Base
 
 	precision: 2
 

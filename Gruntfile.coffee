@@ -1,7 +1,7 @@
-balinBare = [
+binderBare = [
 	'src/_functions.coffee',
 	'src/_ns.coffee',
-	'src/Balin.coffee',
+	'src/Binder.coffee',
 	'src/Base.coffee',
 	'src/Options.coffee',
 	'src/Options/*',
@@ -14,8 +14,8 @@ balinBare = [
 ]
 
 # Shallow clone array with slice
-balin = balinBare.slice 0
-balin.push 'src/_init.coffee'
+binder = binderBare.slice 0
+binder.push 'src/_init.coffee'
 
 # Bundle setup
 bundle = [
@@ -37,17 +37,17 @@ bundleDev = [
 	'bower_components/maslosoft-playlist/dist/playlist.js'
 ]
 
-balinBundle = bundle.slice 0
-balinBundle.push 'dist/ko.balin.min.js'
+binderBundle = bundle.slice 0
+binderBundle.push 'dist/ko.binder.min.js'
 
-balinDevBundle = bundleDev.slice 0
-balinDevBundle.push 'dist/ko.balin.js'
+binderDevBundle = bundleDev.slice 0
+binderDevBundle.push 'dist/ko.binder.js'
 
-balinBundleNoinit = bundle.slice 0
-balinBundleNoinit.push 'dist/ko.balin-noinit.min.js'
+binderBundleNoinit = bundle.slice 0
+binderBundleNoinit.push 'dist/ko.binder-noinit.min.js'
 
-balinDevBundleNoinit = bundleDev.slice 0
-balinDevBundleNoinit.push 'dist/ko.balin-noinit.js'
+binderDevBundleNoinit = bundleDev.slice 0
+binderDevBundleNoinit.push 'dist/ko.binder-noinit.js'
 
 module.exports = (grunt) ->
 
@@ -61,7 +61,7 @@ module.exports = (grunt) ->
 					expand: true
 					extDot: 'last'
 				files: [
-					'dist/ko.balin.js': balin
+					'dist/ko.binder.js': binder
 				]
 			noinit:
 				options:
@@ -70,32 +70,32 @@ module.exports = (grunt) ->
 					expand: true
 					extDot: 'last'
 				files: [
-					'dist/ko.balin-noinit.js': balinBare
+					'dist/ko.binder-noinit.js': binderBare
 				]
 
 		uglify:
 			compile:
 				files:
-					'dist/ko.balin.min.js' : ['dist/ko.balin.js']
+					'dist/ko.binder.min.js' : ['dist/ko.binder.js']
 			noinit:
 				files:
-					'dist/ko.balin-noinit.min.js' : ['dist/ko.balin-noinit.js']
+					'dist/ko.binder-noinit.min.js' : ['dist/ko.binder-noinit.js']
 		concat:
 			bundle:
-				src: balinBundle
-				dest: 'dist/ko.balin.bundle.min.js'
+				src: binderBundle
+				dest: 'dist/ko.binder.bundle.min.js'
 			bundleDev:
-				src: balinDevBundle
-				dest: 'dist/ko.balin.bundle.js'
+				src: binderDevBundle
+				dest: 'dist/ko.binder.bundle.js'
 			bundleNoinit:
-				src: balinBundleNoinit
-				dest: 'dist/ko.balin.bundle-noinit.min.js'
+				src: binderBundleNoinit
+				dest: 'dist/ko.binder.bundle-noinit.min.js'
 			bundleDevNoinit:
-				src: balinDevBundleNoinit
-				dest: 'dist/ko.balin.bundle-noinit.js'
+				src: binderDevBundleNoinit
+				dest: 'dist/ko.binder.bundle-noinit.js'
 		watch:
 			compile:
-				files: balin
+				files: binder
 				tasks: ['coffee:compile']
 
 	# These plugins provide necessary tasks.

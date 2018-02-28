@@ -5,14 +5,14 @@
 #
 # @see ValidationManager
 #
-class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Validator extends @Maslosoft.Binder.Base
 
 	# Counter for id generator
 	# @static
 	idCounter = 0
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.ValidatorOptions()
+		super new Maslosoft.Binder.ValidatorOptions()
 
 	getElementValue: (element) ->
 		# For inputs use value
@@ -71,7 +71,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 		# Generate some id if not set, see notes below why
 		if not element.id
-			element.id = "Maslosoft-Ko-Balin-Validator-#{idCounter++}"
+			element.id = "Maslosoft-Ko-Binder-Validator-#{idCounter++}"
 
 		# Get initial value to evaluate only if changed
 		initialVal = @getElementValue(element)

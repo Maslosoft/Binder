@@ -21,7 +21,7 @@ if(KO_BALIN_EMBEDDED) {
 	NOTE: CSS is not included in this package!
 </p>
 <!-- /trim -->
-<table data-bind="foreach: balin.model.list.videos" class="table table-condensed">
+<table data-bind="foreach: binder.model.list.videos" class="table table-condensed">
 <tr>
 	<td class="col-xs-1">
 		<div data-bind="videoThumb: url" style="height:67px;width:100px;background-size:cover;display:inline-block;">
@@ -43,7 +43,7 @@ if(KO_BALIN_EMBEDDED) {
 	<input id="newVideo" value="https://www.youtube.com/watch?v=IxGvm6btP1A" style="width: 50%;"/> <a href="#" class="add">Add</a>
 </div>
 
-<div data-bind="if: !balin.model.list.videos.length">
+<div data-bind="if: !binder.model.list.videos.length">
 	<b>Add some videos to initialize playlist</b>
 </div>
 <hr />
@@ -51,12 +51,12 @@ if(KO_BALIN_EMBEDDED) {
 <!--A bit of layout to make player smaller-->
 <div class="row">
 	<div class="col-md-6 col-xs-12 col-sm-8">
-		<div data-bind="videoPlaylist: balin.model.list.videos">
+		<div data-bind="videoPlaylist: binder.model.list.videos">
 
 		</div>
 	</div>
 	<div class="col-md-6 col-xs-12 col-sm-8">
-		<div data-bind="videoPlaylist: {data: balin.model.list.videos, urlField: 'url', titleField: 'title'}">
+		<div data-bind="videoPlaylist: {data: binder.model.list.videos, urlField: 'url', titleField: 'title'}">
 
 		</div>
 	</div>
@@ -66,12 +66,12 @@ if(KO_BALIN_EMBEDDED) {
 		var list = new Maslosoft.Koe.Videos;
 		list.videos.push(new Maslosoft.Koe.Video({url: 'https://vimeo.com/181612110'}));
 		list.videos.push(new Maslosoft.Koe.Video({url: 'https://www.youtube.com/watch?v=RzpRU347BDU'}));
-		balin.model.list = list;
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.list = list;
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 		$(document).on('click', '.remove', function(e){
 			var model = ko.dataFor(e.currentTarget);
 			console.log(model);
-			balin.model.list.videos.remove(model);
+			binder.model.list.videos.remove(model);
 			e.preventDefault();
 		});
 		$(document).on('click', '.add', function(e){
@@ -81,7 +81,7 @@ if(KO_BALIN_EMBEDDED) {
 				return false;
 			}
 			var model = new Maslosoft.Koe.Video({url: url});
-			balin.model.list.videos.push(model);
+			binder.model.list.videos.push(model);
 			e.preventDefault();
 		});
 	});

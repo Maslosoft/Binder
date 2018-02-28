@@ -1,7 +1,7 @@
 #
 # Base class for video related bindings
 #
-class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Video extends @Maslosoft.Binder.Base
 
 	options = null
 	adapters = null

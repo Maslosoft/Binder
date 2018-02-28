@@ -1,4 +1,4 @@
-<div id="<?=$testId;?>" data-bind="text: balin.model.Src.filename">
+<div id="<?=$testId;?>" data-bind="text: binder.model.Src.filename">
 </div>
 
 

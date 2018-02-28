@@ -1,10 +1,10 @@
 
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
+class Maslosoft.Binder.Widgets.TreeGrid.DropIndicator
 
 	#
 	# Precise indicator holder
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
+	# @var Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator
 	#
 	@precise: null
 
@@ -16,7 +16,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
 
 	constructor: (@grid) ->
 
-		@precise = new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator @grid
+		@precise = new Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator @grid
 
 	attach: (@element) ->
 		@element.css 'font-size': '1.5em'

@@ -1,4 +1,4 @@
-class @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.Options
 
 	# Set this if need to access complex date objects
 	# @var string

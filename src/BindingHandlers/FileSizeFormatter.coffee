@@ -1,7 +1,7 @@
 #
 # One-way file size formatter
 #
-class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.FileSizeFormatter extends @Maslosoft.Binder.Base
 
 	units: {
 		binary: [

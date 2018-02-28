@@ -14,7 +14,7 @@
 	also arrays of objects.
 </p>
 <!-- /trim -->
-<div data-bind="with: balin.model.Nested">
+<div data-bind="with: binder.model.Nested">
 	<div>
 		<input type="text" data-bind="textInput: rawI18N.name.en" class="col-xs-6" />
 		<input type="text" data-bind="textInput: rawI18N.name.pl" class="col-xs-6" />
@@ -98,8 +98,8 @@
 		}
 	}
 	};
-		balin.model = ko.tracker.factory(data);
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model = ko.tracker.factory(data);
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

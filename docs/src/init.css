@@ -1,15 +1,15 @@
-#ko-balin .ui-selected, .selected{
+#ko-binder .ui-selected, .selected{
 	background: darkorange;
 	color:white;
 }
-#ko-balin .active{
+#ko-binder .active{
 	background: lightgreen;
 	color:black;
 }
-#ko-balin .disabled{
+#ko-binder .disabled{
 	color: silver;
 }
-#ko-balin .custom{
+#ko-binder .custom{
 	color: white;
 	background:black;
 }

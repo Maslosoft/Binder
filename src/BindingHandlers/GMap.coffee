@@ -4,7 +4,7 @@
 # data-bind="gmap: config"
 # TODO When using two or more trees from same data, only first one works properly
 #
-class @Maslosoft.Ko.Balin.GMap extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.GMap extends @Maslosoft.Binder.Base
 
   init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 

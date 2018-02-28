@@ -1,7 +1,7 @@
 #
 # Src binding handler
 #
-class @Maslosoft.Ko.Balin.Src extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Src extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 

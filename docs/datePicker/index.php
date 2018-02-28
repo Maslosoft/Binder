@@ -31,38 +31,38 @@ use Maslosoft\Widgets\JavaScript\Packages\BootstrapDatepickerPackage;
 <form class="form">
 	<div class="form-group">
 		<div class="input-group col-md-4 col-sm-6">
-			<input data-bind="datePicker: balin.model.datePicker.date" type="text" class="form-control"/>
+			<input data-bind="datePicker: binder.model.datePicker.date" type="text" class="form-control"/>
 		</div>
 	</div>
 	<div class="form-group">
 		<div class="input-group col-md-4 col-sm-6">
-			<input data-bind="datePicker: balin.model.datePicker.date, dateOptions: {format: 'yyyy/mm/dd'}" type="text" class="form-control"/>
+			<input data-bind="datePicker: binder.model.datePicker.date, dateOptions: {format: 'yyyy/mm/dd'}" type="text" class="form-control"/>
 		</div>
 	</div>
 	<div class="form-group">
 		<div class="input-group col-md-4 col-sm-6">
-			<input data-bind="datePicker: balin.model.datePicker.date, dateOptions: {format: 'dd.mm.yyyy'}" type="text" class="form-control"/>
+			<input data-bind="datePicker: binder.model.datePicker.date, dateOptions: {format: 'dd.mm.yyyy'}" type="text" class="form-control"/>
 		</div>
 	</div>
 	<div class="form-group">
 		<div class="input-group col-md-4 col-sm-6">
-			<input data-bind="datePicker: balin.model.datePicker.date" type="text" class="form-control"/>
+			<input data-bind="datePicker: binder.model.datePicker.date" type="text" class="form-control"/>
 		</div>
 	</div>
 </form>
-<div data-bind="dateFormatter: balin.model.datePicker.date" class="label label-success"></div>
+<div data-bind="dateFormatter: binder.model.datePicker.date" class="label label-success"></div>
 <!-- trim -->
 <p>
 <br />
-<a class="btn btn-success" href="#" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000) - 200000;}">Set a bit to past</a>
-<a class="btn btn-success" href="#" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000);}">Set date to now</a>
-<a class="btn btn-success" href="#" data-bind="click: function(){balin.model.datePicker.date = Math.round(Date.now() / 1000) + 200000;}">Set a bit to future</a>
+<a class="btn btn-success" href="#" data-bind="click: function(){binder.model.datePicker.date = Math.round(Date.now() / 1000) - 200000;}">Set a bit to past</a>
+<a class="btn btn-success" href="#" data-bind="click: function(){binder.model.datePicker.date = Math.round(Date.now() / 1000);}">Set date to now</a>
+<a class="btn btn-success" href="#" data-bind="click: function(){binder.model.datePicker.date = Math.round(Date.now() / 1000) + 200000;}">Set a bit to future</a>
 </p>
 <!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.datePicker = new Maslosoft.Koe.DatePicker;
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.datePicker = new Maslosoft.Koe.DatePicker;
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

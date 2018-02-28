@@ -11,27 +11,27 @@
 	<tr>
 		<th>Size</th>
 		<td>
-			<input data-bind="textInput: balin.model.FileSizeFormatter.size"/> (in bytes) <br />
+			<input data-bind="textInput: binder.model.FileSizeFormatter.size"/> (in bytes) <br />
 		</td>
 	</tr>
 	<tr>
 		<th>Formatted</th>
 		<td>
-			<span data-bind="fileSizeFormatter: balin.model.FileSizeFormatter.size"></span>
+			<span data-bind="fileSizeFormatter: binder.model.FileSizeFormatter.size"></span>
 		</td>
 	</tr>
 	<tr>
 		<th>Formatted with ko punches</th>
 		<td>
-			<span fileSizeFormatter="{{balin.model.FileSizeFormatter.size}}"></span>
+			<span fileSizeFormatter="{{binder.model.FileSizeFormatter.size}}"></span>
 		</td>
 	</tr>
 </table>
 
 <script>
 	window.onload = (function(){
-		balin.model.FileSizeFormatter = new Maslosoft.Koe.FileSizeFormatter({size: 123456});
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.FileSizeFormatter = new Maslosoft.Koe.FileSizeFormatter({size: 123456});
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

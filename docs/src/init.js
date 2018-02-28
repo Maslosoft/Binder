@@ -1,10 +1,10 @@
-window.balin = {};
-window.balin.model = {};
-window.balin.widget = {};
+window.binder = {};
+window.binder.model = {};
+window.binder.widget = {};
 var app = window.app;
 var body = jQuery('body');
 var defaultFontSize = false;
-window.balin.increaseFont = function () {
+window.binder.increaseFont = function () {
 	var body = jQuery('body');
 	var fontSize = parseInt(body.css('font-size'));
 	if (!defaultFontSize) {
@@ -13,7 +13,7 @@ window.balin.increaseFont = function () {
 	fontSize++;
 	body.css('font-size', fontSize + 'px');
 };
-window.balin.decreaseFont = function () {
+window.binder.decreaseFont = function () {
 	var body = jQuery('body');
 	var fontSize = parseInt(body.css('font-size'));
 	if (!defaultFontSize) {
@@ -22,7 +22,7 @@ window.balin.decreaseFont = function () {
 	fontSize--;
 	body.css('font-size', fontSize + 'px');
 };
-window.balin.resetFont = function () {
+window.binder.resetFont = function () {
 	if (!defaultFontSize) {
 		return;
 	}

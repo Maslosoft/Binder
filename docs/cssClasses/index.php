@@ -63,12 +63,12 @@ $classes = [
                 <code><?= $class; ?></code>
             </td>
             <td>
-                <!-- ko if: balin.model.decorate.classes.indexOf('<?= $class ?>') > -1 -->
+                <!-- ko if: binder.model.decorate.classes.indexOf('<?= $class ?>') > -1 -->
                 <div class="btn btn-success">
                     <i class="fa fa-fw fa-check"></i>
                 </div>
                 <!-- /ko -->
-                <!-- ko if: balin.model.decorate.classes.indexOf('<?= $class ?>') == -1 -->
+                <!-- ko if: binder.model.decorate.classes.indexOf('<?= $class ?>') == -1 -->
                 <div class="btn btn-danger">
                     <i class="fa fa-fw fa-ban"></i>
                 </div>
@@ -96,13 +96,13 @@ $classes = [
     Element below contains <code>btn</code> and <code>btn-success</code> CSS classes.
     The <code>btn</code> class will be always present, however <code>btn-success</code>
     might be disabled, because it is <a href="#" onclick="return toggleClass('btn-success')">toggleable</a>
-    as it is present in <code>balin.model.decorate.classes</code> array and <code>balin.model.decorate.classList</code> list.
+    as it is present in <code>binder.model.decorate.classes</code> array and <code>binder.model.decorate.classList</code> list.
 </p>
 <!-- /trim -->
-<div data-bind="cssClasses: balin.model.decorate.classes" class="btn btn-success">
+<div data-bind="cssClasses: binder.model.decorate.classes" class="btn btn-success">
     Styled with array
 </div>
-<div data-bind="cssClasses: balin.model.decorate.classList" class="btn btn-success">
+<div data-bind="cssClasses: binder.model.decorate.classList" class="btn btn-success">
     Styled classes list
 </div>
 
@@ -113,25 +113,25 @@ array_pop($classes);
     window.onload = (function () {
         <!-- trim -->
         addClass = function (name) {
-            var index = balin.model.decorate.classes.indexOf(name);
+            var index = binder.model.decorate.classes.indexOf(name);
             if (index === -1) {
                 console.log("Add " + name + " IDX: " + index);
-                balin.model.decorate.classes.push(name);
-                balin.model.decorate.classList = balin.model.decorate.classList + ' ' + name
+                binder.model.decorate.classes.push(name);
+                binder.model.decorate.classList = binder.model.decorate.classList + ' ' + name
             }
             return false;
         };
         removeClass = function (name) {
-            var index = balin.model.decorate.classes.indexOf(name);
+            var index = binder.model.decorate.classes.indexOf(name);
             if (index !== -1) {
                 console.log("Remove " + name + " IDX: " + index);
-                balin.model.decorate.classes.splice(index, 1);
-                balin.model.decorate.classList = balin.model.decorate.classList.replace(name, '');
+                binder.model.decorate.classes.splice(index, 1);
+                binder.model.decorate.classList = binder.model.decorate.classList.replace(name, '');
             }
             return false;
         };
         toggleClass = function (name) {
-            var index = balin.model.decorate.classes.indexOf(name);
+            var index = binder.model.decorate.classes.indexOf(name);
             if (index === -1) {
                 addClass(name);
             } else {
@@ -143,12 +143,12 @@ array_pop($classes);
 
         var classes = <?= json_encode($classes);?>;
         var classList = <?= json_encode(implode(' ', $classes));?>;
-        balin.model.decorate = new Maslosoft.Koe.CssClasses({
+        binder.model.decorate = new Maslosoft.Koe.CssClasses({
             classes: classes,
             classList: classList
         });
 
-        ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+        ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
     });
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

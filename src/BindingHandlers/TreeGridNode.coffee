@@ -5,7 +5,7 @@
 #
 #
 #
-class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 

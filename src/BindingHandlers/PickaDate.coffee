@@ -2,10 +2,10 @@
 Date picker
 NOTE: Not recommended, as Pick A Date is not maintanted
 ###
-class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
+class @Maslosoft.Binder.PickaDate extends @Maslosoft.Binder.Picker
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateOptions(options)
+		super new Maslosoft.Binder.DateOptions(options)
 
 	updateModel: (element, valueAccessor, allBindings) =>
 		modelValue = @getValue valueAccessor

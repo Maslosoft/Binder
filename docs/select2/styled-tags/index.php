@@ -43,7 +43,7 @@ use Maslosoft\Widgets\JavaScript\Packages\Select2Package;
 		id="select2"
 		data-bind="
 			tags: {
-			    'data': balin.model.options.selected,
+			    'data': binder.model.options.selected,
 			    'tagCss': 'btn btn-default btn-tag',
 			    'inputCss': 'form-control tag-input',
 			    'placeholder': 'Select tag...'
@@ -52,22 +52,22 @@ use Maslosoft\Widgets\JavaScript\Packages\Select2Package;
 		class="form-control">
 	</select>
 </div>
-<div data-bind="text: balin.model.options.selected"></div>
+<div data-bind="text: binder.model.options.selected"></div>
 <a id="changeIt" href="#">Change programatically to [yes, no, maybe]</a>
 <script>
 	window.onload = (function () {
 
-		balin.model.options = new Maslosoft.Koe.Options();
-		balin.model.options.selected = ['noisy', 'loud'];
+		binder.model.options = new Maslosoft.Koe.Options();
+		binder.model.options.selected = ['noisy', 'loud'];
 
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 		// trim
 		$('#changeIt').on('click', function (e) {
 			var opts = ['yes', 'no', 'maybe'];
-			balin.model.options.selected.removeAll();
+			binder.model.options.selected.removeAll();
 			var i = 0;
 			for (i in opts) {
-				balin.model.options.selected.push(opts[i]);
+				binder.model.options.selected.push(opts[i]);
 			}
 			e.preventDefault();
 		});

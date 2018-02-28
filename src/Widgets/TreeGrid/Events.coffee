@@ -1,10 +1,10 @@
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.Events
+class Maslosoft.Binder.Widgets.TreeGrid.Events
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 

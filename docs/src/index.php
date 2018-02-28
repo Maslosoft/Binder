@@ -11,21 +11,21 @@
 	In this example <code>with</code> binding is used, making HTML code even more clean.
 </p>
 <!-- /trim -->
-<p data-bind="with: balin.model.Src">
+<p data-bind="with: binder.model.Src">
 	Filename: <input data-bind="textInput: filename" style="width:50%;"/> <br />
 	Image with src binding: <img data-bind="src: filename"></img> <br />
 	Image with src punches: <img src="{{filename}}"></img> <br />
 </p>
 <!-- trim -->
 <p>
-	<a href="#" onclick="balin.model.Src.filename = 'images/maslosoft.png';return false;" class="btn btn-success">Set to image 1</a>
-	<a href="#" onclick="balin.model.Src.filename = 'images/maslosoft2.png';return false;"  class="btn btn-success">Set to image 2</a>
+	<a href="#" onclick="binder.model.Src.filename = 'images/maslosoft.png';return false;" class="btn btn-success">Set to image 1</a>
+	<a href="#" onclick="binder.model.Src.filename = 'images/maslosoft2.png';return false;"  class="btn btn-success">Set to image 2</a>
 </p>
 <!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.Src = new Maslosoft.Koe.Src({filename: 'images/maslosoft.png'});
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.Src = new Maslosoft.Koe.Src({filename: 'images/maslosoft.png'});
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

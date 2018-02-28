@@ -1,7 +1,7 @@
 #
 # Tree binding handler
 #
-class @Maslosoft.Ko.Balin.Tree extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Tree extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor) =>
 		

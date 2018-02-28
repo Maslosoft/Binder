@@ -28,7 +28,7 @@ if (KO_BALIN_EMBEDDED):
 	new JsFile(__DIR__ . '/src/chai/chai.js');
 	new CssFile(__DIR__ . '/src/mocha/mocha.css');
 	echo "<div data-bind='eval:false'>
-	<div id='ko-balin'>";
+	<div id='ko-binder'>";
 	ob_start();
 	return;
 endif;
@@ -165,7 +165,7 @@ $baseHref = "$baseURI/";
 		<script type="text/javascript" src="<?= $bower; ?>/knockout-sortable/build/knockout-sortable.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/knockout-es5/dist/knockout-es5.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/knockout.punches/knockout.punches.min.js"></script>
-		<script type="text/javascript" src="<?= $dist; ?>/ko.balin.js"></script>
+		<script type="text/javascript" src="<?= $dist; ?>/ko.binder.js"></script>
 
 		<!--other libs-->
 		<script type="text/javascript" src="<?= $bower; ?>/datejs_original/date.js"></script>
@@ -292,7 +292,7 @@ $baseHref = "$baseURI/";
 			</nav>
 			<hr />
 
-			<div id='ko-balin'>
+			<div id='ko-binder'>
 				<?php
 				ob_start()
 				?>

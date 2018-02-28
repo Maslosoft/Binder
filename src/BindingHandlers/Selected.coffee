@@ -2,7 +2,7 @@
 # Selected binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.Selected extends@Maslosoft.Ko.Balin.CssClass
+class @Maslosoft.Binder.Selected extends@Maslosoft.Binder.CssClass
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.CssOptions({className: 'selected'})
+		super new Maslosoft.Binder.CssOptions({className: 'selected'})

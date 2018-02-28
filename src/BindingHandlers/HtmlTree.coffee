@@ -5,7 +5,7 @@
 #
 # data-bind="htmlTree: data"
 #
-class @Maslosoft.Ko.Balin.HtmlTree extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.HtmlTree extends @Maslosoft.Binder.Base
 
 	@drawNode: (data) ->
 		# wrapper = document.createElement 'ul'

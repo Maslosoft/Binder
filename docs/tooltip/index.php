@@ -13,14 +13,14 @@
 </p>
 <!-- /trim -->
 <div>
-	<input data-bind="textInput: balin.model.Tooltip.title"></input><br/>
-	<b data-bind="tooltip: balin.model.Tooltip.title">Should have tooltip</b>
+	<input data-bind="textInput: binder.model.Tooltip.title"></input><br/>
+	<b data-bind="tooltip: binder.model.Tooltip.title">Should have tooltip</b>
 </div>
 
 <script>
 	window.onload = (function () {
-		balin.model.Tooltip = new Maslosoft.Koe.Tooltip({title: 'This is tooltip text'});
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.Tooltip = new Maslosoft.Koe.Tooltip({title: 'This is tooltip text'});
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 		jQuery('body').tooltip({
 			selector: '[rel~="tooltip"]'
 		});

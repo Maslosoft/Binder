@@ -74,12 +74,12 @@ if not @Maslosoft
 	@Maslosoft = {}
 if not @Maslosoft.Ko
 	@Maslosoft.Ko = {}
-if not @Maslosoft.Ko.Balin
-	@Maslosoft.Ko.Balin = {}
-if not @Maslosoft.Ko.Balin.Helpers
-	@Maslosoft.Ko.Balin.Helpers = {}
-if not @Maslosoft.Ko.Balin.Widgets
-	@Maslosoft.Ko.Balin.Widgets = {}
+if not @Maslosoft.Binder
+	@Maslosoft.Binder = {}
+if not @Maslosoft.Binder.Helpers
+	@Maslosoft.Binder.Helpers = {}
+if not @Maslosoft.Binder.Widgets
+	@Maslosoft.Binder.Widgets = {}
 
 #
 #
@@ -112,9 +112,9 @@ if not @Maslosoft.Ko.Balin.Widgets
 #
 # Register binding handler
 # @param string name
-# @params Maslosoft.Ko.Balin.Base handler
+# @params Maslosoft.Binder.Base handler
 #
-@Maslosoft.Ko.Balin.register = (name, handler) ->
+@Maslosoft.Binder.register = (name, handler) ->
 
 	name2 = false
 	if name.match /[A-Z]/
@@ -140,66 +140,66 @@ if not @Maslosoft.Ko.Balin.Widgets
 #
 # Register default set of binding handlers, or part of default set
 #
-@Maslosoft.Ko.Balin.registerDefaults = (handlers = null) ->
+@Maslosoft.Binder.registerDefaults = (handlers = null) ->
 	# In alphabetical order
 	config = {
-		acl: Maslosoft.Ko.Balin.Acl
-		active: Maslosoft.Ko.Balin.Active
-		action: Maslosoft.Ko.Balin.WidgetAction
-		activity: Maslosoft.Ko.Balin.WidgetActivity
-		asset: Maslosoft.Ko.Balin.Asset
-		cssClasses: Maslosoft.Ko.Balin.CssClasses
-		cssColumnSizes: Maslosoft.Ko.Balin.CssColumnSizes
-		cssColumns: Maslosoft.Ko.Balin.CssColumns
-		data: Maslosoft.Ko.Balin.Data
-		dateFormatter: Maslosoft.Ko.Balin.DateFormatter
-		datePicker: Maslosoft.Ko.Balin.DatePicker
-		datePickerPickaDate: Maslosoft.Ko.Balin.PickaDate
-		dateTimeFormatter: Maslosoft.Ko.Balin.DateTimeFormatter
-		decimalFormatter: Maslosoft.Ko.Balin.DecimalFormatter
-		disabled: Maslosoft.Ko.Balin.Disabled
-		enumCssClassFormatter: Maslosoft.Ko.Balin.EnumCssClassFormatter
-		enumFormatter: Maslosoft.Ko.Balin.EnumFormatter
-		eval: Maslosoft.Ko.Balin.Eval
-		fancytree: Maslosoft.Ko.Balin.Fancytree
-		fileSizeFormatter: Maslosoft.Ko.Balin.FileSizeFormatter
-		hidden: Maslosoft.Ko.Balin.Hidden
-		href: Maslosoft.Ko.Balin.Href
-		htmlTree: Maslosoft.Ko.Balin.HtmlTree
-		htmlValue: Maslosoft.Ko.Balin.HtmlValue
-		icon: Maslosoft.Ko.Balin.Icon
-		log: Maslosoft.Ko.Balin.Log
-		model: Maslosoft.Ko.Balin.DataModel
-		ref: Maslosoft.Ko.Balin.Widget
-		src: Maslosoft.Ko.Balin.Src
-		tags: Maslosoft.Ko.Balin.Tags
-		textValue: Maslosoft.Ko.Balin.TextValue
-		textValueHlJs: Maslosoft.Ko.Balin.TextValueHLJS
-		timeAgoFormatter: Maslosoft.Ko.Balin.TimeAgoFormatter
-		timeFormatter: Maslosoft.Ko.Balin.TimeFormatter
-		timePicker: Maslosoft.Ko.Balin.TimePicker
-		tooltip: Maslosoft.Ko.Balin.Tooltip
-		treegrid: Maslosoft.Ko.Balin.TreeGrid
-		treegridnode: Maslosoft.Ko.Balin.TreeGridNode
-		selected: Maslosoft.Ko.Balin.Selected
-		select2: Maslosoft.Ko.Balin.Select2
-		validator: Maslosoft.Ko.Balin.Validator
-		videoPlaylist: Maslosoft.Ko.Balin.VideoPlaylist
-		videoThumb: Maslosoft.Ko.Balin.VideoThumb
-		widget: Maslosoft.Ko.Balin.Widget
+		acl: Maslosoft.Binder.Acl
+		active: Maslosoft.Binder.Active
+		action: Maslosoft.Binder.WidgetAction
+		activity: Maslosoft.Binder.WidgetActivity
+		asset: Maslosoft.Binder.Asset
+		cssClasses: Maslosoft.Binder.CssClasses
+		cssColumnSizes: Maslosoft.Binder.CssColumnSizes
+		cssColumns: Maslosoft.Binder.CssColumns
+		data: Maslosoft.Binder.Data
+		dateFormatter: Maslosoft.Binder.DateFormatter
+		datePicker: Maslosoft.Binder.DatePicker
+		datePickerPickaDate: Maslosoft.Binder.PickaDate
+		dateTimeFormatter: Maslosoft.Binder.DateTimeFormatter
+		decimalFormatter: Maslosoft.Binder.DecimalFormatter
+		disabled: Maslosoft.Binder.Disabled
+		enumCssClassFormatter: Maslosoft.Binder.EnumCssClassFormatter
+		enumFormatter: Maslosoft.Binder.EnumFormatter
+		eval: Maslosoft.Binder.Eval
+		fancytree: Maslosoft.Binder.Fancytree
+		fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter
+		hidden: Maslosoft.Binder.Hidden
+		href: Maslosoft.Binder.Href
+		htmlTree: Maslosoft.Binder.HtmlTree
+		htmlValue: Maslosoft.Binder.HtmlValue
+		icon: Maslosoft.Binder.Icon
+		log: Maslosoft.Binder.Log
+		model: Maslosoft.Binder.DataModel
+		ref: Maslosoft.Binder.Widget
+		src: Maslosoft.Binder.Src
+		tags: Maslosoft.Binder.Tags
+		textValue: Maslosoft.Binder.TextValue
+		textValueHlJs: Maslosoft.Binder.TextValueHLJS
+		timeAgoFormatter: Maslosoft.Binder.TimeAgoFormatter
+		timeFormatter: Maslosoft.Binder.TimeFormatter
+		timePicker: Maslosoft.Binder.TimePicker
+		tooltip: Maslosoft.Binder.Tooltip
+		treegrid: Maslosoft.Binder.TreeGrid
+		treegridnode: Maslosoft.Binder.TreeGridNode
+		selected: Maslosoft.Binder.Selected
+		select2: Maslosoft.Binder.Select2
+		validator: Maslosoft.Binder.Validator
+		videoPlaylist: Maslosoft.Binder.VideoPlaylist
+		videoThumb: Maslosoft.Binder.VideoThumb
+		widget: Maslosoft.Binder.Widget
 	}
 
 	if handlers isnt null
 		for index, value of handlers
-			Maslosoft.Ko.Balin.register(value, new config[value])
+			Maslosoft.Binder.register(value, new config[value])
 	else
 		for index, value of config
-			Maslosoft.Ko.Balin.register(index, new value)
+			Maslosoft.Binder.register(index, new value)
 
 #
 # Register default set of event handlers, or part of default set
 #
-@Maslosoft.Ko.Balin.registerEvents = (handlers = null) ->
+@Maslosoft.Binder.registerEvents = (handlers = null) ->
 	config = {
 		'dblclick',
 		'mousedown',
@@ -209,12 +209,12 @@ if not @Maslosoft.Ko.Balin.Widgets
 	}
 	if handlers isnt null
 		for index, value of handlers
-			Maslosoft.Ko.Balin.makeEventHandlerShortcut(value)
+			Maslosoft.Binder.makeEventHandlerShortcut(value)
 	else
 		for index, value of config
-			Maslosoft.Ko.Balin.makeEventHandlerShortcut(value)
+			Maslosoft.Binder.makeEventHandlerShortcut(value)
 
-@Maslosoft.Ko.Balin.makeEventHandlerShortcut = (eventName) ->
+@Maslosoft.Binder.makeEventHandlerShortcut = (eventName) ->
 	ko.bindingHandlers[eventName] = init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
 		newValueAccessor = ->
 			result = {}
@@ -228,7 +228,7 @@ if not @Maslosoft.Ko.Balin.Widgets
 #
 # Base class for Maslosoft binding handlers
 #
-class @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Base
 
 	#
 	# Whenever to register binding handler as writable
@@ -237,12 +237,12 @@ class @Maslosoft.Ko.Balin.Base
 	writable: true
 
 	#
-	# @var @Maslosoft.Ko.Balin.Options
+	# @var @Maslosoft.Binder.Options
 	#
 	options: {}
 
 	# Class constructor
-	# @param options @Maslosoft.Ko.Balin.Options
+	# @param options @Maslosoft.Binder.Options
 	#
 	constructor: (options = {}) ->
 		#	Set ref to current object, not prototype
@@ -269,7 +269,7 @@ class @Maslosoft.Ko.Balin.Base
 			return defaults
 		return value
 
-class @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.Options
 
 	# Set this if need to access complex date objects
 	# @var string
@@ -300,14 +300,14 @@ class @Maslosoft.Ko.Balin.Options
 #
 # Configuration class for css bindings
 #
-class @Maslosoft.Ko.Balin.CssOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.CssOptions extends @Maslosoft.Binder.Options
 	
 	className: 'active'
 
 #
 # Configuration class for date bindings
 #
-class @Maslosoft.Ko.Balin.DateOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.DateOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Language for locale formatting
@@ -328,7 +328,7 @@ class @Maslosoft.Ko.Balin.DateOptions extends @Maslosoft.Ko.Balin.Options
 #
 # Configuration class for datetime bindings
 #
-class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.DateTimeOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Language for locale formatting
@@ -349,7 +349,7 @@ class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
 #
 # Configuration class for time bindings
 #
-class @Maslosoft.Ko.Balin.TimeAgoOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.TimeAgoOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Language for locale formatting
@@ -370,7 +370,7 @@ class @Maslosoft.Ko.Balin.TimeAgoOptions extends @Maslosoft.Ko.Balin.Options
 #
 # Configuration class for time bindings
 #
-class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.TimeOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Language for locale formatting
@@ -391,7 +391,7 @@ class @Maslosoft.Ko.Balin.TimeOptions extends @Maslosoft.Ko.Balin.Options
 #
 # Configuration class for css bindings
 #
-class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.ValidatorOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Field for class name
@@ -461,7 +461,7 @@ class @Maslosoft.Ko.Balin.ValidatorOptions extends @Maslosoft.Ko.Balin.Options
 
 
 
-class @Maslosoft.Ko.Balin.BaseValidator
+class @Maslosoft.Binder.BaseValidator
 
 	label: ''
 
@@ -597,7 +597,7 @@ class @Maslosoft.Ko.Balin.BaseValidator
 # CSS class binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.CssClass extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.CssClass extends @Maslosoft.Binder.Base
 
 	writable: false
 
@@ -613,7 +613,7 @@ class @Maslosoft.Ko.Balin.CssClass extends @Maslosoft.Ko.Balin.Base
 # CSS class binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.CssColumnsBase extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.CssColumnsBase extends @Maslosoft.Binder.Base
 
 	writable: false
 
@@ -634,7 +634,7 @@ class @Maslosoft.Ko.Balin.CssColumnsBase extends @Maslosoft.Ko.Balin.Base
 #
 # Moment formatter class
 #
-class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.MomentFormatter extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		moment.locale @options.lang
@@ -649,12 +649,12 @@ class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
 # Base class for date/time pickers
 #
 #
-class @Maslosoft.Ko.Balin.Picker extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Picker extends @Maslosoft.Binder.Base
 
 #
 # Base class for video related bindings
 #
-class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Video extends @Maslosoft.Binder.Base
 
 	options = null
 	adapters = null
@@ -700,7 +700,7 @@ class @Maslosoft.Ko.Balin.Video extends @Maslosoft.Ko.Balin.Base
 			ad.setThumb thumbCallback
 
 
-class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.WidgetUrl extends @Maslosoft.Binder.Base
 
 	getData: (element, valueAccessor, allBindings, bindingName) ->
 		src = @getValue(valueAccessor)
@@ -773,20 +773,20 @@ class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
 # Acl binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.Acl extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Acl extends @Maslosoft.Binder.Base
 	
 	allow = null
 
 	init: () =>
-		if not Maslosoft.Ko.Balin.Acl.allow
-			throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions")
+		if not Maslosoft.Binder.Acl.allow
+			throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions")
 
-		if typeof(Maslosoft.Ko.Balin.Acl.allow) isnt 'function'
-			throw new Error("Acl binding handler requires Maslosoft.Ko.Balin.Acl.allow to be function checking permissions")
+		if typeof(Maslosoft.Binder.Acl.allow) isnt 'function'
+			throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions")
 
 	update: (element, valueAccessor) =>
 		acl = @getValue(valueAccessor)
-		value = Maslosoft.Ko.Balin.Acl.allow(acl)
+		value = Maslosoft.Binder.Acl.allow(acl)
 
 		# Forward to visible
 		ko.bindingHandlers.visible.update element, ->
@@ -795,15 +795,15 @@ class @Maslosoft.Ko.Balin.Acl extends @Maslosoft.Ko.Balin.Base
 # Disabled binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.Active extends @Maslosoft.Ko.Balin.CssClass
+class @Maslosoft.Binder.Active extends @Maslosoft.Binder.CssClass
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.CssOptions({className: 'active'})
+		super new Maslosoft.Binder.CssOptions({className: 'active'})
 
 #
 # Asset binding handler
 #
-class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Asset extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		$element = $(element)
@@ -855,7 +855,7 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 #
 # Enum css class handler
 #
-class @Maslosoft.Ko.Balin.CssClasses extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.CssClasses extends @Maslosoft.Binder.Base
 
 	getClassList: (valueAccessor) =>
 		classes = @getValue valueAccessor
@@ -889,7 +889,7 @@ class @Maslosoft.Ko.Balin.CssClasses extends @Maslosoft.Ko.Balin.Base
 #
 # Enum css class handler
 #
-class @Maslosoft.Ko.Balin.CssColumnSizes extends @Maslosoft.Ko.Balin.CssColumnsBase
+class @Maslosoft.Binder.CssColumnSizes extends @Maslosoft.Binder.CssColumnsBase
 
 	@columns = {
 		'xs': 'col-xs-{num}',
@@ -910,7 +910,7 @@ class @Maslosoft.Ko.Balin.CssColumnSizes extends @Maslosoft.Ko.Balin.CssColumnsB
 #
 # Enum css class handler
 #
-class @Maslosoft.Ko.Balin.CssColumns extends @Maslosoft.Ko.Balin.CssColumnsBase
+class @Maslosoft.Binder.CssColumns extends @Maslosoft.Binder.CssColumnsBase
 
 	@columns = {
 		'xs': 'col-xs-{num}',
@@ -936,7 +936,7 @@ class @Maslosoft.Ko.Balin.CssColumns extends @Maslosoft.Ko.Balin.CssColumnsBase
 #
 # Data binding handler
 #
-class @Maslosoft.Ko.Balin.Data extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Data extends @Maslosoft.Binder.Base
 
 	getNamespacedHandler: (binding) ->
 		return {
@@ -951,7 +951,7 @@ class @Maslosoft.Ko.Balin.Data extends @Maslosoft.Ko.Balin.Base
 # Model binding handler
 # This is to bind selected model properties to data-model field
 #
-class @Maslosoft.Ko.Balin.DataModel extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.DataModel extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindings) =>
 		
@@ -987,19 +987,19 @@ class @Maslosoft.Ko.Balin.DataModel extends @Maslosoft.Ko.Balin.Base
 #
 # Date formatter
 #
-class @Maslosoft.Ko.Balin.DateFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+class @Maslosoft.Binder.DateFormatter extends @Maslosoft.Binder.MomentFormatter
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateOptions(options)
+		super new Maslosoft.Binder.DateOptions(options)
 
 
 ###
 Date picker
 ###
-class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
+class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateOptions(options)
+		super new Maslosoft.Binder.DateOptions(options)
 	
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}
@@ -1159,16 +1159,16 @@ class @Maslosoft.Ko.Balin.DatePicker extends @Maslosoft.Ko.Balin.Picker
 ###
 One-way date/time formatter
 ###
-class @Maslosoft.Ko.Balin.DateTimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+class @Maslosoft.Binder.DateTimeFormatter extends @Maslosoft.Binder.MomentFormatter
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateTimeOptions(options)
+		super new Maslosoft.Binder.DateTimeOptions(options)
 
 
 #
 # One-way decimal formatter
 #
-class @Maslosoft.Ko.Balin.DecimalFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.DecimalFormatter extends @Maslosoft.Binder.Base
 
 	precision: 2
 
@@ -1219,15 +1219,15 @@ class @Maslosoft.Ko.Balin.DecimalFormatter extends @Maslosoft.Ko.Balin.Base
 # Disabled binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.Disabled extends @Maslosoft.Ko.Balin.CssClass
+class @Maslosoft.Binder.Disabled extends @Maslosoft.Binder.CssClass
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.CssOptions({className: 'disabled'})
+		super new Maslosoft.Binder.CssOptions({className: 'disabled'})
 
 #
 # Enum css class handler
 #
-class @Maslosoft.Ko.Balin.EnumCssClassFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.EnumCssClassFormatter extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		config = @getValue valueAccessor
@@ -1243,7 +1243,7 @@ class @Maslosoft.Ko.Balin.EnumCssClassFormatter extends @Maslosoft.Ko.Balin.Base
 #
 # Enum binding handler
 #
-class @Maslosoft.Ko.Balin.EnumFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.EnumFormatter extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		config = @getValue valueAccessor
@@ -1253,7 +1253,7 @@ class @Maslosoft.Ko.Balin.EnumFormatter extends @Maslosoft.Ko.Balin.Base
 #
 # Eval binding handler
 #
-class @Maslosoft.Ko.Balin.Eval extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Eval extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor) =>
 		# Let bindings proceed as normal *only if* my value is false
@@ -1274,7 +1274,7 @@ class @Maslosoft.Ko.Balin.Eval extends @Maslosoft.Ko.Balin.Base
 # data-bind="fancytree: {data: data, options: <fancyTree-options>, autoExpand: true|false}"
 # TODO When using two or more trees from same data, only first one works properly
 #
-class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Fancytree extends @Maslosoft.Binder.Base
 
 	tree: null
 	element: null
@@ -1367,7 +1367,7 @@ class @Maslosoft.Ko.Balin.Fancytree extends @Maslosoft.Ko.Balin.Base
 #
 # One-way file size formatter
 #
-class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.FileSizeFormatter extends @Maslosoft.Binder.Base
 
 	units: {
 		binary: [
@@ -1429,7 +1429,7 @@ class @Maslosoft.Ko.Balin.FileSizeFormatter extends @Maslosoft.Ko.Balin.Base
 # data-bind="gmap: config"
 # TODO When using two or more trees from same data, only first one works properly
 #
-class @Maslosoft.Ko.Balin.GMap extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.GMap extends @Maslosoft.Binder.Base
 
   init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 
@@ -1442,7 +1442,7 @@ class @Maslosoft.Ko.Balin.GMap extends @Maslosoft.Ko.Balin.Base
 #
 # Hidden binding handler, opposite to visible
 #
-class @Maslosoft.Ko.Balin.Hidden extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Hidden extends @Maslosoft.Binder.Base
 	
 	update: (element, valueAccessor) =>
 		value = not @getValue(valueAccessor)
@@ -1452,7 +1452,7 @@ class @Maslosoft.Ko.Balin.Hidden extends @Maslosoft.Ko.Balin.Base
 #
 # Href binding handler
 #
-class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 
 	bustLinks = (element) ->
 		defer = () ->
@@ -1492,7 +1492,7 @@ class @Maslosoft.Ko.Balin.Href extends @Maslosoft.Ko.Balin.Base
 #
 # data-bind="htmlTree: data"
 #
-class @Maslosoft.Ko.Balin.HtmlTree extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.HtmlTree extends @Maslosoft.Binder.Base
 
 	@drawNode: (data) ->
 		# wrapper = document.createElement 'ul'
@@ -1530,7 +1530,7 @@ class @Maslosoft.Ko.Balin.HtmlTree extends @Maslosoft.Ko.Balin.Base
 # Html value binding
 # WARNING This MUST have parent context, or will not work
 #
-class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 	#
 	# Counter for id generator
@@ -1572,7 +1572,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 		
 		# Generate some id if not set, see notes below why
 		if not element.id
-			element.id = "Maslosoft-Ko-Balin-HtmlValue-#{idCounter++}"
+			element.id = "Maslosoft-Ko-Binder-HtmlValue-#{idCounter++}"
 
 		# Handle update immediatelly
 		handler = (e) =>
@@ -1619,7 +1619,7 @@ class @Maslosoft.Ko.Balin.HtmlValue extends @Maslosoft.Ko.Balin.Base
 # Icon binding handler
 # This is to select proper icon or scaled image thumbnail
 #
-class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 	
 	update: (element, valueAccessor, allBindings) =>
 		$element = $(element)
@@ -1730,7 +1730,7 @@ class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
 # Log with element reference
 #
 #
-class @Maslosoft.Ko.Balin.Log extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Log extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindings) =>
 		console.log @getValue(valueAccessor), element
@@ -1741,10 +1741,10 @@ class @Maslosoft.Ko.Balin.Log extends @Maslosoft.Ko.Balin.Base
 Date picker
 NOTE: Not recommended, as Pick A Date is not maintanted
 ###
-class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
+class @Maslosoft.Binder.PickaDate extends @Maslosoft.Binder.Picker
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateOptions(options)
+		super new Maslosoft.Binder.DateOptions(options)
 
 	updateModel: (element, valueAccessor, allBindings) =>
 		modelValue = @getValue valueAccessor
@@ -1887,7 +1887,7 @@ class @Maslosoft.Ko.Balin.PickaDate extends @Maslosoft.Ko.Balin.Picker
 ###
 Select2
 ###
-class @Maslosoft.Ko.Balin.Select2 extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Select2 extends @Maslosoft.Binder.Base
 
 	bindingName = 'select2'
 	dataBindingName = "#{bindingName}Data"
@@ -1975,15 +1975,15 @@ class @Maslosoft.Ko.Balin.Select2 extends @Maslosoft.Ko.Balin.Base
 # Selected binding
 # This adds class from options if value is true
 #
-class @Maslosoft.Ko.Balin.Selected extends@Maslosoft.Ko.Balin.CssClass
+class @Maslosoft.Binder.Selected extends@Maslosoft.Binder.CssClass
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.CssOptions({className: 'selected'})
+		super new Maslosoft.Binder.CssOptions({className: 'selected'})
 
 #
 # Src binding handler
 #
-class @Maslosoft.Ko.Balin.Src extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Src extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 
@@ -1994,7 +1994,7 @@ class @Maslosoft.Ko.Balin.Src extends @Maslosoft.Ko.Balin.Base
 ###
 Select2
 ###
-class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Tags extends @Maslosoft.Binder.Base
 
 	dropdownKillStyles = '''
 <style>
@@ -2153,7 +2153,7 @@ class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
 # Html text value binding
 # WARNING This MUST have parent context, or will not work
 #
-class @Maslosoft.Ko.Balin.TextValue extends @Maslosoft.Ko.Balin.HtmlValue
+class @Maslosoft.Binder.TextValue extends @Maslosoft.Binder.HtmlValue
 
 	getElementValue: (element) ->
 		return element.textContent || element.innerText || ""
@@ -2168,7 +2168,7 @@ class @Maslosoft.Ko.Balin.TextValue extends @Maslosoft.Ko.Balin.HtmlValue
 # Html text value binding
 # WARNING This MUST have parent context, or will not work
 #
-class @Maslosoft.Ko.Balin.TextValueHLJS extends @Maslosoft.Ko.Balin.HtmlValue
+class @Maslosoft.Binder.TextValueHLJS extends @Maslosoft.Binder.HtmlValue
 
 	getElementValue: (element) ->
 		return element.textContent || element.innerText || ""
@@ -2184,10 +2184,10 @@ class @Maslosoft.Ko.Balin.TextValueHLJS extends @Maslosoft.Ko.Balin.HtmlValue
 				hljs.highlightBlock(element)
 
 
-class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+class @Maslosoft.Binder.TimeAgoFormatter extends @Maslosoft.Binder.MomentFormatter
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.TimeAgoOptions(options)
+		super new Maslosoft.Binder.TimeAgoOptions(options)
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		value = @getValue(valueAccessor)
@@ -2197,15 +2197,15 @@ class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFor
 #
 # Date formatter
 #
-class @Maslosoft.Ko.Balin.TimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+class @Maslosoft.Binder.TimeFormatter extends @Maslosoft.Binder.MomentFormatter
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.TimeOptions(options)
+		super new Maslosoft.Binder.TimeOptions(options)
 
 ###
 Time picker
 ###
-class @Maslosoft.Ko.Balin.TimePicker extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.TimePicker extends @Maslosoft.Binder.Base
 
 	
 
@@ -2213,7 +2213,7 @@ class @Maslosoft.Ko.Balin.TimePicker extends @Maslosoft.Ko.Balin.Base
 #
 # Tooltip binding handler
 #
-class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Tooltip extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor) =>
 		title = @getValue(valueAccessor)
@@ -2225,7 +2225,7 @@ class @Maslosoft.Ko.Balin.Tooltip extends @Maslosoft.Ko.Balin.Base
 #
 # Tree binding handler
 #
-class @Maslosoft.Ko.Balin.Tree extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Tree extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor) =>
 		
@@ -2233,7 +2233,7 @@ class @Maslosoft.Ko.Balin.Tree extends @Maslosoft.Ko.Balin.Base
 
 
 
-class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.TreeGrid extends @Maslosoft.Binder.Base
 
 	#
 	#
@@ -2321,12 +2321,12 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 			ko.utils.domNodeDisposal.addDisposeCallback element, dispose
 
-		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor
+		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 		return { controlsDescendantBindings: true }
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
-		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
+		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
 
 		return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 
@@ -2338,7 +2338,7 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 #
 #
 #
-class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 
@@ -2380,14 +2380,14 @@ class @Maslosoft.Ko.Balin.TreeGridNode extends @Maslosoft.Ko.Balin.Base
 #
 # @see ValidationManager
 #
-class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Validator extends @Maslosoft.Binder.Base
 
 	# Counter for id generator
 	# @static
 	idCounter = 0
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.ValidatorOptions()
+		super new Maslosoft.Binder.ValidatorOptions()
 
 	getElementValue: (element) ->
 		# For inputs use value
@@ -2446,7 +2446,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 
 		# Generate some id if not set, see notes below why
 		if not element.id
-			element.id = "Maslosoft-Ko-Balin-Validator-#{idCounter++}"
+			element.id = "Maslosoft-Ko-Binder-Validator-#{idCounter++}"
 
 		# Get initial value to evaluate only if changed
 		initialVal = @getElementValue(element)
@@ -2480,7 +2480,7 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 #
 # Video PLaylist binding handler
 #
-class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
+class @Maslosoft.Binder.VideoPlaylist extends @Maslosoft.Binder.Video
 	initVideos: null
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}
@@ -2515,7 +2515,7 @@ class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
 #
 # Video PLaylist binding handler
 #
-class @Maslosoft.Ko.Balin.VideoThumb extends @Maslosoft.Ko.Balin.Video
+class @Maslosoft.Binder.VideoThumb extends @Maslosoft.Binder.Video
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		
@@ -2528,7 +2528,7 @@ class @Maslosoft.Ko.Balin.VideoThumb extends @Maslosoft.Ko.Balin.Video
 
 		
 
-class @Maslosoft.Ko.Balin.Widget extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Widget extends @Maslosoft.Binder.Base
 	
 	init: (element, valueAccessor, allBindings, context) =>
 		
@@ -2574,7 +2574,7 @@ class @Maslosoft.Ko.Balin.Widget extends @Maslosoft.Ko.Balin.Base
 		
 	update: (element, valueAccessor) =>
 
-class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
+class @Maslosoft.Binder.WidgetAction extends @Maslosoft.Binder.WidgetUrl
 
 	update: (element, valueAccessor, allBindings) =>
 
@@ -2586,7 +2586,7 @@ class @Maslosoft.Ko.Balin.WidgetAction extends @Maslosoft.Ko.Balin.WidgetUrl
 		@setRel element
 
 
-class @Maslosoft.Ko.Balin.WidgetActivity extends @Maslosoft.Ko.Balin.WidgetUrl
+class @Maslosoft.Binder.WidgetActivity extends @Maslosoft.Binder.WidgetUrl
 
 	update: (element, valueAccessor, allBindings) =>
 		
@@ -3150,8 +3150,8 @@ class ValidationManager
 	#
 	# Initialize validation manager
 	#
-	# @param validators Maslosoft.Ko.Balin.BaseValidator[]
-	# @param options Maslosoft.Ko.Balin.ValidatorOptions
+	# @param validators Maslosoft.Binder.BaseValidator[]
+	# @param options Maslosoft.Binder.ValidatorOptions
 	#
 	#
 	constructor: (@validators, @options) ->
@@ -3210,7 +3210,7 @@ class ValidationManager
 	#
 	# Apply validation of one validator
 	#
-	# @param validator Maslosoft.Ko.Balin.BaseValidator
+	# @param validator Maslosoft.Binder.BaseValidator
 	# @param element DomElement
 	# @param value mixed
 	#
@@ -3292,7 +3292,7 @@ class ValidationManager
 	#
 	# Apply warnings of one input
 	#
-	# @param validator Maslosoft.Ko.Balin.BaseValidator
+	# @param validator Maslosoft.Binder.BaseValidator
 	# @param element DomElement
 	# @param value mixed
 	#
@@ -3329,16 +3329,16 @@ class ValidationManager
 
 		return @
 
-if not @Maslosoft.Ko.Balin.Widgets.TreeGrid
-	@Maslosoft.Ko.Balin.Widgets.TreeGrid = {}
+if not @Maslosoft.Binder.Widgets.TreeGrid
+	@Maslosoft.Binder.Widgets.TreeGrid = {}
 
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
+class Maslosoft.Binder.Widgets.TreeGrid.Dnd
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 
@@ -3352,7 +3352,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	# Drop indicator
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
+	# @var Maslosoft.Binder.Widgets.TreeGrid.DropIndicator
 	#
 	indicator = null
 
@@ -3405,7 +3405,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			@grid.element.on 'mousemove', '> tr', @move
 
 		if not indicator
-			indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator @grid
+			indicator = new Maslosoft.Binder.Widgets.TreeGrid.DropIndicator @grid
 
 		defer = () =>
 			draggableOptions = {
@@ -3649,11 +3649,11 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 
 
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
+class Maslosoft.Binder.Widgets.TreeGrid.DropIndicator
 
 	#
 	# Precise indicator holder
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
+	# @var Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator
 	#
 	@precise: null
 
@@ -3665,7 +3665,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
 
 	constructor: (@grid) ->
 
-		@precise = new Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator @grid
+		@precise = new Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator @grid
 
 	attach: (@element) ->
 		@element.css 'font-size': '1.5em'
@@ -3695,12 +3695,12 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
 		@element.css 'color': 'red'
 		@precise.deny()
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.Events
+class Maslosoft.Binder.Widgets.TreeGrid.Events
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 
@@ -3709,12 +3709,12 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Events
 		if not @grid.config.on
 			return
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
+class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 
@@ -3799,12 +3799,12 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
 #
 #
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
+class Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 
@@ -3931,7 +3931,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.InsertIndicator
 		
 		indicator.show()
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 
 	#
 	# Plugins for tree grid
@@ -3941,9 +3941,9 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
 	# @var Object[]
 	#
 	@plugins = [
-		Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
-		Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
-		Maslosoft.Ko.Balin.Widgets.TreeGrid.Events
+		Maslosoft.Binder.Widgets.TreeGrid.Expanders
+		Maslosoft.Binder.Widgets.TreeGrid.Dnd
+		Maslosoft.Binder.Widgets.TreeGrid.Events
 	]
 
 	#
@@ -4253,7 +4253,7 @@ if WeakMap
 else
 	initMap = new Map()
 
-class @Maslosoft.Ko.Balin.Model
+class @Maslosoft.Binder.Model
 
 	constructor: (data = null) ->
 

@@ -1,7 +1,7 @@
 #
 # Configuration class for datetime bindings
 #
-class @Maslosoft.Ko.Balin.DateTimeOptions extends @Maslosoft.Ko.Balin.Options
+class @Maslosoft.Binder.DateTimeOptions extends @Maslosoft.Binder.Options
 
 	#
 	# Language for locale formatting

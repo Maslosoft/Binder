@@ -4,11 +4,11 @@
     this.Maslosoft = {};
   }
 
-  if (!this.Maslosoft.Ko.BalinDev) {
-    this.Maslosoft.Ko.BalinDev = {};
+  if (!this.Maslosoft.BinderDev) {
+    this.Maslosoft.BinderDev = {};
   }
 
-  this.Maslosoft.Ko.BalinDev.TitleRenderer = (function() {
+  this.Maslosoft.BinderDev.TitleRenderer = (function() {
     function TitleRenderer(tree, options) {}
 
     TitleRenderer.prototype.render = function(node, span) {

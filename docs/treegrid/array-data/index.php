@@ -39,7 +39,7 @@
         <tbody
                 data-bind="
 			treegrid: {
-				'data': balin.model.nodes,
+				'data': binder.model.nodes,
 				childrenField: 'children',
 				nodeIcon: '../../images/pdf.png',
 				folderIcon: '../../images/zip.png',
@@ -69,7 +69,7 @@
             var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New node #' + nodeId;
             model.description = 'Description #' + nodeId;
-            balin.model.nodes.push(model);
+            binder.model.nodes.push(model);
             if (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -80,7 +80,7 @@
             var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New sub-node #' + nodeId;
             model.description = 'Description sub-node #' + nodeId;
-            balin.model.nodes[0].children.push(model);
+            binder.model.nodes[0].children.push(model);
             if (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -91,7 +91,7 @@
             var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New sub-sub-node #' + nodeId;
             model.description = 'Description sub-sub-node #' + nodeId;
-            balin.model.nodes[0].children[0].children.push(model);
+            binder.model.nodes[0].children[0].children.push(model);
             if (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -103,10 +103,10 @@
             model.title = 'New sub-sub-node #' + nodeId;
             model.description = 'Description sub-sub-node #' + nodeId;
             var idx = 0;
-            if (balin.model.nodes[0].children.length) {
-                idx = balin.model.nodes[0].children.length - 1;
+            if (binder.model.nodes[0].children.length) {
+                idx = binder.model.nodes[0].children.length - 1;
             }
-            balin.model.nodes[0].children[idx].children.push(model);
+            binder.model.nodes[0].children[idx].children.push(model);
             if (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -117,7 +117,7 @@
             var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New sub-sub-node #' + nodeId;
             model.description = 'Description sub-sub-node #' + nodeId;
-            balin.model.nodes[0].children[0].children = [];
+            binder.model.nodes[0].children[0].children = [];
             if (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -145,7 +145,7 @@
 
 
         var grid = jQuery('#gridView');
-        var gm = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView(grid.find('tbody'));
+        var gm = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(grid.find('tbody'));
         grid.on('click', '.remove', function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -197,8 +197,8 @@
             ]
         };
         var tree = new Maslosoft.Koe.TreeItem(data);
-        balin.model.nodes = tree.children;
-        ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+        binder.model.nodes = tree.children;
+        ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
     });
 </script>
 <?php require __DIR__ . '/../../_footer.php'; ?>

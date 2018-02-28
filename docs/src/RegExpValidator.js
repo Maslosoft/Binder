@@ -7,11 +7,11 @@
     this.Maslosoft = {};
   }
 
-  if (!this.Maslosoft.Ko.BalinDev) {
-    this.Maslosoft.Ko.BalinDev = {};
+  if (!this.Maslosoft.BinderDev) {
+    this.Maslosoft.BinderDev = {};
   }
 
-  this.Maslosoft.Ko.BalinDev.RegExpValidator = (function(superClass) {
+  this.Maslosoft.BinderDev.RegExpValidator = (function(superClass) {
     extend(RegExpValidator, superClass);
 
     function RegExpValidator() {
@@ -39,6 +39,6 @@
 
     return RegExpValidator;
 
-  })(this.Maslosoft.Ko.Balin.BaseValidator);
+  })(this.Maslosoft.Binder.BaseValidator);
 
 }).call(this);

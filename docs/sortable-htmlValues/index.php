@@ -15,7 +15,7 @@
 	<a href="#" data-bind="click: addNode">Add new node programatically</a>
 </div>
 <!-- /trim -->
-<div data-bind="with: balin.model.SortableHtmlValues">
+<div data-bind="with: binder.model.SortableHtmlValues">
 	<div>Sortable: <input data-bind="textInput: title"/> <span data-bind="htmlValue: title"></span></div>
 	<div id="dev" data-bind="sortable: {data: items, connectClass: 'Names', options: {distance: 10}}">
 		<div>
@@ -42,7 +42,7 @@
 			nodeId++;
 			var model = new Maslosoft.Koe.HtmlValue;
 			model.text = 'New name #' + nodeId;
-			balin.model.SortableHtmlValues.items.push(model);
+			binder.model.SortableHtmlValues.items.push(model);
 			e.stopPropagation();
 			e.preventDefault();
 		};
@@ -71,8 +71,8 @@
 				}
 			]
 		};
-		balin.model.SortableHtmlValues = new Maslosoft.Koe.SortableHtmlValues(data);
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.SortableHtmlValues = new Maslosoft.Koe.SortableHtmlValues(data);
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

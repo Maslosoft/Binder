@@ -19,26 +19,26 @@
 
       return Settings;
 
-    })(Maslosoft.Ko.Balin.Model);
+    })(Maslosoft.Binder.Model);
     settings = new Maslosoft.Koe.Settings;
     settings.lang.en = 'English';
     settings.lang.pl = 'Polish';
-    balin.model.settings = settings;
-    ko.track(balin.model);
+    binder.model.settings = settings;
+    ko.track(binder.model);
     ko.applyBindings({
-      model: balin.model
-    }, document.getElementById('ko-balin'));
+      model: binder.model
+    }, document.getElementById('ko-binder'));
     doRound = function() {
       var index, json, model, res, results;
-      json = JSON.stringify(balin.model);
+      json = JSON.stringify(binder.model);
       res = JSON.parse(json);
       results = [];
       for (index in res) {
         model = res[index];
-        if (!!balin.model[index]) {
-          results.push(ko.tracker.fromJs(balin.model[index], res[index]));
+        if (!!binder.model[index]) {
+          results.push(ko.tracker.fromJs(binder.model[index], res[index]));
         } else {
-          results.push(balin.model[index] = ko.tracker.factory(res[index]));
+          results.push(binder.model[index] = ko.tracker.factory(res[index]));
         }
       }
       return results;
@@ -46,7 +46,7 @@
     elem = jQuery('#dynamicPropertiesTest');
     return describe('Test if will allow use of dynamic properties and do round-trip', function() {
       it('Should allow adding property', function() {
-        settings = balin.model.settings;
+        settings = binder.model.settings;
         assert.equal(Object.keys(settings.lang).length, 2);
         settings.lang.fr = 'Francaise';
         settings.lang.de = 'Deutch';
@@ -57,7 +57,7 @@
         return assert.equal(elem.find('div').length, 4, 'That DOM elements are 4 after round trip');
       });
       return it('Should allow removing property', function() {
-        settings = balin.model.settings;
+        settings = binder.model.settings;
         assert.equal(Object.keys(settings.lang).length, 4);
         delete settings.lang.fr;
         delete settings.lang.de;

@@ -1,10 +1,10 @@
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
+class Maslosoft.Binder.Widgets.TreeGrid.Dnd
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 
@@ -18,7 +18,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 	#
 	# Drop indicator
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator
+	# @var Maslosoft.Binder.Widgets.TreeGrid.DropIndicator
 	#
 	indicator = null
 
@@ -71,7 +71,7 @@ class Maslosoft.Ko.Balin.Widgets.TreeGrid.Dnd
 			@grid.element.on 'mousemove', '> tr', @move
 
 		if not indicator
-			indicator = new Maslosoft.Ko.Balin.Widgets.TreeGrid.DropIndicator @grid
+			indicator = new Maslosoft.Binder.Widgets.TreeGrid.DropIndicator @grid
 
 		defer = () =>
 			draggableOptions = {

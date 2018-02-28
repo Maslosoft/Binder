@@ -1,8 +1,8 @@
 ###
 One-way date/time formatter
 ###
-class @Maslosoft.Ko.Balin.DateTimeFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+class @Maslosoft.Binder.DateTimeFormatter extends @Maslosoft.Binder.MomentFormatter
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.DateTimeOptions(options)
+		super new Maslosoft.Binder.DateTimeOptions(options)
 

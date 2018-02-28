@@ -1,7 +1,7 @@
 #
 # Moment formatter class
 #
-class @Maslosoft.Ko.Balin.MomentFormatter extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.MomentFormatter extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		moment.locale @options.lang

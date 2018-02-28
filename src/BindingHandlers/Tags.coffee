@@ -1,7 +1,7 @@
 ###
 Select2
 ###
-class @Maslosoft.Ko.Balin.Tags extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Tags extends @Maslosoft.Binder.Base
 
 	dropdownKillStyles = '''
 <style>

@@ -10,20 +10,20 @@
 <!-- /trim -->
 <div>
 	<a href="" data-bind="widgetId: 'ms_1', activity: 'sort', params: {name: 'asc'}">Acitivity link</a><br />
-	<a href="" data-bind="widget: balin.model.Widget, activity: 'sort', params: {name: 'asc'}">Widget Activity link</a><br />
-	<a href="" data-bind="widget: balin.model.Widget, activity: 'sort', params: 'sss'">Widget Activity link simple param</a><br />
-	<a href="" data-bind="widget: balin.model.Widget, activity: 'status', params: 0">Widget Action link simple numeric param</a><br />
-	<a href="" rel="tooltip" title="My tooltip" data-bind="widget: balin.model.Widget, activity: 'sort'">Widget Activity link no params with tooltip</a><br />
+	<a href="" data-bind="widget: binder.model.Widget, activity: 'sort', params: {name: 'asc'}">Widget Activity link</a><br />
+	<a href="" data-bind="widget: binder.model.Widget, activity: 'sort', params: 'sss'">Widget Activity link simple param</a><br />
+	<a href="" data-bind="widget: binder.model.Widget, activity: 'status', params: 0">Widget Action link simple numeric param</a><br />
+	<a href="" rel="tooltip" title="My tooltip" data-bind="widget: binder.model.Widget, activity: 'sort'">Widget Activity link no params with tooltip</a><br />
 
 </div>
 
 <script>
 	window.onload = (function () {
-		balin.model.Tooltip = new Maslosoft.Koe.Tooltip({title: 'This is tooltip'});
-		balin.model.Widget = {
+		binder.model.Tooltip = new Maslosoft.Koe.Tooltip({title: 'This is tooltip'});
+		binder.model.Widget = {
 			id: 'ms_2'
 		};
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 		jQuery('body').tooltip({
 			selector: '[rel~="tooltip"]'
 		});

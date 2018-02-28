@@ -1,7 +1,7 @@
 #
 # Asset binding handler
 #
-class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Asset extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
 		$element = $(element)

@@ -1,7 +1,7 @@
 #
 # Video PLaylist binding handler
 #
-class @Maslosoft.Ko.Balin.VideoPlaylist extends @Maslosoft.Ko.Balin.Video
+class @Maslosoft.Binder.VideoPlaylist extends @Maslosoft.Binder.Video
 	initVideos: null
 	getData: (valueAccessor) ->
 		# Verbose syntax, at least {data: data}

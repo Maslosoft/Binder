@@ -13,13 +13,13 @@
 	<tr>
 		<th>Raw Value</th>
 		<td>
-			<input data-bind="textInput: balin.model.DecimalFormatter.value"/>
+			<input data-bind="textInput: binder.model.DecimalFormatter.value"/>
 		</td>
 	</tr>
 	<tr>
 		<th>Formatted</th>
 		<td>
-			<span data-bind="decimalFormatter: balin.model.DecimalFormatter.value"></span>
+			<span data-bind="decimalFormatter: binder.model.DecimalFormatter.value"></span>
 		</td>
 	</tr>
 	<tr>
@@ -27,7 +27,7 @@
 		<td>
 			 <span 
 			 data-bind="
-			 	decimalFormatter: balin.model.DecimalFormatter.value, 
+			 	decimalFormatter: binder.model.DecimalFormatter.value, 
 			 	precision: 3, 
 			 	thousandSeparator: ',', 
 			 	decimalSeparator: '.', 
@@ -40,7 +40,7 @@
 		<td>
 			<span 
 			data-bind="
-				decimalFormatter: balin.model.DecimalFormatter.value, 
+				decimalFormatter: binder.model.DecimalFormatter.value, 
 				prefix: '$'
 				"></span>
 		</td>
@@ -48,15 +48,15 @@
 	<tr>
 		<th>Formatted with ko punches</th>
 		<td>
-			<span decimalFormatter="{{balin.model.DecimalFormatter.value}}"></span>
+			<span decimalFormatter="{{binder.model.DecimalFormatter.value}}"></span>
 		</td>
 	</tr>
 </table>
 
 <script>
 	window.onload = (function(){
-		balin.model.DecimalFormatter = new Maslosoft.Koe.DecimalFormatter({value: 234123.4567});
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.DecimalFormatter = new Maslosoft.Koe.DecimalFormatter({value: 234123.4567});
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

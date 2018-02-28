@@ -1,8 +1,8 @@
 
-class @Maslosoft.Ko.Balin.TimeAgoFormatter extends @Maslosoft.Ko.Balin.MomentFormatter
+class @Maslosoft.Binder.TimeAgoFormatter extends @Maslosoft.Binder.MomentFormatter
 
 	constructor: (options) ->
-		super new Maslosoft.Ko.Balin.TimeAgoOptions(options)
+		super new Maslosoft.Binder.TimeAgoOptions(options)
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		value = @getValue(valueAccessor)

@@ -1,5 +1,5 @@
 
-class @Maslosoft.Ko.Balin.WidgetUrl extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.WidgetUrl extends @Maslosoft.Binder.Base
 
 	getData: (element, valueAccessor, allBindings, bindingName) ->
 		src = @getValue(valueAccessor)

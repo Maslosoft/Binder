@@ -1,7 +1,7 @@
 #
 # Eval binding handler
 #
-class @Maslosoft.Ko.Balin.Eval extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Eval extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor) =>
 		# Let bindings proceed as normal *only if* my value is false

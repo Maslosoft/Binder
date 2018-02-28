@@ -16,19 +16,19 @@
     this.Maslosoft.Koe = {};
   }
 
-  if (!this.Maslosoft.Ko.BalinDev) {
-    this.Maslosoft.Ko.BalinDev = {};
+  if (!this.Maslosoft.BinderDev) {
+    this.Maslosoft.BinderDev = {};
   }
 
-  if (!this.Maslosoft.Ko.BalinDev.Models) {
-    this.Maslosoft.Ko.BalinDev.Models = {};
+  if (!this.Maslosoft.BinderDev.Models) {
+    this.Maslosoft.BinderDev.Models = {};
   }
 
-  if (!this.Maslosoft.Ko.BalinDev.Widgets) {
-    this.Maslosoft.Ko.BalinDev.Widgets = {};
+  if (!this.Maslosoft.BinderDev.Widgets) {
+    this.Maslosoft.BinderDev.Widgets = {};
   }
 
-  this.Maslosoft.Ko.BalinDev.FancyTreeDropHandler = (function() {
+  this.Maslosoft.BinderDev.FancyTreeDropHandler = (function() {
     function FancyTreeDropHandler(node, data) {
       this.getNode = bind(this.getNode, this);
     }
@@ -69,7 +69,7 @@
 
     return TreeItem;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Intro = (function(superClass) {
     extend(Intro, superClass);
@@ -84,7 +84,7 @@
 
     return Intro;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.FileSizeFormatter = (function(superClass) {
     extend(FileSizeFormatter, superClass);
@@ -99,7 +99,7 @@
 
     return FileSizeFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.DecimalFormatter = (function(superClass) {
     extend(DecimalFormatter, superClass);
@@ -114,7 +114,7 @@
 
     return DecimalFormatter;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Href = (function(superClass) {
     extend(Href, superClass);
@@ -129,7 +129,7 @@
 
     return Href;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Src = (function(superClass) {
     extend(Src, superClass);
@@ -144,7 +144,7 @@
 
     return Src;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.HtmlValue = (function(superClass) {
     extend(HtmlValue, superClass);
@@ -159,7 +159,7 @@
 
     return HtmlValue;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.TextValue = (function(superClass) {
     extend(TextValue, superClass);
@@ -174,7 +174,7 @@
 
     return TextValue;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.SortableHtmlValues = (function(superClass) {
     extend(SortableHtmlValues, superClass);
@@ -191,7 +191,7 @@
 
     return SortableHtmlValues;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Selected = (function(superClass) {
     extend(Selected, superClass);
@@ -206,7 +206,7 @@
 
     return Selected;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Enum = (function(superClass) {
     extend(Enum, superClass);
@@ -221,7 +221,7 @@
 
     return Enum;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Hidden = (function(superClass) {
     extend(Hidden, superClass);
@@ -236,7 +236,7 @@
 
     return Hidden;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Icon = (function(superClass) {
     extend(Icon, superClass);
@@ -261,7 +261,7 @@
 
     return Icon;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Tooltip = (function(superClass) {
     extend(Tooltip, superClass);
@@ -276,7 +276,7 @@
 
     return Tooltip;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Asset = (function(superClass) {
     extend(Asset, superClass);
@@ -295,7 +295,7 @@
 
     return Asset;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.DateTime = (function(superClass) {
     extend(DateTime, superClass);
@@ -312,7 +312,7 @@
 
     return DateTime;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Nested = (function(superClass) {
     extend(Nested, superClass);
@@ -327,7 +327,7 @@
 
     return Nested;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Video = (function(superClass) {
     extend(Video, superClass);
@@ -344,7 +344,7 @@
 
     return Video;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Videos = (function(superClass) {
     extend(Videos, superClass);
@@ -359,7 +359,7 @@
 
     return Videos;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.DatePicker = (function(superClass) {
     extend(DatePicker, superClass);
@@ -374,7 +374,7 @@
 
     return DatePicker;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.AclUser = (function(superClass) {
     extend(AclUser, superClass);
@@ -389,7 +389,7 @@
 
     return AclUser;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.Options = (function(superClass) {
     extend(Options, superClass);
@@ -407,9 +407,9 @@
 
     return Options;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
-  this.Maslosoft.Ko.BalinDev.Widgets.MyWidget = (function() {
+  this.Maslosoft.BinderDev.Widgets.MyWidget = (function() {
     var i, originalTitle;
 
     i = 0;
@@ -460,7 +460,7 @@
 
     return Columns;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
   this.Maslosoft.Koe.UiColumns = (function(superClass) {
     extend(UiColumns, superClass);
@@ -479,9 +479,9 @@
 
     return UiColumns;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
-  this.Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget = (function() {
+  this.Maslosoft.BinderDev.Widgets.MyOtherWidget = (function() {
     var i, originalTitle;
 
     i = 0;
@@ -536,6 +536,6 @@
 
     return CssClasses;
 
-  })(this.Maslosoft.Ko.Balin.Model);
+  })(this.Maslosoft.Binder.Model);
 
 }).call(this);

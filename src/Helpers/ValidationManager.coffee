@@ -46,8 +46,8 @@ class ValidationManager
 	#
 	# Initialize validation manager
 	#
-	# @param validators Maslosoft.Ko.Balin.BaseValidator[]
-	# @param options Maslosoft.Ko.Balin.ValidatorOptions
+	# @param validators Maslosoft.Binder.BaseValidator[]
+	# @param options Maslosoft.Binder.ValidatorOptions
 	#
 	#
 	constructor: (@validators, @options) ->
@@ -106,7 +106,7 @@ class ValidationManager
 	#
 	# Apply validation of one validator
 	#
-	# @param validator Maslosoft.Ko.Balin.BaseValidator
+	# @param validator Maslosoft.Binder.BaseValidator
 	# @param element DomElement
 	# @param value mixed
 	#
@@ -188,7 +188,7 @@ class ValidationManager
 	#
 	# Apply warnings of one input
 	#
-	# @param validator Maslosoft.Ko.Balin.BaseValidator
+	# @param validator Maslosoft.Binder.BaseValidator
 	# @param element DomElement
 	# @param value mixed
 	#

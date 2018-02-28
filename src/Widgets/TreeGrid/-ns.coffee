@@ -1,2 +1,2 @@
-if not @Maslosoft.Ko.Balin.Widgets.TreeGrid
-	@Maslosoft.Ko.Balin.Widgets.TreeGrid = {}
+if not @Maslosoft.Binder.Widgets.TreeGrid
+	@Maslosoft.Binder.Widgets.TreeGrid = {}

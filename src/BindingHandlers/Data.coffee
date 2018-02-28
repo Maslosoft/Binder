@@ -1,7 +1,7 @@
 #
 # Data binding handler
 #
-class @Maslosoft.Ko.Balin.Data extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Data extends @Maslosoft.Binder.Base
 
 	getNamespacedHandler: (binding) ->
 		return {

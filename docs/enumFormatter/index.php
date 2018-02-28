@@ -14,27 +14,27 @@
 <div class="well">
 <!-- /trim -->
 	<label>
-	Raw Status: <input data-bind="textInput: balin.model.Enum.status"/> (0, 1, 2, 3) <br />
+	Raw Status: <input data-bind="textInput: binder.model.Enum.status"/> (0, 1, 2, 3) <br />
 	</label>
 	<br />
 	<label>
-		<input type="radio" data-bind="checked: balin.model.Enum.status, checkedValue: 0" value="0" />
+		<input type="radio" data-bind="checked: binder.model.Enum.status, checkedValue: 0" value="0" />
 		Status Zero
 	</label>
 	<label>
-		<input type="radio" data-bind="checked: balin.model.Enum.status, checkedValue: 1" value="1" />
+		<input type="radio" data-bind="checked: binder.model.Enum.status, checkedValue: 1" value="1" />
 		Status One
 	</label>
 	<label>
-		<input type="radio" data-bind="checked: balin.model.Enum.status, checkedValue: 2" value="2" />
+		<input type="radio" data-bind="checked: binder.model.Enum.status, checkedValue: 2" value="2" />
 		Status Two
 	</label>
 	<label>
-		<input type="radio" data-bind="checked: balin.model.Enum.status, checkedValue: 3" value="3" />
+		<input type="radio" data-bind="checked: binder.model.Enum.status, checkedValue: 3" value="3" />
 		Status Three
 	</label>
 	<br />
-	Formatted: <span data-bind="enumFormatter: {data: balin.model.Enum.status, values:['Zero', 'One', 'Two', 'Three']}"></span>
+	Formatted: <span data-bind="enumFormatter: {data: binder.model.Enum.status, values:['Zero', 'One', 'Two', 'Three']}"></span>
 	
 <!-- trim -->
 <br />
@@ -45,8 +45,8 @@
 
 <script>
 	window.onload = (function(){
-		balin.model.Enum = new Maslosoft.Koe.Enum({status: 1});
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.Enum = new Maslosoft.Koe.Enum({status: 1});
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

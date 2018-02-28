@@ -44,7 +44,7 @@ if WeakMap
 else
 	initMap = new Map()
 
-class @Maslosoft.Ko.Balin.Model
+class @Maslosoft.Binder.Model
 
 	constructor: (data = null) ->
 

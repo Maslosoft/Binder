@@ -3,7 +3,7 @@
 # Log with element reference
 #
 #
-class @Maslosoft.Ko.Balin.Log extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Log extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindings) =>
 		console.log @getValue(valueAccessor), element

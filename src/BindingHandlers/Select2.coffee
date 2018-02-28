@@ -1,7 +1,7 @@
 ###
 Select2
 ###
-class @Maslosoft.Ko.Balin.Select2 extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Select2 extends @Maslosoft.Binder.Base
 
 	bindingName = 'select2'
 	dataBindingName = "#{bindingName}Data"

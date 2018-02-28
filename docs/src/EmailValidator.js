@@ -7,11 +7,11 @@
     this.Maslosoft = {};
   }
 
-  if (!this.Maslosoft.Ko.BalinDev) {
-    this.Maslosoft.Ko.BalinDev = {};
+  if (!this.Maslosoft.BinderDev) {
+    this.Maslosoft.BinderDev = {};
   }
 
-  this.Maslosoft.Ko.BalinDev.EmailValidator = (function(superClass) {
+  this.Maslosoft.BinderDev.EmailValidator = (function(superClass) {
     extend(EmailValidator, superClass);
 
     function EmailValidator() {
@@ -41,6 +41,6 @@
 
     return EmailValidator;
 
-  })(this.Maslosoft.Ko.Balin.BaseValidator);
+  })(this.Maslosoft.Binder.BaseValidator);
 
 }).call(this);

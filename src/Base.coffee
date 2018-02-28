@@ -1,7 +1,7 @@
 #
 # Base class for Maslosoft binding handlers
 #
-class @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Base
 
 	#
 	# Whenever to register binding handler as writable
@@ -10,12 +10,12 @@ class @Maslosoft.Ko.Balin.Base
 	writable: true
 
 	#
-	# @var @Maslosoft.Ko.Balin.Options
+	# @var @Maslosoft.Binder.Options
 	#
 	options: {}
 
 	# Class constructor
-	# @param options @Maslosoft.Ko.Balin.Options
+	# @param options @Maslosoft.Binder.Options
 	#
 	constructor: (options = {}) ->
 		#	Set ref to current object, not prototype

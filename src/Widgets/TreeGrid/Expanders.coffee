@@ -1,10 +1,10 @@
 
-class Maslosoft.Ko.Balin.Widgets.TreeGrid.Expanders
+class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 
 	#
 	# Tree grid view instance
 	#
-	# @var Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView
+	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	grid: null
 

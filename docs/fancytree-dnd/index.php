@@ -16,20 +16,20 @@ Fancy tree drag'n'drop example. <br />
 </p>
 <p>
 	Also responsive font size is used. Document font size:
-	<a href="javascript: balin.increaseFont();">Increase</a> /
-	<a href="javascript: balin.decreaseFont();">Decrease</a> /
-	<a href="javascript: balin.resetFont();">Reset</a>
+	<a href="javascript: binder.increaseFont();">Increase</a> /
+	<a href="javascript: binder.decreaseFont();">Decrease</a> /
+	<a href="javascript: binder.resetFont();">Reset</a>
 </p>
 <!-- /trim -->
 <div class="fancy-tree"
 	data-bind="fancytree: {
-		data: balin.model.Tree, 
+		data: binder.model.Tree, 
 		nodeIcon: 'images/pdf.png', 
 		folderIcon: 'images/zip.png', 
-		nodeRenderer: Maslosoft.Ko.BalinDev.TitleRenderer, 
+		nodeRenderer: Maslosoft.BinderDev.TitleRenderer, 
 		on:{
-			'dblclick':balin.log, 
-			'drop': Maslosoft.Ko.BalinDev.FancyTreeDropHandler
+			'dblclick':binder.log, 
+			'drop': Maslosoft.BinderDev.FancyTreeDropHandler
 		}, 
 		dnd: true, 
 		autoExpand: true
@@ -87,11 +87,11 @@ Fancy tree drag'n'drop example. <br />
 				}
 			]
 		};
-		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		binder.model.Tree = new Maslosoft.Koe.TreeItem(data);
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 
 		// Helper code
-		balin.log = function () {
+		binder.log = function () {
 			// Do not bind directly to `on` or will fail with `Illegal Invocation`
 			console.log(arguments);
 		}

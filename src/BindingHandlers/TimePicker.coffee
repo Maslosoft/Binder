@@ -1,7 +1,7 @@
 ###
 Time picker
 ###
-class @Maslosoft.Ko.Balin.TimePicker extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.TimePicker extends @Maslosoft.Binder.Base
 
 	
 

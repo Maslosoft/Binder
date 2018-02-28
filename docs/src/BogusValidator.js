@@ -4,11 +4,11 @@
     this.Maslosoft = {};
   }
 
-  if (!this.Maslosoft.Ko.BalinDev) {
-    this.Maslosoft.Ko.BalinDev = {};
+  if (!this.Maslosoft.BinderDev) {
+    this.Maslosoft.BinderDev = {};
   }
 
-  this.Maslosoft.Ko.BalinDev.BogusValidator = (function() {
+  this.Maslosoft.BinderDev.BogusValidator = (function() {
     function BogusValidator() {}
 
     return BogusValidator;

@@ -1,5 +1,5 @@
 
-class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.TreeGrid extends @Maslosoft.Binder.Base
 
 	#
 	#
@@ -87,12 +87,12 @@ class @Maslosoft.Ko.Balin.TreeGrid extends @Maslosoft.Ko.Balin.Base
 
 			ko.utils.domNodeDisposal.addDisposeCallback element, dispose
 
-		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor
+		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 		return { controlsDescendantBindings: true }
 
 	update: (element, valueAccessor, allBindings, viewModel, bindingContext) =>
-		widget = new Maslosoft.Ko.Balin.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
+		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor, 'update'
 
 		return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 

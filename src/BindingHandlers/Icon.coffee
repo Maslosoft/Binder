@@ -2,7 +2,7 @@
 # Icon binding handler
 # This is to select proper icon or scaled image thumbnail
 #
-class @Maslosoft.Ko.Balin.Icon extends @Maslosoft.Ko.Balin.Base
+class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 	
 	update: (element, valueAccessor, allBindings) =>
 		$element = $(element)

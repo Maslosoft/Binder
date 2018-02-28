@@ -9,8 +9,8 @@ function makeButtonsForSizesFor($size, $binding, $columns = [1,2,3,4,5,6,7,8,9,1
 		$html[] = <<<HTML
             <div 
             class="btn btn-default"
-            data-bind="css: {'btn-success': balin.model.layout.$binding.$size == $i}" 
-            onclick="balin.model.layout.$binding.$size = $i">
+            data-bind="css: {'btn-success': binder.model.layout.$binding.$size == $i}" 
+            onclick="binder.model.layout.$binding.$size = $i">
                 $i
             </div>
 HTML;
@@ -40,8 +40,8 @@ HTML;
     properties are:
 </p>
 <ul>
-    <li><code>Maslosoft.Ko.Balin.CssColumnSizes.columns</code> for <code>cssColumnSizes</code> binding</li>
-    <li><code>Maslosoft.Ko.Balin.CssColumns.columns</code> for <code>cssColumns</code> binding</li>
+    <li><code>Maslosoft.Binder.CssColumnSizes.columns</code> for <code>cssColumnSizes</code> binding</li>
+    <li><code>Maslosoft.Binder.CssColumns.columns</code> for <code>cssColumns</code> binding</li>
 </ul>
 <p>
     Class names contain placeholder <code>{num}</code> which will be replaces by observable value.
@@ -51,7 +51,7 @@ HTML;
 </p>
 <h3>Example configuration</h3>
 <pre class="javascript">
-Maslosoft.Ko.Balin.CssColumnSizes.columns = {
+Maslosoft.Binder.CssColumnSizes.columns = {
     'xs': 'col-xs-{num}',
     'sm': 'col-sm-{num}',
     'md': 'col-md-{num}',
@@ -95,7 +95,7 @@ Maslosoft.Ko.Balin.CssColumnSizes.columns = {
 </div>
 <div class="container-fluid">
 <!-- /trim -->
-<div class="row" data-bind="with: balin.model.layout">
+<div class="row" data-bind="with: binder.model.layout">
     <div data-bind="cssColumnSizes: sizes" class="btn-success">
         First column
     </div>
@@ -141,7 +141,7 @@ Maslosoft.Ko.Balin.CssColumnSizes.columns = {
 <!-- trim -->
 <div class="container-fluid">
 <!-- /trim -->
-<div class="row" data-bind="with: balin.model.layout">
+<div class="row" data-bind="with: binder.model.layout">
     <div data-bind="cssColumns: columns" class="btn-success">
         First column
     </div>
@@ -157,7 +157,7 @@ Maslosoft.Ko.Balin.CssColumnSizes.columns = {
 <!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.layout = new Maslosoft.Koe.Columns({
+		binder.model.layout = new Maslosoft.Koe.Columns({
             sizes: new Maslosoft.Koe.UiColumns,
             columns: new Maslosoft.Koe.UiColumns({
                 lg: 3,
@@ -166,7 +166,7 @@ Maslosoft.Ko.Balin.CssColumnSizes.columns = {
                 xs: 3
             })
 		});
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
 <?php require __DIR__ . '/../_footer.php'; ?>

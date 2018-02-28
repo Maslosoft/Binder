@@ -1,5 +1,5 @@
 
-class @Maslosoft.Ko.Balin.BaseValidator
+class @Maslosoft.Binder.BaseValidator
 
 	label: ''
 

@@ -26,12 +26,12 @@
     this binding will reuse existing object.
 </p>
 <h5>Example Widget Output:</h5>
-<a href="javascript://" onclick="balin.model.toggle.enabled = !balin.model.toggle.enabled">Toggle Widget</a>
+<a href="javascript://" onclick="binder.model.toggle.enabled = !binder.model.toggle.enabled">Toggle Widget</a>
 |
-    <a href="javascript://" onclick="console.log(balin.model.ref);">Show ref (in console)</a>
+    <a href="javascript://" onclick="console.log(binder.model.ref);">Show ref (in console)</a>
 <!-- /trim -->
-<!-- ko if: balin.model.toggle.enabled -->
-<div data-bind="widget: Maslosoft.Ko.BalinDev.Widgets.MyWidget,params: {title:'My Title'},ref: 'balin.model.ref'" class="well">
+<!-- ko if: binder.model.toggle.enabled -->
+<div data-bind="widget: Maslosoft.BinderDev.Widgets.MyWidget,params: {title:'My Title'},ref: 'binder.model.ref'" class="well">
 
 </div>
 <!-- /ko -->
@@ -42,7 +42,7 @@
 </div>
     <h5>Example Widget With <code>ref</code> reusing existing object:</h5>
 <!-- /trim -->
-    <div data-bind="ref: balin.widget.other" class="well">
+    <div data-bind="ref: binder.widget.other" class="well">
 
     </div>
 <!-- trim -->
@@ -53,12 +53,12 @@
 <!-- /trim -->
 <script>
 	window.onload = (function () {
-		balin.model.toggle = ko.tracker.factory({enabled: true});
+		binder.model.toggle = ko.tracker.factory({enabled: true});
 
-		balin.widget.other = new Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget();
-        balin.widget.other.title = 'Title set in JavaScript';
+		binder.widget.other = new Maslosoft.BinderDev.Widgets.MyOtherWidget();
+        binder.widget.other.title = 'Title set in JavaScript';
 
-		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
+		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 		jQuery('body').tooltip({
 			selector: '[rel~="tooltip"]'
 		});
