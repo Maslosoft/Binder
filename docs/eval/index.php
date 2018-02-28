@@ -27,7 +27,7 @@
 			text: 'This is text provided via javascript'
 		};
 
-		balin.model.txt = new Maslosoft.Ko.BalinDev.Models.TextValue(data);
+		balin.model.txt = new Maslosoft.Koe.TextValue(data);
 		balin.model.eval = new Maslosoft.Koe.Selected({isSelected: false});
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));

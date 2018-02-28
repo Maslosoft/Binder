@@ -30,7 +30,7 @@
 
 <script>
 	window.onload = (function(){
-		balin.model.FileSizeFormatter = new Maslosoft.Ko.BalinDev.Models.FileSizeFormatter({size: 123456});
+		balin.model.FileSizeFormatter = new Maslosoft.Koe.FileSizeFormatter({size: 123456});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

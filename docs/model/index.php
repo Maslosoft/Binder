@@ -23,9 +23,9 @@
 			text: 'Val3'
 		};
 
-		balin.model.txt1 = new Maslosoft.Ko.BalinDev.Models.TextValue(data1);
-		balin.model.txt2 = new Maslosoft.Ko.BalinDev.Models.TextValue(data2);
-		balin.model.txt3 = new Maslosoft.Ko.BalinDev.Models.TextValue(data3);
+		balin.model.txt1 = new Maslosoft.Koe.TextValue(data1);
+		balin.model.txt2 = new Maslosoft.Koe.TextValue(data2);
+		balin.model.txt3 = new Maslosoft.Koe.TextValue(data3);
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});

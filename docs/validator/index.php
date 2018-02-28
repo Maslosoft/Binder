@@ -123,10 +123,10 @@ class @Maslosoft.Ko.BalinDev.RegExpValidator extends @Maslosoft.Ko.Balin.BaseVal
 			text: 'Partially bogus validators config'
 		};
 
-		balin.model.txt1 = new Maslosoft.Ko.BalinDev.Models.TextValue(data1);
-		balin.model.txt2 = new Maslosoft.Ko.BalinDev.Models.TextValue(data2);
-		balin.model.txt3 = new Maslosoft.Ko.BalinDev.Models.TextValue(data3);
-		balin.model.txt6 = new Maslosoft.Ko.BalinDev.Models.TextValue(data6);
+		balin.model.txt1 = new Maslosoft.Koe.TextValue(data1);
+		balin.model.txt2 = new Maslosoft.Koe.TextValue(data2);
+		balin.model.txt3 = new Maslosoft.Koe.TextValue(data3);
+		balin.model.txt6 = new Maslosoft.Koe.TextValue(data6);
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});

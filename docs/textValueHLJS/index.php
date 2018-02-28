@@ -17,7 +17,7 @@
 		var data = {
 			text: 'Some text, also <b>with</b> <abbr title="HyperText Markup Language">HTML</abbr>'
 		};
-		balin.model.TextValue = new Maslosoft.Ko.BalinDev.Models.TextValue(data);
+		balin.model.TextValue = new Maslosoft.Koe.TextValue(data);
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

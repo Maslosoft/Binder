@@ -57,7 +57,7 @@ use Maslosoft\Widgets\JavaScript\Packages\Select2Package;
 <script>
 	window.onload = (function () {
 
-		balin.model.options = new Maslosoft.Ko.BalinDev.Models.Options();
+		balin.model.options = new Maslosoft.Koe.Options();
 		balin.model.options.selected = ['noisy', 'loud'];
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));

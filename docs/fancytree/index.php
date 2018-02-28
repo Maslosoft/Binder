@@ -49,7 +49,7 @@
 		var nodeId = 0;
 		window.addNode = function (data, e) {
 			nodeId++;
-			var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+			var model = new Maslosoft.Koe.TreeItem;
 			model.title = 'New node #' + nodeId;
 			balin.model.Tree.children.push(model);
 			e.stopPropagation();
@@ -57,7 +57,7 @@
 		};
 		window.addSubNode = function (data, e) {
 			nodeId++;
-			var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+			var model = new Maslosoft.Koe.TreeItem;
 			model.title = 'New sub-node #' + nodeId;
 			balin.model.Tree.children[0].children.push(model);
 			e.stopPropagation();
@@ -67,30 +67,30 @@
 
 		var data = {
 			title: "Some container",
-			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+			_class: 'Maslosoft.Koe.TreeItem',
 			children: [{
 					title: "One",
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					children: [
 						{
 							title: "Two",
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 					children: []
 
 				},
 				{
 					title: "Three",
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					children: [
 						{
 							title: "Three-Two",
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							children: []
 
 						},
 						{
 							title: "Three-Three",
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							children: []
 
 						}
@@ -99,14 +99,14 @@
 				},
 				{
 					title: "Four",
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					children: []
 				}
 			]
 			}]
 		};
-		balin.model.Tree = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
-		balin.model.Tree2 = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
+		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
+		balin.model.Tree2 = new Maslosoft.Koe.TreeItem(data);
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

@@ -85,7 +85,7 @@
 				}
 		  },
 			Nested:{
-		_class:'Maslosoft.Ko.BalinDev.Models.Nested',
+		_class:'Maslosoft.Koe.Nested',
 		rawI18N:{
 			name:{
 				en:"January",

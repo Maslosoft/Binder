@@ -56,7 +56,7 @@
 <script>
 	window.onload = (function () {
 		var data = {text: 'Editable text <b>with</b> <abbr title="HyperText Markup Language">HTML</abbr>'};
-		balin.model.HtmlValue = new Maslosoft.Ko.BalinDev.Models.HtmlValue(data);
+		balin.model.HtmlValue = new Maslosoft.Koe.HtmlValue(data);
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 		// trim
 		// These are helpers for this page only, irrelevant for real usage

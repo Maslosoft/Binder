@@ -16,41 +16,41 @@
 <script>
 	window.onload = (function () {
 		data = {
-			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+			_class: 'Maslosoft.Koe.TreeItem',
 			title: "Some container",
 			children: [
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "One",
 					children: [
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Two"
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Three",
 							children: [
 								{
-									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									_class: 'Maslosoft.Koe.TreeItem',
 									title: "Three-Two"
 								},
 								{
-									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									_class: 'Maslosoft.Koe.TreeItem',
 									title: "Three-Three"
 								}
 							]
 
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Four"
 						}
 					]
 				}
 			]
 		};
-		balin.model.Tree = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
+		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});

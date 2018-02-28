@@ -19,7 +19,7 @@
 
 <script>
 	window.onload = (function(){
-		balin.model.Hidden = new Maslosoft.Ko.BalinDev.Models.Hidden({show: true});
+		balin.model.Hidden = new Maslosoft.Koe.Hidden({show: true});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

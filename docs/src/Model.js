@@ -43,12 +43,12 @@
 
   })();
 
-  this.Maslosoft.Ko.BalinDev.Models.TreeItem = (function(superClass) {
+  this.Maslosoft.Koe.TreeItem = (function(superClass) {
     extend(TreeItem, superClass);
 
     TreeItem.idCounter = 0;
 
-    TreeItem.prototype._class = "Maslosoft.Ko.BalinDev.Models.TreeItem";
+    TreeItem.prototype._class = "Maslosoft.Koe.TreeItem";
 
     TreeItem.prototype.id = 0;
 
@@ -71,14 +71,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Intro = (function(superClass) {
+  this.Maslosoft.Koe.Intro = (function(superClass) {
     extend(Intro, superClass);
 
     function Intro() {
       return Intro.__super__.constructor.apply(this, arguments);
     }
 
-    Intro.prototype._class = "Maslosoft.Ko.BalinDev.Models.Intro";
+    Intro.prototype._class = "Maslosoft.Koe.Intro";
 
     Intro.prototype.text = '';
 
@@ -86,14 +86,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.FileSizeFormatter = (function(superClass) {
+  this.Maslosoft.Koe.FileSizeFormatter = (function(superClass) {
     extend(FileSizeFormatter, superClass);
 
     function FileSizeFormatter() {
       return FileSizeFormatter.__super__.constructor.apply(this, arguments);
     }
 
-    FileSizeFormatter.prototype._class = "Maslosoft.Ko.BalinDev.Models.FileSizeFormatter";
+    FileSizeFormatter.prototype._class = "Maslosoft.Koe.FileSizeFormatter";
 
     FileSizeFormatter.prototype.size = 0;
 
@@ -101,14 +101,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.DecimalFormatter = (function(superClass) {
+  this.Maslosoft.Koe.DecimalFormatter = (function(superClass) {
     extend(DecimalFormatter, superClass);
 
     function DecimalFormatter() {
       return DecimalFormatter.__super__.constructor.apply(this, arguments);
     }
 
-    DecimalFormatter.prototype._class = "Maslosoft.Ko.BalinDev.Models.DecimalFormatter";
+    DecimalFormatter.prototype._class = "Maslosoft.Koe.DecimalFormatter";
 
     DecimalFormatter.prototype.value = 0;
 
@@ -116,14 +116,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Href = (function(superClass) {
+  this.Maslosoft.Koe.Href = (function(superClass) {
     extend(Href, superClass);
 
     function Href() {
       return Href.__super__.constructor.apply(this, arguments);
     }
 
-    Href.prototype._class = "Maslosoft.Ko.BalinDev.Models.Href";
+    Href.prototype._class = "Maslosoft.Koe.Href";
 
     Href.prototype.filename = '';
 
@@ -131,14 +131,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Src = (function(superClass) {
+  this.Maslosoft.Koe.Src = (function(superClass) {
     extend(Src, superClass);
 
     function Src() {
       return Src.__super__.constructor.apply(this, arguments);
     }
 
-    Src.prototype._class = "Maslosoft.Ko.BalinDev.Models.Src";
+    Src.prototype._class = "Maslosoft.Koe.Src";
 
     Src.prototype.filename = '';
 
@@ -146,14 +146,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.HtmlValue = (function(superClass) {
+  this.Maslosoft.Koe.HtmlValue = (function(superClass) {
     extend(HtmlValue, superClass);
 
     function HtmlValue() {
       return HtmlValue.__super__.constructor.apply(this, arguments);
     }
 
-    HtmlValue.prototype._class = "Maslosoft.Ko.BalinDev.Models.HtmlValue";
+    HtmlValue.prototype._class = "Maslosoft.Koe.HtmlValue";
 
     HtmlValue.prototype.text = '';
 
@@ -161,14 +161,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.TextValue = (function(superClass) {
+  this.Maslosoft.Koe.TextValue = (function(superClass) {
     extend(TextValue, superClass);
 
     function TextValue() {
       return TextValue.__super__.constructor.apply(this, arguments);
     }
 
-    TextValue.prototype._class = "Maslosoft.Ko.BalinDev.Models.TextValue";
+    TextValue.prototype._class = "Maslosoft.Koe.TextValue";
 
     TextValue.prototype.text = '';
 
@@ -176,14 +176,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.SortableHtmlValues = (function(superClass) {
+  this.Maslosoft.Koe.SortableHtmlValues = (function(superClass) {
     extend(SortableHtmlValues, superClass);
 
     function SortableHtmlValues() {
       return SortableHtmlValues.__super__.constructor.apply(this, arguments);
     }
 
-    SortableHtmlValues.prototype._class = "Maslosoft.Ko.BalinDev.Models.SortableHtmlValues";
+    SortableHtmlValues.prototype._class = "Maslosoft.Koe.SortableHtmlValues";
 
     SortableHtmlValues.prototype.title = '';
 
@@ -208,14 +208,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Enum = (function(superClass) {
+  this.Maslosoft.Koe.Enum = (function(superClass) {
     extend(Enum, superClass);
 
     function Enum() {
       return Enum.__super__.constructor.apply(this, arguments);
     }
 
-    Enum.prototype._class = "Maslosoft.Ko.BalinDev.Models.Enum";
+    Enum.prototype._class = "Maslosoft.Koe.Enum";
 
     Enum.prototype.status = 0;
 
@@ -223,14 +223,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Hidden = (function(superClass) {
+  this.Maslosoft.Koe.Hidden = (function(superClass) {
     extend(Hidden, superClass);
 
     function Hidden() {
       return Hidden.__super__.constructor.apply(this, arguments);
     }
 
-    Hidden.prototype._class = "Maslosoft.Ko.BalinDev.Models.Hidden";
+    Hidden.prototype._class = "Maslosoft.Koe.Hidden";
 
     Hidden.prototype.show = true;
 
@@ -238,14 +238,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Icon = (function(superClass) {
+  this.Maslosoft.Koe.Icon = (function(superClass) {
     extend(Icon, superClass);
 
     function Icon() {
       return Icon.__super__.constructor.apply(this, arguments);
     }
 
-    Icon.prototype._class = "Maslosoft.Ko.BalinDev.Models.Icon";
+    Icon.prototype._class = "Maslosoft.Koe.Icon";
 
     Icon.prototype.icon = '';
 
@@ -263,14 +263,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Tooltip = (function(superClass) {
+  this.Maslosoft.Koe.Tooltip = (function(superClass) {
     extend(Tooltip, superClass);
 
     function Tooltip() {
       return Tooltip.__super__.constructor.apply(this, arguments);
     }
 
-    Tooltip.prototype._class = "Maslosoft.Ko.BalinDev.Models.Tooltip";
+    Tooltip.prototype._class = "Maslosoft.Koe.Tooltip";
 
     Tooltip.prototype.title = '';
 
@@ -278,14 +278,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Asset = (function(superClass) {
+  this.Maslosoft.Koe.Asset = (function(superClass) {
     extend(Asset, superClass);
 
     function Asset() {
       return Asset.__super__.constructor.apply(this, arguments);
     }
 
-    Asset.prototype._class = "Maslosoft.Ko.BalinDev.Models.Asset";
+    Asset.prototype._class = "Maslosoft.Koe.Asset";
 
     Asset.prototype.url = '';
 
@@ -297,14 +297,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.DateTime = (function(superClass) {
+  this.Maslosoft.Koe.DateTime = (function(superClass) {
     extend(DateTime, superClass);
 
     function DateTime() {
       return DateTime.__super__.constructor.apply(this, arguments);
     }
 
-    DateTime.prototype._class = "Maslosoft.Ko.BalinDev.Models.DateTime";
+    DateTime.prototype._class = "Maslosoft.Koe.DateTime";
 
     DateTime.prototype.url = '';
 
@@ -314,14 +314,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Nested = (function(superClass) {
+  this.Maslosoft.Koe.Nested = (function(superClass) {
     extend(Nested, superClass);
 
     function Nested() {
       return Nested.__super__.constructor.apply(this, arguments);
     }
 
-    Nested.prototype._class = "Maslosoft.Ko.BalinDev.Models.Nested";
+    Nested.prototype._class = "Maslosoft.Koe.Nested";
 
     Nested.prototype.rawI18N = '';
 
@@ -329,14 +329,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Video = (function(superClass) {
+  this.Maslosoft.Koe.Video = (function(superClass) {
     extend(Video, superClass);
 
     function Video() {
       return Video.__super__.constructor.apply(this, arguments);
     }
 
-    Video.prototype._class = "Maslosoft.Ko.BalinDev.Models.Video";
+    Video.prototype._class = "Maslosoft.Koe.Video";
 
     Video.prototype.url = '';
 
@@ -346,14 +346,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Videos = (function(superClass) {
+  this.Maslosoft.Koe.Videos = (function(superClass) {
     extend(Videos, superClass);
 
     function Videos() {
       return Videos.__super__.constructor.apply(this, arguments);
     }
 
-    Videos.prototype._class = "Maslosoft.Ko.BalinDev.Models.Video";
+    Videos.prototype._class = "Maslosoft.Koe.Video";
 
     Videos.prototype.videos = [];
 
@@ -361,14 +361,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.DatePicker = (function(superClass) {
+  this.Maslosoft.Koe.DatePicker = (function(superClass) {
     extend(DatePicker, superClass);
 
     function DatePicker() {
       return DatePicker.__super__.constructor.apply(this, arguments);
     }
 
-    DatePicker.prototype._class = "Maslosoft.Ko.BalinDev.Models.DatePicker";
+    DatePicker.prototype._class = "Maslosoft.Koe.DatePicker";
 
     DatePicker.prototype.date = 1473839950;
 
@@ -376,14 +376,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.AclUser = (function(superClass) {
+  this.Maslosoft.Koe.AclUser = (function(superClass) {
     extend(AclUser, superClass);
 
     function AclUser() {
       return AclUser.__super__.constructor.apply(this, arguments);
     }
 
-    AclUser.prototype._class = "Maslosoft.Ko.BalinDev.Models.AclUser";
+    AclUser.prototype._class = "Maslosoft.Koe.AclUser";
 
     AclUser.prototype.isGuest = true;
 
@@ -391,10 +391,10 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Options = (function(superClass) {
+  this.Maslosoft.Koe.Options = (function(superClass) {
     extend(Options, superClass);
 
-    Options.prototype._class = "Maslosoft.Ko.BalinDev.Models.Options";
+    Options.prototype._class = "Maslosoft.Koe.Options";
 
     Options.prototype.selected = null;
 
@@ -447,7 +447,7 @@
 
   })();
 
-  this.Maslosoft.Ko.BalinDev.Models.Columns = (function(superClass) {
+  this.Maslosoft.Koe.Columns = (function(superClass) {
     extend(Columns, superClass);
 
     function Columns() {
@@ -462,7 +462,7 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.UiColumns = (function(superClass) {
+  this.Maslosoft.Koe.UiColumns = (function(superClass) {
     extend(UiColumns, superClass);
 
     function UiColumns() {
@@ -528,7 +528,7 @@
       return CssClasses.__super__.constructor.apply(this, arguments);
     }
 
-    CssClasses.prototype._class = "Maslosoft.Ko.BalinDev.Models.CssClasses";
+    CssClasses.prototype._class = "Maslosoft.Koe.CssClasses";
 
     CssClasses.prototype.classes = [];
 

@@ -24,7 +24,7 @@
 <!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({filename: 'images/maslosoft.png'});
+		balin.model.Src = new Maslosoft.Koe.Src({filename: 'images/maslosoft.png'});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

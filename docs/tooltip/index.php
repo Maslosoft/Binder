@@ -19,7 +19,7 @@
 
 <script>
 	window.onload = (function () {
-		balin.model.Tooltip = new Maslosoft.Ko.BalinDev.Models.Tooltip({title: 'This is tooltip text'});
+		balin.model.Tooltip = new Maslosoft.Koe.Tooltip({title: 'This is tooltip text'});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 		jQuery('body').tooltip({
 			selector: '[rel~="tooltip"]'

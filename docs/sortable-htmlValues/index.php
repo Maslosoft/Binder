@@ -40,7 +40,7 @@
 		var nodeId = 0;
 		window.addNode = function (data, e) {
 			nodeId++;
-			var model = new Maslosoft.Ko.BalinDev.Models.HtmlValue;
+			var model = new Maslosoft.Koe.HtmlValue;
 			model.text = 'New name #' + nodeId;
 			balin.model.SortableHtmlValues.items.push(model);
 			e.stopPropagation();
@@ -50,28 +50,28 @@
 			title: 'Names Collection',
 			items: [
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+					_class: 'Maslosoft.Koe.HtmlValue',
 					text: 'Frank'
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+					_class: 'Maslosoft.Koe.HtmlValue',
 					text: 'Sara'
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+					_class: 'Maslosoft.Koe.HtmlValue',
 					text: 'John'
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+					_class: 'Maslosoft.Koe.HtmlValue',
 					text: 'Anna'
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+					_class: 'Maslosoft.Koe.HtmlValue',
 					text: 'Joseph'
 				}
 			]
 		};
-		balin.model.SortableHtmlValues = new Maslosoft.Ko.BalinDev.Models.SortableHtmlValues(data);
+		balin.model.SortableHtmlValues = new Maslosoft.Koe.SortableHtmlValues(data);
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

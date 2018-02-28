@@ -25,7 +25,7 @@
 <!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.datePicker = new Maslosoft.Ko.BalinDev.Models.DatePicker;
+		balin.model.datePicker = new Maslosoft.Koe.DatePicker;
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

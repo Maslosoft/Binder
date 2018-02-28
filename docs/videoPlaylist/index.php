@@ -63,9 +63,9 @@ if(KO_BALIN_EMBEDDED) {
 </div>
 <script>
 	window.onload = (function () {
-		var list = new Maslosoft.Ko.BalinDev.Models.Videos;
-		list.videos.push(new Maslosoft.Ko.BalinDev.Models.Video({url: 'https://vimeo.com/181612110'}));
-		list.videos.push(new Maslosoft.Ko.BalinDev.Models.Video({url: 'https://www.youtube.com/watch?v=RzpRU347BDU'}));
+		var list = new Maslosoft.Koe.Videos;
+		list.videos.push(new Maslosoft.Koe.Video({url: 'https://vimeo.com/181612110'}));
+		list.videos.push(new Maslosoft.Koe.Video({url: 'https://www.youtube.com/watch?v=RzpRU347BDU'}));
 		balin.model.list = list;
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 		$(document).on('click', '.remove', function(e){
@@ -80,7 +80,7 @@ if(KO_BALIN_EMBEDDED) {
 			if(!url){
 				return false;
 			}
-			var model = new Maslosoft.Ko.BalinDev.Models.Video({url: url});
+			var model = new Maslosoft.Koe.Video({url: url});
 			balin.model.list.videos.push(model);
 			e.preventDefault();
 		});

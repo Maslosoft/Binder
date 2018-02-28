@@ -47,7 +47,7 @@
 
 <script>
 	window.onload = (function(){
-		balin.model.Enum = new Maslosoft.Ko.BalinDev.Models.Enum({status: 1});
+		balin.model.Enum = new Maslosoft.Koe.Enum({status: 1});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

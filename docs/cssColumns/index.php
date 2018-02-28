@@ -50,13 +50,13 @@ HTML;
     placeholder.
 </p>
 <h3>Example configuration</h3>
-<pre>
-    Maslosoft.Ko.Balin.CssColumnSizes.columns = {
-        'xs': 'col-xs-{num}',
-        'sm': 'col-sm-{num}',
-        'md': 'col-md-{num}',
-        'lg': 'col-lg-{num}'
-    }
+<pre class="javascript">
+Maslosoft.Ko.Balin.CssColumnSizes.columns = {
+    'xs': 'col-xs-{num}',
+    'sm': 'col-sm-{num}',
+    'md': 'col-md-{num}',
+    'lg': 'col-lg-{num}'
+}
 </pre>
 <h2>Live Example</h2>
 <p>
@@ -138,28 +138,28 @@ HTML;
     </div>
 </div>
 <!-- /trim -->
-
+<!-- trim -->
 <div class="container-fluid">
-    <!-- /trim -->
-    <div class="row" data-bind="with: balin.model.layout">
-        <div data-bind="cssColumns: columns" class="btn-success">
-            First column
-        </div>
-        <div data-bind="cssColumns: columns" class="btn-success">
-            Second column
-        </div>
-        <div data-bind="cssColumns: columns" class="btn-success">
-            Third column
-        </div>
+<!-- /trim -->
+<div class="row" data-bind="with: balin.model.layout">
+    <div data-bind="cssColumns: columns" class="btn-success">
+        First column
     </div>
-    <!-- trim -->
+    <div data-bind="cssColumns: columns" class="btn-success">
+        Second column
+    </div>
+    <div data-bind="cssColumns: columns" class="btn-success">
+        Third column
+    </div>
 </div>
-
+<!-- trim -->
+</div>
+<!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.layout = new Maslosoft.Ko.BalinDev.Models.Columns({
-            sizes: new Maslosoft.Ko.BalinDev.Models.UiColumns,
-            columns: new Maslosoft.Ko.BalinDev.Models.UiColumns({
+		balin.model.layout = new Maslosoft.Koe.Columns({
+            sizes: new Maslosoft.Koe.UiColumns,
+            columns: new Maslosoft.Koe.UiColumns({
                 lg: 3,
                 md: 3,
                 sm: 3,

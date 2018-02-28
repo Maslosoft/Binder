@@ -39,7 +39,7 @@
 			text: 'Val1'
 		};
 
-		balin.model.txt1 = new Maslosoft.Ko.BalinDev.Models.TextValue(data1);
+		balin.model.txt1 = new Maslosoft.Koe.TextValue(data1);
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});

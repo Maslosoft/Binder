@@ -7,7 +7,7 @@
 	Fancy tree drag and drop between two trees example.
 </p>
 	<p class="alert alert-warning">
-	<b>Make sure that <code>children</code> field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in <code>docs/src/Model.coffee</code>	
+	<b>Make sure that <code>children</code> field of model is dereferenced, see Maslosoft.Koe.TreeItem in <code>docs/src/Model.coffee</code>	
 	</p>
 	<p class="alert alert-danger">
 		This is currently broken
@@ -37,117 +37,117 @@
 		var listData = {
 			children: [
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Affenpinscher",
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Afghan Shepherd"
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Aidi",
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Airedale Terrier"
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Akbash"
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Akita Inu"
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Afghan Hound"
 
 				}
 			]
 		}
-		balin.model.list = new Maslosoft.Ko.BalinDev.Models.TreeItem(listData);
+		balin.model.list = new Maslosoft.Koe.TreeItem(listData);
 		var data = {
-			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+			_class: 'Maslosoft.Koe.TreeItem',
 			title: "Dogs",
 			children: [
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Affenpinscher",
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Afghan Hound",
 					children: [
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Afghan Shepherd"
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Aidi",
 							children: [
 								{
-									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									_class: 'Maslosoft.Koe.TreeItem',
 									title: "Airedale Terrier"
 								},
 								{
-									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									_class: 'Maslosoft.Koe.TreeItem',
 									title: "Akbash"
 								}
 							]
 
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Akita Inu"
 						}
 					]
 				}
 			]
 		};
-		balin.model.Tree = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
+		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
 		data2 = {
-			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+			_class: 'Maslosoft.Koe.TreeItem',
 			title: "Cats",
 			children: [
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Abyssinian",
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Aegean"
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "American Curl",
 					children: [
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "American Bobtail",
 							children: [
 								{
-									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									_class: 'Maslosoft.Koe.TreeItem',
 									title: "American Shorthair"
 								}
 							]
 
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "American Wirehair"
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Arabian Mau"
 						}
 					]
 				}
 			]
 		};
-		balin.model.Tree2 = new Maslosoft.Ko.BalinDev.Models.TreeItem(data2);
+		balin.model.Tree2 = new Maslosoft.Koe.TreeItem(data2);
 		balin.model.options = {
 			dnd:{
 				draggable: {

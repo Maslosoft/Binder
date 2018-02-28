@@ -38,7 +38,7 @@ array_walk($textLines, function(&$value, $index)
 <?= implode(",\n\t\t\t\t", $textLines) . "\n"; ?>
 			].join("\n")
 		// /trim
-		balin.model.intro = new Maslosoft.Ko.BalinDev.Models.Intro({
+		balin.model.intro = new Maslosoft.Koe.Intro({
 			text: introText
 		});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));

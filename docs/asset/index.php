@@ -15,7 +15,7 @@
 
 <script>
 	window.onload = (function(){
-		balin.model.Asset = new Maslosoft.Ko.BalinDev.Models.Asset({url: 'assets'});
+		balin.model.Asset = new Maslosoft.Koe.Asset({url: 'assets'});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

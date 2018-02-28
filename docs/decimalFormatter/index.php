@@ -55,7 +55,7 @@
 
 <script>
 	window.onload = (function(){
-		balin.model.DecimalFormatter = new Maslosoft.Ko.BalinDev.Models.DecimalFormatter({value: 234123.4567});
+		balin.model.DecimalFormatter = new Maslosoft.Koe.DecimalFormatter({value: 234123.4567});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

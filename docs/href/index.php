@@ -76,8 +76,8 @@
 
 <script>
 	window.onload = (function(){
-		balin.model.Href = new Maslosoft.Ko.BalinDev.Models.Href({filename: 'http://example.com/'});
-        balin.model.Inner = new Maslosoft.Ko.BalinDev.Models.Href({filename: '<a href="http://example.org/">Should not have inner link inside</a>'});
+		balin.model.Href = new Maslosoft.Koe.Href({filename: 'http://example.com/'});
+        balin.model.Inner = new Maslosoft.Koe.Href({filename: '<a href="http://example.org/">Should not have inner link inside</a>'});
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

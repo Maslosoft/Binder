@@ -111,7 +111,7 @@ To customize, re-register with custom options possibly with other name too.
 		});
 		// /trim
 
-		balin.model.DateTime = new Maslosoft.Ko.BalinDev.Models.DateTime();
+		balin.model.DateTime = new Maslosoft.Koe.DateTime();
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>

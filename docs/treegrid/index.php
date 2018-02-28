@@ -101,7 +101,7 @@
         var nodeId = 0;
         window.addNode = function (data, e) {
             nodeId++;
-            var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+            var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New node #' + nodeId;
             model.description = 'Description #' + nodeId;
             balin.model.Tree.children.push(model);
@@ -112,7 +112,7 @@
         };
         window.addSubNode = function (data, e) {
             nodeId++;
-            var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+            var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New sub-node #' + nodeId;
             model.description = 'Description sub-node #' + nodeId;
             balin.model.Tree.children[0].children.push(model);
@@ -123,7 +123,7 @@
         };
         window.addSubSubNode = function (data, e) {
             nodeId++;
-            var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+            var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New sub-sub-node #' + nodeId;
             model.description = 'Description sub-sub-node #' + nodeId;
             balin.model.Tree.children[0].children[0].children.push(model);
@@ -134,7 +134,7 @@
         };
         window.addSubSubNodeLast = function (data, e) {
             nodeId++;
-            var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+            var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New sub-sub-node #' + nodeId;
             model.description = 'Description sub-sub-node #' + nodeId;
             var idx = 0;
@@ -149,7 +149,7 @@
         };
         window.remSubSubNode = function (data, e) {
             nodeId++;
-            var model = new Maslosoft.Ko.BalinDev.Models.TreeItem;
+            var model = new Maslosoft.Koe.TreeItem;
             model.title = 'New sub-sub-node #' + nodeId;
             model.description = 'Description sub-sub-node #' + nodeId;
             balin.model.Tree.children[0].children[0].children = [];
@@ -198,49 +198,49 @@
         });
 // /trim
         data = {
-            _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+            _class: 'Maslosoft.Koe.TreeItem',
             title: "Some container",
             children: [
                 {
-                    _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+                    _class: 'Maslosoft.Koe.TreeItem',
                     title: "Zero",
                     description: "This can be also rendered via custom renderer"
                 },
                 {
-                    _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+                    _class: 'Maslosoft.Koe.TreeItem',
                     title: "One",
                     description: "Another one with description",
                     children: [
                         {
-                            _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+                            _class: 'Maslosoft.Koe.TreeItem',
                             title: "Two",
                             description: "Hover for node tooltip - also added by node renderer"
                         },
                         {
-                            _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+                            _class: 'Maslosoft.Koe.TreeItem',
                             title: "Three",
                             children: [
                                 {
-                                    _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+                                    _class: 'Maslosoft.Koe.TreeItem',
                                     title: "Three-Two"
                                 },
                                 {
-                                    _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+                                    _class: 'Maslosoft.Koe.TreeItem',
                                     title: "Three-Three"
                                 }
                             ]
 
                         },
                         {
-                            _class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+                            _class: 'Maslosoft.Koe.TreeItem',
                             title: "Four"
                         }
                     ]
                 }
             ]
         };
-        balin.model.Tree = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
-        balin.model.Tree2 = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
+        balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
+        balin.model.Tree2 = new Maslosoft.Koe.TreeItem(data);
         ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
     });
 </script>

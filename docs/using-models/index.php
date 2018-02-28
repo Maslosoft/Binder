@@ -17,7 +17,7 @@
 	in HTML does not require brackets - even when accessing deeply nested value.
 </p>
 <p>
-	Example below will bind deeply nested property of <code>Maslosoft.Ko.BalinDev.Models.Nested</code> model instance:
+	Example below will bind deeply nested property of <code>Maslosoft.Koe.Nested</code> model instance:
 </p>
 <pre class="html">
 <?= escapeKo('<input data-bind="textInput: balin.model.nested.rawI18N.name.en"></input>') . PHP_EOL?>
@@ -58,7 +58,7 @@ class @Maslosoft.Models.MyChecklist extends @Maslosoft.Ko.Balin.Model
 <!-- /trim -->
 <script>
 	window.onload = (function () {
-		balin.model.nested = new Maslosoft.Ko.BalinDev.Models.Nested({
+		balin.model.nested = new Maslosoft.Koe.Nested({
 		rawI18N:{
 			name:{
 				en:"January",

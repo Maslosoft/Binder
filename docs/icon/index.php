@@ -102,23 +102,23 @@ use Maslosoft\Components\Controller;
 <!-- /trim -->
 <script>
 	window.onload = (function(){
-		balin.model.Image = new Maslosoft.Ko.BalinDev.Models.Icon({
+		balin.model.Image = new Maslosoft.Koe.Icon({
 			icon: 'images/maslosoft.png',
 			isImage: true,
 			iconSize: 64,
 			updateDate: 123
 		});
-		balin.model.Icon = new Maslosoft.Ko.BalinDev.Models.Icon({
+		balin.model.Icon = new Maslosoft.Koe.Icon({
 			icon: 'images/maslosoft.png',
 			isImage: false,
 			iconSize: 64
 		});
-		balin.model.svg = new Maslosoft.Ko.BalinDev.Models.Icon({
+		balin.model.svg = new Maslosoft.Koe.Icon({
 			icon: 'images/balin.svg',
 			isImage: true,
 			iconSize: 64
 		});
-        balin.model.withFilename = new Maslosoft.Ko.BalinDev.Models.Icon({
+        balin.model.withFilename = new Maslosoft.Koe.Icon({
             icon: 'images/subdir/',
             filename: 'msft.png',
             isImage: true,

@@ -4,7 +4,7 @@
 <h1>Fancytree Drag and Drop</h1>
 Fancy tree drag'n'drop example. <br />
 <p>
-	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Ko.BalinDev.Models.TreeItem in dev/src/Model.coffee
+	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Koe.TreeItem in dev/src/Model.coffee
 </p>
 <p>
 	There are two rendering related options used:
@@ -46,48 +46,48 @@ Fancy tree drag'n'drop example. <br />
 	window.onload = (function () {
 		// Create tree structure
 		var data = {
-			_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+			_class: 'Maslosoft.Koe.TreeItem',
 			title: "Some container",
 			children: [
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "Zero",
 					description: "This can be also rendered via custom renderer"
 				},
 				{
-					_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+					_class: 'Maslosoft.Koe.TreeItem',
 					title: "One",
 					description: "Another one with description",
 					children: [
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Two",
 							description: "Hover for node tooltip - also added by node renderer"
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Three",
 							children: [
 								{
-									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									_class: 'Maslosoft.Koe.TreeItem',
 									title: "Three-Two"
 								},
 								{
-									_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+									_class: 'Maslosoft.Koe.TreeItem',
 									title: "Three-Three"
 								}
 							]
 
 						},
 						{
-							_class: 'Maslosoft.Ko.BalinDev.Models.TreeItem',
+							_class: 'Maslosoft.Koe.TreeItem',
 							title: "Four"
 						}
 					]
 				}
 			]
 		};
-		balin.model.Tree = new Maslosoft.Ko.BalinDev.Models.TreeItem(data);
+		balin.model.Tree = new Maslosoft.Koe.TreeItem(data);
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 
 		// Helper code

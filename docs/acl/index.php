@@ -85,7 +85,7 @@
 		// /trim
 		// Apply bindings
 		Maslosoft.Ko.Balin.Acl.allow = balin.myAcl
-		balin.model.AclUser = new Maslosoft.Ko.BalinDev.Models.AclUser();
+		balin.model.AclUser = new Maslosoft.Koe.AclUser();
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});
 </script>
