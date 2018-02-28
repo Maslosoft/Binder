@@ -1,5 +1,5 @@
 {
-  "name": "binder",
+  "name": "maslosoft-binder",
   "version": "0.0.6",
   "authors": [
     "Peter Maselkowski <pmaselkowski@gmail.com>"
@@ -16,7 +16,7 @@
     "binding-handlers"
   ],
   "license": "MIT",
-  "homepage": "http://maslosoft.com/binder/",
+  "homepage": "https://maslosoft.com/binder/",
   "ignore": [
     "**/.*",
     "dev",
