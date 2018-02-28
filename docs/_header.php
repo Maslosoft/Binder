@@ -8,8 +8,8 @@ define('KO_BALIN_STANDALONE', !KO_BALIN_EMBEDDED);
 
 function escapeko($html){
 	$html = htmlspecialchars($html);
-	$html = str_replace('{', '&lbrace;<!---->', $html);
-	$html = str_replace('}', '&rbrace;<!---->', $html);
+	$html = str_replace('{', '&lbrace;&shy;<!---->', $html);
+	$html = str_replace('}', '&rbrace;&shy;<!---->', $html);
 	return $html;
 }
 

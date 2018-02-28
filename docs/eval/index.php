@@ -28,7 +28,7 @@
 		};
 
 		balin.model.txt = new Maslosoft.Ko.BalinDev.Models.TextValue(data);
-		balin.model.eval = new Maslosoft.Ko.BalinDev.Models.Selected({isSelected: false});
+		balin.model.eval = new Maslosoft.Koe.Selected({isSelected: false});
 
 		ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
 	});

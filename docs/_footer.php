@@ -13,8 +13,8 @@ $text = trim($text);
 $text = htmlspecialchars($text);
 
 // Avoid parsing punches
-$text = str_replace('{', '{<!---->', $text);
-$text = str_replace('}', '<!---->}', $text);
+$text = str_replace('{', '{&shy;<!---->', $text);
+$text = str_replace('}', '<!---->&shy;}', $text);
 
 ?>
 <?php if(empty($mocha)):?>

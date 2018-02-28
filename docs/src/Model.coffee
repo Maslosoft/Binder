@@ -2,6 +2,8 @@ if not @Maslosoft
 	@Maslosoft = {}
 if not @Maslosoft.Ko
 	@Maslosoft.Ko = {}
+if not @Maslosoft.Koe
+	@Maslosoft.Koe = {}
 if not @Maslosoft.Ko.BalinDev
 	@Maslosoft.Ko.BalinDev = {}
 if not @Maslosoft.Ko.BalinDev.Models
@@ -65,8 +67,8 @@ class @Maslosoft.Ko.BalinDev.Models.SortableHtmlValues extends @Maslosoft.Ko.Bal
 	title: ''
 	items: []
 
-class @Maslosoft.Ko.BalinDev.Models.Selected extends @Maslosoft.Ko.Balin.Model
-	_class: "Maslosoft.Ko.BalinDev.Models.Selected"
+class @Maslosoft.Koe.Selected extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Koe.Selected"
 	isSelected: false
 
 class @Maslosoft.Ko.BalinDev.Models.Enum extends @Maslosoft.Ko.Balin.Model
@@ -230,7 +232,7 @@ class @Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget
 		i++
 		jQuery('#widgetLog2').append "<div>#{i}. #{message}</div>"
 
-class @Maslosoft.Ko.CssClasses extends @Maslosoft.Ko.Balin.Model
+class @Maslosoft.Koe.CssClasses extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.CssClasses"
 	classes: []
 	classList: ''

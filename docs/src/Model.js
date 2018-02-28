@@ -12,6 +12,10 @@
     this.Maslosoft.Ko = {};
   }
 
+  if (!this.Maslosoft.Koe) {
+    this.Maslosoft.Koe = {};
+  }
+
   if (!this.Maslosoft.Ko.BalinDev) {
     this.Maslosoft.Ko.BalinDev = {};
   }
@@ -189,14 +193,14 @@
 
   })(this.Maslosoft.Ko.Balin.Model);
 
-  this.Maslosoft.Ko.BalinDev.Models.Selected = (function(superClass) {
+  this.Maslosoft.Koe.Selected = (function(superClass) {
     extend(Selected, superClass);
 
     function Selected() {
       return Selected.__super__.constructor.apply(this, arguments);
     }
 
-    Selected.prototype._class = "Maslosoft.Ko.BalinDev.Models.Selected";
+    Selected.prototype._class = "Maslosoft.Koe.Selected";
 
     Selected.prototype.isSelected = false;
 
@@ -517,7 +521,7 @@
 
   })();
 
-  this.Maslosoft.Ko.CssClasses = (function(superClass) {
+  this.Maslosoft.Koe.CssClasses = (function(superClass) {
     extend(CssClasses, superClass);
 
     function CssClasses() {

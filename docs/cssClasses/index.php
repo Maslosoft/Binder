@@ -143,7 +143,7 @@ array_pop($classes);
 
         var classes = <?= json_encode($classes);?>;
         var classList = <?= json_encode(implode(' ', $classes));?>;
-        balin.model.decorate = new Maslosoft.Ko.CssClasses({
+        balin.model.decorate = new Maslosoft.Koe.CssClasses({
             classes: classes,
             classList: classList
         });
