@@ -1,9 +1,9 @@
 test = () ->
-	class @Maslosoft.Ko.BalinDev.Models.Settings extends Maslosoft.Ko.Balin.Model
-		_class: 'Maslosoft.Ko.BalinDev.Models.Settings'
+	class @Maslosoft.Koe.Settings extends Maslosoft.Ko.Balin.Model
+		_class: 'Maslosoft.Koe.Settings'
 		lang: {}
 
-	settings = new Maslosoft.Ko.BalinDev.Models.Settings
+	settings = new Maslosoft.Koe.Settings
 	settings.lang.en = 'English'
 	settings.lang.pl = 'Polish'
 

@@ -1,7 +1,7 @@
 test = () ->
 
 
-	balin.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({filename: 'maslosoft.png'})
+	balin.model.Src = new Maslosoft.Koe.Src({filename: 'maslosoft.png'})
 	ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'))
 
 	doRound = () ->

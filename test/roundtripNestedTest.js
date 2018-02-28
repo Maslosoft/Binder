@@ -7,22 +7,22 @@
     data = {
       'sortable': {
         title: 'Names Collection',
-        _class: 'Maslosoft.Ko.BalinDev.Models.SortableHtmlValues',
+        _class: 'Maslosoft.Koe.SortableHtmlValues',
         items: [
           {
-            _class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+            _class: 'Maslosoft.Koe.HtmlValue',
             text: 'Frank'
           }, {
-            _class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+            _class: 'Maslosoft.Koe.HtmlValue',
             text: 'Sara'
           }, {
-            _class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+            _class: 'Maslosoft.Koe.HtmlValue',
             text: 'John'
           }, {
-            _class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+            _class: 'Maslosoft.Koe.HtmlValue',
             text: 'Anna'
           }, {
-            _class: 'Maslosoft.Ko.BalinDev.Models.HtmlValue',
+            _class: 'Maslosoft.Koe.HtmlValue',
             text: 'Joseph'
           }
         ]
@@ -72,7 +72,7 @@
         var model;
         model = balin.model.sortable;
         assert.equal(model.items.length, 4, 'That there are still 4 items from previous test');
-        model.items.push(new Maslosoft.Ko.BalinDev.Models.HtmlValue({
+        model.items.push(new Maslosoft.Koe.HtmlValue({
           text: 'new'
         }));
         assert.equal(model.items.length, 5, 'That one element was added');

@@ -6,21 +6,21 @@
 
   test = function() {
     var doRound, elem, settings;
-    this.Maslosoft.Ko.BalinDev.Models.Settings = (function(superClass) {
+    this.Maslosoft.Koe.Settings = (function(superClass) {
       extend(Settings, superClass);
 
       function Settings() {
         return Settings.__super__.constructor.apply(this, arguments);
       }
 
-      Settings.prototype._class = 'Maslosoft.Ko.BalinDev.Models.Settings';
+      Settings.prototype._class = 'Maslosoft.Koe.Settings';
 
       Settings.prototype.lang = {};
 
       return Settings;
 
     })(Maslosoft.Ko.Balin.Model);
-    settings = new Maslosoft.Ko.BalinDev.Models.Settings;
+    settings = new Maslosoft.Koe.Settings;
     settings.lang.en = 'English';
     settings.lang.pl = 'Polish';
     balin.model.settings = settings;

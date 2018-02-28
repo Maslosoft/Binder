@@ -1,24 +1,24 @@
 test = () ->
 
-	sortable = new Maslosoft.Ko.BalinDev.Models.SortableHtmlValues
+	sortable = new Maslosoft.Koe.SortableHtmlValues
 	sortable.title = 'Names Collection'
-	item1 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+	item1 = new Maslosoft.Koe.HtmlValue
 	item1.text = 'Frank'
 	sortable.items.push item1
 
-	item2 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+	item2 = new Maslosoft.Koe.HtmlValue
 	item2.text = 'Sara'
 	sortable.items.push item2
 
-	item3 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+	item3 = new Maslosoft.Koe.HtmlValue
 	item3.text = 'John'
 	sortable.items.push item3
 
-	item4 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+	item4 = new Maslosoft.Koe.HtmlValue
 	item4.text = 'Anna'
 	sortable.items.push item4
 
-	item5 = new Maslosoft.Ko.BalinDev.Models.HtmlValue
+	item5 = new Maslosoft.Koe.HtmlValue
 	item5.text = 'Joseph'
 	sortable.items.push item5
 
@@ -66,7 +66,7 @@ test = () ->
 		it 'Should allow push', ->
 			model = balin.model.sortable
 			assert.equal model.items.length, 4
-			model.items.push new Maslosoft.Ko.BalinDev.Models.HtmlValue({text: 'new'})
+			model.items.push new Maslosoft.Koe.HtmlValue({text: 'new'})
 
 			assert.equal model.items.length, 5, 'That one element was added'
 			assert.equal elem.find('div').length, 5, 'That DOM elements are 5 too'

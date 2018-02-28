@@ -4,7 +4,7 @@
 
   test = function() {
     var doRound;
-    balin.model.Src = new Maslosoft.Ko.BalinDev.Models.Src({
+    balin.model.Src = new Maslosoft.Koe.Src({
       filename: 'maslosoft.png'
     });
     ko.applyBindings({
