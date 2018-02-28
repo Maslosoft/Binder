@@ -1,14 +1,15 @@
-.ui-selected, .selected{
+#ko-balin .ui-selected, .selected{
 	background: darkorange;
 	color:white;
 }
-.active{
+#ko-balin .active{
 	background: lightgreen;
+	color:black;
 }
-.disabled{
+#ko-balin .disabled{
 	color: silver;
 }
-.custom{
+#ko-balin .custom{
 	color: white;
 	background:black;
 }
