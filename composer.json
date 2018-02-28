@@ -1,6 +1,6 @@
 {
 	"name": "maslosoft/binder",
-	"description": "Knockout binding handlers",
+	"description": "Knockout JS tracker and binding handlers with coffee and sugar",
 	"keywords": [
 		"javascript",
 		"mvvm",

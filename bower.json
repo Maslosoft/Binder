@@ -1,10 +1,10 @@
 {
   "name": "maslosoft-binder",
-  "version": "0.0.6",
+  "version": "2.0.0",
   "authors": [
     "Peter Maselkowski <pmaselkowski@gmail.com>"
   ],
-  "description": "Binding handlers for knockut js",
+  "description": "Knockout JS tracker and binding handlers with coffee and sugar",
   "main": "dist/ko.binder.min.js",
   "moduleType": [
     "globals"
