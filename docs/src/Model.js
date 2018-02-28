@@ -8,6 +8,10 @@
     this.Maslosoft = {};
   }
 
+  if (!this.Maslosoft.Ko) {
+    this.Maslosoft.Ko = {};
+  }
+
   if (!this.Maslosoft.Ko.BalinDev) {
     this.Maslosoft.Ko.BalinDev = {};
   }
@@ -513,7 +517,7 @@
 
   })();
 
-  this.Maslosoft.Ko.BalinDev.Models.CssClasses = (function(superClass) {
+  this.Maslosoft.Ko.CssClasses = (function(superClass) {
     extend(CssClasses, superClass);
 
     function CssClasses() {
@@ -523,6 +527,8 @@
     CssClasses.prototype._class = "Maslosoft.Ko.BalinDev.Models.CssClasses";
 
     CssClasses.prototype.classes = [];
+
+    CssClasses.prototype.classList = '';
 
     return CssClasses;
 

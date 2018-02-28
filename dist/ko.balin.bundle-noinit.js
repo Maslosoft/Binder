@@ -11430,12 +11430,18 @@ module.exports = function (element) {
     CssClasses.prototype.getClassList = function(valueAccessor) {
       var classList, classes;
       classes = this.getValue(valueAccessor);
+      if (typeof classes === 'undefined') {
+        return '';
+      }
+      if (classes === null) {
+        return '';
+      }
       if (typeof classes === 'string') {
         classList = classes;
       } else {
         classList = classes.join(' ');
       }
-      return classList;
+      return classList.replace(/^\s*/, '').replace(/\s*$/, '');
     };
 
     CssClasses.prototype.init = function(element, valueAccessor) {
@@ -11449,7 +11455,9 @@ module.exports = function (element) {
       toRemove = element.getAttribute('data-css-classes');
       ko.utils.toggleDomNodeCssClass(element, toRemove, false);
       classesToAdd = this.getClassList(valueAccessor);
-      ko.utils.toggleDomNodeCssClass(element, classesToAdd, true);
+      if (classesToAdd) {
+        ko.utils.toggleDomNodeCssClass(element, classesToAdd, true);
+      }
       return element.setAttribute('data-css-classes', classesToAdd);
     };
 

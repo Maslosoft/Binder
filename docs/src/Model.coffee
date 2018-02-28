@@ -1,5 +1,7 @@
 if not @Maslosoft
 	@Maslosoft = {}
+if not @Maslosoft.Ko
+	@Maslosoft.Ko = {}
 if not @Maslosoft.Ko.BalinDev
 	@Maslosoft.Ko.BalinDev = {}
 if not @Maslosoft.Ko.BalinDev.Models
@@ -228,6 +230,7 @@ class @Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget
 		i++
 		jQuery('#widgetLog2').append "<div>#{i}. #{message}</div>"
 
-class @Maslosoft.Ko.BalinDev.Models.CssClasses extends @Maslosoft.Ko.Balin.Model
+class @Maslosoft.Ko.CssClasses extends @Maslosoft.Ko.Balin.Model
 	_class: "Maslosoft.Ko.BalinDev.Models.CssClasses"
 	classes: []
+	classList: ''

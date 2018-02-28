@@ -41,7 +41,7 @@ $classes = [
 </p>
 <p class="alert alert-warning">
     To keep track which class to remove, this binding will store added
-    classes list in <code>data-css-classes</code> attribute.
+    classes list in <code>data-css-classes</code> working element attribute.
 </p>
 <h2>Live Example</h2>
 <table class="table">
@@ -77,13 +77,13 @@ $classes = [
             <td>
                 <div class="btn-group">
                     <a href="#" onclick="return addClass('<?= $class ?>')" class="btn btn-success">
-                        <i class="fa fa-plus"></i>Add
+                        <i class="fa fa-fw fa-plus"></i>Add
                     </a>
                     <a href="#" onclick="return removeClass('<?= $class ?>')" class="btn btn-danger">
-                        <i class="fa fa-minus"></i>Remove
+                        <i class="fa fa-fw fa-minus"></i>Remove
                     </a>
                     <a href="#" onclick="return toggleClass('<?= $class ?>')" class="btn btn-info">
-                        <i class="fa fa-minus"></i>Toggle
+                        <i class="fa fa-fw fa-toggle-off"></i>Toggle
                     </a>
                 </div>
             </td>
@@ -91,18 +91,21 @@ $classes = [
 	<?php endforeach; ?>
     </tbody>
 </table>
-<!-- /trim -->
+
 <p>
     Element below contains <code>btn</code> and <code>btn-success</code> CSS classes.
     The <code>btn</code> class will be always present, however <code>btn-success</code>
     might be disabled, because it is <a href="#" onclick="return toggleClass('btn-success')">toggleable</a>
-    as it is present on <code>balin.model.decorate.classes</code> list.
+    as it is present in <code>balin.model.decorate.classes</code> array and <code>balin.model.decorate.classList</code> list.
 </p>
-<!-- trim -->
-<div data-bind="cssClasses: balin.model.decorate.classes" class="btn btn-success">
-    Styled element
-</div>
 <!-- /trim -->
+<div data-bind="cssClasses: balin.model.decorate.classes" class="btn btn-success">
+    Styled with array
+</div>
+<div data-bind="cssClasses: balin.model.decorate.classList" class="btn btn-success">
+    Styled classes list
+</div>
+
 <?php
 array_pop($classes);
 ?>
@@ -114,6 +117,7 @@ array_pop($classes);
             if (index === -1) {
                 console.log("Add " + name + " IDX: " + index);
                 balin.model.decorate.classes.push(name);
+                balin.model.decorate.classList = balin.model.decorate.classList + ' ' + name
             }
             return false;
         };
@@ -122,6 +126,7 @@ array_pop($classes);
             if (index !== -1) {
                 console.log("Remove " + name + " IDX: " + index);
                 balin.model.decorate.classes.splice(index, 1);
+                balin.model.decorate.classList = balin.model.decorate.classList.replace(name, '');
             }
             return false;
         };
@@ -137,7 +142,11 @@ array_pop($classes);
         <!-- /trim -->
 
         var classes = <?= json_encode($classes);?>;
-        balin.model.decorate = new Maslosoft.Ko.BalinDev.Models.CssClasses({classes: classes});
+        var classList = <?= json_encode(implode(' ', $classes));?>;
+        balin.model.decorate = new Maslosoft.Ko.CssClasses({
+            classes: classes,
+            classList: classList
+        });
 
         ko.applyBindings({model: balin.model}, document.getElementById('ko-balin'));
     });
