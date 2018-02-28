@@ -182,6 +182,7 @@
       action: Maslosoft.Ko.Balin.WidgetAction,
       activity: Maslosoft.Ko.Balin.WidgetActivity,
       asset: Maslosoft.Ko.Balin.Asset,
+      cssClasses: Maslosoft.Ko.Balin.CssClasses,
       cssColumnSizes: Maslosoft.Ko.Balin.CssColumnSizes,
       cssColumns: Maslosoft.Ko.Balin.CssColumns,
       data: Maslosoft.Ko.Balin.Data,
@@ -869,6 +870,46 @@
     };
 
     return Asset;
+
+  })(this.Maslosoft.Ko.Balin.Base);
+
+  this.Maslosoft.Ko.Balin.CssClasses = (function(_super) {
+    __extends(CssClasses, _super);
+
+    function CssClasses() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      this.getClassList = __bind(this.getClassList, this);
+      return CssClasses.__super__.constructor.apply(this, arguments);
+    }
+
+    CssClasses.prototype.getClassList = function(valueAccessor) {
+      var classList, classes;
+      classes = this.getValue(valueAccessor);
+      if (typeof classes === 'string') {
+        classList = classes;
+      } else {
+        classList = classes.join(' ');
+      }
+      return classList;
+    };
+
+    CssClasses.prototype.init = function(element, valueAccessor) {
+      var initialClasses;
+      initialClasses = this.getClassList(valueAccessor);
+      return element.setAttribute('data-css-classes', initialClasses);
+    };
+
+    CssClasses.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var classesToAdd, toRemove;
+      toRemove = element.getAttribute('data-css-classes');
+      ko.utils.toggleDomNodeCssClass(element, toRemove, false);
+      classesToAdd = this.getClassList(valueAccessor);
+      ko.utils.toggleDomNodeCssClass(element, classesToAdd, true);
+      return element.setAttribute('data-css-classes', classesToAdd);
+    };
+
+    return CssClasses;
 
   })(this.Maslosoft.Ko.Balin.Base);
 

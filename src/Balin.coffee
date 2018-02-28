@@ -65,6 +65,7 @@
 		action: Maslosoft.Ko.Balin.WidgetAction
 		activity: Maslosoft.Ko.Balin.WidgetActivity
 		asset: Maslosoft.Ko.Balin.Asset
+		cssClasses: Maslosoft.Ko.Balin.CssClasses
 		cssColumnSizes: Maslosoft.Ko.Balin.CssColumnSizes
 		cssColumns: Maslosoft.Ko.Balin.CssColumns
 		data: Maslosoft.Ko.Balin.Data

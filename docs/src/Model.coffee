@@ -227,3 +227,7 @@ class @Maslosoft.Ko.BalinDev.Widgets.MyOtherWidget
 	log: (message) =>
 		i++
 		jQuery('#widgetLog2').append "<div>#{i}. #{message}</div>"
+
+class @Maslosoft.Ko.BalinDev.Models.CssClasses extends @Maslosoft.Ko.Balin.Model
+	_class: "Maslosoft.Ko.BalinDev.Models.CssClasses"
+	classes: []

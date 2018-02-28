@@ -148,6 +148,7 @@ if not @Maslosoft.Ko.Balin.Widgets
 		action: Maslosoft.Ko.Balin.WidgetAction
 		activity: Maslosoft.Ko.Balin.WidgetActivity
 		asset: Maslosoft.Ko.Balin.Asset
+		cssClasses: Maslosoft.Ko.Balin.CssClasses
 		cssColumnSizes: Maslosoft.Ko.Balin.CssColumnSizes
 		cssColumns: Maslosoft.Ko.Balin.CssColumns
 		data: Maslosoft.Ko.Balin.Data
@@ -850,6 +851,36 @@ class @Maslosoft.Ko.Balin.Asset extends @Maslosoft.Ko.Balin.Base
 		if $element.attr("src") != src
 			$element.attr "src", src
 		return
+
+#
+# Enum css class handler
+#
+class @Maslosoft.Ko.Balin.CssClasses extends @Maslosoft.Ko.Balin.Base
+
+	getClassList: (valueAccessor) =>
+		classes = @getValue valueAccessor
+		if typeof(classes) is 'string'
+			classList = classes
+		else
+			classList = classes.join(' ')
+		return classList
+
+	init: (element, valueAccessor) =>
+		initialClasses = @getClassList(valueAccessor)
+
+		element.setAttribute('data-css-classes', initialClasses)
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		toRemove = element.getAttribute('data-css-classes')
+
+		ko.utils.toggleDomNodeCssClass element, toRemove, false
+
+		classesToAdd = @getClassList(valueAccessor)
+
+		ko.utils.toggleDomNodeCssClass element, classesToAdd, true
+
+		element.setAttribute('data-css-classes', classesToAdd)
+
 
 #
 # Enum css class handler
@@ -2397,10 +2428,10 @@ class @Maslosoft.Ko.Balin.Validator extends @Maslosoft.Ko.Balin.Base
 				error "Parameter `#{classField}` (of type #{name}) must be validator compatible class, binding defined on element:", element
 				continue
 
-			# Store class name first, as it needts to be removed
+			# Store class name first, as it needs to be removed
 			className = config[classField]
 
-			# Remove class key, to not iterrupt validator configuration
+			# Remove class key, to not interrupt validator configuration
 			delete(config[classField])
 
 			# Instantiate validator

@@ -513,4 +513,19 @@
 
   })();
 
+  this.Maslosoft.Ko.BalinDev.Models.CssClasses = (function(superClass) {
+    extend(CssClasses, superClass);
+
+    function CssClasses() {
+      return CssClasses.__super__.constructor.apply(this, arguments);
+    }
+
+    CssClasses.prototype._class = "Maslosoft.Ko.BalinDev.Models.CssClasses";
+
+    CssClasses.prototype.classes = [];
+
+    return CssClasses;
+
+  })(this.Maslosoft.Ko.Balin.Model);
+
 }).call(this);

@@ -6,7 +6,7 @@
 	Experimental date picker based on pick a date. This demo will most probably not work at all...
 </p>
 <p class="alert alert-danger">
-	Not recommended, use <a href="datePicker.php"> datePicker</a> instead
+	Not recommended, use <a href="../datePicker/"> datePicker</a> instead
 </p>
 <!-- /trim -->
 <div class="input-group col-md-4 col-sm-6">
