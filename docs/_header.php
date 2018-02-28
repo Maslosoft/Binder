@@ -152,6 +152,7 @@ $baseHref = "$baseURI/";
 				}
 				#mocha-stats .progress {
 					height:40px;
+                    border-radius: 100%;
 				}
 			</style>
 		<?php endif; ?>

@@ -36,7 +36,11 @@ use Maslosoft\Components\Helpers\JsInline;
 	#mocha-stats .progress {
 		float:left;
 		height:40px;
+        border-radius: 100%;
 	}
+    #mocha-stats em {
+        color: white;
+    }
 </style>
 <title>10. Tests</title>
 <h1>Tests</h1>
@@ -73,7 +77,7 @@ JS;
 
 
 <!-- Tests menu -->
-<p>
+<p class="text-left">
 <?php foreach ($test as $script => $name): ?>
 	<a href="?test=<?= $script?>" class="btn btn-success">
 		<i class="fa fa-arrow-circle-o-right"></i>
