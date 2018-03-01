@@ -2,18 +2,24 @@
 <!-- trim -->
 <title>Fancytree Drag and Drop</title>
 <h1>Fancytree Drag and Drop</h1>
-Fancy tree drag'n'drop example. <br />
 <p>
-	<b>NOTE:</b> Make sure that `children` field of model is dereferenced, see Maslosoft.Koe.TreeItem in dev/src/Model.coffee
+Fancy tree drag'n'drop example.
+</p>
+<p class="alert alert-warning">
+	Make sure that `children` field of model is dereferenced, see Maslosoft.Koe.TreeItem in dev/src/Model.coffee
+</p>
+<p class="alert alert-warning">
+    When using multi-line binding definition the <code>data</code> property must
+    be quited with <code>'</code>
 </p>
 <p>
 	There are two rendering related options used:
-<ul>
-	<li><code>nodeIcon</code> - To use custom icon, with also custom styling possible (and recommended). This allows responsive icon/title size.</li>
-	<li><code>nodeFolder</code> - Same as `nodeIcon` but for nodes containing childs.</li>
-	<li><code>nodeRenderer</code> - Custom node renderer. This renderer gets param as actual ko model, not fancytree node. So many possibilies are open here. See dev/src/TitleRenderer.coffee for example</li>
-</ul>
 </p>
+<ul>
+    <li><code>nodeIcon</code> - To use custom icon, with also custom styling possible (and recommended). This allows responsive icon/title size.</li>
+    <li><code>nodeFolder</code> - Same as `nodeIcon` but for nodes containing childs.</li>
+    <li><code>nodeRenderer</code> - Custom node renderer. This renderer gets param as actual ko model, not fancytree node. So many possibilies are open here. See dev/src/TitleRenderer.coffee for example</li>
+</ul>
 <p>
 	Also responsive font size is used. Document font size:
 	<a href="javascript: binder.increaseFont();">Increase</a> /
@@ -23,7 +29,7 @@ Fancy tree drag'n'drop example. <br />
 <!-- /trim -->
 <div class="fancy-tree"
 	data-bind="fancytree: {
-		data: binder.model.Tree, 
+		'data': binder.model.Tree,
 		nodeIcon: 'images/pdf.png', 
 		folderIcon: 'images/zip.png', 
 		nodeRenderer: Maslosoft.BinderDev.TitleRenderer, 

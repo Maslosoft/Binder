@@ -1,5 +1,10 @@
 <?php require __DIR__ . '/../_header.php'; ?>
 <!-- trim -->
+<style>
+    .hide-description .description{
+        display: none !important;
+    }
+</style>
 <title>Tree Grid</title>
 <h1>Tree Grid</h1>
 <p>
@@ -10,7 +15,7 @@
     to arrange them as You like.
 </p>
 <p class="alert alert-warning">
-    When using multiline binding definition the <code>data</code> property must
+    When using multi-line binding definition the <code>data</code> property must
     be quited with <code>'</code>
 </p>
 <p>
@@ -39,71 +44,120 @@
     extra <code>data-bind</code> attributes.
 </p>
 <div>
-    <a href="#" data-bind="click: addNode">Add new node programatically</a>
+    <a href="#" data-bind="click: addNode">Add new node programmatically</a>
 </div>
 <div>
-    <a href="#" data-bind="click: addSubNode">Add new sub-node programatically</a>
+    <a href="#" data-bind="click: addSubNode">Add new sub-node programmatically</a>
 </div>
 <div>
-    <a href="#" data-bind="click: addSubSubNode">Add new sub-sub-node programatically</a>
+    <a href="#" data-bind="click: addSubSubNode">Add new sub-sub-node programmatically</a>
 </div>
 <div>
-    <a href="#" data-bind="click: addSubSubNodeLast">Add new sub-sub-node to last sub-node programatically</a>
+    <a href="#" data-bind="click: addSubSubNodeLast">Add new sub-sub-node to last sub-node programmatically</a>
 </div>
 <div>
-    <a href="#" data-bind="click: remSubSubNode">Remove all sub-sub-nodes programatically</a>
+    <a href="#" data-bind="click: addManyNodes">Add many nodes</a>
 </div>
-
-<hr/>
+<div>
+    <a href="#" data-bind="click: addLoadOfNodes">Add load of nodes</a>
+</div>
+<div>
+    <a href="#" data-bind="click: toggleHtmlTree">Toggle second, synchronised tree</a>
+</div>
+<h2>Live example</h2>
+<p class="alert alert-success">
+    Items can be dragged and dropped between trees too. Trees are protected against recursive loop.
+</p>
+<div id="gridWrapper" class="col-xs-12 col-sm-12">
 <!-- /trim -->
-<div>
+<table id="gridView" style="font-size: 18px;" class="table table-condensed">
+    <thead>
+    <tr>
+        <th style="width:.1%;"><input type="checkbox" id="selectAll"/></th>
+        <th>Nodes</th>
+        <th class="description">Description</th>
+        <th class="hidden-xs">Misc</th>
+        <th>Remove</th>
+    </tr>
+    </thead>
+    <tbody
+            data-bind="
+                treegrid: {
+                    'data': binder.model.Tree,
+                    childrenField: 'children',
+                    nodeIcon: '../images/pdf.png',
+                    folderIcon: '../images/zip.png',
+                    autoExpand: true,
+                    dnd: true,
+                    activeClass: 'active success'
+                    }
+            "
+    >
+    <tr>
+        <td><input type="checkbox" class="tree-grid-checkbox"/></td>
+        <td>
+            <span data-bind="treegridnode: $data"></span>
+            <span data-bind="html: title"></span>
+        </td>
+        <td data-bind="html: description" class="description"></td>
+        <td class="hidden-xs">Text</td>
+        <td><a href="#" class="remove">Remove</a></td>
+    </tr>
+    </tbody>
+</table>
+<!-- trim -->
+</div>
+<div id="treeWrapper" class="col-xs-12 col-sm-6 hide">
     <table id="gridView" style="font-size: 18px;" class="table table-condensed">
         <thead>
         <tr>
-            <th style="width:.1%;"><input type="checkbox" id="selectAll"/></th>
             <th>Nodes</th>
-            <th>Description</th>
-            <th>Misc</th>
-            <th>Remove</th>
-            <th>Debug</th>
         </tr>
         </thead>
         <tbody
                 data-bind="
-                    treegrid: {
-                        'data': binder.model.Tree,
-                        childrenField: 'children',
-                        nodeIcon: '../images/pdf.png',
-                        folderIcon: '../images/zip.png',
-                        autoExpand: true,
-                        dnd: true,
-                        activeClass: 'active success'
-                        }
-                "
+                treegrid: {
+                    'data': binder.model.Tree,
+                    childrenField: 'children',
+                    nodeIcon: '../images/pdf.png',
+                    folderIcon: '../images/zip.png',
+                    autoExpand: true,
+                    dnd: true,
+                    activeClass: 'active success'
+                    }
+            "
         >
         <tr>
-            <td><input type="checkbox" class="tree-grid-checkbox"/></td>
             <td>
                 <span data-bind="treegridnode: $data"></span>
                 <span data-bind="html: title"></span>
             </td>
-            <td data-bind="html: description"></td>
-            <td>Static value</td>
-            <td><a href="#" class="remove">Remove</a></td>
-            <td class="debug"></td>
         </tr>
         </tbody>
     </table>
 </div>
+<div class="clearfix"></div>
+<!-- /trim -->
 <script type="text/javascript">
     window.onload = (function () {
 // trim
+
+        toggleHtmlTree = function () {
+            var grid = jQuery('#gridWrapper');
+            var tree = jQuery('#treeWrapper');
+            grid.toggleClass('col-sm-12');
+            grid.toggleClass('col-sm-6');
+            tree.toggleClass('hide');
+            grid.toggleClass('hide-description');
+            return false;
+        };
+        toggleHtmlTree();
         var nodeId = 0;
         window.addNode = function (data, e) {
             nodeId++;
             var model = new Maslosoft.Koe.TreeItem;
-            model.title = 'New node #' + nodeId;
-            model.description = 'Description #' + nodeId;
+            model.title = 'New node ' + nodeId;
+            model.description = 'Description ' + nodeId;
             binder.model.Tree.children.push(model);
             if (e) {
                 e.stopPropagation();
@@ -113,8 +167,8 @@
         window.addSubNode = function (data, e) {
             nodeId++;
             var model = new Maslosoft.Koe.TreeItem;
-            model.title = 'New sub-node #' + nodeId;
-            model.description = 'Description sub-node #' + nodeId;
+            model.title = 'Sub-node ' + nodeId;
+            model.description = 'Description ' + nodeId;
             binder.model.Tree.children[0].children.push(model);
             if (e) {
                 e.stopPropagation();
@@ -124,8 +178,8 @@
         window.addSubSubNode = function (data, e) {
             nodeId++;
             var model = new Maslosoft.Koe.TreeItem;
-            model.title = 'New sub-sub-node #' + nodeId;
-            model.description = 'Description sub-sub-node #' + nodeId;
+            model.title = 'Sub-sub-node ' + nodeId;
+            model.description = 'Description ' + nodeId;
             binder.model.Tree.children[0].children[0].children.push(model);
             if (e) {
                 e.stopPropagation();
@@ -135,8 +189,8 @@
         window.addSubSubNodeLast = function (data, e) {
             nodeId++;
             var model = new Maslosoft.Koe.TreeItem;
-            model.title = 'New sub-sub-node #' + nodeId;
-            model.description = 'Description sub-sub-node #' + nodeId;
+            model.title = 'Sub-sub-node ' + nodeId;
+            model.description = 'Description ' + nodeId;
             var idx = 0;
             if (binder.model.Tree.children[0].children.length) {
                 idx = binder.model.Tree.children[0].children.length - 1;
@@ -150,8 +204,8 @@
         window.remSubSubNode = function (data, e) {
             nodeId++;
             var model = new Maslosoft.Koe.TreeItem;
-            model.title = 'New sub-sub-node #' + nodeId;
-            model.description = 'Description sub-sub-node #' + nodeId;
+            model.title = 'Sub-sub-node ' + nodeId;
+            model.description = 'Description ' + nodeId;
             binder.model.Tree.children[0].children[0].children = [];
             if (e) {
                 e.stopPropagation();
@@ -159,7 +213,7 @@
             }
         };
 
-        var deferAdd = function () {
+        window.addManyNodes = function () {
             window.addNode();
             window.addSubNode();
             window.addSubNode();
@@ -176,7 +230,16 @@
             window.addSubSubNodeLast();
         };
 
-        setTimeout(deferAdd, 100);
+        window.addLoadOfNodes = function() {
+            window.addManyNodes();
+            window.addManyNodes();
+            window.addManyNodes();
+            window.addManyNodes();
+            window.addManyNodes();
+            window.addManyNodes();
+            window.addManyNodes();
+        }
+
         var grid = jQuery('#gridView');
         var gm = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(grid.find('tbody'));
         grid.on('click', '.remove', function (e) {

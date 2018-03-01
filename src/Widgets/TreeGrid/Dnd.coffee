@@ -86,6 +86,7 @@ class Maslosoft.Binder.Widgets.TreeGrid.Dnd
 				helper: @dragHelper
 			}
 			droppableOptions = {
+				tolerance: "pointer"
 				drop: @drop
 				over: @over
 			}

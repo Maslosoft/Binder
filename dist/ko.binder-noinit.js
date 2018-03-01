@@ -3602,6 +3602,7 @@
             helper: _this.dragHelper
           };
           droppableOptions = {
+            tolerance: "pointer",
             drop: _this.drop,
             over: _this.over
           };
