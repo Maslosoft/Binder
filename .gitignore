@@ -6,3 +6,4 @@
 /api/
 /vendor/
 dist/ko.binder.bundle-new.js
+yarn-error.log
