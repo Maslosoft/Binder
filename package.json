@@ -34,6 +34,7 @@
     "@bower_components/select2": "ivaynberg/select2#^4.0.3",
     "@bower_components/knockout-es5": "https://github.com/Maslosoft/knockout-es5.git#master",
     "@bower_components/knockout.punches": "mbest/knockout.punches#^0.5",
+    "@bower_components/knockout-switch-case": "mbest/knockout-switch-case#^2",
     "grunt": "~0.4.5",
     "grunt-contrib-coffee": "~0.11.1",
     "grunt-contrib-concat": "^0.5.1",

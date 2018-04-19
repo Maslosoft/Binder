@@ -64,6 +64,10 @@
   version "0.12.0"
   resolved "https://codeload.github.com/rniemeyer/knockout-sortable/tar.gz/aa97f9779ef1d8823bb226b035449eec0cdd7899"
 
+"@bower_components/knockout-switch-case@mbest/knockout-switch-case#^2":
+  version "0.0.0"
+  resolved "https://codeload.github.com/mbest/knockout-switch-case/tar.gz/987fddcaf8788ea7f78ab1b526a80d5391769086"
+
 "@bower_components/knockout.punches@mbest/knockout.punches#^0.5":
   version "0.0.0"
   resolved "https://codeload.github.com/mbest/knockout.punches/tar.gz/83fb4eb83aba9e18dc36433ee35f8d1b38c63443"
