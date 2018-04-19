@@ -538,4 +538,58 @@
 
   })(this.Maslosoft.Binder.Model);
 
+  this.Maslosoft.Koe.Smileys = (function() {
+    function Smileys() {
+      this.getElementValue = bind(this.getElementValue, this);
+      this.getModelValue = bind(this.getModelValue, this);
+    }
+
+    Smileys.prototype.enabled = true;
+
+    Smileys.smileys = {
+      ':)': 'smiley.png',
+      ':(': 'smiley-sad.png',
+      '8)': 'smiley-cool.png'
+    };
+
+    Smileys.dir = '../src/images';
+
+    Smileys.prototype.getModelValue = function(element, value) {
+      var el, image, j, len, ref, ref1, selector, smiley, val;
+      if (!this.enabled) {
+        return value;
+      }
+      val = jQuery("<div>" + value + "</div>");
+      ref = Smileys.smileys;
+      for (smiley in ref) {
+        image = ref[smiley];
+        selector = "[data-smiley='" + smiley + "']";
+        ref1 = val.find(selector);
+        for (j = 0, len = ref1.length; j < len; j++) {
+          el = ref1[j];
+          jQuery(el).replaceWith(smiley);
+        }
+      }
+      value = val.html();
+      return value;
+    };
+
+    Smileys.prototype.getElementValue = function(element, value) {
+      var image, re, ref, smiley;
+      if (!this.enabled) {
+        return value;
+      }
+      ref = Smileys.smileys;
+      for (smiley in ref) {
+        image = ref[smiley];
+        re = new RegExp(Maslosoft.Ko.escapeRegExp(smiley), 'g');
+        value = value.replace(re, "<img src='" + Smileys.dir + "/" + image + "' data-smiley='" + smiley + "'/>");
+      }
+      return value;
+    };
+
+    return Smileys;
+
+  })();
+
 }).call(this);

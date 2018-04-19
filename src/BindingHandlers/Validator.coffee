@@ -28,43 +28,25 @@ class @Maslosoft.Binder.Validator extends @Maslosoft.Binder.Base
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		configuration = @getValue(valueAccessor)
-		validators = new Array
 		classField = @options.classField
-		if configuration.constructor is Array
-			cfg = configuration
-		else
-			cfg = [configuration]
 
-		for config in cfg
-#			console.log config
+		pm = new PluginsManager element, classField
 
-			if not config[classField]
-				error "Parameter `#{classField}` must be defined for validator on element:", element
-				continue
+		validators = pm.from configuration
 
-			if typeof(config[classField]) isnt 'function'
-				error "Parameter `#{classField}` must be validator compatible class, binding defined on element:", element
-				continue
-			
-			proto = config[classField].prototype
 
-			if typeof(proto.isValid) isnt 'function' or typeof(proto.getErrors) isnt 'function' or typeof(proto.reset) isnt 'function'
-				if typeof(config[classField].prototype.constructor) is 'function'
-					name = config[classField].prototype.constructor.name
-				else
-					name = config[classField].toString()
+#   TODO Maybe below code should be used to check if class is validator compatible
+#		proto = config[classField].prototype
+#
+#		if typeof(proto.isValid) isnt 'function' or typeof(proto.getErrors) isnt 'function' or typeof(proto.reset) isnt 'function'
+#			if typeof(config[classField].prototype.constructor) is 'function'
+#				name = config[classField].prototype.constructor.name
+#			else
+#				name = config[classField].toString()
+#
+#			error "Parameter `#{classField}` (of type #{name}) must be validator compatible class, binding defined on element:", element
+#			continue
 
-				error "Parameter `#{classField}` (of type #{name}) must be validator compatible class, binding defined on element:", element
-				continue
-
-			# Store class name first, as it needs to be removed
-			className = config[classField]
-
-			# Remove class key, to not interrupt validator configuration
-			delete(config[classField])
-
-			# Instantiate validator
-			validators.push new className(config)
 
 		manager = new ValidationManager(validators, @options)
 		manager.init element
@@ -94,7 +76,8 @@ class @Maslosoft.Binder.Validator extends @Maslosoft.Binder.Base
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
 		ko.utils.registerEventHandler element, "keyup, input", handler
 
-		# This is to allow interation with tools which could modify content, also to work with drag and drop
+		# This is to allow interaction with tools which could modify content,
+		# also to work with drag and drop
 		ko.utils.registerEventHandler document, "mouseup", handler
 
 

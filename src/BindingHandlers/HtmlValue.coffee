@@ -46,6 +46,11 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 		if not element.id
 			element.id = "Maslosoft-Ko-Binder-HtmlValue-#{idCounter++}"
 
+		configuration = @getValue(allBindingsAccessor).plugins
+		pm = new PluginsManager(element)
+
+		pm.from configuration
+
 		# Handle update immediatelly
 		handler = (e) =>
 			# On some situations element might be null (sorting), ignore this case
@@ -54,14 +59,15 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 			# This is required in some scenarios, specifically when sorting htmlValue elements
 			element = document.getElementById(element.id)
 			if not element then return
-			
 			accessor = valueAccessor()
+
 			modelValue = @getValue(valueAccessor)
 			elementValue = @getElementValue(element)
 			if ko.isWriteableObservable(accessor)
 				# Update only if changed
+				elementValue = pm.getModelValue element, elementValue
 				if modelValue isnt elementValue
-#					console.log "Write: #{modelValue} = #{elementValue}"
+					#console.log "Write: #{modelValue} = #{elementValue}"
 					accessor(elementValue)
 		
 		# Handle update, but push update to end of queue
@@ -84,6 +90,15 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindings) =>
 		value = @getValue(valueAccessor)
+
+		configuration = @getValue(allBindings).plugins
+
+		pm = new PluginsManager(element)
+
+		pm.from configuration
+
+		value = pm.getElementValue element, value
+		#console.log value
 		if @getElementValue(element) isnt value
 			@setElementValue(element, value)
 		return

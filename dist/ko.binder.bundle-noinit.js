@@ -53,7 +53,7 @@
 
     // Fail on unsupported traps: Chrome doesn't do this, but ensure that users of the polyfill
     // are a bit more careful. Copy the internal parts of handler to prevent user changes.
-    let unsafeHandler = handler;
+    const unsafeHandler = handler;
     handler = {'get': null, 'set': null, 'apply': null, 'construct': null};
     for (let k in unsafeHandler) {
       if (!(k in handler)) {
@@ -71,27 +71,27 @@
     // TODO(samthor): Closure compiler doesn't know about 'construct', attempts to rename it.
     let proxy = this;
     let isMethod = false;
-    let targetIsFunction = typeof target == 'function';
+    const targetIsFunction = typeof target == 'function';
     if (handler.apply || handler['construct'] || targetIsFunction) {
       proxy = function Proxy() {
-        let usingNew = (this && this.constructor === proxy);
+        const usingNew = (this && this.constructor === proxy);
+        const args = Array.prototype.slice.call(arguments);
         throwRevoked(usingNew ? 'construct' : 'apply');
 
         if (usingNew && handler['construct']) {
-          return handler['construct'].call(this, target, arguments);
+          return handler['construct'].call(this, target, args);
         } else if (!usingNew && handler.apply) {
-          return handler.apply(target, this, arguments);
+          return handler.apply(target, this, args);
         } else if (targetIsFunction) {
           // since the target was a function, fallback to calling it directly.
           if (usingNew) {
             // inspired by answers to https://stackoverflow.com/q/1606797
-            let all = Array.prototype.slice.call(arguments);
-            all.unshift(target);  // pass class as first arg to constructor, although irrelevant
+            args.unshift(target);  // pass class as first arg to constructor, although irrelevant
             // nb. cast to convince Closure compiler that this is a constructor
-            let f = /** @type {!Function} */ (target.bind.apply(target, all));
+            const f = /** @type {!Function} */ (target.bind.apply(target, args));
             return new f();
           }
-          return target.apply(this, arguments);
+          return target.apply(this, args);
         }
         throw new TypeError(usingNew ? 'not a constructor' : 'not a function');
       };
@@ -100,16 +100,16 @@
 
     // Create default getters/setters. Create different code paths as handler.get/handler.set can't
     // change after creation.
-    let getter = handler.get ? function(prop) {
+    const getter = handler.get ? function(prop) {
       throwRevoked('get');
       return handler.get(this, prop, proxy);
     } : function(prop) {
       throwRevoked('get');
       return this[prop];
     };
-    let setter = handler.set ? function(prop, value) {
+    const setter = handler.set ? function(prop, value) {
       throwRevoked('set');
-      let status = handler.set(this, prop, value, proxy);
+      const status = handler.set(this, prop, value, proxy);
       if (!status) {
         // TODO(samthor): If the calling code is in strict mode, throw TypeError.
         // It's (sometimes) possible to work this out, if this code isn't strict- try to load the
@@ -121,14 +121,14 @@
     };
 
     // Clone direct properties (i.e., not part of a prototype).
-    let propertyNames = Object.getOwnPropertyNames(target);
-    let propertyMap = {};
+    const propertyNames = Object.getOwnPropertyNames(target);
+    const propertyMap = {};
     propertyNames.forEach(function(prop) {
       if (isMethod && prop in proxy) {
         return;  // ignore properties already here, e.g. 'bind', 'prototype' etc
       }
-      let real = Object.getOwnPropertyDescriptor(target, prop);
-      let desc = {
+      const real = Object.getOwnPropertyDescriptor(target, prop);
+      const desc = {
         enumerable: !!real.enumerable,
         get: getter.bind(target, prop),
         set: setter.bind(target, prop),
@@ -165,13 +165,13 @@
   };
 
   scope.Proxy.revocable = function(target, handler) {
-    let p = new scope.Proxy(target, handler);
+    const p = new scope.Proxy(target, handler);
     return {'proxy': p, 'revoke': lastRevokeFn};
   };
 
   scope.Proxy['revocable'] = scope.Proxy.revocable;
   scope['Proxy'] = scope.Proxy;
-})(window);
+})(typeof process !== 'undefined' && {}.toString.call(process) == '[object process]' ? global : self);
 
 /* (The MIT License)
  *
@@ -7236,7 +7236,7 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 
             //override global options with override options passed in
             ko.utils.extend(draggableOptions, options);
-			
+
             //setup connection to a sortable
             draggableOptions.connectToSortable = connectClass ? "." + connectClass : false;
 
@@ -10544,7 +10544,7 @@ module.exports = function (element) {
 
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, setRefByName, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, escapeRegExp, initMap, isPlainObject, log, setRefByName, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -10651,6 +10651,10 @@ module.exports = function (element) {
     return func;
   };
 
+  escapeRegExp = function(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  };
+
   "use strict";
 
   if (!this.Maslosoft) {
@@ -10747,6 +10751,7 @@ module.exports = function (element) {
       fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter,
       hidden: Maslosoft.Binder.Hidden,
       href: Maslosoft.Binder.Href,
+      html: Maslosoft.Binder.Html,
       htmlTree: Maslosoft.Binder.HtmlTree,
       htmlValue: Maslosoft.Binder.HtmlValue,
       icon: Maslosoft.Binder.Icon,
@@ -12207,6 +12212,34 @@ module.exports = function (element) {
 
   })(this.Maslosoft.Binder.Base);
 
+  this.Maslosoft.Binder.Html = (function(_super) {
+    __extends(Html, _super);
+
+    function Html() {
+      this.update = __bind(this.update, this);
+      return Html.__super__.constructor.apply(this, arguments);
+    }
+
+    Html.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      return {
+        'controlsDescendantBindings': true
+      };
+    };
+
+    Html.prototype.update = function(element, valueAccessor, allBindings, context) {
+      var configuration, pm, value;
+      value = this.getValue(valueAccessor);
+      configuration = this.getValue(allBindings).plugins;
+      pm = new PluginsManager(element);
+      pm.from(configuration);
+      value = pm.getElementValue(element, value);
+      return ko.utils.setHtml(element, value);
+    };
+
+    return Html;
+
+  })(this.Maslosoft.Binder.Base);
+
   this.Maslosoft.Binder.HtmlTree = (function(_super) {
     __extends(HtmlTree, _super);
 
@@ -12288,11 +12321,14 @@ module.exports = function (element) {
     };
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var deferHandler, dispose, handler;
+      var configuration, deferHandler, dispose, handler, pm;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Binder-HtmlValue-" + (idCounter++);
       }
+      configuration = this.getValue(allBindingsAccessor).plugins;
+      pm = new PluginsManager(element);
+      pm.from(configuration);
       handler = (function(_this) {
         return function(e) {
           var accessor, elementValue, modelValue;
@@ -12307,6 +12343,7 @@ module.exports = function (element) {
           modelValue = _this.getValue(valueAccessor);
           elementValue = _this.getElementValue(element);
           if (ko.isWriteableObservable(accessor)) {
+            elementValue = pm.getModelValue(element, elementValue);
             if (modelValue !== elementValue) {
               return accessor(elementValue);
             }
@@ -12328,8 +12365,12 @@ module.exports = function (element) {
     };
 
     HtmlValue.prototype.update = function(element, valueAccessor, allBindings) {
-      var value;
+      var configuration, pm, value;
       value = this.getValue(valueAccessor);
+      configuration = this.getValue(allBindings).plugins;
+      pm = new PluginsManager(element);
+      pm.from(configuration);
+      value = pm.getElementValue(element, value);
       if (this.getElementValue(element) !== value) {
         this.setElementValue(element, value);
       }
@@ -13220,39 +13261,11 @@ module.exports = function (element) {
     };
 
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var cfg, classField, className, config, configuration, handler, initialVal, manager, name, proto, validators, _i, _len;
+      var classField, configuration, handler, initialVal, manager, pm, validators;
       configuration = this.getValue(valueAccessor);
-      validators = new Array;
       classField = this.options.classField;
-      if (configuration.constructor === Array) {
-        cfg = configuration;
-      } else {
-        cfg = [configuration];
-      }
-      for (_i = 0, _len = cfg.length; _i < _len; _i++) {
-        config = cfg[_i];
-        if (!config[classField]) {
-          error("Parameter `" + classField + "` must be defined for validator on element:", element);
-          continue;
-        }
-        if (typeof config[classField] !== 'function') {
-          error("Parameter `" + classField + "` must be validator compatible class, binding defined on element:", element);
-          continue;
-        }
-        proto = config[classField].prototype;
-        if (typeof proto.isValid !== 'function' || typeof proto.getErrors !== 'function' || typeof proto.reset !== 'function') {
-          if (typeof config[classField].prototype.constructor === 'function') {
-            name = config[classField].prototype.constructor.name;
-          } else {
-            name = config[classField].toString();
-          }
-          error("Parameter `" + classField + "` (of type " + name + ") must be validator compatible class, binding defined on element:", element);
-          continue;
-        }
-        className = config[classField];
-        delete config[classField];
-        validators.push(new className(config));
-      }
+      pm = new PluginsManager(element, classField);
+      validators = pm.from(configuration);
       manager = new ValidationManager(validators, this.options);
       manager.init(element);
       if (!element.id) {
@@ -13454,6 +13467,85 @@ module.exports = function (element) {
     return WidgetActivity;
 
   })(this.Maslosoft.Binder.WidgetUrl);
+
+  PluginsManager = (function() {
+    PluginsManager.prototype.classField = '_class';
+
+    PluginsManager.prototype.element = null;
+
+    PluginsManager.prototype.plugins = null;
+
+    function PluginsManager(element, classField) {
+      this.element = element != null ? element : null;
+      this.classField = classField != null ? classField : '_class';
+      this.getModelValue = __bind(this.getModelValue, this);
+      this.getElementValue = __bind(this.getElementValue, this);
+      this.plugins = new Array;
+    }
+
+    PluginsManager.prototype.from = function(configuration) {
+      var cfg, classField, className, config, element, index, plugin, value, _i, _len;
+      element = this.element;
+      classField = this.classField;
+      this.plugins = new Array;
+      if (!configuration) {
+        return this.plugins;
+      }
+      if (configuration.constructor === Array) {
+        cfg = configuration;
+      } else {
+        cfg = [configuration];
+      }
+      for (_i = 0, _len = cfg.length; _i < _len; _i++) {
+        config = cfg[_i];
+        if (!config[classField]) {
+          error("Parameter `" + classField + "` must be defined for plugin on element:", element);
+          continue;
+        }
+        if (typeof config[classField] !== 'function') {
+          error("Parameter `" + classField + "` must be plugin compatible class, binding defined on element:", element);
+          continue;
+        }
+        className = config[classField];
+        delete config[classField];
+        plugin = new className;
+        for (index in config) {
+          value = config[index];
+          plugin[index] = null;
+          plugin[index] = value;
+        }
+        this.plugins.push(plugin);
+        return this.plugins;
+      }
+    };
+
+    PluginsManager.prototype.getElementValue = function(element, value) {
+      var plugin, _i, _len, _ref;
+      _ref = this.plugins;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        plugin = _ref[_i];
+        if (typeof plugin.getElementValue === 'function') {
+          value = plugin.getElementValue(element, value);
+        }
+      }
+      return value;
+    };
+
+    PluginsManager.prototype.getModelValue = function(element, value) {
+      var plugin, _i, _len, _ref;
+      _ref = this.plugins;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        plugin = _ref[_i];
+        if (typeof plugin.getModelValue === 'function') {
+          value = plugin.getModelValue(element, value);
+        }
+      }
+      return value;
+    };
+
+    return PluginsManager;
+
+  })();
 
   TreeDnd = (function() {
     var t;
@@ -14146,6 +14238,7 @@ module.exports = function (element) {
             helper: _this.dragHelper
           };
           droppableOptions = {
+            tolerance: "pointer",
             drop: _this.drop,
             over: _this.over
           };
@@ -14995,6 +15088,8 @@ module.exports = function (element) {
   })();
 
   this.Maslosoft.Ko.Balin = this.Maslosoft.Binder;
+
+  this.Maslosoft.Ko.escapeRegExp = escapeRegExp;
 
 }).call(this);
 

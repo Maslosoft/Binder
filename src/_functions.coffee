@@ -69,3 +69,7 @@ setRefByName = (name, value, context = window) ->
 			func[n] = value
 		func = func[n]
 	return func
+
+escapeRegExp = (str) ->
+	# $& means the whole matched string
+	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

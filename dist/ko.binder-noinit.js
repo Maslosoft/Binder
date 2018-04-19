@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, initMap, isPlainObject, log, setRefByName, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, escapeRegExp, initMap, isPlainObject, log, setRefByName, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -107,6 +107,10 @@
     return func;
   };
 
+  escapeRegExp = function(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  };
+
   "use strict";
 
   if (!this.Maslosoft) {
@@ -203,6 +207,7 @@
       fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter,
       hidden: Maslosoft.Binder.Hidden,
       href: Maslosoft.Binder.Href,
+      html: Maslosoft.Binder.Html,
       htmlTree: Maslosoft.Binder.HtmlTree,
       htmlValue: Maslosoft.Binder.HtmlValue,
       icon: Maslosoft.Binder.Icon,
@@ -1663,6 +1668,34 @@
 
   })(this.Maslosoft.Binder.Base);
 
+  this.Maslosoft.Binder.Html = (function(_super) {
+    __extends(Html, _super);
+
+    function Html() {
+      this.update = __bind(this.update, this);
+      return Html.__super__.constructor.apply(this, arguments);
+    }
+
+    Html.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      return {
+        'controlsDescendantBindings': true
+      };
+    };
+
+    Html.prototype.update = function(element, valueAccessor, allBindings, context) {
+      var configuration, pm, value;
+      value = this.getValue(valueAccessor);
+      configuration = this.getValue(allBindings).plugins;
+      pm = new PluginsManager(element);
+      pm.from(configuration);
+      value = pm.getElementValue(element, value);
+      return ko.utils.setHtml(element, value);
+    };
+
+    return Html;
+
+  })(this.Maslosoft.Binder.Base);
+
   this.Maslosoft.Binder.HtmlTree = (function(_super) {
     __extends(HtmlTree, _super);
 
@@ -1744,11 +1777,14 @@
     };
 
     HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var deferHandler, dispose, handler;
+      var configuration, deferHandler, dispose, handler, pm;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
         element.id = "Maslosoft-Ko-Binder-HtmlValue-" + (idCounter++);
       }
+      configuration = this.getValue(allBindingsAccessor).plugins;
+      pm = new PluginsManager(element);
+      pm.from(configuration);
       handler = (function(_this) {
         return function(e) {
           var accessor, elementValue, modelValue;
@@ -1763,6 +1799,7 @@
           modelValue = _this.getValue(valueAccessor);
           elementValue = _this.getElementValue(element);
           if (ko.isWriteableObservable(accessor)) {
+            elementValue = pm.getModelValue(element, elementValue);
             if (modelValue !== elementValue) {
               return accessor(elementValue);
             }
@@ -1784,8 +1821,12 @@
     };
 
     HtmlValue.prototype.update = function(element, valueAccessor, allBindings) {
-      var value;
+      var configuration, pm, value;
       value = this.getValue(valueAccessor);
+      configuration = this.getValue(allBindings).plugins;
+      pm = new PluginsManager(element);
+      pm.from(configuration);
+      value = pm.getElementValue(element, value);
       if (this.getElementValue(element) !== value) {
         this.setElementValue(element, value);
       }
@@ -2676,39 +2717,11 @@
     };
 
     Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var cfg, classField, className, config, configuration, handler, initialVal, manager, name, proto, validators, _i, _len;
+      var classField, configuration, handler, initialVal, manager, pm, validators;
       configuration = this.getValue(valueAccessor);
-      validators = new Array;
       classField = this.options.classField;
-      if (configuration.constructor === Array) {
-        cfg = configuration;
-      } else {
-        cfg = [configuration];
-      }
-      for (_i = 0, _len = cfg.length; _i < _len; _i++) {
-        config = cfg[_i];
-        if (!config[classField]) {
-          error("Parameter `" + classField + "` must be defined for validator on element:", element);
-          continue;
-        }
-        if (typeof config[classField] !== 'function') {
-          error("Parameter `" + classField + "` must be validator compatible class, binding defined on element:", element);
-          continue;
-        }
-        proto = config[classField].prototype;
-        if (typeof proto.isValid !== 'function' || typeof proto.getErrors !== 'function' || typeof proto.reset !== 'function') {
-          if (typeof config[classField].prototype.constructor === 'function') {
-            name = config[classField].prototype.constructor.name;
-          } else {
-            name = config[classField].toString();
-          }
-          error("Parameter `" + classField + "` (of type " + name + ") must be validator compatible class, binding defined on element:", element);
-          continue;
-        }
-        className = config[classField];
-        delete config[classField];
-        validators.push(new className(config));
-      }
+      pm = new PluginsManager(element, classField);
+      validators = pm.from(configuration);
       manager = new ValidationManager(validators, this.options);
       manager.init(element);
       if (!element.id) {
@@ -2910,6 +2923,85 @@
     return WidgetActivity;
 
   })(this.Maslosoft.Binder.WidgetUrl);
+
+  PluginsManager = (function() {
+    PluginsManager.prototype.classField = '_class';
+
+    PluginsManager.prototype.element = null;
+
+    PluginsManager.prototype.plugins = null;
+
+    function PluginsManager(element, classField) {
+      this.element = element != null ? element : null;
+      this.classField = classField != null ? classField : '_class';
+      this.getModelValue = __bind(this.getModelValue, this);
+      this.getElementValue = __bind(this.getElementValue, this);
+      this.plugins = new Array;
+    }
+
+    PluginsManager.prototype.from = function(configuration) {
+      var cfg, classField, className, config, element, index, plugin, value, _i, _len;
+      element = this.element;
+      classField = this.classField;
+      this.plugins = new Array;
+      if (!configuration) {
+        return this.plugins;
+      }
+      if (configuration.constructor === Array) {
+        cfg = configuration;
+      } else {
+        cfg = [configuration];
+      }
+      for (_i = 0, _len = cfg.length; _i < _len; _i++) {
+        config = cfg[_i];
+        if (!config[classField]) {
+          error("Parameter `" + classField + "` must be defined for plugin on element:", element);
+          continue;
+        }
+        if (typeof config[classField] !== 'function') {
+          error("Parameter `" + classField + "` must be plugin compatible class, binding defined on element:", element);
+          continue;
+        }
+        className = config[classField];
+        delete config[classField];
+        plugin = new className;
+        for (index in config) {
+          value = config[index];
+          plugin[index] = null;
+          plugin[index] = value;
+        }
+        this.plugins.push(plugin);
+        return this.plugins;
+      }
+    };
+
+    PluginsManager.prototype.getElementValue = function(element, value) {
+      var plugin, _i, _len, _ref;
+      _ref = this.plugins;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        plugin = _ref[_i];
+        if (typeof plugin.getElementValue === 'function') {
+          value = plugin.getElementValue(element, value);
+        }
+      }
+      return value;
+    };
+
+    PluginsManager.prototype.getModelValue = function(element, value) {
+      var plugin, _i, _len, _ref;
+      _ref = this.plugins;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        plugin = _ref[_i];
+        if (typeof plugin.getModelValue === 'function') {
+          value = plugin.getModelValue(element, value);
+        }
+      }
+      return value;
+    };
+
+    return PluginsManager;
+
+  })();
 
   TreeDnd = (function() {
     var t;
@@ -4452,6 +4544,8 @@
   })();
 
   this.Maslosoft.Ko.Balin = this.Maslosoft.Binder;
+
+  this.Maslosoft.Ko.escapeRegExp = escapeRegExp;
 
 }).call(this);
 

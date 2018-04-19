@@ -82,6 +82,7 @@
 		fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter
 		hidden: Maslosoft.Binder.Hidden
 		href: Maslosoft.Binder.Href
+		html: Maslosoft.Binder.Html
 		htmlTree: Maslosoft.Binder.HtmlTree
 		htmlValue: Maslosoft.Binder.HtmlValue
 		icon: Maslosoft.Binder.Icon

@@ -236,3 +236,46 @@ class @Maslosoft.Koe.CssClasses extends @Maslosoft.Binder.Model
 	_class: "Maslosoft.Koe.CssClasses"
 	classes: []
 	classList: ''
+
+class @Maslosoft.Koe.Smileys
+
+	enabled: true
+
+	@smileys:
+		':)': 'smiley.png'
+		':(': 'smiley-sad.png'
+		'8)': 'smiley-cool.png'
+
+	@dir: '../src/images'
+
+	getModelValue: (element, value) =>
+
+		if not @enabled
+			return value
+
+		# Convert images back to smileys
+
+		val = jQuery("<div>#{value}</div>")
+		for smiley, image of Smileys.smileys
+			selector = "[data-smiley='#{smiley}']"
+			#console.log selector
+			for el in val.find(selector)
+				jQuery(el).replaceWith(smiley)
+
+		value = val.html()
+
+		return value
+
+	getElementValue: (element, value) =>
+		if not @enabled
+			return value
+
+
+		# Update will cause caret jumping
+		# in htmlValue binding. For this plugin this could suffice...
+		# see for selection save restore: http://jsfiddle.net/Y8pJ7/8/
+		for smiley, image of Smileys.smileys
+			re = new RegExp(Maslosoft.Ko.escapeRegExp(smiley), 'g')
+			value = value.replace re, "<img src='#{Smileys.dir}/#{image}' data-smiley='#{smiley}'/>"
+
+		return value
