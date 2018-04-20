@@ -13488,6 +13488,9 @@ module.exports = function (element) {
       element = this.element;
       classField = this.classField;
       this.plugins = new Array;
+      if (ko.isObservable(configuration)) {
+        configuration = ko.unwrap(configuration);
+      }
       if (!configuration) {
         return this.plugins;
       }

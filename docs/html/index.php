@@ -29,10 +29,10 @@
         <td>
             <span data-bind="
                 html: binder.model.html.text,
-                plugins: {
+                plugins: [{
                     '_class': Maslosoft.Koe.Smileys,
                     enabled: binder.model.smileys.enabled
-                }" class="col-xs-12"></span>
+                }]" class="col-xs-12"></span>
         </td>
     </tr>
 </table>

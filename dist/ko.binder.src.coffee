@@ -2678,6 +2678,9 @@ class PluginsManager
 		classField = @classField
 		@plugins = new Array
 
+		if ko.isObservable configuration
+			configuration = ko.unwrap configuration
+
 		if not configuration
 			return @plugins
 
@@ -2686,8 +2689,8 @@ class PluginsManager
 		else
 			cfg = [configuration]
 
+#		console.log cfg
 		for config in cfg
-	#			console.log config
 
 			if not config[classField]
 				error "Parameter `#{classField}` must be defined for plugin on element:", element
