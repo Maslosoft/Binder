@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, error, escapeRegExp, initMap, isPlainObject, log, setRefByName, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, setRefByName, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -111,6 +111,23 @@
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
+  entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  escapeHtml = function(string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function(s) {
+      return entityMap[s];
+    });
+  };
+
   "use strict";
 
   if (!this.Maslosoft) {
@@ -216,6 +233,7 @@
       ref: Maslosoft.Binder.Widget,
       src: Maslosoft.Binder.Src,
       tags: Maslosoft.Binder.Tags,
+      text: Maslosoft.Binder.Text,
       textValue: Maslosoft.Binder.TextValue,
       textValueHlJs: Maslosoft.Binder.TextValueHLJS,
       timeAgoFormatter: Maslosoft.Binder.TimeAgoFormatter,
@@ -2414,6 +2432,34 @@
 
   })(this.Maslosoft.Binder.Base);
 
+  this.Maslosoft.Binder.Text = (function(_super) {
+    __extends(Text, _super);
+
+    function Text() {
+      this.update = __bind(this.update, this);
+      return Text.__super__.constructor.apply(this, arguments);
+    }
+
+    Text.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+      return {
+        'controlsDescendantBindings': true
+      };
+    };
+
+    Text.prototype.update = function(element, valueAccessor, allBindings, context) {
+      var configuration, pm, value;
+      value = escapeHtml(this.getValue(valueAccessor));
+      configuration = this.getValue(allBindings).plugins;
+      pm = new PluginsManager(element);
+      pm.from(configuration);
+      value = pm.getElementValue(element, value);
+      return ko.utils.setHtml(element, value);
+    };
+
+    return Text;
+
+  })(this.Maslosoft.Binder.Base);
+
   this.Maslosoft.Binder.TextValue = (function(_super) {
     __extends(TextValue, _super);
 
@@ -4549,6 +4595,8 @@
   this.Maslosoft.Ko.Balin = this.Maslosoft.Binder;
 
   this.Maslosoft.Ko.escapeRegExp = escapeRegExp;
+
+  this.Maslosoft.Ko.escapeHtml = escapeHtml;
 
   this.Maslosoft.Binder.registerDefaults();
 

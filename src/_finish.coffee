@@ -2,3 +2,5 @@
 @Maslosoft.Ko.Balin = @Maslosoft.Binder
 
 @Maslosoft.Ko.escapeRegExp = escapeRegExp
+
+@Maslosoft.Ko.escapeHtml = escapeHtml

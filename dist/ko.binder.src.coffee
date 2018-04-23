@@ -74,6 +74,21 @@ escapeRegExp = (str) ->
 	# $& means the whole matched string
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+entityMap =
+	'&': '&amp;'
+	'<': '&lt;'
+	'>': '&gt;'
+	'"': '&quot;'
+	"'": '&#39;'
+	'/': '&#x2F;'
+	'`': '&#x60;'
+	'=': '&#x3D;'
+
+
+escapeHtml = (string) ->
+	return String(string).replace(/[&<>"'`=\/]/g, (s) ->
+		return entityMap[s]
+	)
 "use strict"
 if not @Maslosoft
 	@Maslosoft = {}
@@ -181,6 +196,7 @@ if not @Maslosoft.Binder.Widgets
 		ref: Maslosoft.Binder.Widget
 		src: Maslosoft.Binder.Src
 		tags: Maslosoft.Binder.Tags
+		text: Maslosoft.Binder.Text
 		textValue: Maslosoft.Binder.TextValue
 		textValueHlJs: Maslosoft.Binder.TextValueHLJS
 		timeAgoFormatter: Maslosoft.Binder.TimeAgoFormatter
@@ -2194,6 +2210,28 @@ class @Maslosoft.Binder.Tags extends @Maslosoft.Binder.Base
 
 
 		setTimeout maybeSet, 0
+#
+# HTML improved binding handler
+#
+class @Maslosoft.Binder.Text extends @Maslosoft.Binder.Base
+
+	init: (element, valueAccessor, allBindingsAccessor, context) ->
+		return { 'controlsDescendantBindings': true }
+
+	update: (element, valueAccessor, allBindings, context) =>
+		# setHtml will unwrap the value if needed
+		value = escapeHtml @getValue(valueAccessor)
+
+		configuration = @getValue(allBindings).plugins
+
+		pm = new PluginsManager(element)
+
+		pm.from configuration
+
+		value = pm.getElementValue element, value
+
+		ko.utils.setHtml(element, value)
+
 #
 # Html text value binding
 # WARNING This MUST have parent context, or will not work
@@ -4425,5 +4463,7 @@ class @Maslosoft.Binder.Model
 @Maslosoft.Ko.Balin = @Maslosoft.Binder
 
 @Maslosoft.Ko.escapeRegExp = escapeRegExp
+
+@Maslosoft.Ko.escapeHtml = escapeHtml
 @Maslosoft.Binder.registerDefaults()
 ko.punches.enableAll()

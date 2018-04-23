@@ -73,3 +73,19 @@ setRefByName = (name, value, context = window) ->
 escapeRegExp = (str) ->
 	# $& means the whole matched string
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+entityMap =
+	'&': '&amp;'
+	'<': '&lt;'
+	'>': '&gt;'
+	'"': '&quot;'
+	"'": '&#39;'
+	'/': '&#x2F;'
+	'`': '&#x60;'
+	'=': '&#x3D;'
+
+
+escapeHtml = (string) ->
+	return String(string).replace(/[&<>"'`=\/]/g, (s) ->
+		return entityMap[s]
+	)
