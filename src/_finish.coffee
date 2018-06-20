@@ -4,3 +4,5 @@
 @Maslosoft.Ko.escapeRegExp = escapeRegExp
 
 @Maslosoft.Ko.escapeHtml = escapeHtml
+
+@Maslosoft.Ko.equals = equals
