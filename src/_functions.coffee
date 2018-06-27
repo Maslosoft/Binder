@@ -132,3 +132,24 @@ equals = (x, y) ->
 			return false
 	# allows x[ p ] to be set to undefined
 	true
+
+#
+# Generate CSS hex color based on input string
+#
+#
+#
+stringToColour = (str) ->
+	console.log arguments
+	hash = 0
+	i = 0
+	i = 0
+	while i < str.length
+		hash = str.charCodeAt(i) + (hash << 5) - hash
+		i++
+	colour = '#'
+	i = 0
+	while i < 3
+		value = hash >> i * 8 & 0xFF
+		colour += ('00' + value.toString(16)).substr(-2)
+		i++
+	colour

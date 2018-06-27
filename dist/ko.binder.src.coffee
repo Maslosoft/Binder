@@ -89,6 +89,70 @@ escapeHtml = (string) ->
 	return String(string).replace(/[&<>"'`=\/]/g, (s) ->
 		return entityMap[s]
 	)
+
+#
+# Compare objects for equallness.
+#
+# Example:
+# equals({x: 2}, {x: 2}); // Returns true
+#
+# @link https://stackoverflow.com/a/6713782/5444623
+#
+#
+equals = (x, y) ->
+	if x == y
+		return true
+	# if both x and y are null or undefined and exactly the same
+	if !(x instanceof Object) or !(y instanceof Object)
+		return false
+	# if they are not strictly equal, they both need to be Objects
+	if x.constructor != y.constructor
+		return false
+	# they must have the exact same prototype chain, the closest we can do is
+	# test there constructor.
+	for p of x
+		if !x.hasOwnProperty(p)
+			continue
+		# other properties were tested using x.constructor === y.constructor
+		if !y.hasOwnProperty(p)
+			return false
+		# allows to compare x[ p ] and y[ p ] when set to undefined
+		if x[p] == y[p]
+			continue
+		# if they have the same strict value or identity then they are equal
+		if typeof x[p] != 'object'
+			return false
+		# Numbers, Strings, Functions, Booleans must be strictly equal
+		if !Object.equals(x[p], y[p])
+			return false
+	# Objects and Arrays must be tested recursively
+	for p of y
+		`p = p`
+		if y.hasOwnProperty(p) and !x.hasOwnProperty(p)
+			return false
+	# allows x[ p ] to be set to undefined
+	true
+
+#
+# Generate CSS hex color based on input string
+#
+#
+#
+stringToColour = (str) ->
+	console.log arguments
+	hash = 0
+	i = 0
+	i = 0
+	while i < str.length
+		hash = str.charCodeAt(i) + (hash << 5) - hash
+		i++
+	colour = '#'
+	i = 0
+	while i < 3
+		value = hash >> i * 8 & 0xFF
+		colour += ('00' + value.toString(16)).substr(-2)
+		i++
+	colour
 "use strict"
 if not @Maslosoft
 	@Maslosoft = {}
@@ -197,6 +261,7 @@ if not @Maslosoft.Binder.Widgets
 		src: Maslosoft.Binder.Src
 		tags: Maslosoft.Binder.Tags
 		text: Maslosoft.Binder.Text
+		textToBg: Maslosoft.Binder.TextToBg
 		textValue: Maslosoft.Binder.TextValue
 		textValueHlJs: Maslosoft.Binder.TextValueHLJS
 		timeAgoFormatter: Maslosoft.Binder.TimeAgoFormatter
@@ -2231,6 +2296,17 @@ class @Maslosoft.Binder.Text extends @Maslosoft.Binder.Base
 		value = pm.getElementValue element, value
 
 		ko.utils.setHtml(element, value)
+
+class @Maslosoft.Binder.TextToBg extends @Maslosoft.Binder.Base
+
+	init: (element, valueAccessor, allBindingsAccessor, context) ->
+
+
+	update: (element, valueAccessor, allBindings, context) =>
+
+		value = @getValue(valueAccessor)
+		jQuery(element).css 'background-color', stringToColour(value)
+
 
 #
 # Html text value binding
@@ -4465,5 +4541,9 @@ class @Maslosoft.Binder.Model
 @Maslosoft.Ko.escapeRegExp = escapeRegExp
 
 @Maslosoft.Ko.escapeHtml = escapeHtml
+
+@Maslosoft.Ko.equals = equals
+
+@Maslosoft.Ko.stringToColour = stringToColour
 @Maslosoft.Binder.registerDefaults()
 ko.punches.enableAll()

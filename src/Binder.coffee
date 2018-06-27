@@ -92,6 +92,7 @@
 		src: Maslosoft.Binder.Src
 		tags: Maslosoft.Binder.Tags
 		text: Maslosoft.Binder.Text
+		textToBg: Maslosoft.Binder.TextToBg
 		textValue: Maslosoft.Binder.TextValue
 		textValueHlJs: Maslosoft.Binder.TextValueHLJS
 		timeAgoFormatter: Maslosoft.Binder.TimeAgoFormatter

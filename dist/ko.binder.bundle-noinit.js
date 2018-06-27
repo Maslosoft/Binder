@@ -10544,7 +10544,7 @@ module.exports = function (element) {
 
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, setRefByName, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, setRefByName, stringToColour, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -10672,6 +10672,63 @@ module.exports = function (element) {
     });
   };
 
+  equals = function(x, y) {
+    var p;
+    if (x === y) {
+      return true;
+    }
+    if (!(x instanceof Object) || !(y instanceof Object)) {
+      return false;
+    }
+    if (x.constructor !== y.constructor) {
+      return false;
+    }
+    for (p in x) {
+      if (!x.hasOwnProperty(p)) {
+        continue;
+      }
+      if (!y.hasOwnProperty(p)) {
+        return false;
+      }
+      if (x[p] === y[p]) {
+        continue;
+      }
+      if (typeof x[p] !== 'object') {
+        return false;
+      }
+      if (!Object.equals(x[p], y[p])) {
+        return false;
+      }
+    }
+    for (p in y) {
+      p = p;
+      if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  stringToColour = function(str) {
+    var colour, hash, i, value;
+    console.log(arguments);
+    hash = 0;
+    i = 0;
+    i = 0;
+    while (i < str.length) {
+      hash = str.charCodeAt(i) + (hash << 5) - hash;
+      i++;
+    }
+    colour = '#';
+    i = 0;
+    while (i < 3) {
+      value = hash >> i * 8 & 0xFF;
+      colour += ('00' + value.toString(16)).substr(-2);
+      i++;
+    }
+    return colour;
+  };
+
   "use strict";
 
   if (!this.Maslosoft) {
@@ -10778,6 +10835,7 @@ module.exports = function (element) {
       src: Maslosoft.Binder.Src,
       tags: Maslosoft.Binder.Tags,
       text: Maslosoft.Binder.Text,
+      textToBg: Maslosoft.Binder.TextToBg,
       textValue: Maslosoft.Binder.TextValue,
       textValueHlJs: Maslosoft.Binder.TextValueHLJS,
       timeAgoFormatter: Maslosoft.Binder.TimeAgoFormatter,
@@ -13004,6 +13062,26 @@ module.exports = function (element) {
 
   })(this.Maslosoft.Binder.Base);
 
+  this.Maslosoft.Binder.TextToBg = (function(_super) {
+    __extends(TextToBg, _super);
+
+    function TextToBg() {
+      this.update = __bind(this.update, this);
+      return TextToBg.__super__.constructor.apply(this, arguments);
+    }
+
+    TextToBg.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+
+    TextToBg.prototype.update = function(element, valueAccessor, allBindings, context) {
+      var value;
+      value = this.getValue(valueAccessor);
+      return jQuery(element).css('background-color', stringToColour(value));
+    };
+
+    return TextToBg;
+
+  })(this.Maslosoft.Binder.Base);
+
   this.Maslosoft.Binder.TextValue = (function(_super) {
     __extends(TextValue, _super);
 
@@ -15141,6 +15219,10 @@ module.exports = function (element) {
   this.Maslosoft.Ko.escapeRegExp = escapeRegExp;
 
   this.Maslosoft.Ko.escapeHtml = escapeHtml;
+
+  this.Maslosoft.Ko.equals = equals;
+
+  this.Maslosoft.Ko.stringToColour = stringToColour;
 
 }).call(this);
 

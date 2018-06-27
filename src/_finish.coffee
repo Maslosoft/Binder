@@ -6,3 +6,5 @@
 @Maslosoft.Ko.escapeHtml = escapeHtml
 
 @Maslosoft.Ko.equals = equals
+
+@Maslosoft.Ko.stringToColour = stringToColour
