@@ -139,7 +139,7 @@ equals = (x, y) ->
 #
 #
 stringToColour = (str) ->
-	console.log arguments
+	
 	hash = 0
 	i = 0
 	i = 0

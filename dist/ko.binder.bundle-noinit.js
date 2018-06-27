@@ -10711,7 +10711,6 @@ module.exports = function (element) {
 
   stringToColour = function(str) {
     var colour, hash, i, value;
-    console.log(arguments);
     hash = 0;
     i = 0;
     i = 0;
