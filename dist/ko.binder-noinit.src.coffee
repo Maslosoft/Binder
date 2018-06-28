@@ -4175,8 +4175,6 @@ class Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator
 		indicator.appendTo 'body'
 		coarse = indicator.find '.tree-grid-insert-indicator-coarse'
 		precise = indicator.find '.tree-grid-insert-indicator-precise'
-		
-		indicator.show()
 
 class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 

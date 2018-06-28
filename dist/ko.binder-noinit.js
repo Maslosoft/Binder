@@ -4252,8 +4252,7 @@
       indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;z-index: 10000;color:green;line-height: 1em;">\n	<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">\n		&#9654;\n	</span>\n	<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">\n		&#11835;\n	</span>\n</div>');
       indicator.appendTo('body');
       coarse = indicator.find('.tree-grid-insert-indicator-coarse');
-      precise = indicator.find('.tree-grid-insert-indicator-precise');
-      return indicator.show();
+      return precise = indicator.find('.tree-grid-insert-indicator-precise');
     };
 
     return InsertIndicator;
