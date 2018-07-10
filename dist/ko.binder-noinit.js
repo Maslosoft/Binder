@@ -1695,6 +1695,9 @@
 
     bustLinks = function(element) {
       var defer;
+      if (element.tagName.toLowerCase() !== 'a') {
+        return;
+      }
       defer = function() {
         var $il, innerLink, _i, _len, _ref, _results;
         _ref = jQuery(element).find('a');
@@ -1710,8 +1713,9 @@
     };
 
     Href.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var stopPropagation;
-      if (!element.href) {
+      var href, stopPropagation;
+      href = this.getValue(valueAccessor);
+      if (!element.href && href) {
         element.setAttribute('href', '');
       }
       if (element.tagName.toLowerCase() !== 'a') {
@@ -1730,12 +1734,19 @@
       var href, target;
       bustLinks(element);
       href = this.getValue(valueAccessor);
-      target = allBindings.get('target') || '';
-      if (element.href !== href) {
-        element.href = href;
-      }
-      if (element.target !== target) {
-        return element.target = target;
+      if (href) {
+        target = allBindings.get('target') || '';
+        if (!element.href) {
+          element.setAttribute('href', '');
+        }
+        if (element.href !== href) {
+          element.href = href;
+        }
+        if (element.target !== target) {
+          return element.target = target;
+        }
+      } else {
+        return element.removeAttribute('href');
       }
     };
 
