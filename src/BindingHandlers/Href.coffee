@@ -4,6 +4,9 @@
 class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 
 	bustLinks = (element) ->
+		# Skip on non anchor elements
+		if element.tagName.toLowerCase() isnt 'a'
+			return
 		defer = () ->
 			for innerLink in jQuery(element).find('a')
 				$il = jQuery(innerLink)
@@ -11,7 +14,11 @@ class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 		setTimeout defer, 0
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
-		if not element.href
+
+		href = @getValue(valueAccessor)
+
+		# Add href attribute if binding have some value
+		if not element.href and href
 			element.setAttribute('href', '')
 		if element.tagName.toLowerCase() isnt 'a'
 			console.warn('href binding should be used only on `a` tags')
@@ -29,8 +36,16 @@ class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 		bustLinks element
 
 		href = @getValue(valueAccessor)
-		target = allBindings.get('target') or ''
-		if element.href isnt href
-			element.href = href
-		if element.target isnt target
-			element.target = target
+
+		if href
+			target = allBindings.get('target') or ''
+			# Ensure attribute
+			if not element.href
+				element.setAttribute('href', '')
+			if element.href isnt href
+				element.href = href
+			if element.target isnt target
+				element.target = target
+		else
+			# Remove attribute if empty
+			element.removeAttribute 'href'
