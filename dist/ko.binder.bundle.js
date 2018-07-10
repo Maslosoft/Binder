@@ -12227,7 +12227,7 @@ module.exports = function (element) {
   })(this.Maslosoft.Binder.Base);
 
   this.Maslosoft.Binder.Href = (function(_super) {
-    var bustLinks;
+    var bustLinks, ensureHrefOn;
 
     __extends(Href, _super);
 
@@ -12256,14 +12256,22 @@ module.exports = function (element) {
       return setTimeout(defer, 0);
     };
 
+    ensureHrefOn = function(element) {
+      var attr;
+      if (!element.href) {
+        attr = document.createAttribute('href');
+        attr.value = '';
+        element.setAttributeNode(attr);
+        element.setAttribute('href', '');
+        return jQuery(element).attr('href', '');
+      }
+    };
+
     Href.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
       var href, stopPropagation;
       href = this.getValue(valueAccessor);
       if (!element.href && href) {
-        element.setAttribute('href', '');
-      }
-      if (element.tagName.toLowerCase() !== 'a') {
-        console.warn('href binding should be used only on `a` tags');
+        ensureHrefOn(element);
       }
       bustLinks(element);
       stopPropagation = allBindingsAccessor.get('stopPropagation') || false;
@@ -12280,14 +12288,12 @@ module.exports = function (element) {
       href = this.getValue(valueAccessor);
       if (href) {
         target = allBindings.get('target') || '';
-        if (!element.href) {
-          element.setAttribute('href', '');
+        ensureHrefOn(element);
+        if (element.getAttribute('href') !== href) {
+          element.setAttribute('href', href);
         }
-        if (element.href !== href) {
-          element.href = href;
-        }
-        if (element.target !== target) {
-          return element.target = target;
+        if (element.getAttribute('target') !== target) {
+          return element.setAttribute('target', target);
         }
       } else {
         return element.removeAttribute('href');
