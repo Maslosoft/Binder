@@ -1,18 +1,23 @@
 <?php require __DIR__ . '/../_header.php'; ?>
 <!-- trim -->
+<style>
+    #spanHref::after{
+        content: attr(href);
+    }
+</style>
 <title>HREF Attribute</title>
 <h1>HREF Attribute</h1>
 <p>
 	HREF binding handler is a shorthand for <code>attr</code> binding handler for links <code>href</code>
 	attribute. Base syntax uses data bind HTML attribute:
-	<pre class="html"><?= escapeko('<a data-bind="href: binder.model.Href.filename">Text</a>');?></pre>
 </p>
+<pre class="html"><?= escapeko('<a data-bind="href: binder.model.Href.filename">Text</a>');?></pre>
 <h5>Using with punches syntax</h5>
 <p>
 	This binding, as well many others can be used with alternative syntax, called ko punches. Just
 	set <code>href</code> attribute to observable reference wrapped with curly braces:
-	<pre class="html"><?= escapeko('<a href="{{binder.model.Href.filename}}">Text</a>'); ?></pre>
 </p>
+<pre class="html"><?= escapeko('<a href="{{binder.model.Href.filename}}">Text</a>'); ?></pre>
 <h2>Live example</h2>
 <!-- /trim -->
 <table class="table table-condensed">
@@ -46,6 +51,12 @@
 			<a data-bind="href: binder.model.Href.filename" target="_blank">This should open in new window</a>
 		</td>
 	</tr>
+    <tr>
+        <th>Span element</th>
+        <td>
+            <span id="spanHref" data-bind="href: binder.model.Href.filename">This should have href attribute:&nbsp;</span>
+        </td>
+    </tr>
 </table>
 <!-- trim -->
 <p>
