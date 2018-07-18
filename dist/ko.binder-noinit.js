@@ -1445,7 +1445,11 @@
     EnumFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
       var config;
       config = this.getValue(valueAccessor);
-      element.innerHTML = config.values[config.data];
+      if (typeof config.values[config.data] !== 'undefined') {
+        element.innerHTML = config.values[config.data];
+      } else {
+        element.innerHTML = config.data;
+      }
     };
 
     return EnumFormatter;
