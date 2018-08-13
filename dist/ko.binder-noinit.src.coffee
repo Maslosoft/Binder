@@ -96,41 +96,62 @@ escapeHtml = (string) ->
 # Example:
 # equals({x: 2}, {x: 2}); // Returns true
 #
+# Optionally skip properties (recursively) to compare:
+# equals({x: 2, y: false}, {x: 2, y: true}, ['y']); // Returns true
+# equals({y: false, x: 2, z: {x: 1, y: 1}}, {x: 2, y: true, z: {x: 1, y: 2}}, ['y']); // Returns true
+#
 # @link https://stackoverflow.com/a/6713782/5444623
 #
 #
-equals = (x, y) ->
+equals = (x, y, skip = []) ->
+
+	doSkip = (property) ->
+		return skip.indexOf(property) != -1
+
+	# if both x and y are null or undefined and exactly the same
 	if x == y
 		return true
-	# if both x and y are null or undefined and exactly the same
+
+	# if they are not strictly equal, they both need to be Objects
 	if !(x instanceof Object) or !(y instanceof Object)
 		return false
-	# if they are not strictly equal, they both need to be Objects
-	if x.constructor != y.constructor
-		return false
+
 	# they must have the exact same prototype chain, the closest we can do is
 	# test there constructor.
+	if x.constructor != y.constructor
+		return false
+
 	for p of x
+		if doSkip p
+			continue
+
+		# other properties were tested using x.constructor === y.constructor
 		if !x.hasOwnProperty(p)
 			continue
-		# other properties were tested using x.constructor === y.constructor
+
+		# allows to compare x[ p ] and y[ p ] when set to undefined
 		if !y.hasOwnProperty(p)
 			return false
-		# allows to compare x[ p ] and y[ p ] when set to undefined
+
+		# if they have the same strict value or identity then they are equal
 		if x[p] == y[p]
 			continue
-		# if they have the same strict value or identity then they are equal
+
+		# Numbers, Strings, Functions, Booleans must be strictly equal
 		if typeof x[p] != 'object'
 			return false
-		# Numbers, Strings, Functions, Booleans must be strictly equal
-		if !Object.equals(x[p], y[p])
+
+		# Objects and Arrays must be tested recursively
+		if !equals(x[p], y[p], skip)
 			return false
-	# Objects and Arrays must be tested recursively
+
 	for p of y
+		if doSkip p
+			continue
 		`p = p`
+		# allows x[ p ] to be set to undefined
 		if y.hasOwnProperty(p) and !x.hasOwnProperty(p)
 			return false
-	# allows x[ p ] to be set to undefined
 	true
 
 #

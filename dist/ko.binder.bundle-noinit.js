@@ -10672,8 +10672,14 @@ module.exports = function (element) {
     });
   };
 
-  equals = function(x, y) {
-    var p;
+  equals = function(x, y, skip) {
+    var doSkip, p;
+    if (skip == null) {
+      skip = [];
+    }
+    doSkip = function(property) {
+      return skip.indexOf(property) !== -1;
+    };
     if (x === y) {
       return true;
     }
@@ -10684,6 +10690,9 @@ module.exports = function (element) {
       return false;
     }
     for (p in x) {
+      if (doSkip(p)) {
+        continue;
+      }
       if (!x.hasOwnProperty(p)) {
         continue;
       }
@@ -10696,11 +10705,14 @@ module.exports = function (element) {
       if (typeof x[p] !== 'object') {
         return false;
       }
-      if (!Object.equals(x[p], y[p])) {
+      if (!equals(x[p], y[p], skip)) {
         return false;
       }
     }
     for (p in y) {
+      if (doSkip(p)) {
+        continue;
+      }
       p = p;
       if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) {
         return false;
