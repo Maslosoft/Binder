@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, setRefByName, stringToColour, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, setRefByName, stringToColour, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -194,6 +194,17 @@
       i++;
     }
     return colour;
+  };
+
+  preload = function(element, src) {
+    var image;
+    image = new Image;
+    image.src = src;
+    return image.onload = function() {
+      image = null;
+      console.log('loaded...');
+      return element.attr("src", src);
+    };
   };
 
   "use strict";
@@ -966,7 +977,7 @@
       }
       src = src.join('/');
       if ($element.attr("src") !== src) {
-        $element.attr("src", src);
+        preload($element, src);
       }
     };
 
@@ -2045,7 +2056,7 @@
         src = src + '?' + new Date().getTime();
       }
       if ($element.attr("src") !== src) {
-        $element.attr("src", src);
+        preload($element, src);
       }
       $element.css({
         width: "" + size + "px",
@@ -4715,6 +4726,8 @@
   this.Maslosoft.Ko.equals = equals;
 
   this.Maslosoft.Ko.stringToColour = stringToColour;
+
+  this.Maslosoft.Ko.preload = preload;
 
 }).call(this);
 

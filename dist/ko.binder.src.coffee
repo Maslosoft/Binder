@@ -174,6 +174,18 @@ stringToColour = (str) ->
 		colour += ('00' + value.toString(16)).substr(-2)
 		i++
 	colour
+
+#
+# Preload image of element
+# @param element DomElement
+#
+preload = (element, src) ->
+	image = new Image
+	image.src = src
+	image.onload = () ->
+		image = null
+		console.log 'loaded...'
+		element.attr "src", src
 "use strict"
 if not @Maslosoft
 	@Maslosoft = {}
@@ -962,7 +974,9 @@ class @Maslosoft.Binder.Asset extends @Maslosoft.Binder.Base
 		src = src.join '/'
 
 		if $element.attr("src") != src
-			$element.attr "src", src
+
+			# Preload image
+			preload $element, src
 		return
 
 #
@@ -1888,9 +1902,9 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 
 		# Update src only if changed
 		if $element.attr("src") != src
-			$element.attr "src", src
+			preload $element, src
 
-		# Set max image dimentions
+		# Set max image dimensions
 		$element.css
 			width: "#{size}px"
 			height: 'auto'
@@ -4590,5 +4604,7 @@ class @Maslosoft.Binder.Model
 @Maslosoft.Ko.equals = equals
 
 @Maslosoft.Ko.stringToColour = stringToColour
+
+@Maslosoft.Ko.preload = preload
 @Maslosoft.Binder.registerDefaults()
 ko.punches.enableAll()
