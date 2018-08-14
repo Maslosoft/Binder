@@ -50,5 +50,7 @@ class @Maslosoft.Binder.Asset extends @Maslosoft.Binder.Base
 		src = src.join '/'
 
 		if $element.attr("src") != src
-			$element.attr "src", src
+
+			# Preload image
+			preload $element, src
 		return

@@ -98,9 +98,9 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 
 		# Update src only if changed
 		if $element.attr("src") != src
-			$element.attr "src", src
+			preload $element, src
 
-		# Set max image dimentions
+		# Set max image dimensions
 		$element.css
 			width: "#{size}px"
 			height: 'auto'
