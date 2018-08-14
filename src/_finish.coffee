@@ -8,3 +8,5 @@
 @Maslosoft.Ko.equals = equals
 
 @Maslosoft.Ko.stringToColour = stringToColour
+
+@Maslosoft.Ko.preload = preload

@@ -174,3 +174,15 @@ stringToColour = (str) ->
 		colour += ('00' + value.toString(16)).substr(-2)
 		i++
 	colour
+
+#
+# Preload image of element
+# @param element DomElement
+#
+preload = (element, src) ->
+	image = new Image
+	image.src = src
+	image.onload = () ->
+		image = null
+		console.log 'loaded...'
+		element.attr "src", src
