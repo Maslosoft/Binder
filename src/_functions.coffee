@@ -184,5 +184,4 @@ preload = (element, src) ->
 	image.src = src
 	image.onload = () ->
 		image = null
-		console.log 'loaded...'
 		element.attr "src", src

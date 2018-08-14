@@ -202,7 +202,6 @@
     image.src = src;
     return image.onload = function() {
       image = null;
-      console.log('loaded...');
       return element.attr("src", src);
     };
   };
