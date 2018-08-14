@@ -933,7 +933,7 @@
       return Asset.__super__.constructor.apply(this, arguments);
     }
 
-    Asset.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+    Asset.prototype.update = function(element, valueAccessor, allBindings) {
       var $element, date, height, model, proportional, sec, src, url, width;
       $element = $(element);
       width = allBindings.get('w' || allBindings.get('width' || null));
@@ -942,7 +942,12 @@
       model = this.getValue(valueAccessor);
       if (model.updateDate) {
         date = model.updateDate;
-        sec = date.sec;
+        if (typeof date === 'number') {
+          sec = date;
+        }
+        if (typeof date.sec === 'number') {
+          sec = date.sec;
+        }
       }
       url = model.url;
       src = [];
