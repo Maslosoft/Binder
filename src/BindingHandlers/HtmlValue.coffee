@@ -19,7 +19,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
 
 	#
-	# Get value of element, this can be ovverriden, see TextValue for example.
+	# Get value of element, this can be overridden, see TextValue for example.
 	# Will return inner html of element.
 	#
 	# @param jQuery element
@@ -29,7 +29,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 		return element.innerHTML
 
 	#
-	# Set value of element, this can be ovverriden, see TextValue for example
+	# Set value of element, this can be overridden, see TextValue for example
 	# Value param should be valid html.
 	#
 	# @param jQuery element
@@ -38,7 +38,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 	setElementValue: (element, value) ->
 		element.innerHTML = value
 
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
+	init: (element, valueAccessor, allBindingsAccessor) =>
 		
 		element.setAttribute('contenteditable', true)
 		
@@ -51,8 +51,8 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 		pm.from configuration
 
-		# Handle update immediatelly
-		handler = (e) =>
+		# Handle update immediately
+		handler = () =>
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 
@@ -71,13 +71,13 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 					accessor(elementValue)
 		
 		# Handle update, but push update to end of queue
-		deferHandler = (e) =>
+		deferHandler = () =>
 			setTimeout handler, 0
 		
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
 		jQuery(element).on "keyup, input", handler
 
-		# This is to allow interation with tools which could modify content, also to work with drag and drop
+		# This is to allow interaction with tools which could modify content, also to work with drag and drop
 		jQuery(document).on "mouseup", deferHandler
 
 		dispose = (toDispose) ->

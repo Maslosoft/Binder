@@ -4,7 +4,7 @@ class @Maslosoft.Binder.TimeAgoFormatter extends @Maslosoft.Binder.MomentFormatt
 	constructor: (options) ->
 		super new Maslosoft.Binder.TimeAgoOptions(options)
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@options.sourceFormat](value).fromNow()
 		return
