@@ -238,7 +238,7 @@ if not @Maslosoft.Binder.Widgets
 	if name.match /[A-Z]/
 		name2 = name.toLowerCase()
 
-	# Assign two way. Not sure if nessesary in current ko
+	# Assign two way. Not sure if necessary in current ko
 	if handler.writable
 		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
 			ko.expressionRewriting.twoWayBindings[name] = true
@@ -281,6 +281,7 @@ if not @Maslosoft.Binder.Widgets
 		eval: Maslosoft.Binder.Eval
 		fancytree: Maslosoft.Binder.Fancytree
 		fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter
+		googlemap: Maslosoft.Binder.GoogleMap
 		hidden: Maslosoft.Binder.Hidden
 		href: Maslosoft.Binder.Href
 		html: Maslosoft.Binder.Html
@@ -1555,18 +1556,34 @@ class @Maslosoft.Binder.FileSizeFormatter extends @Maslosoft.Binder.Base
 #
 # GMap3 binding
 # TODO Allow syntax:
-# data-bind="gmap: config"
+# data-bind="googleMap: config"
 # TODO When using two or more trees from same data, only first one works properly
 #
-class @Maslosoft.Binder.GMap extends @Maslosoft.Binder.Base
+class @Maslosoft.Binder.GoogleMap extends @Maslosoft.Binder.Base
 
-  init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		@apply(element, @getValue(valueAccessor))
 
-  update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		@apply(element, @getValue(valueAccessor))
 
-    value = @getValue(valueAccessor);
+
+	apply: (element, cfg) =>
+		console.log element, cfg
+		latLng = new google.maps.LatLng cfg.lat, cfg.lng
+		mapOptions =
+			zoom: cfg.zoom
+			center: latLng
+			mapTypeId: cfg.type
 
 
+		map = new google.maps.Map element, mapOptions
+
+		if cfg.markers
+			markerCfg =
+				position: latLng
+				map: map
+			new google.maps.Marker markerCfg
 
 #
 # Hidden binding handler, opposite to visible
@@ -1806,7 +1823,12 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 # This is to select proper icon or scaled image thumbnail
 #
 class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
-	
+
+	#
+	# Optional preloader image, useful to avoid layout reflow
+	#
+	@preloader = ''
+
 	update: (element, valueAccessor, allBindings) =>
 		$element = $(element)
 		model = @getValue(valueAccessor)
@@ -1901,6 +1923,10 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 
 		# Update src only if changed
 		if $element.attr("src") != src
+
+			if Icon.preload
+				$element.attr 'src', Icon.preload
+
 			preload $element, src
 
 		# Set max image dimensions

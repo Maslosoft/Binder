@@ -25,19 +25,18 @@ use Maslosoft\Components\Controller;
     This binding does not have configuration parameters, is will behave depending on context. However
     setting extra binding value of <code>cachebusting</code> with value <code>true</code>
     will add timestamp to logo to ensure that always fresh copy is loaded. This is useful
-    for dynamic images.
+    for dynamic images. If layout reflow during downloading of images is issue, the <code>preloader</code>
+    binding can be set to some already loaded image.
 </p>
 <div>
     <div class="well">
-    <p>Image with timestamp example and scaling parameters with cachebusting enabled:</p>
-    <p>
+        <p>Image with timestamp example and scaling parameters with cachebusting enabled:</p>
         <ul>
-        <li><code>isImages</code> is set to <code>true</code></li>
-        <li><code>iconSize</code> is set to <code>64</code></li>
-        <li><code>updateDate</code> is set to <code>123</code>.
-            This parameter is used to keep images fresh, ie. to get new one on model update.</li>
-    </ul>
-    </p>
+            <li><code>isImages</code> is set to <code>true</code></li>
+            <li><code>iconSize</code> is set to <code>64</code></li>
+            <li><code>updateDate</code> is set to <code>123</code>.
+                This parameter is used to keep images fresh, ie. to get new one on model update.</li>
+        </ul>
     <!-- /trim -->
 	<img data-bind="icon: binder.model.Image, cachebusting: true" />
     <!-- trim -->

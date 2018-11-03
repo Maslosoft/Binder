@@ -179,6 +179,7 @@ $baseHref = "$baseURI/";
 		<script type="text/javascript" src="<?= $bower; ?>/fancytree/dist/jquery.fancytree-all.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/bootstrap/dist/js/bootstrap.js"></script>
 		<script type="text/javascript" src="<?= $bower; ?>/maslosoft-playlist/dist/playlist.js"></script>
+        <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&.js"></script>
 		<script type="text/javascript" src="<?= $src; ?>/Model.js"></script>
 		<script type="text/javascript" src="<?= $src; ?>/RegExpValidator.js"></script>
 		<script type="text/javascript" src="<?= $src; ?>/RequiredValidator.js"></script>

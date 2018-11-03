@@ -3,7 +3,7 @@
 # This is to select proper icon or scaled image thumbnail
 #
 class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
-	
+
 	update: (element, valueAccessor, allBindings) =>
 		$element = $(element)
 		model = @getValue(valueAccessor)
@@ -59,10 +59,10 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 			# End with /
 			if not src.match(new RegExp("/$"))
 				src = src + '/'
-			# Dimentions are set
+			# Dimensions are set
 			if src.match(new RegExp("/w/", "g"))
 				src = src.replace(regex, "/" + size + "/")
-			# Dimentions are not set, set it here
+			# Dimensions are not set, set it here
 			else
 				src = src + "w/#{size}/h/#{size}/p/0/"
 				
@@ -98,6 +98,10 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 
 		# Update src only if changed
 		if $element.attr("src") != src
+
+			if extra.preloader
+				$element.attr 'src', extra.preloader
+
 			preload $element, src
 
 		# Set max image dimensions

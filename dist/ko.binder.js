@@ -300,6 +300,7 @@
       "eval": Maslosoft.Binder.Eval,
       fancytree: Maslosoft.Binder.Fancytree,
       fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter,
+      googlemap: Maslosoft.Binder.GoogleMap,
       hidden: Maslosoft.Binder.Hidden,
       href: Maslosoft.Binder.Href,
       html: Maslosoft.Binder.Html,
@@ -1673,23 +1674,44 @@
 
   })(this.Maslosoft.Binder.Base);
 
-  this.Maslosoft.Binder.GMap = (function(_super) {
-    __extends(GMap, _super);
+  this.Maslosoft.Binder.GoogleMap = (function(_super) {
+    __extends(GoogleMap, _super);
 
-    function GMap() {
+    function GoogleMap() {
+      this.apply = __bind(this.apply, this);
       this.update = __bind(this.update, this);
       this.init = __bind(this.init, this);
-      return GMap.__super__.constructor.apply(this, arguments);
+      return GoogleMap.__super__.constructor.apply(this, arguments);
     }
 
-    GMap.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {};
-
-    GMap.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var value;
-      return value = this.getValue(valueAccessor);
+    GoogleMap.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      return this.apply(element, this.getValue(valueAccessor));
     };
 
-    return GMap;
+    GoogleMap.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+      return this.apply(element, this.getValue(valueAccessor));
+    };
+
+    GoogleMap.prototype.apply = function(element, cfg) {
+      var latLng, map, mapOptions, markerCfg;
+      console.log(element, cfg);
+      latLng = new google.maps.LatLng(cfg.lat, cfg.lng);
+      mapOptions = {
+        zoom: cfg.zoom,
+        center: latLng,
+        mapTypeId: cfg.type
+      };
+      map = new google.maps.Map(element, mapOptions);
+      if (cfg.markers) {
+        markerCfg = {
+          position: latLng,
+          map: map
+        };
+        return new google.maps.Marker(markerCfg);
+      }
+    };
+
+    return GoogleMap;
 
   })(this.Maslosoft.Binder.Base);
 
@@ -1899,7 +1921,7 @@
       return element.innerHTML = value;
     };
 
-    HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+    HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor) {
       var configuration, deferHandler, dispose, handler, pm;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
@@ -1909,7 +1931,7 @@
       pm = new PluginsManager(element);
       pm.from(configuration);
       handler = (function(_this) {
-        return function(e) {
+        return function() {
           var accessor, elementValue, modelValue;
           if (!element) {
             return;
@@ -1930,7 +1952,7 @@
         };
       })(this);
       deferHandler = (function(_this) {
-        return function(e) {
+        return function() {
           return setTimeout(handler, 0);
         };
       })(this);
@@ -2055,6 +2077,9 @@
         src = src + '?' + new Date().getTime();
       }
       if ($element.attr("src") !== src) {
+        if (extra.preloader) {
+          $element.attr('src', extra.preloader);
+        }
         preload($element, src);
       }
       $element.css({
@@ -2647,7 +2672,7 @@
       TimeAgoFormatter.__super__.constructor.call(this, new Maslosoft.Binder.TimeAgoOptions(options));
     }
 
-    TimeAgoFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    TimeAgoFormatter.prototype.update = function(element, valueAccessor) {
       var value;
       value = this.getValue(valueAccessor);
       element.innerHTML = moment[this.options.sourceFormat](value).fromNow();
@@ -2987,7 +3012,7 @@
 
     VideoThumb.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
 
-    VideoThumb.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    VideoThumb.prototype.update = function(element, valueAccessor) {
       var url;
       url = this.getValue(valueAccessor);
       return this.setThumb(url, element);

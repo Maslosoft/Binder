@@ -279,3 +279,14 @@ class @Maslosoft.Koe.Smileys
 			value = value.replace re, "<img src='#{Smileys.dir}/#{image}' data-smiley='#{smiley}'/>"
 
 		return value
+
+class @Maslosoft.Koe.Map
+
+	lat: 0
+	lng: 0
+
+	zoom: 10
+	type: 'roadmap'
+
+	markers: null
+

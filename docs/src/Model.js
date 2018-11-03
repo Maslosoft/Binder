@@ -592,4 +592,21 @@
 
   })();
 
+  this.Maslosoft.Koe.Map = (function() {
+    function Map() {}
+
+    Map.prototype.lat = 0;
+
+    Map.prototype.lng = 0;
+
+    Map.prototype.zoom = 10;
+
+    Map.prototype.type = 'roadmap';
+
+    Map.prototype.markers = null;
+
+    return Map;
+
+  })();
+
 }).call(this);

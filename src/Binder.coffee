@@ -37,7 +37,7 @@
 	if name.match /[A-Z]/
 		name2 = name.toLowerCase()
 
-	# Assign two way. Not sure if nessesary in current ko
+	# Assign two way. Not sure if necessary in current ko
 	if handler.writable
 		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
 			ko.expressionRewriting.twoWayBindings[name] = true
@@ -80,6 +80,7 @@
 		eval: Maslosoft.Binder.Eval
 		fancytree: Maslosoft.Binder.Fancytree
 		fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter
+		googlemap: Maslosoft.Binder.GoogleMap
 		hidden: Maslosoft.Binder.Hidden
 		href: Maslosoft.Binder.Href
 		html: Maslosoft.Binder.Html

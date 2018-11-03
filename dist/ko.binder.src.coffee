@@ -238,7 +238,7 @@ if not @Maslosoft.Binder.Widgets
 	if name.match /[A-Z]/
 		name2 = name.toLowerCase()
 
-	# Assign two way. Not sure if nessesary in current ko
+	# Assign two way. Not sure if necessary in current ko
 	if handler.writable
 		if ko.expressionRewriting and ko.expressionRewriting.twoWayBindings
 			ko.expressionRewriting.twoWayBindings[name] = true
@@ -281,6 +281,7 @@ if not @Maslosoft.Binder.Widgets
 		eval: Maslosoft.Binder.Eval
 		fancytree: Maslosoft.Binder.Fancytree
 		fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter
+		googlemap: Maslosoft.Binder.GoogleMap
 		hidden: Maslosoft.Binder.Hidden
 		href: Maslosoft.Binder.Href
 		html: Maslosoft.Binder.Html
@@ -1555,18 +1556,34 @@ class @Maslosoft.Binder.FileSizeFormatter extends @Maslosoft.Binder.Base
 #
 # GMap3 binding
 # TODO Allow syntax:
-# data-bind="gmap: config"
+# data-bind="googleMap: config"
 # TODO When using two or more trees from same data, only first one works properly
 #
-class @Maslosoft.Binder.GMap extends @Maslosoft.Binder.Base
+class @Maslosoft.Binder.GoogleMap extends @Maslosoft.Binder.Base
 
-  init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	init: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		@apply(element, @getValue(valueAccessor))
 
-  update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		@apply(element, @getValue(valueAccessor))
 
-    value = @getValue(valueAccessor);
+
+	apply: (element, cfg) =>
+		console.log element, cfg
+		latLng = new google.maps.LatLng cfg.lat, cfg.lng
+		mapOptions =
+			zoom: cfg.zoom
+			center: latLng
+			mapTypeId: cfg.type
 
 
+		map = new google.maps.Map element, mapOptions
+
+		if cfg.markers
+			markerCfg =
+				position: latLng
+				map: map
+			new google.maps.Marker markerCfg
 
 #
 # Hidden binding handler, opposite to visible
@@ -1718,7 +1735,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
 
 	#
-	# Get value of element, this can be ovverriden, see TextValue for example.
+	# Get value of element, this can be overridden, see TextValue for example.
 	# Will return inner html of element.
 	#
 	# @param jQuery element
@@ -1728,7 +1745,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 		return element.innerHTML
 
 	#
-	# Set value of element, this can be ovverriden, see TextValue for example
+	# Set value of element, this can be overridden, see TextValue for example
 	# Value param should be valid html.
 	#
 	# @param jQuery element
@@ -1737,7 +1754,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 	setElementValue: (element, value) ->
 		element.innerHTML = value
 
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
+	init: (element, valueAccessor, allBindingsAccessor) =>
 		
 		element.setAttribute('contenteditable', true)
 		
@@ -1750,8 +1767,8 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 		pm.from configuration
 
-		# Handle update immediatelly
-		handler = (e) =>
+		# Handle update immediately
+		handler = () =>
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 
@@ -1770,13 +1787,13 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 					accessor(elementValue)
 		
 		# Handle update, but push update to end of queue
-		deferHandler = (e) =>
+		deferHandler = () =>
 			setTimeout handler, 0
 		
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
 		jQuery(element).on "keyup, input", handler
 
-		# This is to allow interation with tools which could modify content, also to work with drag and drop
+		# This is to allow interaction with tools which could modify content, also to work with drag and drop
 		jQuery(document).on "mouseup", deferHandler
 
 		dispose = (toDispose) ->
@@ -1806,7 +1823,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 # This is to select proper icon or scaled image thumbnail
 #
 class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
-	
+
 	update: (element, valueAccessor, allBindings) =>
 		$element = $(element)
 		model = @getValue(valueAccessor)
@@ -1862,10 +1879,10 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 			# End with /
 			if not src.match(new RegExp("/$"))
 				src = src + '/'
-			# Dimentions are set
+			# Dimensions are set
 			if src.match(new RegExp("/w/", "g"))
 				src = src.replace(regex, "/" + size + "/")
-			# Dimentions are not set, set it here
+			# Dimensions are not set, set it here
 			else
 				src = src + "w/#{size}/h/#{size}/p/0/"
 				
@@ -1901,6 +1918,10 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 
 		# Update src only if changed
 		if $element.attr("src") != src
+
+			if extra.preloader
+				$element.attr 'src', extra.preloader
+
 			preload $element, src
 
 		# Set max image dimensions
@@ -2408,7 +2429,7 @@ class @Maslosoft.Binder.TimeAgoFormatter extends @Maslosoft.Binder.MomentFormatt
 	constructor: (options) ->
 		super new Maslosoft.Binder.TimeAgoOptions(options)
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@options.sourceFormat](value).fromNow()
 		return
@@ -2715,13 +2736,13 @@ class @Maslosoft.Binder.VideoPlaylist extends @Maslosoft.Binder.Video
 			ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', false);
 
 #
-# Video PLaylist binding handler
+# Video Playlist binding handler
 #
 class @Maslosoft.Binder.VideoThumb extends @Maslosoft.Binder.Video
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor) =>
 		url = @getValue(valueAccessor)
 
 		@setThumb url, element
