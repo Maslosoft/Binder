@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, setRefByName, stringToColour, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, preloadedImages, setRefByName, stringToColour, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -196,12 +196,19 @@
     return colour;
   };
 
+  preloadedImages = {};
+
   preload = function(element, src) {
     var image;
+    if (preloadedImages[src]) {
+      element.attr("src", src);
+      return;
+    }
     image = new Image;
     image.src = src;
     return image.onload = function() {
       image = null;
+      preloadedImages[src] = true;
       return element.attr("src", src);
     };
   };

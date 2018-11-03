@@ -175,15 +175,21 @@ stringToColour = (str) ->
 		i++
 	colour
 
+preloadedImages = {}
+
 #
 # Preload image of element
 # @param element DomElement
 #
 preload = (element, src) ->
+	if preloadedImages[src]
+		element.attr "src", src
+		return
 	image = new Image
 	image.src = src
 	image.onload = () ->
 		image = null
+		preloadedImages[src] = true
 		element.attr "src", src
 "use strict"
 if not @Maslosoft
