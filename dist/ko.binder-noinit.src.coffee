@@ -175,15 +175,21 @@ stringToColour = (str) ->
 		i++
 	colour
 
+preloadedImages = {}
+
 #
 # Preload image of element
 # @param element DomElement
 #
 preload = (element, src) ->
+	if preloadedImages[src]
+		element.attr "src", src
+		return
 	image = new Image
 	image.src = src
 	image.onload = () ->
 		image = null
+		preloadedImages[src] = true
 		element.attr "src", src
 "use strict"
 if not @Maslosoft
@@ -1735,7 +1741,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 			ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]'
 
 	#
-	# Get value of element, this can be ovverriden, see TextValue for example.
+	# Get value of element, this can be overridden, see TextValue for example.
 	# Will return inner html of element.
 	#
 	# @param jQuery element
@@ -1745,7 +1751,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 		return element.innerHTML
 
 	#
-	# Set value of element, this can be ovverriden, see TextValue for example
+	# Set value of element, this can be overridden, see TextValue for example
 	# Value param should be valid html.
 	#
 	# @param jQuery element
@@ -1754,7 +1760,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 	setElementValue: (element, value) ->
 		element.innerHTML = value
 
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
+	init: (element, valueAccessor, allBindingsAccessor) =>
 		
 		element.setAttribute('contenteditable', true)
 		
@@ -1767,8 +1773,8 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 		pm.from configuration
 
-		# Handle update immediatelly
-		handler = (e) =>
+		# Handle update immediately
+		handler = () =>
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 
@@ -1787,13 +1793,13 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 					accessor(elementValue)
 		
 		# Handle update, but push update to end of queue
-		deferHandler = (e) =>
+		deferHandler = () =>
 			setTimeout handler, 0
 		
 		# NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
 		jQuery(element).on "keyup, input", handler
 
-		# This is to allow interation with tools which could modify content, also to work with drag and drop
+		# This is to allow interaction with tools which could modify content, also to work with drag and drop
 		jQuery(document).on "mouseup", deferHandler
 
 		dispose = (toDispose) ->
@@ -1823,11 +1829,6 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 # This is to select proper icon or scaled image thumbnail
 #
 class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
-
-	#
-	# Optional preloader image, useful to avoid layout reflow
-	#
-	@preloader = ''
 
 	update: (element, valueAccessor, allBindings) =>
 		$element = $(element)
@@ -1884,10 +1885,10 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 			# End with /
 			if not src.match(new RegExp("/$"))
 				src = src + '/'
-			# Dimentions are set
+			# Dimensions are set
 			if src.match(new RegExp("/w/", "g"))
 				src = src.replace(regex, "/" + size + "/")
-			# Dimentions are not set, set it here
+			# Dimensions are not set, set it here
 			else
 				src = src + "w/#{size}/h/#{size}/p/0/"
 				
@@ -1924,8 +1925,8 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 		# Update src only if changed
 		if $element.attr("src") != src
 
-			if Icon.preload
-				$element.attr 'src', Icon.preload
+			if extra.preloader
+				$element.attr 'src', extra.preloader
 
 			preload $element, src
 
@@ -2434,7 +2435,7 @@ class @Maslosoft.Binder.TimeAgoFormatter extends @Maslosoft.Binder.MomentFormatt
 	constructor: (options) ->
 		super new Maslosoft.Binder.TimeAgoOptions(options)
 
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor) =>
 		value = @getValue(valueAccessor)
 		element.innerHTML = moment[@options.sourceFormat](value).fromNow()
 		return
@@ -2741,13 +2742,13 @@ class @Maslosoft.Binder.VideoPlaylist extends @Maslosoft.Binder.Video
 			ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', false);
 
 #
-# Video PLaylist binding handler
+# Video Playlist binding handler
 #
 class @Maslosoft.Binder.VideoThumb extends @Maslosoft.Binder.Video
 
 	init: (element, valueAccessor, allBindingsAccessor, context) =>
 		
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+	update: (element, valueAccessor) =>
 		url = @getValue(valueAccessor)
 
 		@setThumb url, element

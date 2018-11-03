@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, setRefByName, stringToColour, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, preloadedImages, setRefByName, stringToColour, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -196,12 +196,19 @@
     return colour;
   };
 
+  preloadedImages = {};
+
   preload = function(element, src) {
     var image;
+    if (preloadedImages[src]) {
+      element.attr("src", src);
+      return;
+    }
     image = new Image;
     image.src = src;
     return image.onload = function() {
       image = null;
+      preloadedImages[src] = true;
       return element.attr("src", src);
     };
   };
@@ -1921,7 +1928,7 @@
       return element.innerHTML = value;
     };
 
-    HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+    HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor) {
       var configuration, deferHandler, dispose, handler, pm;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
@@ -1931,7 +1938,7 @@
       pm = new PluginsManager(element);
       pm.from(configuration);
       handler = (function(_this) {
-        return function(e) {
+        return function() {
           var accessor, elementValue, modelValue;
           if (!element) {
             return;
@@ -1952,7 +1959,7 @@
         };
       })(this);
       deferHandler = (function(_this) {
-        return function(e) {
+        return function() {
           return setTimeout(handler, 0);
         };
       })(this);
@@ -1988,8 +1995,6 @@
       this.update = __bind(this.update, this);
       return Icon.__super__.constructor.apply(this, arguments);
     }
-
-    Icon.preloader = '';
 
     Icon.prototype.update = function(element, valueAccessor, allBindings) {
       var $element, date, defaultSize, extra, fixedSize, iconField, isImage, isSvg, matched, model, nameSuffix, regex, size, src;
@@ -2079,8 +2084,8 @@
         src = src + '?' + new Date().getTime();
       }
       if ($element.attr("src") !== src) {
-        if (Icon.preload) {
-          $element.attr('src', Icon.preload);
+        if (extra.preloader) {
+          $element.attr('src', extra.preloader);
         }
         preload($element, src);
       }
@@ -2674,7 +2679,7 @@
       TimeAgoFormatter.__super__.constructor.call(this, new Maslosoft.Binder.TimeAgoOptions(options));
     }
 
-    TimeAgoFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    TimeAgoFormatter.prototype.update = function(element, valueAccessor) {
       var value;
       value = this.getValue(valueAccessor);
       element.innerHTML = moment[this.options.sourceFormat](value).fromNow();
@@ -3014,7 +3019,7 @@
 
     VideoThumb.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
 
-    VideoThumb.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    VideoThumb.prototype.update = function(element, valueAccessor) {
       var url;
       url = this.getValue(valueAccessor);
       return this.setThumb(url, element);
