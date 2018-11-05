@@ -191,6 +191,14 @@ preload = (element, src) ->
 		image = null
 		preloadedImages[src] = true
 		element.attr "src", src
+
+ensureAttribute = (element, attribute) ->
+	if not element.hasAttribute attribute
+		attr = document.createAttribute(attribute)
+		attr.value = ''
+		element.setAttributeNode(attr)
+		element.setAttribute(attribute, '')
+		jQuery(element).attr(attribute, '')
 "use strict"
 if not @Maslosoft
 	@Maslosoft = {}
@@ -296,6 +304,7 @@ if not @Maslosoft.Binder.Widgets
 		icon: Maslosoft.Binder.Icon
 		log: Maslosoft.Binder.Log
 		model: Maslosoft.Binder.DataModel
+		placeholder: Maslosoft.Binder.Placeholder
 		ref: Maslosoft.Binder.Widget
 		src: Maslosoft.Binder.Src
 		tags: Maslosoft.Binder.Tags
@@ -1616,21 +1625,13 @@ class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 				$il.replaceWith($il.contents())
 		setTimeout defer, 0
 
-	ensureHrefOn = (element) ->
-		if not element.href
-			attr = document.createAttribute('href')
-			attr.value = ''
-			element.setAttributeNode(attr)
-			element.setAttribute('href', '')
-			jQuery(element).attr('href', '')
-
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
+	init: (element, valueAccessor, allBindingsAccessor) =>
 
 		href = @getValue(valueAccessor)
 
 		# Add href attribute if binding have some value
 		if not element.href and href
-			ensureHrefOn element
+			ensureAttribute element, 'href'
 
 		bustLinks element
 
@@ -1649,7 +1650,8 @@ class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 		if href
 			target = allBindings.get('target') or ''
 			# Ensure attribute
-			ensureHrefOn element
+			ensureAttribute element, 'href'
+			ensureAttribute element, 'target'
 			if element.getAttribute('href') isnt href
 				element.setAttribute 'href', href
 			if element.getAttribute('target') isnt target
@@ -2097,6 +2099,23 @@ class @Maslosoft.Binder.PickaDate extends @Maslosoft.Binder.Picker
 		value = @getDisplayValue(@getValue(valueAccessor))
 		if element.value isnt value
 			element.value = value
+#
+# Placeholder binding handler
+#
+class @Maslosoft.Binder.Placeholder extends @Maslosoft.Binder.Base
+
+	init: (element) =>
+		ensureAttribute element, 'placeholder'
+
+	update: (element, valueAccessor) =>
+
+		placeholder = @getValue(valueAccessor)
+
+		if element.placeholder isnt placeholder
+			# Clean up HTML
+			placeholder = $("<div/>").html(placeholder).text()
+			element.setAttribute 'placeholder', placeholder
+
 ###
 Select2
 ###
@@ -2602,6 +2621,8 @@ class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 		# TODO: Just accessing data.children causes havoc...
 		nodeIcon = config.nodeIcon
 		folderIcon = config.folderIcon
+
+		expanderIcon = config.expanderIcon or "<i class='glyphicon glyphicon-triangle-bottom'></i>"
 		if folderIcon and extras.hasChilds
 #				console.log 'hmmm'
 			nodeIcon = folderIcon
@@ -2610,8 +2631,8 @@ class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 #			console.log ko.unwrap bindingContext.$index
 		depth = extras.depth
 		expanders = []
-		expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>"
-		expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>"
+		expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>#{expanderIcon}</div>"
+		expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>#{expanderIcon}</div>"
 		html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
 		depth = extras.depth + 1
 		html.push "<i class='no-expander' style='margin-left:#{depth}em;display:inline-block;'></i>"
@@ -3943,7 +3964,7 @@ class Maslosoft.Binder.Widgets.TreeGrid.Dnd
 
 
 	#
-	# Reset apropriate things on drop
+	# Reset appropriate things on drop
 	#
 	#
 	clear: () =>
@@ -4046,6 +4067,38 @@ class Maslosoft.Binder.Widgets.TreeGrid.Events
 class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 
 	#
+	# Init expands
+	# @return boolean whether is expanded
+	#
+	initExpand = (item) ->
+		el = item.find('.expander')
+		if el.find('.expanded:visible').length
+			el.find('.expanded').hide()
+			el.find('.collapsed').show()
+			show = false
+		else
+			el.find('.collapsed').hide()
+			el.find('.expanded').show()
+			show = true
+		return show
+
+	#
+	# Expand expanders
+	#
+	expand = (item) ->
+		el = item.find('.expander')
+		el.find('.collapsed').hide()
+		el.find('.expanded').show()
+
+	#
+	# Collapse expanders
+	#
+	collapse = (item) ->
+		el = item.find('.expander')
+		el.find('.expanded').hide()
+		el.find('.collapsed').show()
+
+	#
 	# Tree grid view instance
 	#
 	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
@@ -4094,15 +4147,8 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 			itemDepth = data._treeGrid.depth
 			if data is current
 				depth = itemDepth
-				el = item.find('.expander')
-				if el.find('.expanded:visible').length
-					el.find('.expanded').hide()
-					el.find('.collapsed').show()
-					show = false
-				else
-					el.find('.collapsed').hide()
-					el.find('.expanded').show()
-					show = true
+				show = initExpand(item)
+				item.data 'treegrid-manual-state', show
 				# Current item should be left intact, so skip to next item
 				return
 
@@ -4115,14 +4161,26 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 				return
 
 			# toggle all one depth lower
-			if itemDepth - 1 is depth
+			if itemDepth >= depth
+
+				# TODO: Below is a scratch of logic to re-expand or re-collapse
+				if false
+					# nodes that were manually toggled.
+					showChildItems = show
+
+					# Manually expanded/collapsed sub nodes
+					# should have state restored
+					manuallyToggled = item.data 'treegrid-manual-state'
+					if typeof(manuallyToggled) isnt 'undefined'
+						console.log manuallyToggled
+						showChildItems = manuallyToggled
+
 				if show
 					item.show()
+					expand item
 				else
 					item.hide()
-
-		# TODO 1. Hide also deeper items if parent of them expanded
-		# and show them back if parent of them is expanded
+					collapse item
 
 		@grid.visit initOne
 
@@ -4279,7 +4337,7 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	]
 
 	#
-	# Tbody element - root of tree
+	# TBODY element - root of tree
 	#
 	# @var jQuery element
 	#

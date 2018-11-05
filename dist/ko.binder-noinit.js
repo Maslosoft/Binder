@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, preloadedImages, setRefByName, stringToColour, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, ensureAttribute, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, preloadedImages, setRefByName, stringToColour, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -213,6 +213,17 @@
     };
   };
 
+  ensureAttribute = function(element, attribute) {
+    var attr;
+    if (!element.hasAttribute(attribute)) {
+      attr = document.createAttribute(attribute);
+      attr.value = '';
+      element.setAttributeNode(attr);
+      element.setAttribute(attribute, '');
+      return jQuery(element).attr(attribute, '');
+    }
+  };
+
   "use strict";
 
   if (!this.Maslosoft) {
@@ -316,6 +327,7 @@
       icon: Maslosoft.Binder.Icon,
       log: Maslosoft.Binder.Log,
       model: Maslosoft.Binder.DataModel,
+      placeholder: Maslosoft.Binder.Placeholder,
       ref: Maslosoft.Binder.Widget,
       src: Maslosoft.Binder.Src,
       tags: Maslosoft.Binder.Tags,
@@ -1743,7 +1755,7 @@
   })(this.Maslosoft.Binder.Base);
 
   this.Maslosoft.Binder.Href = (function(_super) {
-    var bustLinks, ensureHrefOn;
+    var bustLinks;
 
     __extends(Href, _super);
 
@@ -1772,22 +1784,11 @@
       return setTimeout(defer, 0);
     };
 
-    ensureHrefOn = function(element) {
-      var attr;
-      if (!element.href) {
-        attr = document.createAttribute('href');
-        attr.value = '';
-        element.setAttributeNode(attr);
-        element.setAttribute('href', '');
-        return jQuery(element).attr('href', '');
-      }
-    };
-
-    Href.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+    Href.prototype.init = function(element, valueAccessor, allBindingsAccessor) {
       var href, stopPropagation;
       href = this.getValue(valueAccessor);
       if (!element.href && href) {
-        ensureHrefOn(element);
+        ensureAttribute(element, 'href');
       }
       bustLinks(element);
       stopPropagation = allBindingsAccessor.get('stopPropagation') || false;
@@ -1804,7 +1805,8 @@
       href = this.getValue(valueAccessor);
       if (href) {
         target = allBindings.get('target') || '';
-        ensureHrefOn(element);
+        ensureAttribute(element, 'href');
+        ensureAttribute(element, 'target');
         if (element.getAttribute('href') !== href) {
           element.setAttribute('href', href);
         }
@@ -2257,6 +2259,32 @@
     return PickaDate;
 
   })(this.Maslosoft.Binder.Picker);
+
+  this.Maslosoft.Binder.Placeholder = (function(_super) {
+    __extends(Placeholder, _super);
+
+    function Placeholder() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return Placeholder.__super__.constructor.apply(this, arguments);
+    }
+
+    Placeholder.prototype.init = function(element) {
+      return ensureAttribute(element, 'placeholder');
+    };
+
+    Placeholder.prototype.update = function(element, valueAccessor) {
+      var placeholder;
+      placeholder = this.getValue(valueAccessor);
+      if (element.placeholder !== placeholder) {
+        placeholder = $("<div/>").html(placeholder).text();
+        return element.setAttribute('placeholder', placeholder);
+      }
+    };
+
+    return Placeholder;
+
+  })(this.Maslosoft.Binder.Base);
 
 
   /*
@@ -2870,7 +2898,7 @@
     TreeGridNode.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {};
 
     TreeGridNode.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var config, data, depth, expanders, extras, folderIcon, html, nodeIcon;
+      var config, data, depth, expanderIcon, expanders, extras, folderIcon, html, nodeIcon;
       ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
       html = [];
       data = this.getValue(valueAccessor);
@@ -2878,13 +2906,14 @@
       config = bindingContext.widget.config;
       nodeIcon = config.nodeIcon;
       folderIcon = config.folderIcon;
+      expanderIcon = config.expanderIcon || "<i class='glyphicon glyphicon-triangle-bottom'></i>";
       if (folderIcon && extras.hasChilds) {
         nodeIcon = folderIcon;
       }
       depth = extras.depth;
       expanders = [];
-      expanders.push("<div class='collapsed' style='display:none;transform: rotate(-90deg);'>&#128899;</div>");
-      expanders.push("<div class='expanded' style='transform: rotate(-45deg);'>&#128899;</div>");
+      expanders.push("<div class='collapsed' style='display:none;transform: rotate(-90deg);'>" + expanderIcon + "</div>");
+      expanders.push("<div class='expanded' style='transform: rotate(-45deg);'>" + expanderIcon + "</div>");
       html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
       depth = extras.depth + 1;
       html.push("<i class='no-expander' style='margin-left:" + depth + "em;display:inline-block;'></i>");
@@ -4145,6 +4174,37 @@
   })();
 
   Maslosoft.Binder.Widgets.TreeGrid.Expanders = (function() {
+    var collapse, expand, initExpand;
+
+    initExpand = function(item) {
+      var el, show;
+      el = item.find('.expander');
+      if (el.find('.expanded:visible').length) {
+        el.find('.expanded').hide();
+        el.find('.collapsed').show();
+        show = false;
+      } else {
+        el.find('.collapsed').hide();
+        el.find('.expanded').show();
+        show = true;
+      }
+      return show;
+    };
+
+    expand = function(item) {
+      var el;
+      el = item.find('.expander');
+      el.find('.collapsed').hide();
+      return el.find('.expanded').show();
+    };
+
+    collapse = function(item) {
+      var el;
+      el = item.find('.expander');
+      el.find('.expanded').hide();
+      return el.find('.collapsed').show();
+    };
+
     Expanders.prototype.grid = null;
 
     function Expanders(grid, context) {
@@ -4193,20 +4253,12 @@
       log("clicked on expander " + current.title);
       initOne = (function(_this) {
         return function(item, data) {
-          var el, itemDepth;
+          var itemDepth, manuallyToggled, showChildItems;
           itemDepth = data._treeGrid.depth;
           if (data === current) {
             depth = itemDepth;
-            el = item.find('.expander');
-            if (el.find('.expanded:visible').length) {
-              el.find('.expanded').hide();
-              el.find('.collapsed').show();
-              show = false;
-            } else {
-              el.find('.collapsed').hide();
-              el.find('.expanded').show();
-              show = true;
-            }
+            show = initExpand(item);
+            item.data('treegrid-manual-state', show);
             return;
           }
           if (depth === -1) {
@@ -4216,11 +4268,21 @@
             depth = -1;
             return;
           }
-          if (itemDepth - 1 === depth) {
+          if (itemDepth >= depth) {
+            if (false) {
+              showChildItems = show;
+              manuallyToggled = item.data('treegrid-manual-state');
+              if (typeof manuallyToggled !== 'undefined') {
+                console.log(manuallyToggled);
+                showChildItems = manuallyToggled;
+              }
+            }
             if (show) {
-              return item.show();
+              item.show();
+              return expand(item);
             } else {
-              return item.hide();
+              item.hide();
+              return collapse(item);
             }
           }
         };
