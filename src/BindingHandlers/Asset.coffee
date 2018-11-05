@@ -15,6 +15,8 @@ class @Maslosoft.Binder.Asset extends @Maslosoft.Binder.Base
 
 		model = @getValue(valueAccessor)
 
+		extra = @getValue(allBindings)
+
 		# Try to get timestamp
 		if model.updateDate
 			date = model.updateDate
@@ -50,6 +52,9 @@ class @Maslosoft.Binder.Asset extends @Maslosoft.Binder.Base
 		src = src.join '/'
 
 		if $element.attr("src") != src
+
+			if extra.preloader
+				$element.attr 'src', extra.preloader
 
 			# Preload image
 			preload $element, src
