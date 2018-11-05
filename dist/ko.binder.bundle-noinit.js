@@ -11508,12 +11508,13 @@ module.exports = function (element) {
     }
 
     Asset.prototype.update = function(element, valueAccessor, allBindings) {
-      var $element, date, height, model, proportional, sec, src, url, width;
+      var $element, date, extra, height, model, proportional, sec, src, url, width;
       $element = $(element);
       width = allBindings.get('w' || allBindings.get('width' || null));
       height = allBindings.get('h' || allBindings.get('height' || null));
       proportional = allBindings.get('p' || allBindings.get('proportional' || null));
       model = this.getValue(valueAccessor);
+      extra = this.getValue(allBindings);
       if (model.updateDate) {
         date = model.updateDate;
         if (typeof date === 'number') {
@@ -11540,6 +11541,9 @@ module.exports = function (element) {
       }
       src = src.join('/');
       if ($element.attr("src") !== src) {
+        if (extra.preloader) {
+          $element.attr('src', extra.preloader);
+        }
         preload($element, src);
       }
     };
