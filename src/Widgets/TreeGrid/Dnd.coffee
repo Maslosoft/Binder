@@ -276,7 +276,7 @@ class Maslosoft.Binder.Widgets.TreeGrid.Dnd
 
 
 	#
-	# Reset apropriate things on drop
+	# Reset appropriate things on drop
 	#
 	#
 	clear: () =>

@@ -16,7 +16,7 @@
 </p>
 <p class="alert alert-warning">
     When using multi-line binding definition the <code>data</code> property must
-    be quited with <code>'</code>
+    be quoted with single quote (<code>'</code>)
 </p>
 <p>
     Setting up Tree Grid is no different than configuring table to be
@@ -38,6 +38,33 @@
     with folding controls, add span with <code>treegridnode</code> binding to
     chosen column. It does not have to be first one, any will do.
 </p>
+<h3>Extra options</h3>
+<p>
+    The <code>treegrid</code> binding has also extra configurable parameters:
+</p>
+<ul>
+    <li>
+        <code>childrenField</code> - field containing child elements in each node
+    </li>
+    <li>
+        <code>nodeIcon</code> - path to file which will be used as node icon
+    </li>
+    <li>
+        <code>autoExpand</code> - boolean value, will automatically open all nodes
+    </li>
+    <li>
+        <code>dnd</code> - boolean value, enable Drag'n'Drop support
+    </li>
+    <li>
+        <code>activeClass</code> - string value, CSS classes that will be added to activated node
+    </li>
+    <li>
+        <code>expanderIcon</code> - string value, HTML element template for expander. By default
+        it is using glyphicon <i class='glyphicon glyphicon-triangle-bottom'></i>. There is only
+        one type of icon for expander, as it is simply rotated. The icon should be some kind of
+        triangle pointing down.
+    </li>
+</ul>
 <p>
     This design approach gives great freedom of arranging Tree Grid. It looks
     like it require a lot of HTML markup, but it is old plain table with

@@ -2,6 +2,38 @@
 class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 
 	#
+	# Init expands
+	# @return boolean whether is expanded
+	#
+	initExpand = (item) ->
+		el = item.find('.expander')
+		if el.find('.expanded:visible').length
+			el.find('.expanded').hide()
+			el.find('.collapsed').show()
+			show = false
+		else
+			el.find('.collapsed').hide()
+			el.find('.expanded').show()
+			show = true
+		return show
+
+	#
+	# Expand expanders
+	#
+	expand = (item) ->
+		el = item.find('.expander')
+		el.find('.collapsed').hide()
+		el.find('.expanded').show()
+
+	#
+	# Collapse expanders
+	#
+	collapse = (item) ->
+		el = item.find('.expander')
+		el.find('.expanded').hide()
+		el.find('.collapsed').show()
+
+	#
 	# Tree grid view instance
 	#
 	# @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
@@ -50,15 +82,8 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 			itemDepth = data._treeGrid.depth
 			if data is current
 				depth = itemDepth
-				el = item.find('.expander')
-				if el.find('.expanded:visible').length
-					el.find('.expanded').hide()
-					el.find('.collapsed').show()
-					show = false
-				else
-					el.find('.collapsed').hide()
-					el.find('.expanded').show()
-					show = true
+				show = initExpand(item)
+				item.data 'treegrid-manual-state', show
 				# Current item should be left intact, so skip to next item
 				return
 
@@ -71,13 +96,25 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 				return
 
 			# toggle all one depth lower
-			if itemDepth - 1 is depth
+			if itemDepth >= depth
+
+				# TODO: Below is a scratch of logic to re-expand or re-collapse
+				if false
+					# nodes that were manually toggled.
+					showChildItems = show
+
+					# Manually expanded/collapsed sub nodes
+					# should have state restored
+					manuallyToggled = item.data 'treegrid-manual-state'
+					if typeof(manuallyToggled) isnt 'undefined'
+						console.log manuallyToggled
+						showChildItems = manuallyToggled
+
 				if show
 					item.show()
+					expand item
 				else
 					item.hide()
-
-		# TODO 1. Hide also deeper items if parent of them expanded
-		# and show them back if parent of them is expanded
+					collapse item
 
 		@grid.visit initOne

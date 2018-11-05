@@ -15,7 +15,7 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	]
 
 	#
-	# Tbody element - root of tree
+	# TBODY element - root of tree
 	#
 	# @var jQuery element
 	#
