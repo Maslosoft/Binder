@@ -89,6 +89,7 @@
 		icon: Maslosoft.Binder.Icon
 		log: Maslosoft.Binder.Log
 		model: Maslosoft.Binder.DataModel
+		placeholder: Maslosoft.Binder.Placeholder
 		ref: Maslosoft.Binder.Widget
 		src: Maslosoft.Binder.Src
 		tags: Maslosoft.Binder.Tags

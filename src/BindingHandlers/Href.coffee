@@ -13,21 +13,13 @@ class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 				$il.replaceWith($il.contents())
 		setTimeout defer, 0
 
-	ensureHrefOn = (element) ->
-		if not element.href
-			attr = document.createAttribute('href')
-			attr.value = ''
-			element.setAttributeNode(attr)
-			element.setAttribute('href', '')
-			jQuery(element).attr('href', '')
-
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
+	init: (element, valueAccessor, allBindingsAccessor) =>
 
 		href = @getValue(valueAccessor)
 
 		# Add href attribute if binding have some value
 		if not element.href and href
-			ensureHrefOn element
+			ensureAttribute element, 'href'
 
 		bustLinks element
 
@@ -46,7 +38,8 @@ class @Maslosoft.Binder.Href extends @Maslosoft.Binder.Base
 		if href
 			target = allBindings.get('target') or ''
 			# Ensure attribute
-			ensureHrefOn element
+			ensureAttribute element, 'href'
+			ensureAttribute element, 'target'
 			if element.getAttribute('href') isnt href
 				element.setAttribute 'href', href
 			if element.getAttribute('target') isnt target

@@ -191,3 +191,11 @@ preload = (element, src) ->
 		image = null
 		preloadedImages[src] = true
 		element.attr "src", src
+
+ensureAttribute = (element, attribute) ->
+	if not element.hasAttribute attribute
+		attr = document.createAttribute(attribute)
+		attr.value = ''
+		element.setAttributeNode(attr)
+		element.setAttribute(attribute, '')
+		jQuery(element).attr(attribute, '')
