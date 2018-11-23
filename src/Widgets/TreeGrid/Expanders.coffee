@@ -73,6 +73,11 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 	handler: (e) =>
 		current = ko.contextFor(e.target).$data
 
+		# Expanding tree node should not call action
+		# @see https://github.com/Maslosoft/Binder/issues/33
+		e.stopPropagation()
+		e.preventDefault()
+
 		depth = -1
 		show = false
 

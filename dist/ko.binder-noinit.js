@@ -4252,6 +4252,8 @@
     Expanders.prototype.handler = function(e) {
       var current, depth, initOne, show;
       current = ko.contextFor(e.target).$data;
+      e.stopPropagation();
+      e.preventDefault();
       depth = -1;
       show = false;
       log("clicked on expander " + current.title);
