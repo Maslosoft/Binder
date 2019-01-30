@@ -3,9 +3,10 @@
 #
 class @Maslosoft.Binder.Src extends @Maslosoft.Binder.Base
 
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
+	init: (element) =>
+		ensureAttribute(element, 'src')
 
 	update: (element, valueAccessor) =>
 		src = @getValue(valueAccessor)
-		if element.src isnt src
-			element.src = src
+		if element.getAttribute('src') isnt src
+			element.setAttribute('src', src)
