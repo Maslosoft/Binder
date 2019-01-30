@@ -89,6 +89,10 @@ class @Maslosoft.Koe.Icon extends @Maslosoft.Binder.Model
 		sec: 21232323
 	}
 
+class @Maslosoft.Koe.Id extends @Maslosoft.Binder.Model
+	_class: "Maslosoft.Koe.Id"
+	id: ''
+
 class @Maslosoft.Koe.Tooltip extends @Maslosoft.Binder.Model
 	_class: "Maslosoft.Koe.Tooltip"
 	title: ''

@@ -87,6 +87,7 @@
 		htmlTree: Maslosoft.Binder.HtmlTree
 		htmlValue: Maslosoft.Binder.HtmlValue
 		icon: Maslosoft.Binder.Icon
+		id: Maslosoft.Binder.Id
 		log: Maslosoft.Binder.Log
 		model: Maslosoft.Binder.DataModel
 		placeholder: Maslosoft.Binder.Placeholder
