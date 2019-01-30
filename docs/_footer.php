@@ -30,8 +30,10 @@ $text = str_replace('}', '<!---->&shy;}', $text);
 	<script type="text/javascript" >
 		jQuery(document).ready(function () {
 		    if(jQuery('pre').length) {
-                hljs.configure({languages: ['html']});
-                hljs.highlightBlock(document.getElementsByTagName('pre')[0]);
+                hljs.configure({languages: ['html', 'css']});
+                $('pre').each(function (i, block) {
+                    hljs.highlightBlock(block);
+                });
             }
 			jQuery('body').tooltip({
 				selector: '[rel~="tooltip"]'
