@@ -325,6 +325,7 @@
       htmlTree: Maslosoft.Binder.HtmlTree,
       htmlValue: Maslosoft.Binder.HtmlValue,
       icon: Maslosoft.Binder.Icon,
+      id: Maslosoft.Binder.Id,
       log: Maslosoft.Binder.Log,
       model: Maslosoft.Binder.DataModel,
       placeholder: Maslosoft.Binder.Placeholder,
@@ -2106,6 +2107,31 @@
 
   })(this.Maslosoft.Binder.Base);
 
+  this.Maslosoft.Binder.Id = (function(_super) {
+    __extends(Id, _super);
+
+    function Id() {
+      this.update = __bind(this.update, this);
+      this.init = __bind(this.init, this);
+      return Id.__super__.constructor.apply(this, arguments);
+    }
+
+    Id.prototype.init = function(element) {
+      return ensureAttribute(element, 'id');
+    };
+
+    Id.prototype.update = function(element, valueAccessor) {
+      var id;
+      id = this.getValue(valueAccessor);
+      if (element.getAttribute('id') !== id) {
+        return element.setAttribute('id', id);
+      }
+    };
+
+    return Id;
+
+  })(this.Maslosoft.Binder.Base);
+
   this.Maslosoft.Binder.Log = (function(_super) {
     __extends(Log, _super);
 
@@ -2280,7 +2306,7 @@
     Placeholder.prototype.update = function(element, valueAccessor) {
       var placeholder;
       placeholder = this.getValue(valueAccessor);
-      if (element.placeholder !== placeholder) {
+      if (element.getAttribute('placeholder') !== placeholder) {
         placeholder = $("<div/>").html(placeholder).text();
         return element.setAttribute('placeholder', placeholder);
       }
@@ -2424,13 +2450,15 @@
       return Src.__super__.constructor.apply(this, arguments);
     }
 
-    Src.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+    Src.prototype.init = function(element) {
+      return ensureAttribute(element, 'src');
+    };
 
     Src.prototype.update = function(element, valueAccessor) {
       var src;
       src = this.getValue(valueAccessor);
-      if (element.src !== src) {
-        return element.src = src;
+      if (element.getAttribute('src') !== src) {
+        return element.setAttribute('src', src);
       }
     };
 

@@ -302,6 +302,7 @@ if not @Maslosoft.Binder.Widgets
 		htmlTree: Maslosoft.Binder.HtmlTree
 		htmlValue: Maslosoft.Binder.HtmlValue
 		icon: Maslosoft.Binder.Icon
+		id: Maslosoft.Binder.Id
 		log: Maslosoft.Binder.Log
 		model: Maslosoft.Binder.DataModel
 		placeholder: Maslosoft.Binder.Placeholder
@@ -1945,6 +1946,18 @@ class @Maslosoft.Binder.Icon extends @Maslosoft.Binder.Base
 
 		return
 
+#
+# Src binding handler
+#
+class @Maslosoft.Binder.Id extends @Maslosoft.Binder.Base
+
+	init: (element) =>
+		ensureAttribute element, 'id'
+
+	update: (element, valueAccessor) =>
+		id = @getValue(valueAccessor)
+		if element.getAttribute('id') isnt id
+			element.setAttribute('id', id)
 
 #
 # Log with element reference
@@ -2116,7 +2129,7 @@ class @Maslosoft.Binder.Placeholder extends @Maslosoft.Binder.Base
 
 		placeholder = @getValue(valueAccessor)
 
-		if element.placeholder isnt placeholder
+		if element.getAttribute('placeholder') isnt placeholder
 			# Clean up HTML
 			placeholder = $("<div/>").html(placeholder).text()
 			element.setAttribute 'placeholder', placeholder
@@ -2222,12 +2235,13 @@ class @Maslosoft.Binder.Selected extends@Maslosoft.Binder.CssClass
 #
 class @Maslosoft.Binder.Src extends @Maslosoft.Binder.Base
 
-	init: (element, valueAccessor, allBindingsAccessor, context) =>
+	init: (element) =>
+		ensureAttribute(element, 'src')
 
 	update: (element, valueAccessor) =>
 		src = @getValue(valueAccessor)
-		if element.src isnt src
-			element.src = src
+		if element.getAttribute('src') isnt src
+			element.setAttribute('src', src)
 ###
 Select2
 ###
