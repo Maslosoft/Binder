@@ -5,8 +5,13 @@
 <p>
     The <code>placeholder</code> binding will simply add
     <code>placeholder</code> attribute to element, and set it's
-    value to observable. However it will also strip any HTML
+    value to observable. When setting placeholder attribute value,
+    the binding handler will strip any HTML
     from value, so that the attribute will contain allowed value.
+</p>
+<p class="alert alert-success">
+    This binding handler can be safely used on elements not having
+    <code>placeholder</code> attribute as it will add it if required.
 </p>
 <p>
     Try to change text in first input or in HTML editable input,
@@ -33,10 +38,10 @@
     }
 </style>
 <div class="form-group" data-bind="with: binder.model.Text">
-    <label>Standard input</label>
+    <label>Placeholder value</label>
     <input data-bind="textInput: text" class="form-control">
 
-    <label>HTML Editable input</label>
+    <label>HTML placeholder value</label>
     <div data-bind="htmlValue: text" class="form-control"></div>
 
     <label>Empty input with placeholder</label>

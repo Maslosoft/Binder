@@ -10,7 +10,7 @@ class @Maslosoft.Binder.Placeholder extends @Maslosoft.Binder.Base
 
 		placeholder = @getValue(valueAccessor)
 
-		if element.placeholder isnt placeholder
+		if element.getAttribute('placeholder') isnt placeholder
 			# Clean up HTML
 			placeholder = $("<div/>").html(placeholder).text()
 			element.setAttribute 'placeholder', placeholder
