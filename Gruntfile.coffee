@@ -98,6 +98,9 @@ module.exports = (grunt) ->
 			compile:
 				files: binder
 				tasks: ['coffee:compile']
+				options:
+					interrupt: true
+					atBegin: true
 
 	# These plugins provide necessary tasks.
 	grunt.loadNpmTasks 'grunt-contrib-coffee'
