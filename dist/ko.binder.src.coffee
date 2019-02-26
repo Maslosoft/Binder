@@ -1774,7 +1774,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 		
 		# Generate some id if not set, see notes below why
 		if not element.id
-			element.id = "Maslosoft-Ko-Binder-HtmlValue-#{idCounter++}"
+			element.id = "maslosoft-binder-htmlvalue-#{idCounter++}"
 
 		configuration = @getValue(allBindingsAccessor).plugins
 		pm = new PluginsManager(element)
@@ -1783,6 +1783,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 		# Handle update immediately
 		handler = () =>
+			console.log("HTML Value Update", element)
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 

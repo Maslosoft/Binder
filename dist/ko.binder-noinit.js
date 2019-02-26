@@ -1939,7 +1939,7 @@
       var configuration, deferHandler, dispose, handler, pm;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
-        element.id = "Maslosoft-Ko-Binder-HtmlValue-" + (idCounter++);
+        element.id = "maslosoft-binder-htmlvalue-" + (idCounter++);
       }
       configuration = this.getValue(allBindingsAccessor).plugins;
       pm = new PluginsManager(element);
@@ -1947,6 +1947,7 @@
       handler = (function(_this) {
         return function() {
           var accessor, elementValue, modelValue;
+          console.log("HTML Value Update", element);
           if (!element) {
             return;
           }
