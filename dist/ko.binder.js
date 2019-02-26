@@ -1972,9 +1972,11 @@
       })(this);
       jQuery(element).on("keyup, input", handler);
       jQuery(document).on("mouseup", deferHandler);
+      jQuery(document).on("changed.htmlvalue", handler);
       dispose = function(toDispose) {
         jQuery(toDispose).off("keyup, input", handler);
-        return jQuery(document).off("mouseup", deferHandler);
+        jQuery(document).off("mouseup", deferHandler);
+        return jQuery(document).off("changed.htmlvalue", handler);
       };
       ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
     };
