@@ -1810,12 +1810,14 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 		# This is to allow interaction with tools which could modify content, also to work with drag and drop
 		jQuery(document).on "mouseup", deferHandler
+		jQuery(document).on "mousedown", deferHandler
 
 		jQuery(document).on "changed.htmlvalue", handler
 
 		dispose = (toDispose) ->
 			jQuery(toDispose).off "keyup, input", handler
 			jQuery(document).off "mouseup", deferHandler
+			jQuery(document).off "mousedown", deferHandler
 			jQuery(document).off "changed.htmlvalue", handler
 
 		ko.utils.domNodeDisposal.addDisposeCallback element, dispose
