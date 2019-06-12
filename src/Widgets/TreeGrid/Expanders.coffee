@@ -49,6 +49,7 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 		# Initialize click handlers only on init
 		if @grid.context is 'init'
 			@grid.element.on 'mousedown', '.expander', @handler
+			@grid.element.on 'click', '.expander', @cancelClick
 
 		if @grid.context is 'update'
 			@updateExpanders()
@@ -124,3 +125,9 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 					collapse item
 
 		@grid.visit initOne
+
+	# Cancel expander click event, as it reacts on mousedown
+	# however click would propagate and call action
+	cancelClick: (e) =>
+		e.stopPropagation()
+		e.preventDefault()
