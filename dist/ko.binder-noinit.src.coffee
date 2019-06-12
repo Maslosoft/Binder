@@ -2595,6 +2595,9 @@ class @Maslosoft.Binder.TreeGrid extends @Maslosoft.Binder.Base
 
 		table = jQuery(element)
 
+		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor
+		widget.init()
+
 		if activeClass
 			activeClassHandler = (e) ->
 				# Remove from all instances of `tr` tu support multiple
@@ -2605,11 +2608,11 @@ class @Maslosoft.Binder.TreeGrid extends @Maslosoft.Binder.Base
 			table.on 'click', 'tr', activeClassHandler
 
 			dispose = (toDispose) ->
+				widget.dispose()
 				jQuery(toDispose).off "click", 'tr', activeClassHandler
 
 			ko.utils.domNodeDisposal.addDisposeCallback element, dispose
 
-		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 		return { controlsDescendantBindings: true }
 
@@ -2645,7 +2648,7 @@ class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 		nodeIcon = config.nodeIcon
 		folderIcon = config.folderIcon
 
-		expanderIcon = config.expanderIcon or "<i class='glyphicon glyphicon-triangle-bottom' style='display: none;'></i>"
+		expanderIcon = config.expanderIcon or "<i class='glyphicon glyphicon-triangle-bottom'></i>"
 		if folderIcon and extras.hasChilds
 #				console.log 'hmmm'
 			nodeIcon = folderIcon
@@ -2655,7 +2658,7 @@ class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 		depth = extras.depth
 		expanders = []
 		expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>#{expanderIcon}</div>"
-		expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>#{expanderIcon}</div>"
+		expanders.push "<div class='expanded' style='display:none;transform: rotate(-45deg);'>#{expanderIcon}</div>"
 		html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
 		depth = extras.depth + 1
 		html.push "<i class='no-expander' style='margin-left:#{depth}em;display:inline-block;'></i>"
@@ -4137,6 +4140,7 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 		# Initialize click handlers only on init
 		if @grid.context is 'init'
 			@grid.element.on 'mousedown', '.expander', @handler
+			@grid.element.on 'click', '.expander', @cancelClick
 
 		if @grid.context is 'update'
 			@updateExpanders()
@@ -4148,6 +4152,8 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 			if hasChildren
 				item.find('.no-expander').hide()
 				item.find('.expander').show()
+				if not item.find('.expander .collapsed').is(':visible')
+					item.find('.expander .expanded').show()
 			else
 				item.find('.expander').hide()
 				item.find('.no-expander').show()
@@ -4211,6 +4217,12 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 					collapse item
 
 		@grid.visit initOne
+
+	# Cancel expander click event, as it reacts on mousedown
+	# however click would propagate and call action
+	cancelClick: (e) =>
+		e.stopPropagation()
+		e.preventDefault()
 
 
 #
@@ -4391,6 +4403,14 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 
 #			console.log data
 
+	init: () ->
+		jQuery(document).on 'ajaxStart', @freeze
+		jQuery(document).on 'ajaxComplete', @thaw
+
+	dispose: () ->
+		jQuery(document).off 'ajaxStart', @freeze
+		jQuery(document).off 'ajaxComplete', @thaw
+
 	#
 	# Visit each node and apply callback.
 	# Callback accepts two parameters:
@@ -4535,11 +4555,11 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	#
 	freeze: () =>
-
+		console.log "Freeze"
 		# Reset stored width values
 		cellsStyles = []
-		cells = @element.find('> tr:first() td')
-
+		cells = @getFirstCells()
+		console.log cells
 		for cell in cells
 #			log cell
 			cellsStyles.push cell.style
@@ -4554,13 +4574,29 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	thaw: () =>
 		defer = () =>
-			cells = @element.find('> tr:first-child() td')
+			console.log 'thaw'
+			cells = @getFirstCells()
 
 			for cell, index in cells
 				cell.style = cellsStyles[index]
+		# TODO setTimeout should be avoided, investigate if should be used
 		# Unfreezing takes some time...
 		# This needs to be delayed a bit or flicker will still occur
-		setTimeout defer, 150
+		defer()
+#		setTimeout defer, 0
+
+	getFirstCells: () =>
+		table = @element
+		if @element.is 'tbody'
+			table = @element.parent()
+		cells = table.find('thead tr:first() th')
+		if not cells or not cells.length
+			cells = table.find('tr:first() td')
+		if not cells or not cells.length
+			cells = table.find('tbody tr:first() td')
+		if not cells or not cells.length
+			cells = table.find('tfoot tr:first() th')
+		return cells
 @Maslosoft.Ko.getType = (type) ->
 	if x and typeof x is 'object'
 		if x.constructor is Date then return 'date'

@@ -13436,6 +13436,8 @@ module.exports = function (element) {
       value = this.getValue(valueAccessor);
       activeClass = value.activeClass;
       table = jQuery(element);
+      widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
+      widget.init();
       if (activeClass) {
         activeClassHandler = function(e) {
           table.find('tr').removeClass(activeClass);
@@ -13444,11 +13446,11 @@ module.exports = function (element) {
         };
         table.on('click', 'tr', activeClassHandler);
         dispose = function(toDispose) {
+          widget.dispose();
           return jQuery(toDispose).off("click", 'tr', activeClassHandler);
         };
         ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
       }
-      widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
       ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
       return {
         controlsDescendantBindings: true
@@ -13485,14 +13487,14 @@ module.exports = function (element) {
       config = bindingContext.widget.config;
       nodeIcon = config.nodeIcon;
       folderIcon = config.folderIcon;
-      expanderIcon = config.expanderIcon || "<i class='glyphicon glyphicon-triangle-bottom' style='display: none;'></i>";
+      expanderIcon = config.expanderIcon || "<i class='glyphicon glyphicon-triangle-bottom'></i>";
       if (folderIcon && extras.hasChilds) {
         nodeIcon = folderIcon;
       }
       depth = extras.depth;
       expanders = [];
       expanders.push("<div class='collapsed' style='display:none;transform: rotate(-90deg);'>" + expanderIcon + "</div>");
-      expanders.push("<div class='expanded' style='transform: rotate(-45deg);'>" + expanderIcon + "</div>");
+      expanders.push("<div class='expanded' style='display:none;transform: rotate(-45deg);'>" + expanderIcon + "</div>");
       html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
       depth = extras.depth + 1;
       html.push("<i class='no-expander' style='margin-left:" + depth + "em;display:inline-block;'></i>");
@@ -14788,6 +14790,7 @@ module.exports = function (element) {
 
     function Expanders(grid, context) {
       this.grid = grid;
+      this.cancelClick = __bind(this.cancelClick, this);
       this.handler = __bind(this.handler, this);
       this.updateExpanders = __bind(this.updateExpanders, this);
       if (this.grid.config.expanders === false) {
@@ -14795,6 +14798,7 @@ module.exports = function (element) {
       }
       if (this.grid.context === 'init') {
         this.grid.element.on('mousedown', '.expander', this.handler);
+        this.grid.element.on('click', '.expander', this.cancelClick);
       }
       if (this.grid.context === 'update') {
         this.updateExpanders();
@@ -14809,7 +14813,10 @@ module.exports = function (element) {
           hasChildren = data.children && data.children.length;
           if (hasChildren) {
             item.find('.no-expander').hide();
-            return item.find('.expander').show();
+            item.find('.expander').show();
+            if (!item.find('.expander .collapsed').is(':visible')) {
+              return item.find('.expander .expanded').show();
+            }
           } else {
             item.find('.expander').hide();
             return item.find('.no-expander').show();
@@ -14869,6 +14876,11 @@ module.exports = function (element) {
         };
       })(this);
       return this.grid.visit(initOne);
+    };
+
+    Expanders.prototype.cancelClick = function(e) {
+      e.stopPropagation();
+      return e.preventDefault();
     };
 
     return Expanders;
@@ -14997,6 +15009,7 @@ module.exports = function (element) {
         valueAccessor = null;
       }
       this.context = context != null ? context : 'init';
+      this.getFirstCells = __bind(this.getFirstCells, this);
       this.thaw = __bind(this.thaw, this);
       this.freeze = __bind(this.freeze, this);
       this.remove = __bind(this.remove, this);
@@ -15018,6 +15031,16 @@ module.exports = function (element) {
         }
       }
     }
+
+    TreeGridView.prototype.init = function() {
+      jQuery(document).on('ajaxStart', this.freeze);
+      return jQuery(document).on('ajaxComplete', this.thaw);
+    };
+
+    TreeGridView.prototype.dispose = function() {
+      jQuery(document).off('ajaxStart', this.freeze);
+      return jQuery(document).off('ajaxComplete', this.thaw);
+    };
 
     TreeGridView.prototype.visit = function(callback) {
       var data, item, items, _i, _len, _results;
@@ -15162,8 +15185,10 @@ module.exports = function (element) {
 
     TreeGridView.prototype.freeze = function() {
       var $cell, cell, cells, _i, _len, _results;
+      console.log("Freeze");
       cellsStyles = [];
-      cells = this.element.find('> tr:first() td');
+      cells = this.getFirstCells();
+      console.log(cells);
       _results = [];
       for (_i = 0, _len = cells.length; _i < _len; _i++) {
         cell = cells[_i];
@@ -15179,7 +15204,8 @@ module.exports = function (element) {
       defer = (function(_this) {
         return function() {
           var cell, cells, index, _i, _len, _results;
-          cells = _this.element.find('> tr:first-child() td');
+          console.log('thaw');
+          cells = _this.getFirstCells();
           _results = [];
           for (index = _i = 0, _len = cells.length; _i < _len; index = ++_i) {
             cell = cells[index];
@@ -15188,7 +15214,26 @@ module.exports = function (element) {
           return _results;
         };
       })(this);
-      return setTimeout(defer, 150);
+      return defer();
+    };
+
+    TreeGridView.prototype.getFirstCells = function() {
+      var cells, table;
+      table = this.element;
+      if (this.element.is('tbody')) {
+        table = this.element.parent();
+      }
+      cells = table.find('thead tr:first() th');
+      if (!cells || !cells.length) {
+        cells = table.find('tr:first() td');
+      }
+      if (!cells || !cells.length) {
+        cells = table.find('tbody tr:first() td');
+      }
+      if (!cells || !cells.length) {
+        cells = table.find('tfoot tr:first() th');
+      }
+      return cells;
     };
 
     return TreeGridView;
