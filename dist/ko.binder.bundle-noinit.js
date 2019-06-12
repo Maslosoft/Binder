@@ -12483,7 +12483,7 @@ module.exports = function (element) {
       var configuration, deferHandler, dispose, handler, pm;
       element.setAttribute('contenteditable', true);
       if (!element.id) {
-        element.id = "Maslosoft-Ko-Binder-HtmlValue-" + (idCounter++);
+        element.id = "maslosoft-binder-htmlvalue-" + (idCounter++);
       }
       configuration = this.getValue(allBindingsAccessor).plugins;
       pm = new PluginsManager(element);
@@ -12491,6 +12491,7 @@ module.exports = function (element) {
       handler = (function(_this) {
         return function() {
           var accessor, elementValue, modelValue;
+          console.log("HTML Value Update", element);
           if (!element) {
             return;
           }
@@ -15272,15 +15273,30 @@ module.exports = function (element) {
     };
 
     Track.prototype.fromJs = function(model, jsData) {
-      var name, value, _results;
+      var index, item, name, value, _results;
       _results = [];
       for (name in jsData) {
         value = jsData[name];
         if (typeof value === 'object') {
-          if (model[name]) {
-            _results.push(this.fromJs(model[name], value));
+          if (Array.isArray(value)) {
+            model[name] = ko.track([], {
+              deep: false
+            });
+            _results.push((function() {
+              var _i, _len, _results1;
+              _results1 = [];
+              for (index = _i = 0, _len = value.length; _i < _len; index = ++_i) {
+                item = value[index];
+                _results1.push(model[name][index] = this.factory(item));
+              }
+              return _results1;
+            }).call(this));
           } else {
-            _results.push(model[name] = this.factory(value));
+            if (model[name]) {
+              _results.push(this.fromJs(model[name], value));
+            } else {
+              _results.push(model[name] = this.factory(value));
+            }
           }
         } else {
           _results.push(model[name] = value);
