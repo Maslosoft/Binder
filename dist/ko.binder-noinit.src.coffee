@@ -2645,7 +2645,7 @@ class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 		nodeIcon = config.nodeIcon
 		folderIcon = config.folderIcon
 
-		expanderIcon = config.expanderIcon or "<i class='glyphicon glyphicon-triangle-bottom'></i>"
+		expanderIcon = config.expanderIcon or "<i class='glyphicon glyphicon-triangle-bottom' style='display: none;'></i>"
 		if folderIcon and extras.hasChilds
 #				console.log 'hmmm'
 			nodeIcon = folderIcon

@@ -34,7 +34,7 @@ class @Maslosoft.Binder.TreeGridNode extends @Maslosoft.Binder.Base
 		depth = extras.depth
 		expanders = []
 		expanders.push "<div class='collapsed' style='display:none;transform: rotate(-90deg);'>#{expanderIcon}</div>"
-		expanders.push "<div class='expanded' style='transform: rotate(-45deg);'>#{expanderIcon}</div>"
+		expanders.push "<div class='expanded' style='display:none;transform: rotate(-45deg);'>#{expanderIcon}</div>"
 		html.push "<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:#{depth}em;display:inline-block;'>#{expanders.join('')}</a>"
 		depth = extras.depth + 1
 		html.push "<i class='no-expander' style='margin-left:#{depth}em;display:inline-block;'></i>"

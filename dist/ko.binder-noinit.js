@@ -2941,7 +2941,7 @@
       config = bindingContext.widget.config;
       nodeIcon = config.nodeIcon;
       folderIcon = config.folderIcon;
-      expanderIcon = config.expanderIcon || "<i class='glyphicon glyphicon-triangle-bottom'></i>";
+      expanderIcon = config.expanderIcon || "<i class='glyphicon glyphicon-triangle-bottom' style='display: none;'></i>";
       if (folderIcon && extras.hasChilds) {
         nodeIcon = folderIcon;
       }
