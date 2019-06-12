@@ -41,6 +41,14 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 
 #			console.log data
 
+	init: () ->
+		jQuery(document).on 'ajaxStart', @freeze
+		jQuery(document).on 'ajaxComplete', @thaw
+
+	dispose: () ->
+		jQuery(document).off 'ajaxStart', @freeze
+		jQuery(document).off 'ajaxComplete', @thaw
+
 	#
 	# Visit each node and apply callback.
 	# Callback accepts two parameters:
@@ -185,11 +193,11 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	#
 	freeze: () =>
-
+		console.log "Freeze"
 		# Reset stored width values
 		cellsStyles = []
-		cells = @element.find('> tr:first() td')
-
+		cells = @getFirstCells()
+		console.log cells
 		for cell in cells
 #			log cell
 			cellsStyles.push cell.style
@@ -204,10 +212,26 @@ class Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
 	#
 	thaw: () =>
 		defer = () =>
-			cells = @element.find('> tr:first-child() td')
+			console.log 'thaw'
+			cells = @getFirstCells()
 
 			for cell, index in cells
 				cell.style = cellsStyles[index]
+		# TODO setTimeout should be avoided, investigate if should be used
 		# Unfreezing takes some time...
 		# This needs to be delayed a bit or flicker will still occur
-		setTimeout defer, 150
+		defer()
+#		setTimeout defer, 0
+
+	getFirstCells: () =>
+		table = @element
+		if @element.is 'tbody'
+			table = @element.parent()
+		cells = table.find('thead tr:first() th')
+		if not cells or not cells.length
+			cells = table.find('tr:first() td')
+		if not cells or not cells.length
+			cells = table.find('tbody tr:first() td')
+		if not cells or not cells.length
+			cells = table.find('tfoot tr:first() th')
+		return cells

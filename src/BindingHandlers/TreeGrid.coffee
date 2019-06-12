@@ -73,6 +73,9 @@ class @Maslosoft.Binder.TreeGrid extends @Maslosoft.Binder.Base
 
 		table = jQuery(element)
 
+		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor
+		widget.init()
+
 		if activeClass
 			activeClassHandler = (e) ->
 				# Remove from all instances of `tr` tu support multiple
@@ -83,11 +86,11 @@ class @Maslosoft.Binder.TreeGrid extends @Maslosoft.Binder.Base
 			table.on 'click', 'tr', activeClassHandler
 
 			dispose = (toDispose) ->
+				widget.dispose()
 				jQuery(toDispose).off "click", 'tr', activeClassHandler
 
 			ko.utils.domNodeDisposal.addDisposeCallback element, dispose
 
-		widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView element, valueAccessor
 		ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
 		return { controlsDescendantBindings: true }
 
