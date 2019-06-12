@@ -61,7 +61,8 @@ class Maslosoft.Binder.Widgets.TreeGrid.Expanders
 			if hasChildren
 				item.find('.no-expander').hide()
 				item.find('.expander').show()
-				item.find('.expander .expanded').show()
+				if not item.find('.expander .collapsed').is(':visible')
+					item.find('.expander .expanded').show()
 			else
 				item.find('.expander').hide()
 				item.find('.no-expander').show()
