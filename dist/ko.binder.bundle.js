@@ -15318,30 +15318,15 @@ module.exports = function (element) {
     };
 
     Track.prototype.fromJs = function(model, jsData) {
-      var index, item, name, value, _results;
+      var name, value, _results;
       _results = [];
       for (name in jsData) {
         value = jsData[name];
         if (typeof value === 'object') {
-          if (Array.isArray(value)) {
-            model[name] = ko.track([], {
-              deep: false
-            });
-            _results.push((function() {
-              var _i, _len, _results1;
-              _results1 = [];
-              for (index = _i = 0, _len = value.length; _i < _len; index = ++_i) {
-                item = value[index];
-                _results1.push(model[name][index] = this.factory(item));
-              }
-              return _results1;
-            }).call(this));
+          if (model[name]) {
+            _results.push(this.fromJs(model[name], value));
           } else {
-            if (model[name]) {
-              _results.push(this.fromJs(model[name], value));
-            } else {
-              _results.push(model[name] = this.factory(value));
-            }
+            _results.push(model[name] = this.factory(value));
           }
         } else {
           _results.push(model[name] = value);
