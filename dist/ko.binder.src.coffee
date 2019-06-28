@@ -1783,7 +1783,7 @@ class @Maslosoft.Binder.HtmlValue extends @Maslosoft.Binder.Base
 
 		# Handle update immediately
 		handler = () =>
-			console.log("HTML Value Update", element)
+			# console.log("HTML Value Update", element)
 			# On some situations element might be null (sorting), ignore this case
 			if not element then return
 

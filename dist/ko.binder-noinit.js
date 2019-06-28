@@ -1947,7 +1947,6 @@
       handler = (function(_this) {
         return function() {
           var accessor, elementValue, modelValue;
-          console.log("HTML Value Update", element);
           if (!element) {
             return;
           }
