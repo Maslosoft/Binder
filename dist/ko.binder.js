@@ -4738,7 +4738,7 @@
       if (!data) {
         return data;
       }
-      if (data._class) {
+      if (data._class && typeof data._class === 'string') {
         className = data._class.replace(/\\/g, '.');
         try {
           ref = Maslosoft.Ko.objByName(className);
