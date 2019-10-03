@@ -23,7 +23,7 @@ class @Maslosoft.Ko.Track
 		if not data then return data
 
 		# Check if has prototype
-		if data._class
+		if data._class and typeof(data._class) is 'string'
 			# Convert PHP class name to js class name
 			className = data._class.replace(/\\/g, '.')
 			try
