@@ -12,3 +12,7 @@
 @Maslosoft.Ko.preload = preload
 
 @Maslosoft.Ko.numberFormat = numberFormat
+
+@Maslosoft.Ko.lcfirst = lcfirst
+
+@Maslosoft.Ko.ucfirst = ucfirst

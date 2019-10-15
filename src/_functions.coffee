@@ -213,3 +213,9 @@ numberFormat = (number, n = 2, x = 3, s = ' ', c = ',') ->
 	re = '\\d(?=(\\d{' + (x or 3) + '})+' + (if n > 0 then '\\D' else '$') + ')'
 	num = number.toFixed(Math.max(0, ~ ~n))
 	(if c then num.replace('.', c) else num).replace new RegExp(re, 'g'), '$&' + (s or ',')
+
+lcfirst = (str) ->
+	str = str.substring(0,1).toLocaleLowerCase() + str.substring(1);
+
+ucfirst = (str) ->
+	str = str.substring(0,1).toLocaleUpperCase() + str.substring(1);

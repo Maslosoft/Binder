@@ -10544,7 +10544,7 @@ module.exports = function (element) {
 
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, ensureAttribute, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, numberFormat, preload, preloadedImages, setRefByName, stringToColour, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, ensureAttribute, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, lcfirst, log, numberFormat, preload, preloadedImages, setRefByName, stringToColour, ucfirst, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -10796,6 +10796,14 @@ module.exports = function (element) {
     re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')';
     num = number.toFixed(Math.max(0, ~~n));
     return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
+  };
+
+  lcfirst = function(str) {
+    return str = str.substring(0, 1).toLocaleLowerCase() + str.substring(1);
+  };
+
+  ucfirst = function(str) {
+    return str = str.substring(0, 1).toLocaleUpperCase() + str.substring(1);
   };
 
   "use strict";
@@ -15450,6 +15458,10 @@ module.exports = function (element) {
   this.Maslosoft.Ko.preload = preload;
 
   this.Maslosoft.Ko.numberFormat = numberFormat;
+
+  this.Maslosoft.Ko.lcfirst = lcfirst;
+
+  this.Maslosoft.Ko.ucfirst = ucfirst;
 
 }).call(this);
 
