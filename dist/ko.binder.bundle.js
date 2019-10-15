@@ -10544,7 +10544,7 @@ module.exports = function (element) {
 
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, ensureAttribute, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, preload, preloadedImages, setRefByName, stringToColour, warn,
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, ensureAttribute, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, log, numberFormat, preload, preloadedImages, setRefByName, stringToColour, warn,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -10766,6 +10766,36 @@ module.exports = function (element) {
       element.setAttribute(attribute, '');
       return jQuery(element).attr(attribute, '');
     }
+  };
+
+
+  /*
+   * Number.prototype.format(n, x, s, c)
+   * @see http://stackoverflow.com/a/14428340/5444623
+   * @param float   number: number to format
+   * @param integer n: length of decimal
+   * @param integer x: length of whole part
+   * @param mixed   s: sections delimiter
+   * @param mixed   c: decimal delimiter
+   */
+
+  numberFormat = function(number, n, x, s, c) {
+    var num, re;
+    if (n == null) {
+      n = 2;
+    }
+    if (x == null) {
+      x = 3;
+    }
+    if (s == null) {
+      s = ' ';
+    }
+    if (c == null) {
+      c = ',';
+    }
+    re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')';
+    num = number.toFixed(Math.max(0, ~~n));
+    return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
   };
 
   "use strict";
@@ -11944,7 +11974,7 @@ module.exports = function (element) {
     DecimalFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {};
 
     DecimalFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var bound, config, format, formatted, name, names, value, _i, _len;
+      var bound, config, formatted, name, names, value, _i, _len;
       value = this.getValue(valueAccessor) || 0;
       value = parseFloat(value);
       config = {};
@@ -11957,35 +11987,7 @@ module.exports = function (element) {
           config[name] = this.getValue(bound);
         }
       }
-
-      /*
-      		 * Number.prototype.format(n, x, s, c)
-      		 * @see http://stackoverflow.com/a/14428340/5444623
-      		 * @param float   number: number to format
-      		 * @param integer n: length of decimal
-      		 * @param integer x: length of whole part
-      		 * @param mixed   s: sections delimiter
-      		 * @param mixed   c: decimal delimiter
-       */
-      format = function(number, n, x, s, c) {
-        var num, re;
-        if (n == null) {
-          n = 2;
-        }
-        if (x == null) {
-          x = 3;
-        }
-        if (s == null) {
-          s = ' ';
-        }
-        if (c == null) {
-          c = ',';
-        }
-        re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')';
-        num = number.toFixed(Math.max(0, ~~n));
-        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
-      };
-      formatted = format(value, config.precision, 3, config.thousandSeparator, config.decimalSeparator);
+      formatted = numberFormat(value, config.precision, 3, config.thousandSeparator, config.decimalSeparator);
       return element.innerHTML = config.prefix + formatted + config.suffix;
     };
 
@@ -15446,6 +15448,8 @@ module.exports = function (element) {
   this.Maslosoft.Ko.stringToColour = stringToColour;
 
   this.Maslosoft.Ko.preload = preload;
+
+  this.Maslosoft.Ko.numberFormat = numberFormat;
 
   this.Maslosoft.Binder.registerDefaults();
 

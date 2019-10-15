@@ -199,3 +199,17 @@ ensureAttribute = (element, attribute) ->
 		element.setAttributeNode(attr)
 		element.setAttribute(attribute, '')
 		jQuery(element).attr(attribute, '')
+
+###
+# Number.prototype.format(n, x, s, c)
+# @see http://stackoverflow.com/a/14428340/5444623
+# @param float   number: number to format
+# @param integer n: length of decimal
+# @param integer x: length of whole part
+# @param mixed   s: sections delimiter
+# @param mixed   c: decimal delimiter
+###
+numberFormat = (number, n = 2, x = 3, s = ' ', c = ',') ->
+	re = '\\d(?=(\\d{' + (x or 3) + '})+' + (if n > 0 then '\\D' else '$') + ')'
+	num = number.toFixed(Math.max(0, ~ ~n))
+	(if c then num.replace('.', c) else num).replace new RegExp(re, 'g'), '$&' + (s or ',')

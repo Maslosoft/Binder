@@ -10,3 +10,5 @@
 @Maslosoft.Ko.stringToColour = stringToColour
 
 @Maslosoft.Ko.preload = preload
+
+@Maslosoft.Ko.numberFormat = numberFormat

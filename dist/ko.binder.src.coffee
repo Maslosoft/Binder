@@ -199,6 +199,20 @@ ensureAttribute = (element, attribute) ->
 		element.setAttributeNode(attr)
 		element.setAttribute(attribute, '')
 		jQuery(element).attr(attribute, '')
+
+###
+# Number.prototype.format(n, x, s, c)
+# @see http://stackoverflow.com/a/14428340/5444623
+# @param float   number: number to format
+# @param integer n: length of decimal
+# @param integer x: length of whole part
+# @param mixed   s: sections delimiter
+# @param mixed   c: decimal delimiter
+###
+numberFormat = (number, n = 2, x = 3, s = ' ', c = ',') ->
+	re = '\\d(?=(\\d{' + (x or 3) + '})+' + (if n > 0 then '\\D' else '$') + ')'
+	num = number.toFixed(Math.max(0, ~ ~n))
+	(if c then num.replace('.', c) else num).replace new RegExp(re, 'g'), '$&' + (s or ',')
 "use strict"
 if not @Maslosoft
 	@Maslosoft = {}
@@ -1345,22 +1359,7 @@ class @Maslosoft.Binder.DecimalFormatter extends @Maslosoft.Binder.Base
 			if typeof(bound) isnt 'undefined'
 				config[name] = @getValue bound
 		
-		###
-		# Number.prototype.format(n, x, s, c)
-		# @see http://stackoverflow.com/a/14428340/5444623
-		# @param float   number: number to format
-		# @param integer n: length of decimal
-		# @param integer x: length of whole part
-		# @param mixed   s: sections delimiter
-		# @param mixed   c: decimal delimiter
-		###
-		format = (number, n = 2, x = 3, s = ' ', c = ',') ->
-			re = '\\d(?=(\\d{' + (x or 3) + '})+' + (if n > 0 then '\\D' else '$') + ')'
-			num = number.toFixed(Math.max(0, ~ ~n))
-			(if c then num.replace('.', c) else num).replace new RegExp(re, 'g'), '$&' + (s or ',')
-
-
-		formatted = format value, config.precision, 3, config.thousandSeparator, config.decimalSeparator
+		formatted = numberFormat value, config.precision, 3, config.thousandSeparator, config.decimalSeparator
 
 		element.innerHTML = config.prefix + formatted + config.suffix
 #
@@ -4754,5 +4753,7 @@ class @Maslosoft.Binder.Model
 @Maslosoft.Ko.stringToColour = stringToColour
 
 @Maslosoft.Ko.preload = preload
+
+@Maslosoft.Ko.numberFormat = numberFormat
 @Maslosoft.Binder.registerDefaults()
 ko.punches.enableAll()
