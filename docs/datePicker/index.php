@@ -49,8 +49,15 @@ use Maslosoft\Widgets\JavaScript\Packages\BootstrapDatepickerPackage;
 			<input data-bind="datePicker: binder.model.datePicker.date" type="text" class="form-control"/>
 		</div>
 	</div>
+    <div class="form-group">
+        <label>Nulled value</label>
+        <div class="input-group col-md-4 col-sm-6">
+            <input data-bind="datePicker: binder.model.nulled.date" type="text" class="form-control"/>
+        </div>
+    </div>
 </form>
 <div data-bind="dateFormatter: binder.model.datePicker.date" class="label label-success"></div>
+<div data-bind="dateFormatter: binder.model.nulled.date" class="label label-success"></div>
 <!-- trim -->
 <p>
 <br />
@@ -62,6 +69,8 @@ use Maslosoft\Widgets\JavaScript\Packages\BootstrapDatepickerPackage;
 <script>
 	window.onload = (function(){
 		binder.model.datePicker = new Maslosoft.Koe.DatePicker;
+        binder.model.nulled = new Maslosoft.Koe.DatePicker;
+        binder.model.nulled.date = null;
 		ko.applyBindings({model: binder.model}, document.getElementById('ko-binder'));
 	});
 </script>
