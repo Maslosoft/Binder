@@ -800,6 +800,9 @@ class @Maslosoft.Binder.MomentFormatter extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		value = @getValue(valueAccessor)
+		if not value
+			element.innerHTML = ''
+			return
 		element.innerHTML = moment[@options.sourceFormat](value).format(@options.displayFormat)
 		return
 
@@ -1170,6 +1173,8 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 		super new Maslosoft.Binder.DateOptions(options)
 	
 	getData: (valueAccessor) ->
+		if not valueAccessor
+			return ''
 		# Verbose syntax, at least {data: data}
 		value = @getValue(valueAccessor) or []
 		if value.data
@@ -1213,10 +1218,10 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 		options = @getOptions allBindings
 		modelValue = @getData valueAccessor
 		elementValue = @getModelValue element.value, options
-		
+		accessor = valueAccessor()
 		# Update only if changed
 		if modelValue isnt elementValue
-			if valueAccessor().data
+			if accessor and accessor.data
 				
 				ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue)
 			else
@@ -1229,6 +1234,11 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 	# @return string|int
 	#
 	getDisplayValue: (value, options) =>
+		#console.log value
+		if not value
+			return ''
+		if value and value.length is 0
+			return ''
 		if options.sourceFormat is 'unix'
 			inputValue = moment.unix(value).format(options.displayFormat)
 		else
@@ -1241,6 +1251,8 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 	# @return string|int
 	#
 	getModelValue: (value, options) =>
+		if not value
+			return null
 		if options.sourceFormat is 'unix'
 			modelValue = moment(value, options.displayFormat).unix()
 		else
@@ -1255,7 +1267,12 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 
 		options = @getOptions allBindingsAccessor
 
-		element.value = @getDisplayValue(@getData(valueAccessor), options)
+		value = @getDisplayValue(@getData(valueAccessor), options)
+		#console.log value
+		if not value
+			element.value = ''
+		else
+			element.value = value
 		
 		input = jQuery(element)
 
@@ -1270,18 +1287,24 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 			</div>
 			'''
 		addon = jQuery(template)
-		addon.insertAfter input
+		addon.insertBefore input
 		
 		trigger = addon.find('a.picker-trigger-link')
 
 		input.datepicker(options)
 
-		# Don't trigger picker change date, as date need to be parsed by datejs
-		input.on 'changeDate', (e) =>
+		# Trigger only when value has changed, but do not update
+		# picker, ie someone is typing-in date
+		onChangeValue = (e) =>
+			value = input.datepicker('getDate')
+			#console.log value, element.value
+			if value
+				@updateModel element, valueAccessor, allBindingsAccessor
+				#console.log 'Changing model... onChangeValue'
 			return false
 
-		# Here is actual date change handling
-		input.on 'change', (e) =>
+		# When date is changed and change is confirmed
+		onChange = (e) =>
 			parsedDate = Date.parse(element.value)
 			if parsedDate and not e.isTrigger
 				element.value = @getDisplayValue(Math.round(parsedDate.getTime() / 1000), options)
@@ -1289,6 +1312,16 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 				input.datepicker 'update'
 				return true
 			return false
+
+		# Don't trigger picker change date, as date need to be parsed by datejs
+		input.on 'changeDate', (e) =>
+			onChangeValue(e)
+			return true
+
+		# Here is actual date change handling
+		input.on 'change', onChange
+
+		input.on 'blur', onChange
 
 		# Handle opened state
 		isOpen = false
@@ -1314,11 +1347,12 @@ class @Maslosoft.Binder.DatePicker extends @Maslosoft.Binder.Picker
 	#
 	#
 	update: (element, valueAccessor, allBindingsAccessor) =>
-		if valueAccessor().data
+		val = valueAccessor()
+		if val and val.data
 			
-			ko.utils.setTextContent(element, valueAccessor().data)
+			ko.utils.setTextContent(element, val.data)
 		else
-			ko.utils.setTextContent(element, valueAccessor())
+			ko.utils.setTextContent(element, val)
 		options = @getOptions allBindingsAccessor
 		value = @getDisplayValue(@getData(valueAccessor), options)
 		

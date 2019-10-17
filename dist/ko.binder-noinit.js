@@ -793,6 +793,10 @@
     MomentFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
       var value;
       value = this.getValue(valueAccessor);
+      if (!value) {
+        element.innerHTML = '';
+        return;
+      }
       element.innerHTML = moment[this.options.sourceFormat](value).format(this.options.displayFormat);
     };
 
@@ -1257,6 +1261,9 @@
 
     DatePicker.prototype.getData = function(valueAccessor) {
       var value;
+      if (!valueAccessor) {
+        return '';
+      }
       value = this.getValue(valueAccessor) || [];
       if (value.data) {
         return value.data;
@@ -1295,12 +1302,13 @@
     };
 
     DatePicker.prototype.updateModel = function(element, valueAccessor, allBindings) {
-      var elementValue, modelValue, options;
+      var accessor, elementValue, modelValue, options;
       options = this.getOptions(allBindings);
       modelValue = this.getData(valueAccessor);
       elementValue = this.getModelValue(element.value, options);
+      accessor = valueAccessor();
       if (modelValue !== elementValue) {
-        if (valueAccessor().data) {
+        if (accessor && accessor.data) {
           return ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue);
         } else {
           return ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
@@ -1310,6 +1318,12 @@
 
     DatePicker.prototype.getDisplayValue = function(value, options) {
       var inputValue;
+      if (!value) {
+        return '';
+      }
+      if (value && value.length === 0) {
+        return '';
+      }
       if (options.sourceFormat === 'unix') {
         inputValue = moment.unix(value).format(options.displayFormat);
       } else {
@@ -1320,6 +1334,9 @@
 
     DatePicker.prototype.getModelValue = function(value, options) {
       var modelValue;
+      if (!value) {
+        return null;
+      }
       if (options.sourceFormat === 'unix') {
         modelValue = moment(value, options.displayFormat).unix();
       } else {
@@ -1329,9 +1346,14 @@
     };
 
     DatePicker.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var addon, input, isOpen, options, template, trigger;
+      var addon, input, isOpen, onChange, onChangeValue, options, template, trigger, value;
       options = this.getOptions(allBindingsAccessor);
-      element.value = this.getDisplayValue(this.getData(valueAccessor), options);
+      value = this.getDisplayValue(this.getData(valueAccessor), options);
+      if (!value) {
+        element.value = '';
+      } else {
+        element.value = value;
+      }
       input = jQuery(element);
       if (options.template) {
         template = options.template;
@@ -1339,15 +1361,19 @@
         template = '<div class="input-group-addon">\n	<a class="picker-trigger-link" style="cursor: pointer;">\n		<i class="glyphicon glyphicon-calendar"></i>\n	</a>\n</div>';
       }
       addon = jQuery(template);
-      addon.insertAfter(input);
+      addon.insertBefore(input);
       trigger = addon.find('a.picker-trigger-link');
       input.datepicker(options);
-      input.on('changeDate', (function(_this) {
+      onChangeValue = (function(_this) {
         return function(e) {
+          value = input.datepicker('getDate');
+          if (value) {
+            _this.updateModel(element, valueAccessor, allBindingsAccessor);
+          }
           return false;
         };
-      })(this));
-      input.on('change', (function(_this) {
+      })(this);
+      onChange = (function(_this) {
         return function(e) {
           var parsedDate;
           parsedDate = Date.parse(element.value);
@@ -1359,7 +1385,15 @@
           }
           return false;
         };
+      })(this);
+      input.on('changeDate', (function(_this) {
+        return function(e) {
+          onChangeValue(e);
+          return true;
+        };
       })(this));
+      input.on('change', onChange);
+      input.on('blur', onChange);
       isOpen = false;
       input.on('show', (function(_this) {
         return function(e) {
@@ -1383,11 +1417,12 @@
     };
 
     DatePicker.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
-      var options, value;
-      if (valueAccessor().data) {
-        ko.utils.setTextContent(element, valueAccessor().data);
+      var options, val, value;
+      val = valueAccessor();
+      if (val && val.data) {
+        ko.utils.setTextContent(element, val.data);
       } else {
-        ko.utils.setTextContent(element, valueAccessor());
+        ko.utils.setTextContent(element, val);
       }
       options = this.getOptions(allBindingsAccessor);
       value = this.getDisplayValue(this.getData(valueAccessor), options);
