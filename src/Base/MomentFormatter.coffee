@@ -9,5 +9,8 @@ class @Maslosoft.Binder.MomentFormatter extends @Maslosoft.Binder.Base
 
 	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
 		value = @getValue(valueAccessor)
+		if not value
+			element.innerHTML = ''
+			return
 		element.innerHTML = moment[@options.sourceFormat](value).format(@options.displayFormat)
 		return
