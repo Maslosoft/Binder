@@ -88,6 +88,9 @@ class ValidationManager
 	setElement: (@element) =>
 		@parent = jQuery(@element).parents('.form-group')[0]
 
+		if not @parent
+			return @
+
 		@errors = @parent.querySelector @options.errorMessages
 		@warnings = @parent.querySelector @options.warningMessages
 		hide @errors

@@ -14369,6 +14369,9 @@ module.exports = function (element) {
     ValidationManager.prototype.setElement = function(element) {
       this.element = element;
       this.parent = jQuery(this.element).parents('.form-group')[0];
+      if (!this.parent) {
+        return this;
+      }
       this.errors = this.parent.querySelector(this.options.errorMessages);
       this.warnings = this.parent.querySelector(this.options.warningMessages);
       hide(this.errors);
