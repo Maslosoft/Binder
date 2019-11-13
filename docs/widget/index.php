@@ -15,6 +15,24 @@
     All parameters passed to <code>params</code> will be applied to widget <i>object</i>
     matching parameter name to object instance property name.
 </p>
+<h2>Example Widget</h2>
+<pre class="coffeescript">
+class @Maslosoft.BinderDev.Widgets.MyWidget
+
+    # This field can be configured with `params` binding
+	title: ''
+
+	init: (element) =>
+		# Init widget
+        # 1. Apply initial state
+        # 2. Attach event handlers
+		element.innerHTML = @title
+
+	dispose: (element) =>
+		# Dispose widget:
+        # 1. Remove event handlers
+        # 2. Delete unnecessary objects
+</pre>
 <p>
     The <code>ref</code> option will set value of passed reference <i>name</i> to
     widget instance. The <code>ref</code> value <i>must</i> be of type string, representing
