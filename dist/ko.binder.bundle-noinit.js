@@ -1,178 +1,3 @@
-/*
- * Copyright 2016 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
-
-'use strict';
-
-
-(function(scope) {
-  if (scope['Proxy']) {
-    return;
-  }
-  let lastRevokeFn = null;
-
-  /**
-   * @param {*} o
-   * @return {boolean} whether this is probably a (non-null) Object
-   */
-  function isObject(o) {
-    return o ? (typeof o == 'object' || typeof o == 'function') : false;
-  }
-
-  /**
-   * @constructor
-   * @param {!Object} target
-   * @param {{apply, construct, get, set}} handler
-   */
-  scope.Proxy = function(target, handler) {
-    if (!isObject(target) || !isObject(handler)) {
-      throw new TypeError('Cannot create proxy with a non-object as target or handler');
-    }
-
-    // Construct revoke function, and set lastRevokeFn so that Proxy.revocable can steal it.
-    // The caller might get the wrong revoke function if a user replaces or wraps scope.Proxy
-    // to call itself, but that seems unlikely especially when using the polyfill.
-    let throwRevoked = function() {};
-    lastRevokeFn = function() {
-      throwRevoked = function(trap) {
-        throw new TypeError(`Cannot perform '${trap}' on a proxy that has been revoked`);
-      };
-    };
-
-    // Fail on unsupported traps: Chrome doesn't do this, but ensure that users of the polyfill
-    // are a bit more careful. Copy the internal parts of handler to prevent user changes.
-    const unsafeHandler = handler;
-    handler = {'get': null, 'set': null, 'apply': null, 'construct': null};
-    for (let k in unsafeHandler) {
-      if (!(k in handler)) {
-        throw new TypeError(`Proxy polyfill does not support trap '${k}'`);
-      }
-      handler[k] = unsafeHandler[k];
-    }
-    if (typeof unsafeHandler == 'function') {
-      // Allow handler to be a function (which has an 'apply' method). This matches what is
-      // probably a bug in native versions. It treats the apply call as a trap to be configured.
-      handler.apply = unsafeHandler.apply.bind(unsafeHandler);
-    }
-
-    // Define proxy as this, or a Function (if either it's callable, or apply is set).
-    // TODO(samthor): Closure compiler doesn't know about 'construct', attempts to rename it.
-    let proxy = this;
-    let isMethod = false;
-    const targetIsFunction = typeof target == 'function';
-    if (handler.apply || handler['construct'] || targetIsFunction) {
-      proxy = function Proxy() {
-        const usingNew = (this && this.constructor === proxy);
-        const args = Array.prototype.slice.call(arguments);
-        throwRevoked(usingNew ? 'construct' : 'apply');
-
-        if (usingNew && handler['construct']) {
-          return handler['construct'].call(this, target, args);
-        } else if (!usingNew && handler.apply) {
-          return handler.apply(target, this, args);
-        } else if (targetIsFunction) {
-          // since the target was a function, fallback to calling it directly.
-          if (usingNew) {
-            // inspired by answers to https://stackoverflow.com/q/1606797
-            args.unshift(target);  // pass class as first arg to constructor, although irrelevant
-            // nb. cast to convince Closure compiler that this is a constructor
-            const f = /** @type {!Function} */ (target.bind.apply(target, args));
-            return new f();
-          }
-          return target.apply(this, args);
-        }
-        throw new TypeError(usingNew ? 'not a constructor' : 'not a function');
-      };
-      isMethod = true;
-    }
-
-    // Create default getters/setters. Create different code paths as handler.get/handler.set can't
-    // change after creation.
-    const getter = handler.get ? function(prop) {
-      throwRevoked('get');
-      return handler.get(this, prop, proxy);
-    } : function(prop) {
-      throwRevoked('get');
-      return this[prop];
-    };
-    const setter = handler.set ? function(prop, value) {
-      throwRevoked('set');
-      const status = handler.set(this, prop, value, proxy);
-      if (!status) {
-        // TODO(samthor): If the calling code is in strict mode, throw TypeError.
-        // It's (sometimes) possible to work this out, if this code isn't strict- try to load the
-        // callee, and if it's available, that code is non-strict. However, this isn't exhaustive.
-      }
-    } : function(prop, value) {
-      throwRevoked('set');
-      this[prop] = value;
-    };
-
-    // Clone direct properties (i.e., not part of a prototype).
-    const propertyNames = Object.getOwnPropertyNames(target);
-    const propertyMap = {};
-    propertyNames.forEach(function(prop) {
-      if (isMethod && prop in proxy) {
-        return;  // ignore properties already here, e.g. 'bind', 'prototype' etc
-      }
-      const real = Object.getOwnPropertyDescriptor(target, prop);
-      const desc = {
-        enumerable: !!real.enumerable,
-        get: getter.bind(target, prop),
-        set: setter.bind(target, prop),
-      };
-      Object.defineProperty(proxy, prop, desc);
-      propertyMap[prop] = true;
-    });
-
-    // Set the prototype, or clone all prototype methods (always required if a getter is provided).
-    // TODO(samthor): We don't allow prototype methods to be set. It's (even more) awkward.
-    // An alternative here would be to _just_ clone methods to keep behavior consistent.
-    let prototypeOk = true;
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(proxy, Object.getPrototypeOf(target));
-    } else if (proxy.__proto__) {
-      proxy.__proto__ = target.__proto__;
-    } else {
-      prototypeOk = false;
-    }
-    if (handler.get || !prototypeOk) {
-      for (let k in target) {
-        if (propertyMap[k]) {
-          continue;
-        }
-        Object.defineProperty(proxy, k, {get: getter.bind(target, k)});
-      }
-    }
-
-    // The Proxy polyfill cannot handle adding new properties. Seal the target and proxy.
-    Object.seal(target);
-    Object.seal(proxy);
-
-    return proxy;  // nb. if isMethod is true, proxy != this
-  };
-
-  scope.Proxy.revocable = function(target, handler) {
-    const p = new scope.Proxy(target, handler);
-    return {'proxy': p, 'revoke': lastRevokeFn};
-  };
-
-  scope.Proxy['revocable'] = scope.Proxy.revocable;
-  scope['Proxy'] = scope.Proxy;
-})(typeof process !== 'undefined' && {}.toString.call(process) == '[object process]' ? global : self);
-
 /* (The MIT License)
  *
  * Copyright (c) 2012 Brandon Benvie <http://bbenvie.com>
@@ -6349,6 +6174,276 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 }());
 })();
 
+/*! WeakMap shim
+ * (The MIT License)
+ *
+ * Copyright (c) 2012 Brandon Benvie <http://bbenvie.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the 'Software'), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included with all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// Original WeakMap implementation by Gozala @ https://gist.github.com/1269991
+// Updated and bugfixed by Raynos @ https://gist.github.com/1638059
+// Expanded by Benvie @ https://github.com/Benvie/harmony-collections
+
+// This is the version used by knockout-es5. Modified by Steve Sanderson as follows:
+// [1] Deleted weakmap.min.js (it's not useful as it would be out of sync with weakmap.js now I'm editing it)
+// [2] Since UglifyJS strips inline function names (and you can't disable that without disabling name mangling
+//     entirely), insert code that re-adds function names
+
+void function(global, undefined_, undefined){
+  var getProps = Object.getOwnPropertyNames,
+      cachedWindowNames = typeof window === 'object' ? Object.getOwnPropertyNames(window) : [],
+      defProp  = Object.defineProperty,
+      toSource = Function.prototype.toString,
+      create   = Object.create,
+      hasOwn   = Object.prototype.hasOwnProperty,
+      funcName = /^\n?function\s?(\w*)?_?\(/;
+
+
+  function define(object, key, value){
+    if (typeof key === 'function') {
+      value = key;
+      key = nameOf(value).replace(/_$/, '');
+    }
+    return defProp(object, key, { configurable: true, writable: true, value: value });
+  }
+
+  function nameOf(func){
+    return typeof func !== 'function'
+          ? '' : '_name' in func
+          ? func._name : 'name' in func
+          ? func.name : toSource.call(func).match(funcName)[1];
+  }
+
+  function namedFunction(name, func) {
+    // Undo the name-stripping that UglifyJS does
+    func._name = name;
+    return func;
+  }
+
+  // ############
+  // ### Data ###
+  // ############
+
+  var Data = (function(){
+    var dataDesc = { value: { writable: true, value: undefined } },
+        uids     = create(null),
+
+        createUID = function(){
+          var key = Math.random().toString(36).slice(2);
+          return key in uids ? createUID() : uids[key] = key;
+        },
+
+        globalID = createUID(),
+
+        storage = function(obj){
+          if (hasOwn.call(obj, globalID))
+            return obj[globalID];
+
+          if (!Object.isExtensible(obj))
+            throw new TypeError("Object must be extensible");
+
+          var store = create(null);
+          defProp(obj, globalID, { value: store });
+          return store;
+        };
+
+    // common per-object storage area made visible by patching getOwnPropertyNames'
+    define(Object, namedFunction('getOwnPropertyNames', function getOwnPropertyNames(obj){
+      // gh-43
+      var coercedObj = Object(obj), props;
+      // Fixes for debuggers:
+      // 1) Some objects lack .toString(), calling it on them make Chrome
+      // debugger fail when inspecting variables.
+      // 2) Window.prototype methods and properties are private in IE11 and
+      // throw 'Invalid calling object'.
+      if (coercedObj !== Window.prototype && 'toString' in coercedObj
+        && coercedObj.toString() === '[object Window]')
+      {
+          try {
+              props = getProps(obj);
+          } catch (e) {
+              props = cachedWindowNames;
+          }
+      } else {
+          props = getProps(obj);
+      }
+      if (hasOwn.call(obj, globalID))
+        props.splice(props.indexOf(globalID), 1);
+      return props;
+    }));
+
+    function Data(){
+      var puid = createUID(),
+          secret = {};
+
+      this.unlock = function(obj){
+        var store = storage(obj);
+        if (hasOwn.call(store, puid))
+          return store[puid](secret);
+
+        var data = create(null, dataDesc);
+        defProp(store, puid, {
+          value: function(key){ if (key === secret) return data; }
+        });
+        return data;
+      }
+    }
+
+    define(Data.prototype, namedFunction('get', function get(o){ return this.unlock(o).value }));
+    define(Data.prototype, namedFunction('set', function set(o, v){ this.unlock(o).value = v }));
+
+    return Data;
+  }());
+
+
+  var WM = (function(data){
+    var validate = function(key){
+      if (key == null || typeof key !== 'object' && typeof key !== 'function')
+        throw new TypeError("Invalid WeakMap key");
+    }
+
+    var wrap = function(collection, value){
+      var store = data.unlock(collection);
+      if (store.value)
+        throw new TypeError("Object is already a WeakMap");
+      store.value = value;
+    }
+
+    var unwrap = function(collection){
+      var storage = data.unlock(collection).value;
+      if (!storage)
+        throw new TypeError("WeakMap is not generic");
+      return storage;
+    }
+
+    var initialize = function(weakmap, iterable){
+      if (iterable !== null && typeof iterable === 'object' && typeof iterable.forEach === 'function') {
+        iterable.forEach(function(item, i){
+          if (item instanceof Array && item.length === 2)
+            set.call(weakmap, iterable[i][0], iterable[i][1]);
+        });
+      }
+    }
+
+
+    function WeakMap(iterable){
+      if (this === global || this == null || this === WeakMap.prototype)
+        return new WeakMap(iterable);
+
+      wrap(this, new Data);
+      initialize(this, iterable);
+    }
+
+    function get(key){
+      validate(key);
+      var value = unwrap(this).get(key);
+      return value === undefined_ ? undefined : value;
+    }
+
+    function set(key, value){
+      validate(key);
+      // store a token for explicit undefined so that "has" works correctly
+      unwrap(this).set(key, value === undefined ? undefined_ : value);
+    }
+
+    function has(key){
+      validate(key);
+      return unwrap(this).get(key) !== undefined;
+    }
+
+    function delete_(key){
+      validate(key);
+      var data = unwrap(this),
+          had = data.get(key) !== undefined;
+      data.set(key, undefined);
+      return had;
+    }
+
+    function toString(){
+      unwrap(this);
+      return '[object WeakMap]';
+    }
+
+    // Undo the function-name stripping that UglifyJS does
+    get._name = 'get';
+    set._name = 'set';
+    has._name = 'has';
+    toString._name = 'toString';
+
+    var src = (''+Object).split('Object');
+    var stringifier = namedFunction('toString', function toString(){
+      return src[0] + nameOf(this) + src[1];
+    });
+
+    define(stringifier, stringifier);
+
+    var prep = { __proto__: [] } instanceof Array
+      ? function(f){ f.__proto__ = stringifier }
+      : function(f){ define(f, stringifier) };
+
+    prep(WeakMap);
+
+    [toString, get, set, has, delete_].forEach(function(method){
+      define(WeakMap.prototype, method);
+      prep(method);
+    });
+
+    return WeakMap;
+  }(new Data));
+
+  var defaultCreator = Object.create
+    ? function(){ return Object.create(null) }
+    : function(){ return {} };
+
+  function createStorage(creator){
+    var weakmap = new WM;
+    creator || (creator = defaultCreator);
+
+    function storage(object, value){
+      if (value || arguments.length === 2) {
+        weakmap.set(object, value);
+      } else {
+        value = weakmap.get(object);
+        if (value === undefined) {
+          value = creator(object);
+          weakmap.set(object, value);
+        }
+      }
+      return value;
+    }
+
+    return storage;
+  }
+
+
+  if (typeof module !== 'undefined') {
+    module.exports = WM;
+  } else if (typeof exports !== 'undefined') {
+    exports.WeakMap = WM;
+  } else if (!('WeakMap' in global)) {
+    global.WeakMap = WM;
+  }
+
+  WM.createStorage = createStorage;
+  if (global.WeakMap)
+    global.WeakMap.createStorage = createStorage;
+}(function(){ return this }());
+
 /*!
  * Knockout ES5 plugin - https://github.com/SteveSanderson/knockout-es5
  * Copyright (c) Steve Sanderson
@@ -6359,6 +6454,10 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
   'use strict';
 
   var ko;
+  
+  // A function that returns a new ES6-compatible WeakMap instance (using ES5 shim if needed).
+  // Instantiated by prepareExports, accounting for which module loader is being used.
+  var weakMapFactory;
 
   // Model tracking
   // --------------
@@ -6454,6 +6553,80 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
       get: observable,
       set: ko.isWriteableObservable(observable) ? observable : undefined
     };
+
+    // Custom Binding Provider
+    // -------------------
+    //
+    // To ensure that when using this plugin any custom bindings are provided with the observable
+    // rather than only the value of the property, a custom binding provider supplies bindings with
+    // actual observable values. The built in bindings use Knockout's internal `_ko_property_writers`
+    // feature to be able to write back to the property, but custom bindings may not be able to use
+    // that, especially if they use an options object.
+
+    function CustomBindingProvider(providerToWrap) {
+       this.bindingCache = {};
+       this._providerToWrap = providerToWrap;
+       this._nativeBindingProvider = new ko.bindingProvider();
+    }
+
+    CustomBindingProvider.prototype.nodeHasBindings = function() {
+       return this._providerToWrap.nodeHasBindings.apply(this._providerToWrap, arguments);
+    };
+
+    CustomBindingProvider.prototype.getBindingAccessors = function(node, bindingContext) {
+       var bindingsString = this._nativeBindingProvider.getBindingsString(node, bindingContext);
+       return bindingsString ? this.parseBindingsString(bindingsString, bindingContext, node, {'valueAccessors':true}) : null;
+    };
+
+    CustomBindingProvider.prototype.parseBindingsString = function(bindingsString, bindingContext, node, options) {
+       try {
+          var bindingFunction = createBindingsStringEvaluatorViaCache(bindingsString, this.bindingCache, options);
+          return bindingFunction(bindingContext, node);
+       } catch (ex) {
+          ex.message = 'Unable to parse bindings.\nBindings value: ' + bindingsString + '\nMessage: ' + ex.message;
+          throw ex;
+       }
+    };
+
+    function preProcessBindings(bindingsStringOrKeyValueArray, bindingOptions) {
+       bindingOptions = bindingOptions || {};
+
+       function processKeyValue(key, val) {
+         // Handle arrays if value starts with bracket
+         if(val.match(/^\[/)){
+           // This is required or will throw errors
+           resultStrings.push(key + ':ko.observableArray(' + val + ')');
+         }else{
+           resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
+         }
+
+       }
+
+       var resultStrings = [],
+          keyValueArray = typeof bindingsStringOrKeyValueArray === 'string' ?
+            ko.expressionRewriting.parseObjectLiteral(bindingsStringOrKeyValueArray) : bindingsStringOrKeyValueArray;
+
+       keyValueArray.forEach(function(keyValue) {
+          processKeyValue(keyValue.key || keyValue.unknown, keyValue.value);
+       });
+       return ko.expressionRewriting.preProcessBindings(resultStrings.join(','), bindingOptions);
+    }
+
+    function createBindingsStringEvaluatorViaCache(bindingsString, cache, options) {
+       var cacheKey = bindingsString + (options && options.valueAccessors || '');
+       return cache[cacheKey] || (cache[cacheKey] = createBindingsStringEvaluator(bindingsString, options));
+    }
+
+    function createBindingsStringEvaluator(bindingsString, options) {
+       var rewrittenBindings = preProcessBindings(bindingsString, options),
+          functionBody = 'with($context){with($data||{}){return{' + rewrittenBindings + '}}}';
+        /* jshint -W054 */
+       return new Function('$context', '$element', functionBody);
+    }
+
+    ko.es5BindingProvider = CustomBindingProvider;
+
+    ko.bindingProvider.instance = new CustomBindingProvider(ko.bindingProvider.instance);
   }
 
   function createLazyPropertyDescriptor(originalValue, prop, map) {
@@ -6736,6 +6909,11 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
     if (allObservablesForObject && propertyName in allObservablesForObject) {
       return allObservablesForObject[propertyName]();
     }
+    
+    var observable = obj[propertyName];
+    if (ko.isObservable(observable)) {
+        return observable;
+    }
 
     return null;
   }
@@ -6770,10 +6948,6 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
   // (currently that's just the WeakMap shim), and then finally attaches itself to whichever
   // instance of Knockout.js it can find.
 
-  // A function that returns a new ES6-compatible WeakMap instance (using ES5 shim if needed).
-  // Instantiated by prepareExports, accounting for which module loader is being used.
-  var weakMapFactory;
-
   // Extends a Knockout instance with Knockout-ES5 functionality
   function attachToKo(ko) {
     ko.track = track;
@@ -6788,80 +6962,6 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
       notifyWhenPresentOrFutureArrayValuesMutate: notifyWhenPresentOrFutureArrayValuesMutate,
       isTracked: isTracked
     };
-
-    // Custom Binding Provider
-    // -------------------
-    //
-    // To ensure that when using this plugin any custom bindings are provided with the observable
-    // rather than only the value of the property, a custom binding provider supplies bindings with
-    // actual observable values. The built in bindings use Knockout's internal `_ko_property_writers`
-    // feature to be able to write back to the property, but custom bindings may not be able to use
-    // that, especially if they use an options object.
-
-    function CustomBindingProvider(providerToWrap) {
-       this.bindingCache = {};
-       this._providerToWrap = providerToWrap;
-       this._nativeBindingProvider = new ko.bindingProvider();
-    }
-
-    CustomBindingProvider.prototype.nodeHasBindings = function() {
-       return this._providerToWrap.nodeHasBindings.apply(this._providerToWrap, arguments);
-    };
-
-    CustomBindingProvider.prototype.getBindingAccessors = function(node, bindingContext) {
-       var bindingsString = this._nativeBindingProvider.getBindingsString(node, bindingContext);
-       return bindingsString ? this.parseBindingsString(bindingsString, bindingContext, node, {'valueAccessors':true}) : null;
-    };
-
-    CustomBindingProvider.prototype.parseBindingsString = function(bindingsString, bindingContext, node, options) {
-       try {
-          var bindingFunction = createBindingsStringEvaluatorViaCache(bindingsString, this.bindingCache, options);
-          return bindingFunction(bindingContext, node);
-       } catch (ex) {
-          ex.message = 'Unable to parse bindings.\nBindings value: ' + bindingsString + '\nMessage: ' + ex.message;
-          throw ex;
-       }
-    };
-
-    function preProcessBindings(bindingsStringOrKeyValueArray, bindingOptions) {
-       bindingOptions = bindingOptions || {};
-
-       function processKeyValue(key, val) {
-         // Handle arrays if value starts with bracket
-         if(val.match(/^\[/)){
-           // This is required or will throw errors
-           resultStrings.push(key + ':ko.observableArray(' + val + ')');
-         }else{
-           resultStrings.push(key + ':ko.getObservable($data,"' + val + '")||' + val);
-         }
-
-       }
-
-       var resultStrings = [],
-          keyValueArray = typeof bindingsStringOrKeyValueArray === 'string' ?
-            ko.expressionRewriting.parseObjectLiteral(bindingsStringOrKeyValueArray) : bindingsStringOrKeyValueArray;
-
-       keyValueArray.forEach(function(keyValue) {
-          processKeyValue(keyValue.key || keyValue.unknown, keyValue.value);
-       });
-       return ko.expressionRewriting.preProcessBindings(resultStrings.join(','), bindingOptions);
-    }
-
-    function createBindingsStringEvaluatorViaCache(bindingsString, cache, options) {
-       var cacheKey = bindingsString + (options && options.valueAccessors || '');
-       return cache[cacheKey] || (cache[cacheKey] = createBindingsStringEvaluator(bindingsString, options));
-    }
-
-    function createBindingsStringEvaluator(bindingsString, options) {
-       var rewrittenBindings = preProcessBindings(bindingsString, options),
-          functionBody = 'with($context){with($data||{}){return{' + rewrittenBindings + '}}}';
-        /* jshint -W054 */
-       return new Function('$context', '$element', functionBody);
-    }
-
-    ko.es5BindingProvider = CustomBindingProvider;
-
-    ko.bindingProvider.instance = new CustomBindingProvider(ko.bindingProvider.instance);
   }
 
   // Determines which module loading scenario we're in, grabs dependencies, and attaches to KO
@@ -6869,7 +6969,7 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
     if (typeof exports === 'object' && typeof module === 'object') {
       // Node.js case - load KO and WeakMap modules synchronously
       ko = require('knockout');
-      var WM = require('../lib/weakmap');
+      var WM = global.WeakMap || require('../lib/weakmap');
       attachToKo(ko);
       weakMapFactory = function() { return new WM(); };
       module.exports = ko;
@@ -6890,7 +6990,9 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 
   prepareExports();
 
-})(this);
+})(typeof window !== 'undefined' ? window : 
+   typeof global !== 'undefined' ? global :
+   this);
 
 // knockout-sortable 0.12.0 | (c) 2016 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {

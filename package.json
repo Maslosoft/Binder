@@ -33,7 +33,7 @@
     "@bower_components/knockout.punches": "mbest/knockout.punches#^0.5",
     "@bower_components/maslosoft-playlist": "Maslosoft/Playlist#^1.0.10",
     "@bower_components/mocha": "mochajs/mocha#^2.4.5",
-    "@bower_components/proxy-polyfill": "GoogleChrome/proxy-polyfill#^0.1.3",
+    "@bower_components/proxy-polyfill": "GoogleChrome/proxy-polyfill#^0.3",
     "@bower_components/select2": "ivaynberg/select2#^4.0.3",
     "grunt": "~0.4.5",
     "grunt-contrib-coffee": "~0.11.1",

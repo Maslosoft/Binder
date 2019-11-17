@@ -112,9 +112,9 @@
   dependencies:
     jquery ">=1.7"
 
-"@bower_components/proxy-polyfill@GoogleChrome/proxy-polyfill#^0.1.3":
-  version "0.1.7"
-  resolved "https://codeload.github.com/GoogleChrome/proxy-polyfill/tar.gz/0ab75e61e1babbc3e17a254afaeeec291d963ce4"
+"@bower_components/proxy-polyfill@GoogleChrome/proxy-polyfill#^0.3":
+  version "0.3.0"
+  resolved "https://codeload.github.com/GoogleChrome/proxy-polyfill/tar.gz/f4e1a0651833b0e93e016c4e1a511171d973f9b4"
 
 "@bower_components/select2@ivaynberg/select2#^4.0.3":
   version "4.0.5"
