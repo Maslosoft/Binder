@@ -238,7 +238,7 @@ void function(global, undefined_, undefined){
   if (global.WeakMap)
     global.WeakMap.createStorage = createStorage;
 }((0, eval)('this'));
-
+;
 /*!
  * Knockout JavaScript library v3.5.1
  * (c) The Knockout.js team - http://knockoutjs.com/
@@ -6850,7 +6850,7 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 }));
 }());
 })();
-
+;
 /*!
  * Knockout ES5 plugin - https://github.com/SteveSanderson/knockout-es5
  * Copyright (c) Steve Sanderson
@@ -7393,7 +7393,7 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
   prepareExports();
 
 })(this);
-
+;
 // knockout-sortable 1.2.0 | (c) 2019 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {
     if (typeof define === "function" && define.amd) {
@@ -7884,7 +7884,7 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
         }
     };
 });
-
+;
 /**
  * @license Knockout.Punches
  * Enhanced binding syntaxes for Knockout 3+
@@ -8482,7 +8482,7 @@ var ko_punches_attributeInterpolationMarkup = ko_punches.attributeInterpolationM
 
     return ko_punches;
 }));
-
+;
 (function() {
   var objectKeys;
 
@@ -11154,7 +11154,7 @@ module.exports = function (element) {
 };
 
 },{"../lib/dom":3,"../lib/helper":6,"./instances":18,"./update-geometry":19,"./update-scroll":20}]},{},[1]);
-
+;
 (function() {
   "use strict";
   /*

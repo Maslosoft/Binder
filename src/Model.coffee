@@ -2,7 +2,7 @@
 # Model class with automatically applied knockout bindings
 #
 
-# Stub to ignore fatals
+# Stub to ignore fatal errors
 if !window.Proxy
 	console.warn 'Your browser does not support Proxy, will not work properly in some cases...'
 	class window.Proxy
