@@ -23,7 +23,7 @@ bundle = [
 	'bower_components/proxy-polyfill/proxy.min.js'
 	'node_modules/weakmap/weakmap.min.js'
 	'bower_components/knockout/dist/knockout.js'
-	'knockout-es5-proper.js'
+	'knockout-es5-proper.min.js'
 	'bower_components/knockout-sortable/build/knockout-sortable.min.js'
 	'bower_components/knockout.punches/knockout.punches.min.js'
 	'bower_components/maslosoft-playlist/dist/playlist.min.js'
@@ -75,6 +75,9 @@ module.exports = (grunt) ->
 				]
 
 		uglify:
+			koes5proper:
+				files:
+					'knockout-es5-proper.min.js': ['knockout-es5-proper.js']
 			compile:
 				files:
 					'dist/ko.binder.min.js' : ['dist/ko.binder.js']
