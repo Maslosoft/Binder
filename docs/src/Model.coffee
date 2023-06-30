@@ -26,10 +26,9 @@ class @Maslosoft.Koe.TreeItem extends @Maslosoft.Binder.Model
 	id: 0
 	title: ''
 	description: ''
-	children: null
+	children: []
 
 	constructor: (data = null) ->
-		@children = []
 		super data
 		@id = TreeItem.idCounter++
 
