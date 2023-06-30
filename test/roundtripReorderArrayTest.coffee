@@ -80,8 +80,8 @@ test = () ->
 
 			reorder = (res) ->
 				# Remove frank and push it to the end
-				elem = res.sortable.items.splice 1, 1
-				res.sortable.items.push elem[0]
+				el = res.sortable.items.splice 1, 1
+				res.sortable.items.push el[0]
 			doRound(reorder)
 
 			assert.equal binder.model.sortable.items.length, 5, 'That there are same amount of items'
@@ -98,10 +98,10 @@ test = () ->
 			assert.equal elem.find('div').length, 5, 'There are 5 div elements'
 			assert.equal binder.model.sortable.items[0].text, 'Anna', 'That first item is Anna'
 
-			reorder = (res) ->
+			remove = (res) ->
 				# Remove John
-				elem = res.sortable.items.splice 2, 1
-			doRound(reorder)
+				el = res.sortable.items.splice 2, 1
+			doRound(remove)
 
 			assert.equal binder.model.sortable.items.length, 4, 'That there are same amount of items'
 			assert.equal elem.find('div').length, 4, 'That DOM elements have same amount'
