@@ -85,6 +85,8 @@ module.exports = (grunt) ->
 				files:
 					'dist/ko.binder-noinit.min.js' : ['dist/ko.binder-noinit.js']
 		concat:
+			options:
+				separator: ';\n'
 			bundle:
 				src: binderBundle
 				dest: 'dist/ko.binder.bundle.min.js'
