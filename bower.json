@@ -1,6 +1,6 @@
 {
   "name": "maslosoft-binder",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "authors": [
     "Peter Maselkowski <pmaselkowski@gmail.com>"
   ],
@@ -26,26 +26,25 @@
     "tests"
   ],
   "dependencies": {
-    "knockout": "~3",
-    "moment": "~2",
-    "fancytree": "~2",
+    "knockout": "^3",
+    "moment": "^2",
     "datejs_original": "*",
-    "pickadate": "^3.5.6",
-    "bootstrap-datepicker": "^1.6.4",
-    "awesome-rating": "^1.0.0"
+    "pickadate": "^3",
+    "bootstrap-datepicker": "^1",
+    "awesome-rating": "^1"
   },
   "devDependencies": {
-    "jquery-ui": "~1",
-    "jquery": "~2",
+    "jquery-ui": "^1",
+    "jquery": "^3",
     "knockout.punches": "git@github.com:mbest/knockout.punches.git",
-    "knockout-sortable": "~0.12",
+    "knockout-sortable": "^1",
     "knockout-es5": "git@github.com:Maslosoft/knockout-es5.git#master",
     "highlightjs": "~8",
-    "bootstrap": "~3",
-    "mocha": "^2.4.5",
-    "chai": "^3.5.0",
-    "proxy-polyfill": "^0.1.3",
-    "maslosoft-playlist": "^1.0.10",
-    "select2": "^4.0.3"
+    "bootstrap": "^3",
+    "mocha": "^2",
+    "chai": "^4",
+    "proxy-polyfill": "^0",
+    "maslosoft-playlist": "^1",
+    "select2": "^4"
   }
 }
