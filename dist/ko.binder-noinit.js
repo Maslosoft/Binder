@@ -1,9 +1,16 @@
 (function() {
   "use strict";
-  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, ensureAttribute, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, lcfirst, log, numberFormat, preload, preloadedImages, setRefByName, stringToColour, ucfirst, warn,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  /*
+   * Number.prototype.format(n, x, s, c)
+   * @see http://stackoverflow.com/a/14428340/5444623
+   * @param float   number: number to format
+   * @param integer n: length of decimal
+   * @param integer x: length of whole part
+   * @param mixed   s: sections delimiter
+   * @param mixed   c: decimal delimiter
+   */
+  var ModelProxyHandler, PluginsManager, TreeDnd, TreeDrag, TreeEvents, TreeNodeCache, TreeNodeFinder, TreeNodeRenderer, ValidationManager, assert, ensureAttribute, entityMap, equals, error, escapeHtml, escapeRegExp, initMap, isPlainObject, lcfirst, log, numberFormat, preload, preloadedImages, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref2, ref20, ref21, ref22, ref23, ref24, ref25, ref26, ref27, ref28, ref29, ref3, ref30, ref31, ref32, ref33, ref34, ref35, ref36, ref37, ref38, ref39, ref4, ref40, ref41, ref42, ref43, ref44, ref45, ref5, ref6, ref7, ref8, ref9, setRefByName, stringToColour, ucfirst, warn,
+    boundMethodCheck = function(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new Error('Bound instance method accessed before binding'); } };
 
   assert = function(expr) {
     if (!console) {
@@ -19,20 +26,14 @@
     return console.log.apply(console, arguments);
   };
 
-  warn = function(expr, element) {
-    if (element == null) {
-      element = null;
-    }
+  warn = function(expr, element = null) {
     if (!console) {
       return;
     }
     return console.warn.apply(console, arguments);
   };
 
-  error = function(expr, element) {
-    if (element == null) {
-      element = null;
-    }
+  error = function(expr, element = null) {
     if (!console) {
       return;
     }
@@ -87,15 +88,12 @@
     })();
   }
 
-  setRefByName = function(name, value, context) {
-    var args, func, i, n, ns, _i, _len;
-    if (context == null) {
-      context = window;
-    }
+  setRefByName = function(name, value, context = window) {
+    var args, func, i, j, len, n, ns;
     args = Array.prototype.slice.call(arguments, 2);
     ns = name.split(".");
     func = context;
-    for (i = _i = 0, _len = ns.length; _i < _len; i = ++_i) {
+    for (i = j = 0, len = ns.length; j < len; i = ++j) {
       n = ns[i];
       console.log(i);
       if (i === ns.length - 1) {
@@ -108,6 +106,7 @@
   };
 
   escapeRegExp = function(str) {
+    // $& means the whole matched string
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
@@ -128,20 +127,32 @@
     });
   };
 
-  equals = function(x, y, skip) {
+  
+  // Compare objects for equallness.
+
+  // Example:
+  // equals({x: 2}, {x: 2}); // Returns true
+
+  // Optionally skip properties (recursively) to compare:
+  // equals({x: 2, y: false}, {x: 2, y: true}, ['y']); // Returns true
+  // equals({y: false, x: 2, z: {x: 1, y: 1}}, {x: 2, y: true, z: {x: 1, y: 2}}, ['y']); // Returns true
+
+  // @link https://stackoverflow.com/a/6713782/5444623
+
+  equals = function(x, y, skip = []) {
     var doSkip, p;
-    if (skip == null) {
-      skip = [];
-    }
     doSkip = function(property) {
       return skip.indexOf(property) !== -1;
     };
+    // if both x and y are null or undefined and exactly the same
     if (x === y) {
       return true;
     }
     if (!(x instanceof Object) || !(y instanceof Object)) {
       return false;
     }
+    // they must have the exact same prototype chain, the closest we can do is
+    // test there constructor.
     if (x.constructor !== y.constructor) {
       return false;
     }
@@ -155,9 +166,11 @@
       if (!y.hasOwnProperty(p)) {
         return false;
       }
+      // if they have the same strict value or identity then they are equal
       if (x[p] === y[p]) {
         continue;
       }
+      // Numbers, Strings, Functions, Booleans must be strictly equal
       if (typeof x[p] !== 'object') {
         return false;
       }
@@ -170,12 +183,16 @@
         continue;
       }
       p = p;
+      // allows x[ p ] to be set to undefined
       if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) {
         return false;
       }
     }
     return true;
   };
+
+  
+  // Generate CSS hex color based on input string
 
   stringToColour = function(str) {
     var colour, hash, i, value;
@@ -198,13 +215,17 @@
 
   preloadedImages = {};
 
+  
+  // Preload image of element
+  // @param element DomElement
+
   preload = function(element, src) {
     var image;
     if (preloadedImages[src]) {
       element.attr("src", src);
       return;
     }
-    image = new Image;
+    image = new Image();
     image.src = src;
     return image.onload = function() {
       image = null;
@@ -224,31 +245,8 @@
     }
   };
 
-
-  /*
-   * Number.prototype.format(n, x, s, c)
-   * @see http://stackoverflow.com/a/14428340/5444623
-   * @param float   number: number to format
-   * @param integer n: length of decimal
-   * @param integer x: length of whole part
-   * @param mixed   s: sections delimiter
-   * @param mixed   c: decimal delimiter
-   */
-
-  numberFormat = function(number, n, x, s, c) {
+  numberFormat = function(number, n = 2, x = 3, s = ' ', c = ',') {
     var num, re;
-    if (n == null) {
-      n = 2;
-    }
-    if (x == null) {
-      x = 3;
-    }
-    if (s == null) {
-      s = ' ';
-    }
-    if (c == null) {
-      c = ',';
-    }
     re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')';
     num = number.toFixed(Math.max(0, ~~n));
     return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
@@ -288,6 +286,12 @@
     this.Maslosoft.Binder.Widgets = {};
   }
 
+  
+  // Extra utils
+
+  // Debounce function
+  // @link https://john-dugan.com/javascript-debounce/
+
   this.Maslosoft.Ko.debounce = function(func, wait, immediate) {
     var timeout;
     timeout = void 0;
@@ -310,12 +314,18 @@
     };
   };
 
+  
+  // Register binding handler
+  // @param string name
+  // @params Maslosoft.Binder.Base handler
+
   this.Maslosoft.Binder.register = function(name, handler) {
     var name2;
     name2 = false;
     if (name.match(/[A-Z]/)) {
       name2 = name.toLowerCase();
     }
+    // Assign two way. Not sure if necessary in current ko
     if (handler.writable) {
       if (ko.expressionRewriting && ko.expressionRewriting.twoWayBindings) {
         ko.expressionRewriting.twoWayBindings[name] = true;
@@ -325,16 +335,20 @@
       }
     }
     ko.bindingHandlers[name] = handler;
+    // Lower-case version of binding handler for punches
     if (name2) {
       return ko.bindingHandlers[name2] = handler;
     }
   };
 
-  this.Maslosoft.Binder.registerDefaults = function(handlers) {
-    var config, index, value, _results, _results1;
-    if (handlers == null) {
-      handlers = null;
-    }
+  //Reassign options
+  //ko.bindingHandlers[name].options = JSON.parse(JSON.stringify(handler.options))
+
+  // Register default set of binding handlers, or part of default set
+
+  this.Maslosoft.Binder.registerDefaults = function(handlers = null) {
+    var config, index, results, results1, value;
+    // In alphabetical order
     config = {
       acl: Maslosoft.Binder.Acl,
       active: Maslosoft.Binder.Active,
@@ -353,7 +367,7 @@
       disabled: Maslosoft.Binder.Disabled,
       enumCssClassFormatter: Maslosoft.Binder.EnumCssClassFormatter,
       enumFormatter: Maslosoft.Binder.EnumFormatter,
-      "eval": Maslosoft.Binder.Eval,
+      eval: Maslosoft.Binder.Eval,
       fancytree: Maslosoft.Binder.Fancytree,
       fileSizeFormatter: Maslosoft.Binder.FileSizeFormatter,
       googlemap: Maslosoft.Binder.GoogleMap,
@@ -388,48 +402,42 @@
       widget: Maslosoft.Binder.Widget
     };
     if (handlers !== null) {
-      _results = [];
+      results = [];
       for (index in handlers) {
         value = handlers[index];
-        _results.push(Maslosoft.Binder.register(value, new config[value]));
+        results.push(Maslosoft.Binder.register(value, new config[value]()));
       }
-      return _results;
+      return results;
     } else {
-      _results1 = [];
+      results1 = [];
       for (index in config) {
         value = config[index];
-        _results1.push(Maslosoft.Binder.register(index, new value));
+        results1.push(Maslosoft.Binder.register(index, new value()));
       }
-      return _results1;
+      return results1;
     }
   };
 
-  this.Maslosoft.Binder.registerEvents = function(handlers) {
-    var config, index, value, _results, _results1;
-    if (handlers == null) {
-      handlers = null;
-    }
-    config = {
-      'dblclick': 'dblclick',
-      'mousedown': 'mousedown',
-      'mouseup': 'mouseup',
-      'mouseover': 'mouseover',
-      'mouseout': 'mouseout'
-    };
+  
+  // Register default set of event handlers, or part of default set
+
+  this.Maslosoft.Binder.registerEvents = function(handlers = null) {
+    var config, index, results, results1, value;
+    config = {'dblclick': 'dblclick', 'mousedown': 'mousedown', 'mouseup': 'mouseup', 'mouseover': 'mouseover', 'mouseout': 'mouseout'};
     if (handlers !== null) {
-      _results = [];
+      results = [];
       for (index in handlers) {
         value = handlers[index];
-        _results.push(Maslosoft.Binder.makeEventHandlerShortcut(value));
+        results.push(Maslosoft.Binder.makeEventHandlerShortcut(value));
       }
-      return _results;
+      return results;
     } else {
-      _results1 = [];
+      results1 = [];
       for (index in config) {
         value = config[index];
-        _results1.push(Maslosoft.Binder.makeEventHandlerShortcut(value));
+        results1.push(Maslosoft.Binder.makeEventHandlerShortcut(value));
       }
-      return _results1;
+      return results1;
     }
   };
 
@@ -448,192 +456,432 @@
     };
   };
 
+  
+  // Base class for Maslosoft binding handlers
+
   this.Maslosoft.Binder.Base = (function() {
+    class Base {
+      // Class constructor
+      // @param options @Maslosoft.Binder.Options
+
+      constructor(options = {}) {
+        var name, value;
+        
+        // Get value from model
+
+        this.getValue = this.getValue.bind(this);
+        //	Set ref to current object, not prototype
+        this.options = {};
+        for (name in options) {
+          value = options[name];
+          this.options[name] = value;
+        }
+      }
+
+      getValue(valueAccessor, defaults = '') {
+        var value;
+        if (typeof valueAccessor === 'function') {
+          value = ko.unwrap(valueAccessor());
+        } else {
+          value = ko.unwrap(valueAccessor);
+        }
+        if (this.options.valueField) {
+          if (this.options.ec5) {
+            value = value[this.options.valueField];
+          } else {
+            value = value[this.options.valueField]();
+          }
+        }
+        
+        // Only use defaults when undefined
+        if (typeof value === 'undefined') {
+          return defaults;
+        }
+        return value;
+      }
+
+    };
+
+    
+    // Whenever to register binding handler as writable
+    // @var boolean
+
     Base.prototype.writable = true;
+
+    
+    // @var @Maslosoft.Binder.Options
 
     Base.prototype.options = {};
 
-    function Base(options) {
-      var name, value;
-      if (options == null) {
-        options = {};
-      }
-      this.getValue = __bind(this.getValue, this);
-      this.options = {};
-      for (name in options) {
-        value = options[name];
-        this.options[name] = value;
-      }
-    }
-
-    Base.prototype.getValue = function(valueAccessor, defaults) {
-      var value;
-      if (defaults == null) {
-        defaults = '';
-      }
-      if (typeof valueAccessor === 'function') {
-        value = ko.unwrap(valueAccessor());
-      } else {
-        value = ko.unwrap(valueAccessor);
-      }
-      if (this.options.valueField) {
-        if (this.options.ec5) {
-          value = value[this.options.valueField];
-        } else {
-          value = value[this.options.valueField]();
-        }
-      }
-      if (typeof value === 'undefined') {
-        return defaults;
-      }
-      return value;
-    };
-
     return Base;
 
-  })();
+  }).call(this);
 
   this.Maslosoft.Binder.Options = (function() {
+    class Options {
+      constructor(values = {}) {
+        var index, value;
+        for (index in values) {
+          value = values[index];
+          this[index] = value;
+        }
+        if (this.ec5 === null) {
+          this.ec5 = !!ko.track;
+        }
+        if (this.afterUpdate === null) {
+          this.afterUpdate = function(element, value) {};
+        }
+      }
+
+    };
+
+    // Set this if need to access complex date objects
+    // @var string
+
     Options.prototype.valueField = null;
+
+    // Whenever to use ko ecmascript 5 plugin
+    // Will autodetect if not set
+    // @var boolean
 
     Options.prototype.ec5 = null;
 
     Options.prototype.afterUpdate = null;
 
-    function Options(values) {
-      var index, value;
-      if (values == null) {
-        values = {};
-      }
-      for (index in values) {
-        value = values[index];
-        this[index] = value;
-      }
-      if (this.ec5 === null) {
-        this.ec5 = !!ko.track;
-      }
-      if (this.afterUpdate === null) {
-        this.afterUpdate = function(element, value) {};
-      }
-    }
-
     return Options;
 
-  })();
+  }).call(this);
 
-  this.Maslosoft.Binder.CssOptions = (function(_super) {
-    __extends(CssOptions, _super);
+  
+  // Configuration class for css bindings
 
-    function CssOptions() {
-      return CssOptions.__super__.constructor.apply(this, arguments);
-    }
+  this.Maslosoft.Binder.CssOptions = (function() {
+    class CssOptions extends this.Maslosoft.Binder.Options {};
 
     CssOptions.prototype.className = 'active';
 
     return CssOptions;
 
-  })(this.Maslosoft.Binder.Options);
+  }).call(this);
 
-  this.Maslosoft.Binder.DateOptions = (function(_super) {
-    __extends(DateOptions, _super);
+  
+  // Configuration class for date bindings
 
-    function DateOptions() {
-      return DateOptions.__super__.constructor.apply(this, arguments);
-    }
+  this.Maslosoft.Binder.DateOptions = (function() {
+    class DateOptions extends this.Maslosoft.Binder.Options {};
+
+    
+    // Language for locale formatting
+    // @var string
 
     DateOptions.prototype.lang = 'en';
 
+    // Date source format
+    // @var string
+
     DateOptions.prototype.sourceFormat = 'unix';
+
+    // Date display format
+    // @var string
 
     DateOptions.prototype.displayFormat = 'YYYY-MM-DD';
 
     return DateOptions;
 
-  })(this.Maslosoft.Binder.Options);
+  }).call(this);
 
-  this.Maslosoft.Binder.DateTimeOptions = (function(_super) {
-    __extends(DateTimeOptions, _super);
+  
+  // Configuration class for datetime bindings
 
-    function DateTimeOptions() {
-      return DateTimeOptions.__super__.constructor.apply(this, arguments);
-    }
+  this.Maslosoft.Binder.DateTimeOptions = (function() {
+    class DateTimeOptions extends this.Maslosoft.Binder.Options {};
+
+    
+    // Language for locale formatting
+    // @var string
 
     DateTimeOptions.prototype.lang = 'en';
 
+    // DateTime source format
+    // @var string
+
     DateTimeOptions.prototype.sourceFormat = 'unix';
+
+    // DateTime display format
+    // @var string
 
     DateTimeOptions.prototype.displayFormat = 'YYYY-MM-DD hh:mm';
 
     return DateTimeOptions;
 
-  })(this.Maslosoft.Binder.Options);
+  }).call(this);
 
-  this.Maslosoft.Binder.TimeAgoOptions = (function(_super) {
-    __extends(TimeAgoOptions, _super);
+  
+  // Configuration class for time bindings
 
-    function TimeAgoOptions() {
-      return TimeAgoOptions.__super__.constructor.apply(this, arguments);
-    }
+  this.Maslosoft.Binder.TimeAgoOptions = (function() {
+    class TimeAgoOptions extends this.Maslosoft.Binder.Options {};
+
+    
+    // Language for locale formatting
+    // @var string
 
     TimeAgoOptions.prototype.lang = 'en';
 
+    // Time source format
+    // @var string
+
     TimeAgoOptions.prototype.sourceFormat = 'unix';
+
+    // Time display format
+    // @var string
 
     TimeAgoOptions.prototype.displayFormat = 'hh:mm';
 
     return TimeAgoOptions;
 
-  })(this.Maslosoft.Binder.Options);
+  }).call(this);
 
-  this.Maslosoft.Binder.TimeOptions = (function(_super) {
-    __extends(TimeOptions, _super);
+  
+  // Configuration class for time bindings
 
-    function TimeOptions() {
-      return TimeOptions.__super__.constructor.apply(this, arguments);
-    }
+  this.Maslosoft.Binder.TimeOptions = (function() {
+    class TimeOptions extends this.Maslosoft.Binder.Options {};
+
+    
+    // Language for locale formatting
+    // @var string
 
     TimeOptions.prototype.lang = 'en';
 
+    // Time source format
+    // @var string
+
     TimeOptions.prototype.sourceFormat = 'unix';
+
+    // Time display format
+    // @var string
 
     TimeOptions.prototype.displayFormat = 'hh:mm';
 
     return TimeOptions;
 
-  })(this.Maslosoft.Binder.Options);
+  }).call(this);
 
-  this.Maslosoft.Binder.ValidatorOptions = (function(_super) {
-    __extends(ValidatorOptions, _super);
+  
+  // Configuration class for css bindings
 
-    function ValidatorOptions() {
-      return ValidatorOptions.__super__.constructor.apply(this, arguments);
-    }
+  this.Maslosoft.Binder.ValidatorOptions = (function() {
+    class ValidatorOptions extends this.Maslosoft.Binder.Options {};
+
+    
+    // Field for class name
+    // @var string
 
     ValidatorOptions.prototype.classField = '_class';
 
+    
+    // CSS selector to find parent element
+    // @var string
+
     ValidatorOptions.prototype.parentSelector = '.form-group';
+
+    
+    // Failed validation class name.
+    // This class will be added to input if validation fails.
+    // @var string
 
     ValidatorOptions.prototype.inputError = 'error';
 
+    
+    // Failed validation parent class name.
+    // This class will be added to parent of input if validation fails.
+    // @var string
+
     ValidatorOptions.prototype.parentError = 'has-error';
+
+    
+    // Warning validation class name.
+    // This class will be added to input if validation has warnings.
+    // @var string
 
     ValidatorOptions.prototype.inputWarning = 'warning';
 
+    
+    // Warning validation parent class name.
+    // This class will be added to parent of input if validation has warnings.
+    // @var string
+
     ValidatorOptions.prototype.parentWarning = 'has-warning';
+
+    
+    // Succeed validation class name.
+    // This class will be added to input if validation succeds.
+    // @var string
 
     ValidatorOptions.prototype.inputSuccess = 'success';
 
+    
+    // Succeed validation parent class name.
+    // This class will be added to parent of input if validation succeds.
+    // @var string
+
     ValidatorOptions.prototype.parentSuccess = 'has-success';
 
+    
+    // Selector for error messages. Will scope from input parent.
+    // @var string
+
     ValidatorOptions.prototype.errorMessages = '.error-messages';
+
+    
+    // Selector for warning messages. Will scope from input parent.
+    // @var string
 
     ValidatorOptions.prototype.warningMessages = '.warning-messages';
 
     return ValidatorOptions;
 
-  })(this.Maslosoft.Binder.Options);
+  }).call(this);
 
   this.Maslosoft.Binder.BaseValidator = (function() {
+    class BaseValidator {
+      constructor(config) {
+        var index, value;
+        this.reset();
+        for (index in config) {
+          value = config[index];
+          this[index] = null;
+          this[index] = value;
+        }
+      }
+
+      reset() {
+        // Dereference/reset
+        this.messages = new Array();
+        this.rawMessages = new Object();
+        this.warningMessages = new Array();
+        return this.rawWarningMessages = new Object();
+      }
+
+      isValid() {
+        throw new Error('Validator must implement `isValid` method');
+      }
+
+      getErrors() {
+        return this.messages;
+      }
+
+      getWarnings() {
+        return this.warningMessages;
+      }
+
+      
+      // Add error message with optional substitution params.
+
+      // Simple example:
+      // ```coffee
+      // @addError('My error message')
+      //	```
+
+      // Automatic substitution with label example:
+      // ```coffee
+      // @addError('Attribute {attribute} message')
+      //	```
+
+      // Will add error message: 'Attribute My attribute message'
+
+      // Substitution with params example:
+      // ```coffee
+      // @addError('Attribute {name} message', {name: 'John'})
+      //	```
+
+      // Will add error message: 'Attribute John message'
+
+      addError(errorMessage, params) {
+        var name, rawMessage, ref1, ref2, value;
+        // Raw is required for uniquness, see method end
+        rawMessage = errorMessage;
+        // Apply atribute label first
+        errorMessage = errorMessage.replace("{attribute}", this.label);
+        ref1 = this;
+        // Apply from current validator
+        for (name in ref1) {
+          value = ref1[name];
+          errorMessage = errorMessage.replace(`{${name}}`, value);
+        }
+// Apply from params
+        for (name in params) {
+          value = params[name];
+          errorMessage = errorMessage.replace(`{${name}}`, value);
+        }
+        ref2 = this.model;
+        // Finally try to apply from model
+        for (name in ref2) {
+          value = ref2[name];
+          errorMessage = errorMessage.replace(`{${name}}`, value);
+        }
+        // Ensure uniquness
+        if (!this.rawMessages[rawMessage]) {
+          this.messages.push(errorMessage);
+          return this.rawMessages[rawMessage] = true;
+        }
+      }
+
+      
+      // Add warning message with optional substitution params.
+
+      // Simple example:
+      // ```coffee
+      // @addWarning('My error message')
+      //	```
+
+      // Automatic substitution with label example:
+      // ```coffee
+      // @addWarning('Attribute {attribute} message')
+      //	```
+
+      // Will add warning message: 'Attribute My attribute message'
+
+      // Substitution with params example:
+      // ```coffee
+      // @addWarning('Attribute {name} message', {name: 'John'})
+      //	```
+
+      // Will add warning message: 'Attribute John message'
+
+      addWarning(warningMessage, params) {
+        var name, rawMessage, ref1, ref2, value;
+        // Raw is required for uniquness, see method end
+        rawMessage = warningMessage;
+        // Apply atribute label first
+        warningMessage = warningMessage.replace("{attribute}", this.label);
+        ref1 = this;
+        // Apply from current validator
+        for (name in ref1) {
+          value = ref1[name];
+          warningMessage = warningMessage.replace(`{${name}}`, value);
+        }
+// Apply from params
+        for (name in params) {
+          value = params[name];
+          warningMessage = warningMessage.replace(`{${name}}`, value);
+        }
+        ref2 = this.model;
+        // Finally try to apply from model
+        for (name in ref2) {
+          value = ref2[name];
+          warningMessage = warningMessage.replace(`{${name}}`, value);
+        }
+        // Ensure uniquness
+        if (!this.rawWarningMessages[rawMessage]) {
+          this.warningMessages.push(warningMessage);
+          return this.rawWarningMessages[rawMessage] = true;
+        }
+      }
+
+    };
+
     BaseValidator.prototype.label = '';
 
     BaseValidator.prototype.model = null;
@@ -646,237 +894,188 @@
 
     BaseValidator.prototype.rawWarningMessages = [];
 
-    function BaseValidator(config) {
-      var index, value;
-      this.reset();
-      for (index in config) {
-        value = config[index];
-        this[index] = null;
-        this[index] = value;
-      }
-    }
-
-    BaseValidator.prototype.reset = function() {
-      this.messages = new Array;
-      this.rawMessages = new Object;
-      this.warningMessages = new Array;
-      return this.rawWarningMessages = new Object;
-    };
-
-    BaseValidator.prototype.isValid = function() {
-      throw new Error('Validator must implement `isValid` method');
-    };
-
-    BaseValidator.prototype.getErrors = function() {
-      return this.messages;
-    };
-
-    BaseValidator.prototype.getWarnings = function() {
-      return this.warningMessages;
-    };
-
-    BaseValidator.prototype.addError = function(errorMessage, params) {
-      var name, rawMessage, value, _ref;
-      rawMessage = errorMessage;
-      errorMessage = errorMessage.replace("{attribute}", this.label);
-      for (name in this) {
-        value = this[name];
-        errorMessage = errorMessage.replace("{" + name + "}", value);
-      }
-      for (name in params) {
-        value = params[name];
-        errorMessage = errorMessage.replace("{" + name + "}", value);
-      }
-      _ref = this.model;
-      for (name in _ref) {
-        value = _ref[name];
-        errorMessage = errorMessage.replace("{" + name + "}", value);
-      }
-      if (!this.rawMessages[rawMessage]) {
-        this.messages.push(errorMessage);
-        return this.rawMessages[rawMessage] = true;
-      }
-    };
-
-    BaseValidator.prototype.addWarning = function(warningMessage, params) {
-      var name, rawMessage, value, _ref;
-      rawMessage = warningMessage;
-      warningMessage = warningMessage.replace("{attribute}", this.label);
-      for (name in this) {
-        value = this[name];
-        warningMessage = warningMessage.replace("{" + name + "}", value);
-      }
-      for (name in params) {
-        value = params[name];
-        warningMessage = warningMessage.replace("{" + name + "}", value);
-      }
-      _ref = this.model;
-      for (name in _ref) {
-        value = _ref[name];
-        warningMessage = warningMessage.replace("{" + name + "}", value);
-      }
-      if (!this.rawWarningMessages[rawMessage]) {
-        this.warningMessages.push(warningMessage);
-        return this.rawWarningMessages[rawMessage] = true;
-      }
-    };
-
     return BaseValidator;
 
-  })();
+  }).call(this);
 
-  this.Maslosoft.Binder.CssClass = (function(_super) {
-    __extends(CssClass, _super);
+  
+  // CSS class binding
+  // This adds class from options if value is true
 
-    function CssClass() {
-      this.update = __bind(this.update, this);
-      return CssClass.__super__.constructor.apply(this, arguments);
-    }
+  ref1 = this.Maslosoft.Binder.CssClass = (function() {
+    class CssClass extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.update = this.update.bind(this);
+      }
+
+      update(element, valueAccessor) {
+        var value;
+        boundMethodCheck(this, ref1);
+        value = this.getValue(valueAccessor);
+        if (!!value) {
+          ko.utils.toggleDomNodeCssClass(element, this.options.className, true);
+        } else {
+          ko.utils.toggleDomNodeCssClass(element, this.options.className, false);
+        }
+      }
+
+    };
 
     CssClass.prototype.writable = false;
 
-    CssClass.prototype.update = function(element, valueAccessor) {
-      var value;
-      value = this.getValue(valueAccessor);
-      if (!!value) {
-        ko.utils.toggleDomNodeCssClass(element, this.options.className, true);
-      } else {
-        ko.utils.toggleDomNodeCssClass(element, this.options.className, false);
-      }
-    };
-
     return CssClass;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.CssColumnsBase = (function(_super) {
-    __extends(CssColumnsBase, _super);
+  
+  // CSS class binding
+  // This adds class from options if value is true
 
-    function CssColumnsBase() {
-      this.applyColumns = __bind(this.applyColumns, this);
-      return CssColumnsBase.__super__.constructor.apply(this, arguments);
-    }
+  ref2 = this.Maslosoft.Binder.CssColumnsBase = (function() {
+    class CssColumnsBase extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.applyColumns = this.applyColumns.bind(this);
+      }
+
+      applyColumns(element, sizes, config) {
+        var name, newClasses, re, reName, size;
+        boundMethodCheck(this, ref2);
+        newClasses = [];
+        for (size in config) {
+          name = config[size];
+          // Remove previously set classes
+          reName = name.replace('{num}', '\\d');
+          name = name.replace('{num}', '');
+          re = new RegExp(`(?:^|\\s)${reName}+(?!\\S)`, 'g');
+          element.className = element.className.replace(re, '');
+          newClasses.push(name + sizes[size]);
+        }
+        jQuery(element).addClass(newClasses.join(' '));
+      }
+
+    };
 
     CssColumnsBase.prototype.writable = false;
 
-    CssColumnsBase.prototype.applyColumns = function(element, sizes, config) {
-      var name, newClasses, re, reName, size;
-      newClasses = [];
-      for (size in config) {
-        name = config[size];
-        reName = name.replace('{num}', '\\d');
-        name = name.replace('{num}', '');
-        re = new RegExp("(?:^|\\s)" + reName + "+(?!\\S)", 'g');
-        element.className = element.className.replace(re, '');
-        newClasses.push(name + sizes[size]);
-      }
-      jQuery(element).addClass(newClasses.join(' '));
-    };
-
     return CssColumnsBase;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.MomentFormatter = (function(_super) {
-    __extends(MomentFormatter, _super);
+  
+  // Moment formatter class
 
-    function MomentFormatter() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return MomentFormatter.__super__.constructor.apply(this, arguments);
+  ref3 = this.Maslosoft.Binder.MomentFormatter = class MomentFormatter extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
     }
 
-    MomentFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    init(element, valueAccessor, allBindingsAccessor, viewModel) {
+      boundMethodCheck(this, ref3);
       moment.locale(this.options.lang);
-    };
+    }
 
-    MomentFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    update(element, valueAccessor, allBindingsAccessor, viewModel) {
       var value;
+      boundMethodCheck(this, ref3);
       value = this.getValue(valueAccessor);
       if (!value) {
         element.innerHTML = '';
         return;
       }
       element.innerHTML = moment[this.options.sourceFormat](value).format(this.options.displayFormat);
-    };
-
-    return MomentFormatter;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Picker = (function(_super) {
-    __extends(Picker, _super);
-
-    function Picker() {
-      return Picker.__super__.constructor.apply(this, arguments);
     }
 
-    return Picker;
+  };
 
-  })(this.Maslosoft.Binder.Base);
+  
+  // Base class for date/time pickers
 
-  this.Maslosoft.Binder.Video = (function(_super) {
+  this.Maslosoft.Binder.Picker = class Picker extends this.Maslosoft.Binder.Base {};
+
+  
+  // Base class for video related bindings
+
+  ref4 = this.Maslosoft.Binder.Video = (function() {
     var adapters, options;
 
-    __extends(Video, _super);
+    class Video extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        
+        // Check is supported video url
+        // @param url string
+        // @return false|object
 
-    function Video() {
-      this.setThumb = __bind(this.setThumb, this);
-      this.isVideoUrl = __bind(this.isVideoUrl, this);
-      return Video.__super__.constructor.apply(this, arguments);
-    }
+        this.isVideoUrl = this.isVideoUrl.bind(this);
+        
+        // Will set image src attribute to video thumbnail,
+        // or element background-image style if it's not image
+        // @param url string
+        // @param element DomElement
+
+        this.setThumb = this.setThumb.bind(this);
+      }
+
+      isVideoUrl(url) {
+        var adapter, j, len;
+        boundMethodCheck(this, ref4);
+        for (j = 0, len = adapters.length; j < len; j++) {
+          adapter = adapters[j];
+          if (adapter.match(url)) {
+            return adapter;
+          }
+        }
+        return false;
+      }
+
+      setThumb(url, element) {
+        var ad, adapter, thumbCallback;
+        boundMethodCheck(this, ref4);
+        if (adapter = this.isVideoUrl(url)) {
+          thumbCallback = function(src) {
+            if (element.tagName.toLowerCase() === 'img') {
+              return element.src = src;
+            } else {
+              return jQuery(element).css('background-image', `url('${src}')`);
+            }
+          };
+          console.log(url);
+          // Init adapter
+          ad = new adapter();
+          ad.setUrl(url);
+          return ad.setThumb(thumbCallback);
+        }
+      }
+
+    };
 
     options = null;
 
     adapters = null;
 
     jQuery(document).ready(function() {
-      options = new Maslosoft.Playlist.Options;
+      // Initalize thumbnails adapters
+      options = new Maslosoft.Playlist.Options();
+      // Set adapters from options
       return adapters = options.adapters;
     });
 
-    Video.prototype.isVideoUrl = function(url) {
-      var adapter, _i, _len;
-      for (_i = 0, _len = adapters.length; _i < _len; _i++) {
-        adapter = adapters[_i];
-        if (adapter.match(url)) {
-          return adapter;
-        }
-      }
-      return false;
-    };
-
-    Video.prototype.setThumb = function(url, element) {
-      var ad, adapter, thumbCallback;
-      if (adapter = this.isVideoUrl(url)) {
-        thumbCallback = function(src) {
-          if (element.tagName.toLowerCase() === 'img') {
-            return element.src = src;
-          } else {
-            return jQuery(element).css('background-image', "url('" + src + "')");
-          }
-        };
-        console.log(url);
-        ad = new adapter;
-        ad.setUrl(url);
-        return ad.setThumb(thumbCallback);
-      }
-    };
-
     return Video;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.WidgetUrl = (function(_super) {
-    __extends(WidgetUrl, _super);
-
-    function WidgetUrl() {
-      this.setRel = __bind(this.setRel, this);
-      this.createUrl = __bind(this.createUrl, this);
-      return WidgetUrl.__super__.constructor.apply(this, arguments);
+  ref5 = this.Maslosoft.Binder.WidgetUrl = class WidgetUrl extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.createUrl = this.createUrl.bind(this);
+      this.setRel = this.setRel.bind(this);
     }
 
-    WidgetUrl.prototype.getData = function(element, valueAccessor, allBindings, bindingName) {
+    getData(element, valueAccessor, allBindings, bindingName) {
       var bindingParams, data, src;
       src = this.getValue(valueAccessor);
       data = {};
@@ -885,6 +1084,8 @@
         data.id = allBindings.get('widget').id;
       }
       data[bindingName] = allBindings.get(bindingName) || src[bindingName];
+      // Need to check for undefined here,
+      // as params might be `0` or `` or `false`
       bindingParams = allBindings.get('params');
       if (typeof bindingParams === void 0) {
         data.params = src.params;
@@ -896,12 +1097,14 @@
         data[bindingName] = src;
       }
       return data;
-    };
+    }
 
-    WidgetUrl.prototype.createUrl = function(widgetId, action, params, terminator) {
+    createUrl(widgetId, action, params, terminator) {
       var args, href, name, value;
+      boundMethodCheck(this, ref5);
       args = [];
       if (typeof params === 'string' || typeof params === 'number') {
+        // Skip empty strings
         if (params !== "" || typeof params === 'number') {
           args.push("" + params);
         }
@@ -910,28 +1113,29 @@
           value = params[name];
           name = encodeURIComponent("" + name);
           value = encodeURIComponent("" + value);
-          args.push("" + name + ":" + value);
+          args.push(`${name}:${value}`);
         }
       }
-      href = "" + terminator + widgetId + "." + action;
+      href = `${terminator}${widgetId}.${action}`;
       if (args.length === 0) {
         return href;
       } else {
         args = args.join(',', args);
-        return "" + href + "=" + args;
+        return `${href}=${args}`;
       }
-    };
+    }
 
-    WidgetUrl.prototype.setRel = function(element) {
-      var hasRel, isPlain, rel, relValue, rels, _i, _len;
+    setRel(element) {
+      var hasRel, isPlain, j, len, rel, relValue, rels;
+      boundMethodCheck(this, ref5);
       hasRel = false;
       isPlain = false;
       rels = [];
       rel = element.getAttribute('rel');
       if (rel) {
         rels = rel.split(' ');
-        for (_i = 0, _len = rels.length; _i < _len; _i++) {
-          relValue = rels[_i];
+        for (j = 0, len = rels.length; j < len; j++) {
+          relValue = rels[j];
           if (relValue === 'plain') {
             isPlain = true;
           }
@@ -944,76 +1148,87 @@
         rels.push('virtual');
       }
       return element.setAttribute('rel', rels.join(' '));
-    };
+    }
 
-    return WidgetUrl;
+  };
 
-  })(this.Maslosoft.Binder.Base);
+  
+  // Acl binding
+  // This adds class from options if value is true
 
-  this.Maslosoft.Binder.Acl = (function(_super) {
+  ref6 = this.Maslosoft.Binder.Acl = (function() {
     var allow;
 
-    __extends(Acl, _super);
+    class Acl extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
 
-    function Acl() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Acl.__super__.constructor.apply(this, arguments);
-    }
+      init() {
+        boundMethodCheck(this, ref6);
+        if (!Maslosoft.Binder.Acl.allow) {
+          throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions");
+        }
+        if (typeof Maslosoft.Binder.Acl.allow !== 'function') {
+          throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions");
+        }
+      }
+
+      update(element, valueAccessor) {
+        var acl, value;
+        boundMethodCheck(this, ref6);
+        acl = this.getValue(valueAccessor);
+        value = Maslosoft.Binder.Acl.allow(acl);
+        // Forward to visible
+        return ko.bindingHandlers.visible.update(element, function() {
+          return value;
+        });
+      }
+
+    };
 
     allow = null;
 
-    Acl.prototype.init = function() {
-      if (!Maslosoft.Binder.Acl.allow) {
-        throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions");
-      }
-      if (typeof Maslosoft.Binder.Acl.allow !== 'function') {
-        throw new Error("Acl binding handler requires Maslosoft.Binder.Acl.allow to be function checking permissions");
-      }
-    };
-
-    Acl.prototype.update = function(element, valueAccessor) {
-      var acl, value;
-      acl = this.getValue(valueAccessor);
-      value = Maslosoft.Binder.Acl.allow(acl);
-      return ko.bindingHandlers.visible.update(element, function() {
-        return value;
-      });
-    };
-
     return Acl;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.Active = (function(_super) {
-    __extends(Active, _super);
+  
+  // Disabled binding
+  // This adds class from options if value is true
 
-    function Active(options) {
-      Active.__super__.constructor.call(this, new Maslosoft.Binder.CssOptions({
+  this.Maslosoft.Binder.Active = class Active extends this.Maslosoft.Binder.CssClass {
+    constructor(options) {
+      super(new Maslosoft.Binder.CssOptions({
         className: 'active'
       }));
     }
 
-    return Active;
+  };
 
-  })(this.Maslosoft.Binder.CssClass);
+  
+  // Asset binding handler
 
-  this.Maslosoft.Binder.Asset = (function(_super) {
-    __extends(Asset, _super);
-
-    function Asset() {
-      this.update = __bind(this.update, this);
-      return Asset.__super__.constructor.apply(this, arguments);
+  ref7 = this.Maslosoft.Binder.Asset = class Asset extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
     }
 
-    Asset.prototype.update = function(element, valueAccessor, allBindings) {
+    update(element, valueAccessor, allBindings) {
       var $element, date, extra, height, model, proportional, sec, src, url, width;
+      boundMethodCheck(this, ref7);
       $element = $(element);
+      // Get dimensions defined by other bindings
       width = allBindings.get('w' || allBindings.get('width' || null));
       height = allBindings.get('h' || allBindings.get('height' || null));
+      // Get proportional flag if set
       proportional = allBindings.get('p' || allBindings.get('proportional' || null));
       model = this.getValue(valueAccessor);
       extra = this.getValue(allBindings);
+      // Try to get timestamp
       if (model.updateDate) {
         date = model.updateDate;
         if (typeof date === 'number') {
@@ -1024,45 +1239,53 @@
         }
       }
       url = model.url;
+      // Create new url including width, height and if it should cropped proportionally
       src = [];
+      // Add base url of asset
       src.push(url);
+      // Add width
       if (width) {
-        src.push("w/" + width);
+        src.push(`w/${width}`);
       }
+      // Add height
       if (height) {
-        src.push("h/" + height);
+        src.push(`h/${height}`);
       }
+      // Crop to provided dimensions if not proportional
       if (proportional === false) {
         src.push("p/0");
       }
+      // Add timestamp
       if (sec) {
         src.push(sec);
       }
+      // Join parts of url
       src = src.join('/');
       if ($element.attr("src") !== src) {
         if (extra.preloader) {
           $element.attr('src', extra.preloader);
         }
+        // Preload image
         preload($element, src);
       }
-    };
-
-    return Asset;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.CssClasses = (function(_super) {
-    __extends(CssClasses, _super);
-
-    function CssClasses() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      this.getClassList = __bind(this.getClassList, this);
-      return CssClasses.__super__.constructor.apply(this, arguments);
     }
 
-    CssClasses.prototype.getClassList = function(valueAccessor) {
+  };
+
+  
+  // Enum css class handler
+
+  ref8 = this.Maslosoft.Binder.CssClasses = class CssClasses extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.getClassList = this.getClassList.bind(this);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
+    }
+
+    getClassList(valueAccessor) {
       var classList, classes;
+      boundMethodCheck(this, ref8);
       classes = this.getValue(valueAccessor);
       if (typeof classes === 'undefined') {
         return '';
@@ -1076,16 +1299,18 @@
         classList = classes.join(' ');
       }
       return classList.replace(/^\s*/, '').replace(/\s*$/, '');
-    };
+    }
 
-    CssClasses.prototype.init = function(element, valueAccessor) {
+    init(element, valueAccessor) {
       var initialClasses;
+      boundMethodCheck(this, ref8);
       initialClasses = this.getClassList(valueAccessor);
       return element.setAttribute('data-css-classes', initialClasses);
-    };
+    }
 
-    CssClasses.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    update(element, valueAccessor, allBindingsAccessor, viewModel) {
       var classesToAdd, toRemove;
+      boundMethodCheck(this, ref8);
       toRemove = element.getAttribute('data-css-classes');
       ko.utils.toggleDomNodeCssClass(element, toRemove, false);
       classesToAdd = this.getClassList(valueAccessor);
@@ -1093,48 +1318,41 @@
         ko.utils.toggleDomNodeCssClass(element, classesToAdd, true);
       }
       return element.setAttribute('data-css-classes', classesToAdd);
-    };
-
-    return CssClasses;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.CssColumnSizes = (function(_super) {
-    __extends(CssColumnSizes, _super);
-
-    function CssColumnSizes() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return CssColumnSizes.__super__.constructor.apply(this, arguments);
     }
 
-    CssColumnSizes.columns = {
-      'xs': 'col-xs-{num}',
-      'sm': 'col-sm-{num}',
-      'md': 'col-md-{num}',
-      'lg': 'col-lg-{num}'
+  };
+
+  
+  // Enum css class handler
+
+  ref9 = this.Maslosoft.Binder.CssColumns = (function() {
+    class CssColumns extends this.Maslosoft.Binder.CssColumnsBase {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
+
+      init(element, valueAccessor) {
+        boundMethodCheck(this, ref9);
+      }
+
+      update(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var cols, columns, name, ref10, size, sizes, value;
+        boundMethodCheck(this, ref9);
+        columns = this.getValue(valueAccessor);
+        sizes = {};
+        ref10 = CssColumns.columns;
+        for (size in ref10) {
+          name = ref10[size];
+          value = parseInt(columns[size]);
+          cols = parseInt(12 / value);
+          sizes[size] = cols;
+        }
+        return this.applyColumns(element, sizes, CssColumns.columns);
+      }
+
     };
-
-    CssColumnSizes.prototype.init = function(element, valueAccessor) {};
-
-    CssColumnSizes.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var sizes;
-      sizes = this.getValue(valueAccessor);
-      return this.applyColumns(element, sizes, CssColumnSizes.columns);
-    };
-
-    return CssColumnSizes;
-
-  })(this.Maslosoft.Binder.CssColumnsBase);
-
-  this.Maslosoft.Binder.CssColumns = (function(_super) {
-    __extends(CssColumns, _super);
-
-    function CssColumns() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return CssColumns.__super__.constructor.apply(this, arguments);
-    }
 
     CssColumns.columns = {
       'xs': 'col-xs-{num}',
@@ -1143,155 +1361,192 @@
       'lg': 'col-lg-{num}'
     };
 
-    CssColumns.prototype.init = function(element, valueAccessor) {};
-
-    CssColumns.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var cols, columns, name, size, sizes, value, _ref;
-      columns = this.getValue(valueAccessor);
-      sizes = {};
-      _ref = CssColumns.columns;
-      for (size in _ref) {
-        name = _ref[size];
-        value = parseInt(columns[size]);
-        cols = parseInt(12 / value);
-        sizes[size] = cols;
-      }
-      return this.applyColumns(element, sizes, CssColumns.columns);
-    };
-
     return CssColumns;
 
-  })(this.Maslosoft.Binder.CssColumnsBase);
+  }).call(this);
 
-  this.Maslosoft.Binder.Data = (function(_super) {
-    __extends(Data, _super);
+  
+  // Enum css class handler
 
-    function Data() {
-      return Data.__super__.constructor.apply(this, arguments);
-    }
+  ref10 = this.Maslosoft.Binder.CssColumnSizes = (function() {
+    class CssColumnSizes extends this.Maslosoft.Binder.CssColumnsBase {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
 
-    Data.prototype.getNamespacedHandler = function(binding) {
-      return {
-        update: (function(_this) {
-          return function(element, valueAccessor) {
-            var value, _ref;
-            value = _this.getValue(valueAccessor);
-            if ((_ref = typeof value) !== 'string' && _ref !== 'number') {
-              value = JSON.stringify(value);
-            }
-            return element.setAttribute('data-' + binding, value);
-          };
-        })(this)
-      };
+      init(element, valueAccessor) {
+        boundMethodCheck(this, ref10);
+      }
+
+      update(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var sizes;
+        boundMethodCheck(this, ref10);
+        sizes = this.getValue(valueAccessor);
+        return this.applyColumns(element, sizes, CssColumnSizes.columns);
+      }
+
     };
 
-    return Data;
+    CssColumnSizes.columns = {
+      'xs': 'col-xs-{num}',
+      'sm': 'col-sm-{num}',
+      'md': 'col-md-{num}',
+      'lg': 'col-lg-{num}'
+    };
 
-  })(this.Maslosoft.Binder.Base);
+    return CssColumnSizes;
 
-  this.Maslosoft.Binder.DataModel = (function(_super) {
-    __extends(DataModel, _super);
+  }).call(this);
 
-    function DataModel() {
-      this.update = __bind(this.update, this);
-      return DataModel.__super__.constructor.apply(this, arguments);
+  
+  // Data binding handler
+
+  this.Maslosoft.Binder.Data = class Data extends this.Maslosoft.Binder.Base {
+    getNamespacedHandler(binding) {
+      return {
+        update: (element, valueAccessor) => {
+          var ref11, value;
+          value = this.getValue(valueAccessor);
+          if ((ref11 = typeof value) !== 'string' && ref11 !== 'number') {
+            value = JSON.stringify(value);
+          }
+          return element.setAttribute('data-' + binding, value);
+        }
+      };
     }
 
-    DataModel.prototype.update = function(element, valueAccessor, allBindings) {
-      var field, fields, model, modelStub, _i, _len, _results;
+  };
+
+  
+  // Model binding handler
+  // This is to bind selected model properties to data-model field
+
+  ref11 = this.Maslosoft.Binder.DataModel = class DataModel extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
+
+    update(element, valueAccessor, allBindings) {
+      var field, fields, j, len, model, modelStub, results;
+      boundMethodCheck(this, ref11);
+      
+      // Setup binding
       model = this.getValue(valueAccessor);
       fields = allBindings.get("fields") || null;
+      // Bind all fields if not set `fields` binding
       if (fields === null) {
         this.bindModel(element, model);
         return;
       }
+      // Bind only selected fields
       modelStub = {};
-      _results = [];
-      for (_i = 0, _len = fields.length; _i < _len; _i++) {
-        field = fields[_i];
+      results = [];
+      for (j = 0, len = fields.length; j < len; j++) {
+        field = fields[j];
+        // Filter out undefined model fields
         if (typeof model[field] === 'undefined') {
-          warn("Model field `" + field + "` is undefined on element:", element);
+          warn(`Model field \`${field}\` is undefined on element:`, element);
         } else {
           modelStub[field] = model[field];
         }
-        _results.push(this.bindModel(element, modelStub));
+        results.push(this.bindModel(element, modelStub));
       }
-      return _results;
-    };
+      return results;
+    }
 
-    DataModel.prototype.bindModel = function(element, model) {
-      var modelString, _ref;
-      if ((_ref = typeof value) !== 'string' && _ref !== 'number') {
+    bindModel(element, model) {
+      var modelString, ref12;
+      // Do not stringify scalars
+      if ((ref12 = typeof value) !== 'string' && ref12 !== 'number') {
         modelString = JSON.stringify(model);
       }
       return element.setAttribute('data-model', modelString);
-    };
-
-    return DataModel;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.DateFormatter = (function(_super) {
-    __extends(DateFormatter, _super);
-
-    function DateFormatter(options) {
-      DateFormatter.__super__.constructor.call(this, new Maslosoft.Binder.DateOptions(options));
     }
 
-    return DateFormatter;
+  };
 
-  })(this.Maslosoft.Binder.MomentFormatter);
+  
+  // Date formatter
 
+  this.Maslosoft.Binder.DateFormatter = class DateFormatter extends this.Maslosoft.Binder.MomentFormatter {
+    constructor(options) {
+      super(new Maslosoft.Binder.DateOptions(options));
+    }
+
+  };
 
   /*
   Date picker
-   */
+  */
+  ref12 = this.Maslosoft.Binder.DatePicker = class DatePicker extends this.Maslosoft.Binder.Picker {
+    constructor(options) {
+      super(new Maslosoft.Binder.DateOptions(options));
+      this.updateModel = this.updateModel.bind(this);
+      
+      // Get display value from model value according to formatting options
+      // @param string|int value
+      // @return string|int
 
-  this.Maslosoft.Binder.DatePicker = (function(_super) {
-    __extends(DatePicker, _super);
+      this.getDisplayValue = this.getDisplayValue.bind(this);
+      
+      // Get model value from model value according to formatting options
+      // @param string|int value
+      // @return string|int
 
-    function DatePicker(options) {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      this.getModelValue = __bind(this.getModelValue, this);
-      this.getDisplayValue = __bind(this.getDisplayValue, this);
-      this.updateModel = __bind(this.updateModel, this);
-      DatePicker.__super__.constructor.call(this, new Maslosoft.Binder.DateOptions(options));
+      this.getModelValue = this.getModelValue.bind(this);
+      
+      // Initialize datepicker
+
+      this.init = this.init.bind(this);
+      
+      // Update input after model change
+
+      this.update = this.update.bind(this);
     }
 
-    DatePicker.prototype.getData = function(valueAccessor) {
+    getData(valueAccessor) {
       var value;
       if (!valueAccessor) {
         return '';
       }
+      // Verbose syntax, at least {data: data}
       value = this.getValue(valueAccessor) || [];
       if (value.data) {
         return value.data;
       }
       return value;
-    };
+    }
 
-    DatePicker.prototype.getOptions = function(allBindingsAccessor) {
+    getOptions(allBindingsAccessor) {
       var config, name, options, value;
       options = {
         lang: this.options.lang,
         sourceFormat: this.options.sourceFormat,
         displayFormat: this.options.displayFormat,
+        // Format of pickadate is not compatible of this of moment
         format: this.options.displayFormat.toLowerCase(),
         forceParse: false,
         todayHighlight: true,
         showOnFocus: false
       };
       config = allBindingsAccessor.get('dateOptions') || [];
+      
+      // Only in long notation set options
       if (config) {
         for (name in config) {
           value = config[name];
+          // Skip data
           if (name === 'data') {
             continue;
           }
+          // Skip template
           if (name === 'template') {
             continue;
           }
+          // Special treatment for display format
           if (name === 'format') {
             options.displayFormat = value.toUpperCase();
           }
@@ -1299,14 +1554,16 @@
         }
       }
       return options;
-    };
+    }
 
-    DatePicker.prototype.updateModel = function(element, valueAccessor, allBindings) {
+    updateModel(element, valueAccessor, allBindings) {
       var accessor, elementValue, modelValue, options;
+      boundMethodCheck(this, ref12);
       options = this.getOptions(allBindings);
       modelValue = this.getData(valueAccessor);
       elementValue = this.getModelValue(element.value, options);
       accessor = valueAccessor();
+      // Update only if changed
       if (modelValue !== elementValue) {
         if (accessor && accessor.data) {
           return ko.expressionRewriting.writeValueToProperty(ko.unwrap(valueAccessor()).data, allBindings, 'datePicker.data', elementValue);
@@ -1314,10 +1571,12 @@
           return ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
         }
       }
-    };
+    }
 
-    DatePicker.prototype.getDisplayValue = function(value, options) {
+    getDisplayValue(value, options) {
       var inputValue;
+      boundMethodCheck(this, ref12);
+      //console.log value
       if (!value) {
         return '';
       }
@@ -1330,10 +1589,11 @@
         inputValue = moment(value, options.sourceFormat).format(options.displayFormat);
       }
       return inputValue;
-    };
+    }
 
-    DatePicker.prototype.getModelValue = function(value, options) {
+    getModelValue(value, options) {
       var modelValue;
+      boundMethodCheck(this, ref12);
       if (!value) {
         return null;
       }
@@ -1343,12 +1603,14 @@
         modelValue = moment(value, options.displayFormat).format(options.sourceFormat);
       }
       return modelValue;
-    };
+    }
 
-    DatePicker.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    init(element, valueAccessor, allBindingsAccessor, viewModel) {
       var addon, input, isOpen, onChange, onChangeValue, options, template, trigger, value;
+      boundMethodCheck(this, ref12);
       options = this.getOptions(allBindingsAccessor);
       value = this.getDisplayValue(this.getData(valueAccessor), options);
+      //console.log value
       if (!value) {
         element.value = '';
       } else {
@@ -1358,53 +1620,56 @@
       if (options.template) {
         template = options.template;
       } else {
-        template = '<div class="input-group-addon">\n	<a class="picker-trigger-link" style="cursor: pointer;">\n		<i class="glyphicon glyphicon-calendar"></i>\n	</a>\n</div>';
+        template = `<div class="input-group-addon">
+	<a class="picker-trigger-link" style="cursor: pointer;">
+		<i class="glyphicon glyphicon-calendar"></i>
+	</a>
+</div>`;
       }
       addon = jQuery(template);
       addon.insertBefore(input);
       trigger = addon.find('a.picker-trigger-link');
       input.datepicker(options);
-      onChangeValue = (function(_this) {
-        return function(e) {
-          value = input.datepicker('getDate');
-          if (value) {
-            _this.updateModel(element, valueAccessor, allBindingsAccessor);
-          }
-          return false;
-        };
-      })(this);
-      onChange = (function(_this) {
-        return function(e) {
-          var parsedDate;
-          parsedDate = Date.parse(element.value);
-          if (parsedDate && !e.isTrigger) {
-            element.value = _this.getDisplayValue(Math.round(parsedDate.getTime() / 1000), options);
-            _this.updateModel(element, valueAccessor, allBindingsAccessor);
-            input.datepicker('update');
-            return true;
-          }
-          return false;
-        };
-      })(this);
-      input.on('changeDate', (function(_this) {
-        return function(e) {
-          onChangeValue(e);
+      // Trigger only when value has changed, but do not update
+      // picker, ie someone is typing-in date
+      onChangeValue = (e) => {
+        value = input.datepicker('getDate');
+        //console.log value, element.value
+        if (value) {
+          this.updateModel(element, valueAccessor, allBindingsAccessor);
+        }
+        //console.log 'Changing model... onChangeValue'
+        return false;
+      };
+      // When date is changed and change is confirmed
+      onChange = (e) => {
+        var parsedDate;
+        parsedDate = Date.parse(element.value);
+        if (parsedDate && !e.isTrigger) {
+          element.value = this.getDisplayValue(Math.round(parsedDate.getTime() / 1000), options);
+          this.updateModel(element, valueAccessor, allBindingsAccessor);
+          input.datepicker('update');
           return true;
-        };
-      })(this));
+        }
+        return false;
+      };
+      // Don't trigger picker change date, as date need to be parsed by datejs
+      input.on('changeDate', (e) => {
+        onChangeValue(e);
+        return true;
+      });
+      // Here is actual date change handling
       input.on('change', onChange);
       input.on('blur', onChange);
+      // Handle opened state
       isOpen = false;
-      input.on('show', (function(_this) {
-        return function(e) {
-          return isOpen = true;
-        };
-      })(this));
-      input.on('hide', (function(_this) {
-        return function(e) {
-          return isOpen = false;
-        };
-      })(this));
+      input.on('show', (e) => {
+        return isOpen = true;
+      });
+      input.on('hide', (e) => {
+        return isOpen = false;
+      });
+      // Need mousedown or will no hide on second click
       trigger.on('mousedown', function(e) {
         if (isOpen) {
           input.datepicker('hide');
@@ -1414,10 +1679,11 @@
         e.stopPropagation();
         e.preventDefault();
       });
-    };
+    }
 
-    DatePicker.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
+    update(element, valueAccessor, allBindingsAccessor) {
       var options, val, value;
+      boundMethodCheck(this, ref12);
       val = valueAccessor();
       if (val && val.data) {
         ko.utils.setTextContent(element, val.data);
@@ -1429,36 +1695,58 @@
       if (element.value !== value) {
         return element.value = value;
       }
-    };
+    }
 
-    return DatePicker;
-
-  })(this.Maslosoft.Binder.Picker);
-
+  };
 
   /*
   One-way date/time formatter
-   */
-
-  this.Maslosoft.Binder.DateTimeFormatter = (function(_super) {
-    __extends(DateTimeFormatter, _super);
-
-    function DateTimeFormatter(options) {
-      DateTimeFormatter.__super__.constructor.call(this, new Maslosoft.Binder.DateTimeOptions(options));
+  */
+  this.Maslosoft.Binder.DateTimeFormatter = class DateTimeFormatter extends this.Maslosoft.Binder.MomentFormatter {
+    constructor(options) {
+      super(new Maslosoft.Binder.DateTimeOptions(options));
     }
 
-    return DateTimeFormatter;
+  };
 
-  })(this.Maslosoft.Binder.MomentFormatter);
+  
+  // One-way decimal formatter
 
-  this.Maslosoft.Binder.DecimalFormatter = (function(_super) {
-    __extends(DecimalFormatter, _super);
+  ref13 = this.Maslosoft.Binder.DecimalFormatter = (function() {
+    class DecimalFormatter extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
 
-    function DecimalFormatter() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return DecimalFormatter.__super__.constructor.apply(this, arguments);
-    }
+      init(element, valueAccessor, allBindingsAccessor, viewModel) {
+        boundMethodCheck(this, ref13);
+      }
+
+      update(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var bound, config, formatted, j, len, name, names, value;
+        boundMethodCheck(this, ref13);
+        value = this.getValue(valueAccessor) || 0;
+        value = parseFloat(value);
+        config = {};
+        names = ['precision', 'decimalSeparator', 'thousandSeparator', 'suffix', 'prefix'];
+        for (j = 0, len = names.length; j < len; j++) {
+          name = names[j];
+          // Set global value
+          config[name] = this[name];
+          
+          // Try to set value from bindings
+          bound = allBindingsAccessor.get(name);
+          if (typeof bound !== 'undefined') {
+            config[name] = this.getValue(bound);
+          }
+        }
+        formatted = numberFormat(value, config.precision, 3, config.thousandSeparator, config.decimalSeparator);
+        return element.innerHTML = config.prefix + formatted + config.suffix;
+      }
+
+    };
 
     DecimalFormatter.prototype.precision = 2;
 
@@ -1470,196 +1758,202 @@
 
     DecimalFormatter.prototype.prefix = '';
 
-    DecimalFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {};
-
-    DecimalFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var bound, config, formatted, name, names, value, _i, _len;
-      value = this.getValue(valueAccessor) || 0;
-      value = parseFloat(value);
-      config = {};
-      names = ['precision', 'decimalSeparator', 'thousandSeparator', 'suffix', 'prefix'];
-      for (_i = 0, _len = names.length; _i < _len; _i++) {
-        name = names[_i];
-        config[name] = this[name];
-        bound = allBindingsAccessor.get(name);
-        if (typeof bound !== 'undefined') {
-          config[name] = this.getValue(bound);
-        }
-      }
-      formatted = numberFormat(value, config.precision, 3, config.thousandSeparator, config.decimalSeparator);
-      return element.innerHTML = config.prefix + formatted + config.suffix;
-    };
-
     return DecimalFormatter;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.Disabled = (function(_super) {
-    __extends(Disabled, _super);
+  
+  // Disabled binding
+  // This adds class from options if value is true
 
-    function Disabled(options) {
-      Disabled.__super__.constructor.call(this, new Maslosoft.Binder.CssOptions({
+  this.Maslosoft.Binder.Disabled = class Disabled extends this.Maslosoft.Binder.CssClass {
+    constructor(options) {
+      super(new Maslosoft.Binder.CssOptions({
         className: 'disabled'
       }));
     }
 
-    return Disabled;
+  };
 
-  })(this.Maslosoft.Binder.CssClass);
+  
+  // Enum css class handler
 
-  this.Maslosoft.Binder.EnumCssClassFormatter = (function(_super) {
-    __extends(EnumCssClassFormatter, _super);
-
-    function EnumCssClassFormatter() {
-      this.update = __bind(this.update, this);
-      return EnumCssClassFormatter.__super__.constructor.apply(this, arguments);
+  ref14 = this.Maslosoft.Binder.EnumCssClassFormatter = class EnumCssClassFormatter extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
     }
 
-    EnumCssClassFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var config, name, re, _i, _len, _ref;
+    update(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var config, j, len, name, re, ref15;
+      boundMethodCheck(this, ref14);
       config = this.getValue(valueAccessor);
-      _ref = config.values;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
-        re = new RegExp("(?:^|\\s)" + name + "(?!\\S)", 'g');
+      ref15 = config.values;
+      
+      // Remove previously set classes
+      for (j = 0, len = ref15.length; j < len; j++) {
+        name = ref15[j];
+        re = new RegExp(`(?:^|\\s)${name}(?!\\S)`, 'g');
         element.className = element.className.replace(re, '');
       }
       element.className += ' ' + config.values[config.data];
-    };
-
-    return EnumCssClassFormatter;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.EnumFormatter = (function(_super) {
-    __extends(EnumFormatter, _super);
-
-    function EnumFormatter() {
-      this.update = __bind(this.update, this);
-      return EnumFormatter.__super__.constructor.apply(this, arguments);
     }
 
-    EnumFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+  };
+
+  
+  // Enum binding handler
+
+  ref15 = this.Maslosoft.Binder.EnumFormatter = class EnumFormatter extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
+
+    update(element, valueAccessor, allBindingsAccessor, viewModel) {
       var config;
+      boundMethodCheck(this, ref15);
       config = this.getValue(valueAccessor);
       if (typeof config.values[config.data] !== 'undefined') {
         element.innerHTML = config.values[config.data];
       } else {
         element.innerHTML = config.data;
       }
-    };
-
-    return EnumFormatter;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Eval = (function(_super) {
-    __extends(Eval, _super);
-
-    function Eval() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Eval.__super__.constructor.apply(this, arguments);
     }
 
-    Eval.prototype.init = function(element, valueAccessor) {
+  };
+
+  
+  // Eval binding handler
+
+  ref16 = this.Maslosoft.Binder.Eval = class Eval extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
+    }
+
+    init(element, valueAccessor) {
       var allowBindings;
+      boundMethodCheck(this, ref16);
+      // Let bindings proceed as normal *only if* my value is false
       allowBindings = this.getValue(valueAccessor);
       console.log(allowBindings);
       return {
         controlsDescendantBindings: !allowBindings
       };
-    };
+    }
 
-    Eval.prototype.update = function(element, valueAccessor) {
+    update(element, valueAccessor) {
       var allowBindings;
+      boundMethodCheck(this, ref16);
+      // Let bindings proceed as normal *only if* my value is false
       allowBindings = this.getValue(valueAccessor);
       console.log(allowBindings);
       return {
         controlsDescendantBindings: !allowBindings
       };
-    };
-
-    return Eval;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Fancytree = (function(_super) {
-    __extends(Fancytree, _super);
-
-    function Fancytree() {
-      this.update = __bind(this.update, this);
-      this.handle = __bind(this.handle, this);
-      this.init = __bind(this.init, this);
-      return Fancytree.__super__.constructor.apply(this, arguments);
     }
 
-    Fancytree.prototype.tree = null;
+  };
 
-    Fancytree.prototype.element = null;
+  
+  // Fancytree binding
+  // TODO Allow sytaxes:
+  // data-bind="fancytree: data"
+  // data-bind="fancytree: {data: data}"
+  // data-bind="fancytree: {data: data, options: <fancyTree-options>, autoExpand: true|false}"
+  // TODO When using two or more trees from same data, only first one works properly
 
-    Fancytree.prototype.getData = function(valueAccessor) {
-      var value;
-      value = this.getValue(valueAccessor) || [];
-      if (value.data) {
-        return value.data;
+  ref17 = this.Maslosoft.Binder.Fancytree = (function() {
+    class Fancytree extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.handle = this.handle.bind(this);
+        this.update = this.update.bind(this);
       }
-      return value;
-    };
 
-    Fancytree.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var dnd, drag, events, folderIcon, nodeIcon, nodeRenderer, options, renderer, tree, treeEvents;
-      tree = this.getData(valueAccessor);
-      options = valueAccessor().options || {};
-      events = this.getValue(valueAccessor).on || false;
-      options.toggleEffect = false;
-      options.source = tree.children;
-      options.extensions = [];
-      treeEvents = new TreeEvents(tree, events, options);
-      dnd = valueAccessor().dnd || false;
-      drag = valueAccessor().drag || false;
-      if (dnd && drag) {
-        throw new Error('Cannot use both `dnd` and `drag`');
-      }
-      if (dnd) {
-        options.autoScroll = false;
-        options.extensions.push('dnd');
-        options.dnd = new TreeDnd(tree, element, treeEvents);
-      }
-      if (drag) {
-        options.autoScroll = false;
-        options.extensions.push('dnd');
-        options.dnd = new TreeDrag(tree, element);
-      }
-      nodeIcon = valueAccessor().nodeIcon || false;
-      folderIcon = valueAccessor().folderIcon || false;
-      nodeRenderer = valueAccessor().nodeRenderer || false;
-      if (folderIcon && !nodeIcon) {
-        warn("Option `folderIcon` require also `nodeIcon` or it will not work at all");
-      }
-      if (nodeIcon || nodeRenderer) {
-        if (nodeIcon) {
-          options.icon = false;
+      getData(valueAccessor) {
+        var value;
+        // Verbose syntax, at least {data: data}
+        value = this.getValue(valueAccessor) || [];
+        if (value.data) {
+          return value.data;
         }
-        renderer = new TreeNodeRenderer(tree, options, nodeIcon, folderIcon);
-        if (nodeRenderer) {
-          renderer.setRenderer(new nodeRenderer(tree, options));
-        }
-        options.renderNode = renderer.render;
+        return value;
       }
-      return jQuery(element).fancytree(options);
-    };
 
-    Fancytree.prototype.handle = function(element, valueAccessor, allBindingsAccessor) {
-      var config, handler;
-      config = this.getValue(valueAccessor);
-      element = jQuery(element);
-      handler = (function(_this) {
-        return function() {
+      init(element, valueAccessor, allBindingsAccessor, context) {
+        var dnd, drag, events, folderIcon, nodeIcon, nodeRenderer, options, renderer, tree, treeEvents;
+        boundMethodCheck(this, ref17);
+        tree = this.getData(valueAccessor);
+        // Tree options
+        options = valueAccessor().options || {};
+        events = this.getValue(valueAccessor).on || false;
+        // Effects makes updates flickering, disable
+        options.toggleEffect = false;
+        options.source = tree.children;
+        options.extensions = [];
+        // Events
+        treeEvents = new TreeEvents(tree, events, options);
+        // Accessors for dnd and draggable
+        dnd = valueAccessor().dnd || false;
+        drag = valueAccessor().drag || false;
+        if (dnd && drag) {
+          throw new Error('Cannot use both `dnd` and `drag`');
+        }
+        // DND
+        if (dnd) {
+          options.autoScroll = false;
+          options.extensions.push('dnd');
+          options.dnd = new TreeDnd(tree, element, treeEvents);
+        }
+        
+        // Draggable only
+        if (drag) {
+          options.autoScroll = false;
+          options.extensions.push('dnd');
+          options.dnd = new TreeDrag(tree, element);
+        }
+        // Node icon and renderer
+        nodeIcon = valueAccessor().nodeIcon || false;
+        folderIcon = valueAccessor().folderIcon || false;
+        nodeRenderer = valueAccessor().nodeRenderer || false;
+        
+        // Folder icon option
+        if (folderIcon && !nodeIcon) {
+          warn("Option `folderIcon` require also `nodeIcon` or it will not work at all");
+        }
+        if (nodeIcon || nodeRenderer) {
+          // Disable tree icon, as custom renderer will be used
+          if (nodeIcon) {
+            options.icon = false;
+          }
+          
+          // Create internal renderer instance
+          renderer = new TreeNodeRenderer(tree, options, nodeIcon, folderIcon);
+          
+          // Custom title renderer
+          if (nodeRenderer) {
+            renderer.setRenderer(new nodeRenderer(tree, options));
+          }
+          options.renderNode = renderer.render;
+        }
+        return jQuery(element).fancytree(options);
+      }
+
+      handle(element, valueAccessor, allBindingsAccessor) {
+        var config, handler;
+        boundMethodCheck(this, ref17);
+        config = this.getValue(valueAccessor);
+        element = jQuery(element);
+        handler = () => {
           if (!element.find('.ui-fancytree').length) {
             return;
           }
-          element.fancytree('option', 'source', _this.getData(valueAccessor).children);
+          element.fancytree('option', 'source', this.getData(valueAccessor).children);
+          // Autoexpand handling
           if (config.autoExpand) {
             element.fancytree('getRootNode').visit(function(node) {
               return node.setExpanded(true);
@@ -1667,49 +1961,56 @@
           }
           return element.focus();
         };
-      })(this);
-      return setTimeout(handler, 0);
+        // Put rendering to end of queue to ensure bindings are evaluated
+        return setTimeout(handler, 0);
+      }
+
+      update(element, valueAccessor, allBindingsAccessor, viewModel) {
+        boundMethodCheck(this, ref17);
+        return this.handle(element, valueAccessor, allBindingsAccessor);
+      }
+
     };
 
-    Fancytree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      return this.handle(element, valueAccessor, allBindingsAccessor);
-    };
+    Fancytree.prototype.tree = null;
+
+    Fancytree.prototype.element = null;
 
     return Fancytree;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.FileSizeFormatter = (function(_super) {
-    __extends(FileSizeFormatter, _super);
+  
+  // One-way file size formatter
 
-    function FileSizeFormatter() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return FileSizeFormatter.__super__.constructor.apply(this, arguments);
-    }
-
-    FileSizeFormatter.prototype.units = {
-      binary: ["kiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"],
-      decimal: ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
-    };
-
-    FileSizeFormatter.prototype.binary = true;
-
-    FileSizeFormatter.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {};
-
-    FileSizeFormatter.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var binary, decimal, format, step, value;
-      value = this.getValue(valueAccessor) || 0;
-      binary = this.binary;
-      decimal = !this.binary;
-      if (binary) {
-        step = 1024;
+  ref18 = this.Maslosoft.Binder.FileSizeFormatter = (function() {
+    class FileSizeFormatter extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
       }
-      if (decimal) {
-        step = 1000;
+
+      init(element, valueAccessor, allBindingsAccessor, viewModel) {
+        boundMethodCheck(this, ref18);
       }
-      format = (function(_this) {
-        return function(bytes) {
+
+      update(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var binary, decimal, format, step, value;
+        boundMethodCheck(this, ref18);
+        value = this.getValue(valueAccessor) || 0;
+        
+        // TODO This should also be configurable via at binding
+
+        binary = this.binary;
+        decimal = !this.binary;
+        if (binary) {
+          step = 1024;
+        }
+        if (decimal) {
+          step = 1000;
+        }
+        format = (bytes) => {
           var i, units;
           bytes = parseInt(bytes);
           if (bytes < step) {
@@ -1717,10 +2018,10 @@
           }
           i = -1;
           if (binary) {
-            units = _this.units.binary;
+            units = this.units.binary;
           }
           if (decimal) {
-            units = _this.units.decimal;
+            units = this.units.decimal;
           }
           while (true) {
             bytes = bytes / step;
@@ -1732,37 +2033,52 @@
           if (units[i]) {
             return Math.max(bytes, 0.1).toFixed(1) + ' ' + units[i];
           } else {
-            return Math.max(bytes, 0.1).toFixed(1) + (" ~*" + (i * step) + " * " + step + " B");
+            return Math.max(bytes, 0.1).toFixed(1) + ` ~*${i * step} * ${step} B`;
           }
         };
-      })(this);
-      return element.innerHTML = format(value);
+        return element.innerHTML = format(value);
+      }
+
     };
+
+    FileSizeFormatter.prototype.units = {
+      binary: ["kiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"],
+      decimal: ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    };
+
+    FileSizeFormatter.prototype.binary = true;
 
     return FileSizeFormatter;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.GoogleMap = (function(_super) {
-    __extends(GoogleMap, _super);
+  
+  // GMap3 binding
+  // TODO Allow syntax:
+  // data-bind="googleMap: config"
+  // TODO When using two or more trees from same data, only first one works properly
 
-    function GoogleMap() {
-      this.apply = __bind(this.apply, this);
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return GoogleMap.__super__.constructor.apply(this, arguments);
+  ref19 = this.Maslosoft.Binder.GoogleMap = class GoogleMap extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
+      this.apply = this.apply.bind(this);
     }
 
-    GoogleMap.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    init(element, valueAccessor, allBindingsAccessor, viewModel) {
+      boundMethodCheck(this, ref19);
       return this.apply(element, this.getValue(valueAccessor));
-    };
+    }
 
-    GoogleMap.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    update(element, valueAccessor, allBindingsAccessor, viewModel) {
+      boundMethodCheck(this, ref19);
       return this.apply(element, this.getValue(valueAccessor));
-    };
+    }
 
-    GoogleMap.prototype.apply = function(element, cfg) {
+    apply(element, cfg) {
       var latLng, map, mapOptions, markerCfg;
+      boundMethodCheck(this, ref19);
       console.log(element, cfg);
       latLng = new google.maps.LatLng(cfg.lat, cfg.lng);
       mapOptions = {
@@ -1778,280 +2094,333 @@
         };
         return new google.maps.Marker(markerCfg);
       }
-    };
-
-    return GoogleMap;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Hidden = (function(_super) {
-    __extends(Hidden, _super);
-
-    function Hidden() {
-      this.update = __bind(this.update, this);
-      return Hidden.__super__.constructor.apply(this, arguments);
     }
 
-    Hidden.prototype.update = function(element, valueAccessor) {
+  };
+
+  
+  // Hidden binding handler, opposite to visible
+
+  ref20 = this.Maslosoft.Binder.Hidden = class Hidden extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
+
+    update(element, valueAccessor) {
       var value;
+      boundMethodCheck(this, ref20);
       value = !this.getValue(valueAccessor);
       return ko.bindingHandlers.visible.update(element, function() {
         return value;
       });
-    };
+    }
 
-    return Hidden;
+  };
 
-  })(this.Maslosoft.Binder.Base);
+  
+  // Href binding handler
 
-  this.Maslosoft.Binder.Href = (function(_super) {
+  ref21 = this.Maslosoft.Binder.Href = (function() {
     var bustLinks;
 
-    __extends(Href, _super);
+    class Href extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
 
-    function Href() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Href.__super__.constructor.apply(this, arguments);
-    }
+      init(element, valueAccessor, allBindingsAccessor) {
+        var href, stopPropagation;
+        boundMethodCheck(this, ref21);
+        href = this.getValue(valueAccessor);
+        // Add href attribute if binding have some value
+        if (!element.href && href) {
+          ensureAttribute(element, 'href');
+        }
+        bustLinks(element);
+        // Stop propagation handling
+        stopPropagation = allBindingsAccessor.get('stopPropagation') || false;
+        if (stopPropagation) {
+          return ko.utils.registerEventHandler(element, "click", function(e) {
+            return e.stopPropagation();
+          });
+        }
+      }
+
+      update(element, valueAccessor, allBindings) {
+        var href, target;
+        boundMethodCheck(this, ref21);
+        bustLinks(element);
+        href = this.getValue(valueAccessor);
+        if (href) {
+          target = allBindings.get('target') || '';
+          // Ensure attribute
+          ensureAttribute(element, 'href');
+          ensureAttribute(element, 'target');
+          if (element.getAttribute('href') !== href) {
+            element.setAttribute('href', href);
+          }
+          if (element.getAttribute('target') !== target) {
+            return element.setAttribute('target', target);
+          }
+        } else {
+          // Remove attribute if empty
+          return element.removeAttribute('href');
+        }
+      }
+
+    };
 
     bustLinks = function(element) {
       var defer;
+      // Skip on non anchor elements
       if (element.tagName.toLowerCase() !== 'a') {
         return;
       }
       defer = function() {
-        var $il, innerLink, _i, _len, _ref, _results;
-        _ref = jQuery(element).find('a');
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          innerLink = _ref[_i];
+        var $il, innerLink, j, len, ref22, results;
+        ref22 = jQuery(element).find('a');
+        results = [];
+        for (j = 0, len = ref22.length; j < len; j++) {
+          innerLink = ref22[j];
           $il = jQuery(innerLink);
-          _results.push($il.replaceWith($il.contents()));
+          results.push($il.replaceWith($il.contents()));
         }
-        return _results;
+        return results;
       };
       return setTimeout(defer, 0);
     };
 
-    Href.prototype.init = function(element, valueAccessor, allBindingsAccessor) {
-      var href, stopPropagation;
-      href = this.getValue(valueAccessor);
-      if (!element.href && href) {
-        ensureAttribute(element, 'href');
-      }
-      bustLinks(element);
-      stopPropagation = allBindingsAccessor.get('stopPropagation') || false;
-      if (stopPropagation) {
-        return ko.utils.registerEventHandler(element, "click", function(e) {
-          return e.stopPropagation();
-        });
-      }
-    };
-
-    Href.prototype.update = function(element, valueAccessor, allBindings) {
-      var href, target;
-      bustLinks(element);
-      href = this.getValue(valueAccessor);
-      if (href) {
-        target = allBindings.get('target') || '';
-        ensureAttribute(element, 'href');
-        ensureAttribute(element, 'target');
-        if (element.getAttribute('href') !== href) {
-          element.setAttribute('href', href);
-        }
-        if (element.getAttribute('target') !== target) {
-          return element.setAttribute('target', target);
-        }
-      } else {
-        return element.removeAttribute('href');
-      }
-    };
-
     return Href;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.Html = (function(_super) {
-    __extends(Html, _super);
+  
+  // HTML improved binding handler
 
-    function Html() {
-      this.update = __bind(this.update, this);
-      return Html.__super__.constructor.apply(this, arguments);
+  ref22 = this.Maslosoft.Binder.Html = class Html extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
     }
 
-    Html.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+    init(element, valueAccessor, allBindingsAccessor, context) {
       return {
         'controlsDescendantBindings': true
       };
-    };
+    }
 
-    Html.prototype.update = function(element, valueAccessor, allBindings, context) {
+    update(element, valueAccessor, allBindings, context) {
       var configuration, pm, value;
+      boundMethodCheck(this, ref22);
+      // setHtml will unwrap the value if needed
       value = this.getValue(valueAccessor);
       configuration = this.getValue(allBindings).plugins;
       pm = new PluginsManager(element);
       pm.from(configuration);
       value = pm.getElementValue(element, value);
       return ko.utils.setHtml(element, value);
-    };
-
-    return Html;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.HtmlTree = (function(_super) {
-    __extends(HtmlTree, _super);
-
-    function HtmlTree() {
-      this.update = __bind(this.update, this);
-      return HtmlTree.__super__.constructor.apply(this, arguments);
     }
 
-    HtmlTree.drawNode = function(data) {
-      var child, childWrapper, node, title, _i, _len, _ref;
+  };
+
+  
+  // Html tree binding
+
+  // This simpy builds a nested ul>li struct
+
+  // data-bind="htmlTree: data"
+
+  ref23 = this.Maslosoft.Binder.HtmlTree = class HtmlTree extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
+
+    static drawNode(data) {
+      var child, childWrapper, j, len, node, ref24, title;
+      // wrapper = document.createElement 'ul'
       title = document.createElement('li');
       title.innerHTML = data.title;
+      // wrapper.appendChild title
       if (data.children && data.children.length > 0) {
         childWrapper = document.createElement('ul');
-        _ref = data.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
+        ref24 = data.children;
+        for (j = 0, len = ref24.length; j < len; j++) {
+          node = ref24[j];
           child = HtmlTree.drawNode(node);
           childWrapper.appendChild(child);
         }
         title.appendChild(childWrapper);
       }
       return title;
-    };
+    }
 
-    HtmlTree.prototype.getData = function(valueAccessor) {
+    getData(valueAccessor) {
       var value;
+      // Verbose syntax, at least {data: data}
       value = this.getValue(valueAccessor) || [];
       if (value.data) {
         return this.getValue(value.data) || [];
       }
       return value;
-    };
-
-    HtmlTree.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var data, handler;
-      data = this.getValue(valueAccessor);
-      warn("HtmlTree is experimental, do not use");
-      handler = (function(_this) {
-        return function() {
-          var nodes;
-          nodes = HtmlTree.drawNode(data);
-          element.innerHTML = '';
-          return element.appendChild(nodes);
-        };
-      })(this);
-      return setTimeout(handler, 0);
-    };
-
-    return HtmlTree;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.HtmlValue = (function(_super) {
-    var idCounter;
-
-    __extends(HtmlValue, _super);
-
-    idCounter = 0;
-
-    function HtmlValue(options) {
-      if (options == null) {
-        options = {};
-      }
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      HtmlValue.__super__.constructor.call(this, options);
-      if (ko.bindingHandlers.sortable && ko.bindingHandlers.sortable.options) {
-        ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]';
-      }
     }
 
-    HtmlValue.prototype.getElementValue = function(element) {
-      return element.innerHTML;
-    };
+    update(element, valueAccessor, allBindingsAccessor, viewModel) {
+      var data, handler;
+      boundMethodCheck(this, ref23);
+      data = this.getValue(valueAccessor);
+      warn("HtmlTree is experimental, do not use");
+      handler = () => {
+        var nodes;
+        nodes = HtmlTree.drawNode(data);
+        element.innerHTML = '';
+        return element.appendChild(nodes);
+      };
+      // Put rendering to end of queue to ensure bindings are evaluated
+      return setTimeout(handler, 0);
+    }
 
-    HtmlValue.prototype.setElementValue = function(element, value) {
-      return element.innerHTML = value;
-    };
+  };
 
-    HtmlValue.prototype.init = function(element, valueAccessor, allBindingsAccessor) {
-      var configuration, deferHandler, dispose, handler, pm;
-      element.setAttribute('contenteditable', true);
-      if (!element.id) {
-        element.id = "maslosoft-binder-htmlvalue-" + (idCounter++);
+  
+  // Html value binding
+  // WARNING This MUST have parent context, or will not work
+
+  ref24 = this.Maslosoft.Binder.HtmlValue = (function() {
+    var idCounter;
+
+    class HtmlValue extends this.Maslosoft.Binder.Base {
+      constructor(options = {}) {
+        super(options);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+        if (ko.bindingHandlers.sortable && ko.bindingHandlers.sortable.options) {
+          // Allow `contenteditable` to get focus
+          ko.bindingHandlers.sortable.options.cancel = ':input,button,[contenteditable]';
+        }
       }
-      configuration = this.getValue(allBindingsAccessor).plugins;
-      pm = new PluginsManager(element);
-      pm.from(configuration);
-      handler = (function(_this) {
-        return function() {
+
+      
+      // Get value of element, this can be overridden, see TextValue for example.
+      // Will return inner html of element.
+
+      // @param jQuery element
+      // @return string
+
+      getElementValue(element) {
+        return element.innerHTML;
+      }
+
+      
+      // Set value of element, this can be overridden, see TextValue for example
+      // Value param should be valid html.
+
+      // @param jQuery element
+      // @param string
+
+      setElementValue(element, value) {
+        return element.innerHTML = value;
+      }
+
+      init(element, valueAccessor, allBindingsAccessor) {
+        var configuration, deferHandler, dispose, handler, pm;
+        boundMethodCheck(this, ref24);
+        element.setAttribute('contenteditable', true);
+        
+        // Generate some id if not set, see notes below why
+        if (!element.id) {
+          element.id = `maslosoft-binder-htmlvalue-${idCounter++}`;
+        }
+        configuration = this.getValue(allBindingsAccessor).plugins;
+        pm = new PluginsManager(element);
+        pm.from(configuration);
+        // Handle update immediately
+        handler = () => {
           var accessor, elementValue, modelValue;
+          // console.log("HTML Value Update", element)
+          // On some situations element might be null (sorting), ignore this case
           if (!element) {
             return;
           }
+          // This is required in some scenarios, specifically when sorting htmlValue elements
           element = document.getElementById(element.id);
           if (!element) {
             return;
           }
           accessor = valueAccessor();
-          modelValue = _this.getValue(valueAccessor);
-          elementValue = _this.getElementValue(element);
+          modelValue = this.getValue(valueAccessor);
+          elementValue = this.getElementValue(element);
           if (ko.isWriteableObservable(accessor)) {
+            // Update only if changed
             elementValue = pm.getModelValue(element, elementValue);
             if (modelValue !== elementValue) {
+              //console.log "Write: #{modelValue} = #{elementValue}"
               return accessor(elementValue);
             }
           }
         };
-      })(this);
-      deferHandler = (function(_this) {
-        return function() {
+        
+        // Handle update, but push update to end of queue
+        deferHandler = () => {
           return setTimeout(handler, 0);
         };
-      })(this);
-      jQuery(element).on("keyup, input", handler);
-      jQuery(document).on("mouseup", deferHandler);
-      jQuery(document).on("changed.htmlvalue", handler);
-      dispose = function(toDispose) {
-        jQuery(toDispose).off("keyup, input", handler);
-        jQuery(document).off("mouseup", deferHandler);
-        return jQuery(document).off("changed.htmlvalue", handler);
-      };
-      ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
+        
+        // NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
+        jQuery(element).on("keyup, input", handler);
+        // This is to allow interaction with tools which could modify content, also to work with drag and drop
+        jQuery(document).on("mouseup", deferHandler);
+        jQuery(document).on("changed.htmlvalue", handler);
+        dispose = function(toDispose) {
+          jQuery(toDispose).off("keyup, input", handler);
+          jQuery(document).off("mouseup", deferHandler);
+          return jQuery(document).off("changed.htmlvalue", handler);
+        };
+        ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
+      }
+
+      update(element, valueAccessor, allBindings) {
+        var configuration, pm, value;
+        boundMethodCheck(this, ref24);
+        value = this.getValue(valueAccessor);
+        configuration = this.getValue(allBindings).plugins;
+        pm = new PluginsManager(element);
+        pm.from(configuration);
+        value = pm.getElementValue(element, value);
+        //console.log value
+        if (this.getElementValue(element) !== value) {
+          this.setElementValue(element, value);
+        }
+      }
+
     };
 
-    HtmlValue.prototype.update = function(element, valueAccessor, allBindings) {
-      var configuration, pm, value;
-      value = this.getValue(valueAccessor);
-      configuration = this.getValue(allBindings).plugins;
-      pm = new PluginsManager(element);
-      pm.from(configuration);
-      value = pm.getElementValue(element, value);
-      if (this.getElementValue(element) !== value) {
-        this.setElementValue(element, value);
-      }
-    };
+    
+    // Counter for id generator
+    // @private
+    // @static
+
+    idCounter = 0;
 
     return HtmlValue;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.Icon = (function(_super) {
-    __extends(Icon, _super);
+  
+  // Icon binding handler
+  // This is to select proper icon or scaled image thumbnail
 
-    function Icon() {
-      this.update = __bind(this.update, this);
-      return Icon.__super__.constructor.apply(this, arguments);
+  ref25 = this.Maslosoft.Binder.Icon = class Icon extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
     }
 
-    Icon.prototype.update = function(element, valueAccessor, allBindings) {
+    update(element, valueAccessor, allBindings) {
       var $element, date, defaultSize, extra, fixedSize, iconField, isImage, isSvg, matched, model, nameSuffix, regex, size, src;
+      boundMethodCheck(this, ref25);
       $element = $(element);
       model = this.getValue(valueAccessor);
       extra = this.getValue(allBindings);
@@ -2060,7 +2429,7 @@
         if (console) {
           console.warn('Binding value for `icon` binding not defined, skipping. Element:');
           console.warn(element);
-          console.warn((new Error).stack);
+          console.warn((new Error()).stack);
         }
         return;
       }
@@ -2078,6 +2447,8 @@
       if (!nameSuffix && model.filename) {
         nameSuffix = model.filename;
       }
+      // Get icon size
+      // TODO This should be configurable with options
       if (typeof model.iconSize === 'undefined') {
         defaultSize = 16;
       } else {
@@ -2085,23 +2456,33 @@
       }
       size = allBindings.get("iconSize") || defaultSize;
       regex = new RegExp("/" + defaultSize + "/", "g");
+      // Check if it's image
+      // TODO This should be configurable with options
       if (typeof model.isImage === 'undefined') {
         isImage = true;
       } else {
         isImage = model.isImage;
       }
+      // This is to not add scaling params for svg's
       if (isSvg) {
         isImage = false;
       }
+      // TODO This must be configurable with options
       if (isImage) {
+        // Get image thumbnail
+        // End with /
         if (!src.match(new RegExp("/$"))) {
           src = src + '/';
         }
+        // Dimensions are set
         if (src.match(new RegExp("/w/", "g"))) {
           src = src.replace(regex, "/" + size + "/");
         } else {
-          src = src + ("w/" + size + "/h/" + size + "/p/0/");
+          // Dimensions are not set, set it here
+          src = src + `w/${size}/h/${size}/p/0/`;
         }
+        
+        // Add timestamp if set
         if (model.updateDate) {
           date = null;
           if (model.updateDate.sec) {
@@ -2117,6 +2498,7 @@
           }
         }
       } else {
+        // Calculate size steps for normal icons
         fixedSize = 16;
         if (size > 16) {
           fixedSize = 32;
@@ -2137,92 +2519,102 @@
       if (extra.cachebusting) {
         src = src + '?' + new Date().getTime();
       }
+      // Update src only if changed
       if ($element.attr("src") !== src) {
         if (extra.preloader) {
           $element.attr('src', extra.preloader);
         }
         preload($element, src);
       }
+      // Set max image dimensions
       $element.css({
-        width: "" + size + "px",
+        width: `${size}px`,
         height: 'auto',
         maxWidth: '100%'
       });
-    };
-
-    return Icon;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Id = (function(_super) {
-    __extends(Id, _super);
-
-    function Id() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Id.__super__.constructor.apply(this, arguments);
     }
 
-    Id.prototype.init = function(element) {
-      return ensureAttribute(element, 'id');
-    };
+  };
 
-    Id.prototype.update = function(element, valueAccessor) {
+  
+  // Src binding handler
+
+  ref26 = this.Maslosoft.Binder.Id = class Id extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
+    }
+
+    init(element) {
+      boundMethodCheck(this, ref26);
+      return ensureAttribute(element, 'id');
+    }
+
+    update(element, valueAccessor) {
       var id;
+      boundMethodCheck(this, ref26);
       id = this.getValue(valueAccessor);
       if (element.getAttribute('id') !== id) {
         return element.setAttribute('id', id);
       }
-    };
-
-    return Id;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Log = (function(_super) {
-    __extends(Log, _super);
-
-    function Log() {
-      this.init = __bind(this.init, this);
-      this.update = __bind(this.update, this);
-      return Log.__super__.constructor.apply(this, arguments);
     }
 
-    Log.prototype.update = function(element, valueAccessor, allBindings) {
+  };
+
+  
+  // Log with element reference
+
+  ref27 = this.Maslosoft.Binder.Log = class Log extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+      this.init = this.init.bind(this);
+    }
+
+    update(element, valueAccessor, allBindings) {
+      boundMethodCheck(this, ref27);
       return console.log(this.getValue(valueAccessor), element);
-    };
+    }
 
-    Log.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+    init(element, valueAccessor, allBindingsAccessor, context) {
+      boundMethodCheck(this, ref27);
       return console.log(this.getValue(valueAccessor), element);
-    };
+    }
 
-    return Log;
-
-  })(this.Maslosoft.Binder.Base);
-
+  };
 
   /*
   Date picker
   NOTE: Not recommended, as Pick A Date is not maintanted
-   */
+  */
+  ref28 = this.Maslosoft.Binder.PickaDate = class PickaDate extends this.Maslosoft.Binder.Picker {
+    constructor(options) {
+      super(new Maslosoft.Binder.DateOptions(options));
+      this.updateModel = this.updateModel.bind(this);
+      
+      // Get display value from model value according to formatting options
+      // @param string|int value
+      // @return string|int
 
-  this.Maslosoft.Binder.PickaDate = (function(_super) {
-    __extends(PickaDate, _super);
+      this.getDisplayValue = this.getDisplayValue.bind(this);
+      
+      // Get model value from model value according to formatting options
+      // @param string|int value
+      // @return string|int
 
-    function PickaDate(options) {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      this.getModelValue = __bind(this.getModelValue, this);
-      this.getDisplayValue = __bind(this.getDisplayValue, this);
-      this.updateModel = __bind(this.updateModel, this);
-      PickaDate.__super__.constructor.call(this, new Maslosoft.Binder.DateOptions(options));
+      this.getModelValue = this.getModelValue.bind(this);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
     }
 
-    PickaDate.prototype.updateModel = function(element, valueAccessor, allBindings) {
+    updateModel(element, valueAccessor, allBindings) {
       var elementValue, modelValue, val;
+      boundMethodCheck(this, ref28);
       modelValue = this.getValue(valueAccessor);
       elementValue = this.getModelValue(element.value);
       if (ko.isWriteableObservable(valueAccessor) || true) {
+        // Update only if changed
         if (modelValue !== elementValue) {
           ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'datePicker', elementValue);
           return val = elementValue;
@@ -2230,89 +2622,95 @@
       } else {
 
       }
-    };
+    }
 
-    PickaDate.prototype.getDisplayValue = function(value) {
+    getDisplayValue(value) {
       var inputValue;
+      boundMethodCheck(this, ref28);
       if (this.options.sourceFormat === 'unix') {
         inputValue = moment.unix(value).format(this.options.displayFormat);
       } else {
         inputValue = moment(value, this.options.sourceFormat).format(this.options.displayFormat);
       }
       return inputValue;
-    };
+    }
 
-    PickaDate.prototype.getModelValue = function(value) {
+    getModelValue(value) {
       var modelValue;
+      boundMethodCheck(this, ref28);
       if (this.options.sourceFormat === 'unix') {
         modelValue = moment(value, this.options.displayFormat).unix();
       } else {
         modelValue = moment(value, this.options.displayFormat).format(this.options.sourceFormat);
       }
       return modelValue;
-    };
+    }
 
-    PickaDate.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    init(element, valueAccessor, allBindingsAccessor, viewModel) {
       var $inputDate, events, inputValue, options, picker, pickerElement, pickerWrapper, template, textInput;
+      boundMethodCheck(this, ref28);
       inputValue = this.getDisplayValue(this.getValue(valueAccessor));
       textInput = jQuery(element);
       textInput.val(inputValue);
       if (this.options.template) {
         template = this.options.template;
       } else {
-        template = '<div class="input-group-addon">\n	<a class="picker-trigger-link" style="cursor: pointer;">\n		<i class="glyphicon glyphicon-calendar"></i>\n	</a>\n</div>';
+        template = `<div class="input-group-addon">
+	<a class="picker-trigger-link" style="cursor: pointer;">
+		<i class="glyphicon glyphicon-calendar"></i>
+	</a>
+</div>`;
       }
       pickerWrapper = jQuery(template);
       pickerWrapper.insertAfter(textInput);
       pickerElement = pickerWrapper.find('a.picker-trigger-link');
       options = {
+        // Format of pickadate is not compatible of this of moment
         format: this.options.displayFormat.toLowerCase(),
         selectMonths: true,
         selectYears: true
       };
       $inputDate = pickerElement.pickadate(options);
       picker = $inputDate.pickadate('picker');
-      picker.on('set', (function(_this) {
-        return function() {
-          textInput.val(picker.get('value'));
-          _this.updateModel(element, valueAccessor, allBindingsAccessor);
-        };
-      })(this));
+      picker.on('set', () => {
+        textInput.val(picker.get('value'));
+        this.updateModel(element, valueAccessor, allBindingsAccessor);
+      });
       events = {};
-      events.change = (function(_this) {
-        return function() {
-          var parsedDate;
-          parsedDate = Date.parse(element.value);
-          if (parsedDate) {
-            picker.set('select', [parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()]);
-            _this.updateModel(element, valueAccessor, allBindingsAccessor);
-          }
-        };
-      })(this);
+      // On change or other events (paste etc.)
+      events.change = () => {
+        var parsedDate;
+        parsedDate = Date.parse(element.value);
+        if (parsedDate) {
+          picker.set('select', [parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()]);
+          this.updateModel(element, valueAccessor, allBindingsAccessor);
+        }
+      };
       events.keyup = function(e) {
         if (e.which === 86 && e.ctrlKey) {
           events.change();
         }
       };
       events.mouseup = events.change;
-      events.focus = (function(_this) {
-        return function() {
-          picker.open(false);
-        };
-      })(this);
-      events.blur = (function(_this) {
-        return function(e) {
-          if (e.relatedTarget) {
-            return;
-          }
-          picker.close();
-          _this.updateModel(element, valueAccessor, allBindingsAccessor);
-        };
-      })(this);
+      // Focus event of text input
+      events.focus = () => {
+        picker.open(false);
+      };
+      // Blur of text input
+      events.blur = (e) => {
+        // Don't hide picker when clicking picker itself
+        if (e.relatedTarget) {
+          return;
+        }
+        picker.close();
+        this.updateModel(element, valueAccessor, allBindingsAccessor);
+      };
       textInput.on(events);
       pickerElement.on('click', function(e) {
         var isOpen, root;
         root = jQuery(picker.$root[0]);
+        // This seems to be only method
+        // to discover if picker is really open
         isOpen = jQuery(root.children()[0]).height() > 0;
         if (isOpen) {
           picker.close();
@@ -2322,66 +2720,88 @@
         e.stopPropagation();
         e.preventDefault();
       });
-    };
+    }
 
-    PickaDate.prototype.update = function(element, valueAccessor) {
+    update(element, valueAccessor) {
       var value;
+      boundMethodCheck(this, ref28);
       ko.utils.setTextContent(element, valueAccessor());
       value = this.getDisplayValue(this.getValue(valueAccessor));
       if (element.value !== value) {
         return element.value = value;
       }
-    };
-
-    return PickaDate;
-
-  })(this.Maslosoft.Binder.Picker);
-
-  this.Maslosoft.Binder.Placeholder = (function(_super) {
-    __extends(Placeholder, _super);
-
-    function Placeholder() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Placeholder.__super__.constructor.apply(this, arguments);
     }
 
-    Placeholder.prototype.init = function(element) {
-      return ensureAttribute(element, 'placeholder');
-    };
+  };
 
-    Placeholder.prototype.update = function(element, valueAccessor) {
+  
+  // Placeholder binding handler
+
+  ref29 = this.Maslosoft.Binder.Placeholder = class Placeholder extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
+    }
+
+    init(element) {
+      boundMethodCheck(this, ref29);
+      return ensureAttribute(element, 'placeholder');
+    }
+
+    update(element, valueAccessor) {
       var placeholder;
+      boundMethodCheck(this, ref29);
       placeholder = this.getValue(valueAccessor);
       if (element.getAttribute('placeholder') !== placeholder) {
+        // Clean up HTML
         placeholder = $("<div/>").html(placeholder).text();
         return element.setAttribute('placeholder', placeholder);
       }
-    };
+    }
 
-    return Placeholder;
-
-  })(this.Maslosoft.Binder.Base);
-
+  };
 
   /*
   Select2
-   */
-
-  this.Maslosoft.Binder.Select2 = (function(_super) {
+  */
+  ref30 = this.Maslosoft.Binder.Select2 = (function() {
     var bindingName, dataBindingName, init, triggerChangeQuietly;
 
-    __extends(Select2, _super);
+    class Select2 extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
 
-    function Select2() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Select2.__super__.constructor.apply(this, arguments);
-    }
+      init() {
+        var args, to;
+        boundMethodCheck(this, ref30);
+        args = arguments;
+        to = function() {
+          return init.apply(null, args);
+        };
+        return setTimeout(to, 0);
+      }
+
+      update(element, valueAccessor, allBindingsAccessor) {
+        var copy, value;
+        boundMethodCheck(this, ref30);
+        return;
+        value = this.getValue(valueAccessor);
+        if (element.value !== value.data) {
+          copy = JSON.parse(JSON.stringify(value.data));
+          $(element).val(copy);
+          return console.log("Update what?", element, value);
+        }
+      }
+
+    };
 
     bindingName = 'select2';
 
-    dataBindingName = "" + bindingName + "Data";
+    dataBindingName = `${bindingName}Data`;
 
     triggerChangeQuietly = function(element, binding) {
       var isObservable, originalEqualityComparer;
@@ -2427,6 +2847,7 @@
           triggerChangeQuietly(element, this._target || this.target);
         });
       }
+      // Provide a hook for binding to the select2 "data" property; this property is read-only in select2 so not subscribing.
       if (ko.isWriteableObservable(allBindings[dataBindingName])) {
         dataChangeHandler = function() {
           if (!$(element).data('select2')) {
@@ -2436,10 +2857,12 @@
         };
         $(element).on('change', dataChangeHandler);
       }
+      // Apply select2
       $(element).select2(bindingValue);
       if (allBindings.selectedOptions) {
         $(element).val(allBindings.selectedOptions).trigger('change');
       }
+      // Destroy select2 on element disposal
       ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
         $(element).select2('destroy');
         if (dataChangeHandler !== null) {
@@ -2451,153 +2874,132 @@
       });
     };
 
-    Select2.prototype.init = function() {
-      var args, to;
-      args = arguments;
-      to = function() {
-        return init.apply(null, args);
-      };
-      return setTimeout(to, 0);
-    };
-
-    Select2.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
-      var copy, value;
-      return;
-      value = this.getValue(valueAccessor);
-      if (element.value !== value.data) {
-        copy = JSON.parse(JSON.stringify(value.data));
-        $(element).val(copy);
-        return console.log("Update what?", element, value);
-      }
-    };
-
     return Select2;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.Selected = (function(_super) {
-    __extends(Selected, _super);
+  
+  // Selected binding
+  // This adds class from options if value is true
 
-    function Selected(options) {
-      Selected.__super__.constructor.call(this, new Maslosoft.Binder.CssOptions({
+  this.Maslosoft.Binder.Selected = class Selected extends this.Maslosoft.Binder.CssClass {
+    constructor(options) {
+      super(new Maslosoft.Binder.CssOptions({
         className: 'selected'
       }));
     }
 
-    return Selected;
+  };
 
-  })(this.Maslosoft.Binder.CssClass);
+  
+  // Src binding handler
 
-  this.Maslosoft.Binder.Src = (function(_super) {
-    __extends(Src, _super);
-
-    function Src() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Src.__super__.constructor.apply(this, arguments);
+  ref31 = this.Maslosoft.Binder.Src = class Src extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
     }
 
-    Src.prototype.init = function(element) {
+    init(element) {
+      boundMethodCheck(this, ref31);
       return ensureAttribute(element, 'src');
-    };
+    }
 
-    Src.prototype.update = function(element, valueAccessor) {
+    update(element, valueAccessor) {
       var src;
+      boundMethodCheck(this, ref31);
       src = this.getValue(valueAccessor);
       if (element.getAttribute('src') !== src) {
         return element.setAttribute('src', src);
       }
-    };
+    }
 
-    return Src;
-
-  })(this.Maslosoft.Binder.Base);
-
+  };
 
   /*
   Select2
-   */
-
-  this.Maslosoft.Binder.Tags = (function(_super) {
+  */
+  ref32 = this.Maslosoft.Binder.Tags = (function() {
     var dropdownKillStyles, once;
 
-    __extends(Tags, _super);
-
-    function Tags() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      this.setTags = __bind(this.setTags, this);
-      return Tags.__super__.constructor.apply(this, arguments);
-    }
-
-    dropdownKillStyles = '<style>\n	body.kill-all-select2-dropdowns .select2-dropdown {\n		display: none !important;\n	}\n	body.kill-all-select2-dropdowns .select2-container--default.select2-container--open.select2-container--below .select2-selection--single, .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple\n	{\n		border-bottom-left-radius: 4px;\n		border-bottom-right-radius: 4px;\n	}\n	.select2-container--default.select2-container--focus .select2-selection--multiple {\n		border-color: #66afe9;\n		outline: 0;\n		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);\n		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);\n	}\n</style>';
-
-    once = true;
-
-    Tags.prototype.setTags = function(el, tags) {
-      var index, opt, options, tag, _i, _len, _results;
-      options = el.find('option');
-      if (options.length) {
-        options.remove();
+    class Tags extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.setTags = this.setTags.bind(this);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
       }
-      _results = [];
-      for (index = _i = 0, _len = tags.length; _i < _len; index = ++_i) {
-        tag = tags[index];
-        opt = jQuery("<option selected='true'></option>");
-        opt.val(tag);
-        opt.text(tag);
-        _results.push(el.append(opt));
-      }
-      return _results;
-    };
 
-    Tags.prototype.init = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      var build, config, copy, data, dropDownKill, el, handler, updateCSS, value;
-      if (element.tagName.toLowerCase() !== 'select') {
-        throw new Error("Tags binding must be placed on `select` element");
-      }
-      if (once) {
-        jQuery(dropdownKillStyles).appendTo('head');
-        once = false;
-      }
-      data = this.getValue(valueAccessor);
-      if (data.data) {
-        value = data.data;
-      } else {
-        value = data;
-      }
-      copy = JSON.parse(JSON.stringify(value));
-      el = jQuery(element);
-      el.data('tags', true);
-      el.attr('multiple', true);
-      this.setTags(el, copy);
-      config = {
-        placeholder: data.placeholder,
-        tags: true,
-        tokenSeparators: [',', ' ']
-      };
-      updateCSS = function() {
-        var input;
-        if (data.inputCss) {
-          input = el.parent().find('.select2-search__field');
-          input.addClass(data.inputCss);
-          return input.attr('placeholder', data.placeholder);
+      setTags(el, tags) {
+        var index, j, len, opt, options, results, tag;
+        boundMethodCheck(this, ref32);
+        options = el.find('option');
+        if (options.length) {
+          options.remove();
         }
-      };
-      if (data.tagCss) {
-        config.templateSelection = function(selection, element) {
-          element.removeClass('select2-selection__choice');
-          element.addClass(data.tagCss);
-          if (selection.selected) {
-            return jQuery("<span>" + selection.text + "</span>");
-          } else {
-            return jQuery("<span>" + selection.text + "</span>");
+//		for option, index in el.find('option')
+
+        // Add options, all as selected - as these are our tags list
+        results = [];
+        for (index = j = 0, len = tags.length; j < len; index = ++j) {
+          tag = tags[index];
+          opt = jQuery("<option selected='true'></option>");
+          opt.val(tag);
+          opt.text(tag);
+          results.push(el.append(opt));
+        }
+        return results;
+      }
+
+      init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var build, config, copy, data, dropDownKill, el, handler, updateCSS, value;
+        boundMethodCheck(this, ref32);
+        if (element.tagName.toLowerCase() !== 'select') {
+          throw new Error("Tags binding must be placed on `select` element");
+        }
+        if (once) {
+          jQuery(dropdownKillStyles).appendTo('head');
+          once = false;
+        }
+        data = this.getValue(valueAccessor);
+        if (data.data) {
+          value = data.data;
+        } else {
+          // Assume direct data passing
+          value = data;
+        }
+        copy = JSON.parse(JSON.stringify(value));
+        el = jQuery(element);
+        el.data('tags', true);
+        el.attr('multiple', true);
+        this.setTags(el, copy);
+        config = {
+          placeholder: data.placeholder,
+          tags: true,
+          tokenSeparators: [',', ' ']
+        };
+        updateCSS = function() {
+          var input;
+          if (data.inputCss) {
+            input = el.parent().find('.select2-search__field');
+            input.addClass(data.inputCss);
+            return input.attr('placeholder', data.placeholder);
           }
         };
-      }
-      handler = (function(_this) {
-        return function() {
-          var elementValue, index, tag, _i, _len;
+        if (data.tagCss) {
+          config.templateSelection = function(selection, element) {
+            element.removeClass('select2-selection__choice');
+            element.addClass(data.tagCss);
+            if (selection.selected) {
+              return jQuery(`<span>${selection.text}</span>`);
+            } else {
+              return jQuery(`<span>${selection.text}</span>`);
+            }
+          };
+        }
+        handler = () => {
+          var elementValue, index, j, len, tag;
           if (value.removeAll) {
             value.removeAll();
           } else {
@@ -2605,8 +3007,9 @@
           }
           elementValue = el.val();
           if (elementValue) {
-            for (index = _i = 0, _len = elementValue.length; _i < _len; index = ++_i) {
+            for (index = j = 0, len = elementValue.length; j < len; index = ++j) {
               tag = elementValue[index];
+              // Sometimes some comas and spaces might pop in
               tag = tag.replace(',', '').replace(' ', '').trim();
               if (!tag) {
                 continue;
@@ -2616,24 +3019,23 @@
           }
           return updateCSS();
         };
-      })(this);
-      dropDownKill = (function(_this) {
-        return function(e) {
+        // This prevents dropdown for tags
+        dropDownKill = (e) => {
           var haveTags;
           haveTags = jQuery(e.target).data();
           if (haveTags) {
             return jQuery('body').toggleClass('kill-all-select2-dropdowns', e.type === 'select2:opening');
           }
         };
-      })(this);
-      build = (function(_this) {
-        return function() {
+        build = () => {
+          // Apply select2
           el.select2(config);
           updateCSS();
           el.on('change', handler);
           el.on('select2:select select2:unselect', handler);
           el.on('select2:opening select2:close', dropDownKill);
-          return ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+          // Destroy select2 on element disposal
+          return ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
             el.select2('destroy');
             if (handler !== null) {
               el.off('change', handler);
@@ -2641,23 +3043,24 @@
             }
           });
         };
-      })(this);
-      return setTimeout(build, 0);
-    };
-
-    Tags.prototype.update = function(element, valueAccessor, allBindingsAccessor) {
-      var copy, data, el, maybeSet, value;
-      data = this.getValue(valueAccessor);
-      if (data.data) {
-        value = data.data;
-      } else {
-        value = data;
+        return setTimeout(build, 0);
       }
-      copy = JSON.parse(JSON.stringify(value));
-      el = jQuery(element);
-      maybeSet = (function(_this) {
-        return function() {
+
+      update(element, valueAccessor, allBindingsAccessor) {
+        var copy, data, el, maybeSet, value;
+        boundMethodCheck(this, ref32);
+        data = this.getValue(valueAccessor);
+        if (data.data) {
+          value = data.data;
+        } else {
+          // Assume direct data passing
+          value = data;
+        }
+        copy = JSON.parse(JSON.stringify(value));
+        el = jQuery(element);
+        maybeSet = () => {
           var elementTags, modelTags;
+          // Not a best moment to update
           if (el.val() === null) {
             elementTags = '';
           } else {
@@ -2665,101 +3068,113 @@
           }
           modelTags = value.join(',');
           if (elementTags !== modelTags) {
-            return _this.setTags(el, copy);
+            return this.setTags(el, copy);
           }
         };
-      })(this);
-      return setTimeout(maybeSet, 0);
+        return setTimeout(maybeSet, 0);
+      }
+
     };
+
+    dropdownKillStyles = `<style>
+	body.kill-all-select2-dropdowns .select2-dropdown {
+		display: none !important;
+	}
+	body.kill-all-select2-dropdowns .select2-container--default.select2-container--open.select2-container--below .select2-selection--single, .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple
+	{
+		border-bottom-left-radius: 4px;
+		border-bottom-right-radius: 4px;
+	}
+	.select2-container--default.select2-container--focus .select2-selection--multiple {
+		border-color: #66afe9;
+		outline: 0;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+	}
+</style>`;
+
+    once = true;
 
     return Tags;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.Text = (function(_super) {
-    __extends(Text, _super);
+  
+  // HTML improved binding handler
 
-    function Text() {
-      this.update = __bind(this.update, this);
-      return Text.__super__.constructor.apply(this, arguments);
+  ref33 = this.Maslosoft.Binder.Text = class Text extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
     }
 
-    Text.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
+    init(element, valueAccessor, allBindingsAccessor, context) {
       return {
         'controlsDescendantBindings': true
       };
-    };
+    }
 
-    Text.prototype.update = function(element, valueAccessor, allBindings, context) {
+    update(element, valueAccessor, allBindings, context) {
       var configuration, pm, value;
+      boundMethodCheck(this, ref33);
+      // setHtml will unwrap the value if needed
       value = escapeHtml(this.getValue(valueAccessor));
       configuration = this.getValue(allBindings).plugins;
       pm = new PluginsManager(element);
       pm.from(configuration);
       value = pm.getElementValue(element, value);
       return ko.utils.setHtml(element, value);
-    };
-
-    return Text;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.TextToBg = (function(_super) {
-    __extends(TextToBg, _super);
-
-    function TextToBg() {
-      this.update = __bind(this.update, this);
-      return TextToBg.__super__.constructor.apply(this, arguments);
     }
 
-    TextToBg.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+  };
 
-    TextToBg.prototype.update = function(element, valueAccessor, allBindings, context) {
+  ref34 = this.Maslosoft.Binder.TextToBg = class TextToBg extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
+
+    init(element, valueAccessor, allBindingsAccessor, context) {}
+
+    update(element, valueAccessor, allBindings, context) {
       var value;
+      boundMethodCheck(this, ref34);
       value = this.getValue(valueAccessor);
       return jQuery(element).css('background-color', stringToColour(value));
-    };
-
-    return TextToBg;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.TextValue = (function(_super) {
-    __extends(TextValue, _super);
-
-    function TextValue() {
-      return TextValue.__super__.constructor.apply(this, arguments);
     }
 
-    TextValue.prototype.getElementValue = function(element) {
-      return element.textContent || element.innerText || "";
-    };
+  };
 
-    TextValue.prototype.setElementValue = function(element, value) {
+  
+  // Html text value binding
+  // WARNING This MUST have parent context, or will not work
+
+  this.Maslosoft.Binder.TextValue = class TextValue extends this.Maslosoft.Binder.HtmlValue {
+    getElementValue(element) {
+      return element.textContent || element.innerText || "";
+    }
+
+    setElementValue(element, value) {
       if (typeof element.textContent !== 'undefined') {
         element.textContent = value;
       }
       if (typeof element.innerText !== 'undefined') {
         return element.innerText = value;
       }
-    };
-
-    return TextValue;
-
-  })(this.Maslosoft.Binder.HtmlValue);
-
-  this.Maslosoft.Binder.TextValueHLJS = (function(_super) {
-    __extends(TextValueHLJS, _super);
-
-    function TextValueHLJS() {
-      return TextValueHLJS.__super__.constructor.apply(this, arguments);
     }
 
-    TextValueHLJS.prototype.getElementValue = function(element) {
-      return element.textContent || element.innerText || "";
-    };
+  };
 
-    TextValueHLJS.prototype.setElementValue = function(element, value) {
+  
+  // Html text value binding
+  // WARNING This MUST have parent context, or will not work
+
+  this.Maslosoft.Binder.TextValueHLJS = class TextValueHLJS extends this.Maslosoft.Binder.HtmlValue {
+    getElementValue(element) {
+      return element.textContent || element.innerText || "";
+    }
+
+    setElementValue(element, value) {
       if (typeof element.textContent !== 'undefined') {
         element.textContent = value;
         if (hljs) {
@@ -2772,101 +3187,125 @@
           return hljs.highlightBlock(element);
         }
       }
-    };
-
-    return TextValueHLJS;
-
-  })(this.Maslosoft.Binder.HtmlValue);
-
-  this.Maslosoft.Binder.TimeAgoFormatter = (function(_super) {
-    __extends(TimeAgoFormatter, _super);
-
-    function TimeAgoFormatter(options) {
-      this.update = __bind(this.update, this);
-      TimeAgoFormatter.__super__.constructor.call(this, new Maslosoft.Binder.TimeAgoOptions(options));
     }
 
-    TimeAgoFormatter.prototype.update = function(element, valueAccessor) {
+  };
+
+  ref35 = this.Maslosoft.Binder.TimeAgoFormatter = class TimeAgoFormatter extends this.Maslosoft.Binder.MomentFormatter {
+    constructor(options) {
+      super(new Maslosoft.Binder.TimeAgoOptions(options));
+      this.update = this.update.bind(this);
+    }
+
+    update(element, valueAccessor) {
       var value;
+      boundMethodCheck(this, ref35);
       value = this.getValue(valueAccessor);
       element.innerHTML = moment[this.options.sourceFormat](value).fromNow();
-    };
-
-    return TimeAgoFormatter;
-
-  })(this.Maslosoft.Binder.MomentFormatter);
-
-  this.Maslosoft.Binder.TimeFormatter = (function(_super) {
-    __extends(TimeFormatter, _super);
-
-    function TimeFormatter(options) {
-      TimeFormatter.__super__.constructor.call(this, new Maslosoft.Binder.TimeOptions(options));
     }
 
-    return TimeFormatter;
+  };
 
-  })(this.Maslosoft.Binder.MomentFormatter);
+  
+  // Date formatter
 
+  this.Maslosoft.Binder.TimeFormatter = class TimeFormatter extends this.Maslosoft.Binder.MomentFormatter {
+    constructor(options) {
+      super(new Maslosoft.Binder.TimeOptions(options));
+    }
+
+  };
 
   /*
   Time picker
-   */
+  */
+  this.Maslosoft.Binder.TimePicker = class TimePicker extends this.Maslosoft.Binder.Base {};
 
-  this.Maslosoft.Binder.TimePicker = (function(_super) {
-    __extends(TimePicker, _super);
+  
+  // Tooltip binding handler
 
-    function TimePicker() {
-      return TimePicker.__super__.constructor.apply(this, arguments);
+  ref36 = this.Maslosoft.Binder.Tooltip = class Tooltip extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
     }
 
-    return TimePicker;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Tooltip = (function(_super) {
-    __extends(Tooltip, _super);
-
-    function Tooltip() {
-      this.update = __bind(this.update, this);
-      return Tooltip.__super__.constructor.apply(this, arguments);
-    }
-
-    Tooltip.prototype.update = function(element, valueAccessor) {
+    update(element, valueAccessor) {
       var title;
+      boundMethodCheck(this, ref36);
       title = this.getValue(valueAccessor);
       $(element).attr("title", title);
       $(element).attr("data-original-title", title);
       $(element).attr("rel", "tooltip");
-    };
-
-    return Tooltip;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Tree = (function(_super) {
-    __extends(Tree, _super);
-
-    function Tree() {
-      this.update = __bind(this.update, this);
-      return Tree.__super__.constructor.apply(this, arguments);
     }
 
-    Tree.prototype.update = function(element, valueAccessor) {};
+  };
 
-    return Tree;
+  
+  // Tree binding handler
 
-  })(this.Maslosoft.Binder.Base);
+  ref37 = this.Maslosoft.Binder.Tree = class Tree extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
 
-  this.Maslosoft.Binder.TreeGrid = (function(_super) {
+    update(element, valueAccessor) {
+      boundMethodCheck(this, ref37);
+    }
+
+  };
+
+  ref38 = this.Maslosoft.Binder.TreeGrid = (function() {
     var makeValueAccessor;
 
-    __extends(TreeGrid, _super);
+    class TreeGrid extends this.Maslosoft.Binder.Base {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
 
-    function TreeGrid() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return TreeGrid.__super__.constructor.apply(this, arguments);
-    }
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var activeClass, activeClassHandler, dispose, table, value, widget;
+        boundMethodCheck(this, ref38);
+        value = this.getValue(valueAccessor);
+        activeClass = value.activeClass;
+        table = jQuery(element);
+        widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
+        widget.init();
+        if (activeClass) {
+          activeClassHandler = function(e) {
+            // Remove from all instances of `tr` tu support multiple
+            // classes separated with space
+            table.find('tr').removeClass(activeClass);
+            jQuery(e.currentTarget).addClass(activeClass);
+            return true;
+          };
+          table.on('click', 'tr', activeClassHandler);
+          dispose = function(toDispose) {
+            widget.dispose();
+            return jQuery(toDispose).off("click", 'tr', activeClassHandler);
+          };
+          ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
+        }
+        ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
+        return {
+          controlsDescendantBindings: true
+        };
+      }
+
+      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var widget;
+        boundMethodCheck(this, ref38);
+        widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor, 'update');
+        return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
+      }
+
+    };
+
+    
+    // @private
 
     makeValueAccessor = function(element, valueAccessor, bindingContext, widget) {
       return function() {
@@ -2883,11 +3322,11 @@
         depths = ko.observableArray([]);
         depth = -1;
         unwrapRecursive = function(items) {
-          var extras, hasChilds, item, _i, _len, _results;
+          var extras, hasChilds, item, j, len, results;
           depth++;
-          _results = [];
-          for (_i = 0, _len = items.length; _i < _len; _i++) {
-            item = items[_i];
+          results = [];
+          for (j = 0, len = items.length; j < len; j++) {
+            item = items[j];
             hasChilds = item.children && item.children.length && item.children.length > 0;
             extras = {
               depth: depth,
@@ -2898,16 +3337,19 @@
             depths.push(depth);
             if (hasChilds) {
               unwrapRecursive(item.children);
-              _results.push(depth--);
+              results.push(depth--);
             } else {
-              _results.push(void 0);
+              results.push(void 0);
             }
           }
-          return _results;
+          return results;
         };
+        //			log unwrappedValue['data']
         if (unwrappedValue['data']['children']) {
+          //				log('model init')
           unwrapRecursive(unwrappedValue['data']['children']);
         } else {
+          //				log('array init')
           unwrapRecursive(unwrappedValue['data']);
         }
         if (bindingContext) {
@@ -2915,6 +3357,7 @@
           bindingContext.data = data;
           bindingContext.widget = widget;
         }
+        // If unwrappedValue.data is the array, preserve all relevant options and unwrap again value so we get updates
         ko.utils.unwrapObservable(modelValue);
         return {
           'foreach': data,
@@ -2931,227 +3374,248 @@
       };
     };
 
-    TreeGrid.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var activeClass, activeClassHandler, dispose, table, value, widget;
-      value = this.getValue(valueAccessor);
-      activeClass = value.activeClass;
-      table = jQuery(element);
-      widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor);
-      widget.init();
-      if (activeClass) {
-        activeClassHandler = function(e) {
-          table.find('tr').removeClass(activeClass);
-          jQuery(e.currentTarget).addClass(activeClass);
-          return true;
-        };
-        table.on('click', 'tr', activeClassHandler);
-        dispose = function(toDispose) {
-          widget.dispose();
-          return jQuery(toDispose).off("click", 'tr', activeClassHandler);
-        };
-        ko.utils.domNodeDisposal.addDisposeCallback(element, dispose);
-      }
-      ko.bindingHandlers['template']['init'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
-      return {
-        controlsDescendantBindings: true
-      };
-    };
-
-    TreeGrid.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var widget;
-      widget = new Maslosoft.Binder.Widgets.TreeGrid.TreeGridView(element, valueAccessor, 'update');
-      return ko.bindingHandlers['template']['update'](element, makeValueAccessor(element, valueAccessor, bindingContext, widget), allBindings, viewModel, bindingContext);
-    };
-
     return TreeGrid;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.TreeGridNode = (function(_super) {
-    __extends(TreeGridNode, _super);
+  
+  // This is to create "nodes" cell, this is meant to be used with TreeGrid
+  // binding handler
 
-    function TreeGridNode() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return TreeGridNode.__super__.constructor.apply(this, arguments);
+  ref39 = this.Maslosoft.Binder.TreeGridNode = class TreeGridNode extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
     }
 
-    TreeGridNode.prototype.init = function(element, valueAccessor, allBindings, viewModel, bindingContext) {};
+    init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      boundMethodCheck(this, ref39);
+    }
 
-    TreeGridNode.prototype.update = function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+    update(element, valueAccessor, allBindings, viewModel, bindingContext) {
       var config, data, depth, expanderIcon, expanders, extras, folderIcon, html, nodeIcon;
+      boundMethodCheck(this, ref39);
       ko.utils.toggleDomNodeCssClass(element, 'tree-grid-drag-handle', true);
       html = [];
       data = this.getValue(valueAccessor);
       extras = data._treeGrid;
       config = bindingContext.widget.config;
+      //console.log extras.hasChilds
+      // TODO: Just accessing data.children causes havoc...
       nodeIcon = config.nodeIcon;
       folderIcon = config.folderIcon;
       expanderIcon = config.expanderIcon || "<i class='glyphicon glyphicon-triangle-bottom'></i>";
       if (folderIcon && extras.hasChilds) {
+        //				console.log 'hmmm'
         nodeIcon = folderIcon;
       }
+      //			console.log "#{data.title}: #{extras.depth}", extras.hasChilds
+      //			console.log data
+      //			console.log ko.unwrap bindingContext.$index
       depth = extras.depth;
       expanders = [];
-      expanders.push("<div class='collapsed' style='display:none;transform: rotate(-90deg);'>" + expanderIcon + "</div>");
-      expanders.push("<div class='expanded' style='display:none;transform: rotate(-45deg);'>" + expanderIcon + "</div>");
-      html.push("<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:" + depth + "em;display:inline-block;'>" + (expanders.join('')) + "</a>");
+      expanders.push(`<div class='collapsed' style='display:none;transform: rotate(-90deg);'>${expanderIcon}</div>`);
+      expanders.push(`<div class='expanded' style='display:none;transform: rotate(-45deg);'>${expanderIcon}</div>`);
+      html.push(`<a class='expander' style='cursor:pointer;text-decoration:none;width:1em;margin-left:${depth}em;display:inline-block;'>${expanders.join('')}</a>`);
       depth = extras.depth + 1;
-      html.push("<i class='no-expander' style='margin-left:" + depth + "em;display:inline-block;'></i>");
-      html.push("<img src='" + nodeIcon + "' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>");
+      html.push(`<i class='no-expander' style='margin-left:${depth}em;display:inline-block;'></i>`);
+      html.push(`<img src='${nodeIcon}' style='width: 1em;height:1em;margin-top: -.3em;display: inline-block;'/>`);
       return element.innerHTML = html.join('') + element.innerHTML;
-    };
-
-    return TreeGridNode;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.Validator = (function(_super) {
-    var idCounter;
-
-    __extends(Validator, _super);
-
-    idCounter = 0;
-
-    function Validator(options) {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      Validator.__super__.constructor.call(this, new Maslosoft.Binder.ValidatorOptions());
     }
 
-    Validator.prototype.getElementValue = function(element) {
-      if (element.tagName.toLowerCase() === 'input') {
-        return element.value;
-      }
-      if (element.tagName.toLowerCase() === 'textarea') {
-        return element.value;
-      }
-      return element.textContent || element.innerText || "";
-    };
+  };
 
-    Validator.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {
-      var classField, configuration, handler, initialVal, manager, pm, validators;
-      configuration = this.getValue(valueAccessor);
-      classField = this.options.classField;
-      pm = new PluginsManager(element, classField);
-      validators = pm.from(configuration);
-      manager = new ValidationManager(validators, this.options);
-      manager.init(element);
-      if (!element.id) {
-        element.id = "Maslosoft-Ko-Binder-Validator-" + (idCounter++);
+  
+  // Validation binding handler
+
+  // @see ValidationManager
+
+  ref40 = this.Maslosoft.Binder.Validator = (function() {
+    var idCounter;
+
+    class Validator extends this.Maslosoft.Binder.Base {
+      constructor(options) {
+        super(new Maslosoft.Binder.ValidatorOptions());
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
       }
-      initialVal = this.getElementValue(element);
-      handler = (function(_this) {
-        return function(e) {
+
+      getElementValue(element) {
+        // For inputs use value
+        if (element.tagName.toLowerCase() === 'input') {
+          return element.value;
+        }
+        // For textarea use value
+        if (element.tagName.toLowerCase() === 'textarea') {
+          return element.value;
+        }
+        // For rest use text value
+        return element.textContent || element.innerText || "";
+      }
+
+      init(element, valueAccessor, allBindingsAccessor, context) {
+        var classField, configuration, handler, initialVal, manager, pm, validators;
+        boundMethodCheck(this, ref40);
+        configuration = this.getValue(valueAccessor);
+        classField = this.options.classField;
+        pm = new PluginsManager(element, classField);
+        validators = pm.from(configuration);
+        //   TODO Maybe below code should be used to check if class is validator compatible
+        //		proto = config[classField].prototype
+
+        //		if typeof(proto.isValid) isnt 'function' or typeof(proto.getErrors) isnt 'function' or typeof(proto.reset) isnt 'function'
+        //			if typeof(config[classField].prototype.constructor) is 'function'
+        //				name = config[classField].prototype.constructor.name
+        //			else
+        //				name = config[classField].toString()
+
+        //			error "Parameter `#{classField}` (of type #{name}) must be validator compatible class, binding defined on element:", element
+        //			continue
+        manager = new ValidationManager(validators, this.options);
+        manager.init(element);
+        // Generate some id if not set, see notes below why
+        if (!element.id) {
+          element.id = `Maslosoft-Ko-Binder-Validator-${idCounter++}`;
+        }
+        // Get initial value to evaluate only if changed
+        initialVal = this.getElementValue(element);
+        handler = (e) => {
           var elementValue;
+          // On some situations element might be null (sorting), ignore this case
           if (!element) {
             return;
           }
+          // This is required in some scenarios, specifically when sorting htmlValue elements
           element = document.getElementById(element.id);
           if (!element) {
             return;
           }
-          elementValue = _this.getElementValue(element);
+          elementValue = this.getElementValue(element);
+          
+          // Validate only if changed
           if (initialVal !== elementValue) {
             initialVal = elementValue;
             return manager.validate(element, elementValue);
           }
         };
-      })(this);
-      ko.utils.registerEventHandler(element, "keyup, input", handler);
-      return ko.utils.registerEventHandler(document, "mouseup", handler);
+        // NOTE: Event must be bound to parent node to work if parent has contenteditable enabled
+        ko.utils.registerEventHandler(element, "keyup, input", handler);
+        // This is to allow interaction with tools which could modify content,
+        // also to work with drag and drop
+        return ko.utils.registerEventHandler(document, "mouseup", handler);
+      }
+
+      update(element, valueAccessor, allBindings) {
+        boundMethodCheck(this, ref40);
+      }
+
     };
 
-    Validator.prototype.update = function(element, valueAccessor, allBindings) {};
+    // Counter for id generator
+    // @static
+    idCounter = 0;
 
     return Validator;
 
-  })(this.Maslosoft.Binder.Base);
+  }).call(this);
 
-  this.Maslosoft.Binder.VideoPlaylist = (function(_super) {
-    __extends(VideoPlaylist, _super);
+  // NOTE: Will not trigger on value change, as it is not directly observing value.
+  // Will trigger only on init
 
-    function VideoPlaylist() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return VideoPlaylist.__super__.constructor.apply(this, arguments);
-    }
+  // Video PLaylist binding handler
+
+  ref41 = this.Maslosoft.Binder.VideoPlaylist = (function() {
+    class VideoPlaylist extends this.Maslosoft.Binder.Video {
+      constructor() {
+        super(...arguments);
+        this.init = this.init.bind(this);
+        this.update = this.update.bind(this);
+      }
+
+      getData(valueAccessor) {
+        var value;
+        // Verbose syntax, at least {data: data}
+        value = this.getValue(valueAccessor) || [];
+        if (value.data) {
+          return value.data;
+        }
+        return value;
+      }
+
+      init(element, valueAccessor, allBindingsAccessor, context) {
+        boundMethodCheck(this, ref41);
+      }
+
+      update(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var data, html, j, len, options, title, titleField, url, urlField, video;
+        boundMethodCheck(this, ref41);
+        data = this.getData(valueAccessor);
+        options = this.getValue(valueAccessor || {});
+        urlField = options.urlField || 'url';
+        titleField = options.urlField || 'title';
+        html = [];
+        for (j = 0, len = data.length; j < len; j++) {
+          video = data[j];
+          url = video[urlField];
+          title = video[titleField];
+          if (this.isVideoUrl(url)) {
+            html.push(`<a href='${url}'>${title}</a>`);
+          }
+        }
+        element.innerHTML = html.join("\n");
+        if (html.length) {
+          ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
+          return new Maslosoft.Playlist(element);
+        } else {
+          return ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', false);
+        }
+      }
+
+    };
 
     VideoPlaylist.prototype.initVideos = null;
 
-    VideoPlaylist.prototype.getData = function(valueAccessor) {
-      var value;
-      value = this.getValue(valueAccessor) || [];
-      if (value.data) {
-        return value.data;
-      }
-      return value;
-    };
-
-    VideoPlaylist.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
-
-    VideoPlaylist.prototype.update = function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var data, html, options, title, titleField, url, urlField, video, _i, _len;
-      data = this.getData(valueAccessor);
-      options = this.getValue(valueAccessor || {});
-      urlField = options.urlField || 'url';
-      titleField = options.urlField || 'title';
-      html = [];
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        video = data[_i];
-        url = video[urlField];
-        title = video[titleField];
-        if (this.isVideoUrl(url)) {
-          html.push("<a href='" + url + "'>" + title + "</a>");
-        }
-      }
-      element.innerHTML = html.join("\n");
-      if (html.length) {
-        ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', true);
-        return new Maslosoft.Playlist(element);
-      } else {
-        return ko.utils.toggleDomNodeCssClass(element, 'maslosoft-playlist', false);
-      }
-    };
-
     return VideoPlaylist;
 
-  })(this.Maslosoft.Binder.Video);
+  }).call(this);
 
-  this.Maslosoft.Binder.VideoThumb = (function(_super) {
-    __extends(VideoThumb, _super);
+  
+  // Video Playlist binding handler
 
-    function VideoThumb() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return VideoThumb.__super__.constructor.apply(this, arguments);
+  ref42 = this.Maslosoft.Binder.VideoThumb = class VideoThumb extends this.Maslosoft.Binder.Video {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
     }
 
-    VideoThumb.prototype.init = function(element, valueAccessor, allBindingsAccessor, context) {};
+    init(element, valueAccessor, allBindingsAccessor, context) {
+      boundMethodCheck(this, ref42);
+    }
 
-    VideoThumb.prototype.update = function(element, valueAccessor) {
+    update(element, valueAccessor) {
       var url;
+      boundMethodCheck(this, ref42);
       url = this.getValue(valueAccessor);
       return this.setThumb(url, element);
-    };
-
-    return VideoThumb;
-
-  })(this.Maslosoft.Binder.Video);
-
-  this.Maslosoft.Binder.Widget = (function(_super) {
-    __extends(Widget, _super);
-
-    function Widget() {
-      this.update = __bind(this.update, this);
-      this.init = __bind(this.init, this);
-      return Widget.__super__.constructor.apply(this, arguments);
     }
 
-    Widget.prototype.init = function(element, valueAccessor, allBindings, context) {
+  };
+
+  ref43 = this.Maslosoft.Binder.Widget = class Widget extends this.Maslosoft.Binder.Base {
+    constructor() {
+      super(...arguments);
+      this.init = this.init.bind(this);
+      this.update = this.update.bind(this);
+    }
+
+    init(element, valueAccessor, allBindings, context) {
       var Error, className, name, params, ref, value, widget;
+      boundMethodCheck(this, ref43);
       className = this.getValue(valueAccessor);
       ref = allBindings.get('ref');
+      // Ref is string, try to create new widget and set ref
       if (typeof ref === 'string' || !ref) {
         if (typeof className !== 'function') {
           return;
@@ -3160,9 +3624,9 @@
           return;
         }
         try {
-          widget = new className;
-        } catch (_error) {
-          Error = _error;
+          widget = new className();
+        } catch (error1) {
+          Error = error1;
           return;
         }
         if (ref) {
@@ -3172,7 +3636,10 @@
           ref = widget;
         }
       } else {
+        //			console.log 'By ref...'
+        //			console.log ref, typeof(ref)
         if (typeof ref === 'object') {
+          //				console.log 'Assign ref...'
           widget = ref;
         }
       }
@@ -3189,394 +3656,602 @@
       if (typeof widget.dispose === 'function') {
         return ko.utils.domNodeDisposal.addDisposeCallback(element, widget.dispose);
       }
-    };
-
-    Widget.prototype.update = function(element, valueAccessor) {};
-
-    return Widget;
-
-  })(this.Maslosoft.Binder.Base);
-
-  this.Maslosoft.Binder.WidgetAction = (function(_super) {
-    __extends(WidgetAction, _super);
-
-    function WidgetAction() {
-      this.update = __bind(this.update, this);
-      return WidgetAction.__super__.constructor.apply(this, arguments);
     }
 
-    WidgetAction.prototype.update = function(element, valueAccessor, allBindings) {
+    update(element, valueAccessor) {
+      boundMethodCheck(this, ref43);
+    }
+
+  };
+
+  ref44 = this.Maslosoft.Binder.WidgetAction = class WidgetAction extends this.Maslosoft.Binder.WidgetUrl {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
+
+    update(element, valueAccessor, allBindings) {
       var data, href;
+      boundMethodCheck(this, ref44);
       data = this.getData(element, valueAccessor, allBindings, 'action');
       href = this.createUrl(data.id, data.action, data.params, '?');
       element.setAttribute('href', href);
       return this.setRel(element);
-    };
-
-    return WidgetAction;
-
-  })(this.Maslosoft.Binder.WidgetUrl);
-
-  this.Maslosoft.Binder.WidgetActivity = (function(_super) {
-    __extends(WidgetActivity, _super);
-
-    function WidgetActivity() {
-      this.update = __bind(this.update, this);
-      return WidgetActivity.__super__.constructor.apply(this, arguments);
     }
 
-    WidgetActivity.prototype.update = function(element, valueAccessor, allBindings) {
+  };
+
+  ref45 = this.Maslosoft.Binder.WidgetActivity = class WidgetActivity extends this.Maslosoft.Binder.WidgetUrl {
+    constructor() {
+      super(...arguments);
+      this.update = this.update.bind(this);
+    }
+
+    update(element, valueAccessor, allBindings) {
       var data, href;
+      boundMethodCheck(this, ref45);
       data = this.getData(element, valueAccessor, allBindings, 'activity');
       href = this.createUrl(data.id, data.activity, data.params, '#');
       element.setAttribute('href', href);
       return this.setRel(element);
-    };
+    }
 
-    return WidgetActivity;
-
-  })(this.Maslosoft.Binder.WidgetUrl);
+  };
 
   PluginsManager = (function() {
+    class PluginsManager {
+      constructor(element1 = null, classField1 = '_class') {
+        this.getElementValue = this.getElementValue.bind(this);
+        this.getModelValue = this.getModelValue.bind(this);
+        this.element = element1;
+        this.classField = classField1;
+        this.plugins = new Array();
+      }
+
+      
+      // Create configured instances out of configuration
+      // containing _class and optional params
+
+      // Example configuration for one plugin:
+      // ```
+      // {
+      // 	_class: Maslosoft.BinderDev.RegExpValidator,
+      // 	pattern: '^[a-z]+$',
+      // 	allowEmpty: false
+      // }
+      // ```
+
+      // Example configuration for many plugins:
+      // ```
+      // [
+      // 	{
+      // 		_class: Maslosoft.BinderDev.EmailValidator,
+      // 		label: 'E-mail'
+      // 	},
+      // 	{
+      // 		_class: Maslosoft.BinderDev.RequiredValidator,
+      // 		label: 'E-mail'
+      // 	}
+      // ]
+      // ```
+
+      // @param object
+      // @return object[]
+
+      from(configuration) {
+        var cfg, classField, className, config, element, index, j, len, plugin, value;
+        element = this.element;
+        classField = this.classField;
+        this.plugins = new Array();
+        if (ko.isObservable(configuration)) {
+          configuration = ko.unwrap(configuration);
+        }
+        if (!configuration) {
+          return this.plugins;
+        }
+        if (configuration.constructor === Array) {
+          cfg = configuration;
+        } else {
+          cfg = [configuration];
+        }
+//		console.log cfg
+        for (j = 0, len = cfg.length; j < len; j++) {
+          config = cfg[j];
+          if (!config[classField]) {
+            error(`Parameter \`${classField}\` must be defined for plugin on element:`, element);
+            continue;
+          }
+          if (typeof config[classField] !== 'function') {
+            error(`Parameter \`${classField}\` must be plugin compatible class, binding defined on element:`, element);
+            continue;
+          }
+          // Store class name first, as it needs to be removed
+          className = config[classField];
+          // Remove class key, to not interrupt plugin configuration
+          delete config[classField];
+          // Instantiate plugin
+          plugin = new className();
+          for (index in config) {
+            value = config[index];
+            plugin[index] = null;
+            plugin[index] = value;
+          }
+          this.plugins.push(plugin);
+          return this.plugins;
+        }
+      }
+
+      getElementValue(element, value) {
+        var j, len, plugin, ref46;
+        ref46 = this.plugins;
+        for (j = 0, len = ref46.length; j < len; j++) {
+          plugin = ref46[j];
+          if (typeof plugin.getElementValue === 'function') {
+            value = plugin.getElementValue(element, value);
+          }
+        }
+        return value;
+      }
+
+      getModelValue(element, value) {
+        var j, len, plugin, ref46;
+        ref46 = this.plugins;
+        for (j = 0, len = ref46.length; j < len; j++) {
+          plugin = ref46[j];
+          if (typeof plugin.getModelValue === 'function') {
+            value = plugin.getModelValue(element, value);
+          }
+        }
+        return value;
+      }
+
+    };
+
     PluginsManager.prototype.classField = '_class';
 
     PluginsManager.prototype.element = null;
 
+    
+    // @var object[]
+
     PluginsManager.prototype.plugins = null;
-
-    function PluginsManager(element, classField) {
-      this.element = element != null ? element : null;
-      this.classField = classField != null ? classField : '_class';
-      this.getModelValue = __bind(this.getModelValue, this);
-      this.getElementValue = __bind(this.getElementValue, this);
-      this.plugins = new Array;
-    }
-
-    PluginsManager.prototype.from = function(configuration) {
-      var cfg, classField, className, config, element, index, plugin, value, _i, _len;
-      element = this.element;
-      classField = this.classField;
-      this.plugins = new Array;
-      if (ko.isObservable(configuration)) {
-        configuration = ko.unwrap(configuration);
-      }
-      if (!configuration) {
-        return this.plugins;
-      }
-      if (configuration.constructor === Array) {
-        cfg = configuration;
-      } else {
-        cfg = [configuration];
-      }
-      for (_i = 0, _len = cfg.length; _i < _len; _i++) {
-        config = cfg[_i];
-        if (!config[classField]) {
-          error("Parameter `" + classField + "` must be defined for plugin on element:", element);
-          continue;
-        }
-        if (typeof config[classField] !== 'function') {
-          error("Parameter `" + classField + "` must be plugin compatible class, binding defined on element:", element);
-          continue;
-        }
-        className = config[classField];
-        delete config[classField];
-        plugin = new className;
-        for (index in config) {
-          value = config[index];
-          plugin[index] = null;
-          plugin[index] = value;
-        }
-        this.plugins.push(plugin);
-        return this.plugins;
-      }
-    };
-
-    PluginsManager.prototype.getElementValue = function(element, value) {
-      var plugin, _i, _len, _ref;
-      _ref = this.plugins;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        plugin = _ref[_i];
-        if (typeof plugin.getElementValue === 'function') {
-          value = plugin.getElementValue(element, value);
-        }
-      }
-      return value;
-    };
-
-    PluginsManager.prototype.getModelValue = function(element, value) {
-      var plugin, _i, _len, _ref;
-      _ref = this.plugins;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        plugin = _ref[_i];
-        if (typeof plugin.getModelValue === 'function') {
-          value = plugin.getModelValue(element, value);
-        }
-      }
-      return value;
-    };
 
     return PluginsManager;
 
-  })();
+  }).call(this);
 
   TreeDnd = (function() {
     var t;
 
+    class TreeDnd {
+      constructor(initialTree, element, events1, options) {
+        this.dragEnd = this.dragEnd.bind(this);
+        this.dragDrop = this.dragDrop.bind(this);
+        this.events = events1;
+        this.draggable = {};
+        this.draggable.scroll = false;
+        this.tree = {};
+        this.tree = initialTree;
+        this.finder = new TreeNodeFinder(this.tree);
+        this.el = jQuery(element);
+      }
+
+      dragStart(node, data) {
+        return true;
+      }
+
+      dragEnter(node, data) {
+        return true;
+      }
+
+      dragEnd(node, data) {
+        log('drag end...');
+        return true;
+      }
+
+      dragDrop(node, data) {
+        var ctx, current, dragged, handler, hitMode, index, parent, target, targetParent;
+        hitMode = data.hitMode;
+        // Dragged element - either draggable or tree element
+        dragged = data.draggable.element[0];
+        // Event handler for drop
+        this.events.drop(node, data);
+        if (!data.otherNode) {
+          // Drop from ourside tree
+          ctx = ko.contextFor(dragged);
+          // Handle drop event possible transformation of node
+          current = this.events.getNode(ctx.$data);
+        } else {
+          // From from within tree
+          parent = this.finder.find(data.otherNode.parent.data.id);
+          // Find node
+          // Handle drop event possible transformation of node
+          current = this.events.getNode(this.finder.find(data.otherNode.data.id));
+          if (!this.el.is(dragged)) {
+            log('From other instance...');
+            // Drop from other tree instance
+            data = ko.dataFor(dragged);
+            log(data);
+            setTimeout(handler, 0);
+          }
+        }
+        target = this.finder.find(node.data.id);
+        targetParent = this.finder.find(node.parent.data.id);
+        // console.log "Parent: #{parent.title}"
+        // console.log "Current: #{current.title}"
+        // console.log "Target: #{target.title}"
+        // console.log "TargetParent: #{targetParent.title}"
+        // console.log hitMode
+
+        // Update view model
+        // Remove current element first
+        if (parent) {
+          parent.children.remove(current);
+        }
+        this.tree.children.remove(current);
+        if (targetParent) {
+          targetParent.children.remove(current);
+        }
+        // Just push at target end
+        if (hitMode === 'over') {
+          // log hitMode
+          // log "Target: #{target.title}"
+          // log "Current: #{current.title}"
+          target.children.push(current);
+        }
+        // Insert before target - at target parent
+        if (hitMode === 'before') {
+          if (targetParent) {
+            // Move over some node
+            index = targetParent.children.indexOf(target);
+            targetParent.children.splice(index, 0, current);
+          } else {
+            // Move over root node
+            index = this.tree.children.indexOf(target);
+            this.tree.children.splice(index, 0, current);
+          }
+        }
+        // console.log "indexOf: #{index} (before)"
+
+        // Simply push at the end - but at targetParent
+        if (hitMode === 'after') {
+          if (targetParent) {
+            targetParent.children.push(current);
+          } else {
+            this.tree.children.push(current);
+          }
+        }
+        // NOTE: This could possibly work, but it doesn't.
+        // This would update whole tree with new data. Some infinite recursion occurs.
+        // @handle element, valueAccessor, allBindingsAccessor
+        handler = (e) => {
+          log(e);
+          this.el.fancytree('option', 'source', this.tree.children);
+          this.el.fancytree('getRootNode').visit(function(node) {
+            return node.setExpanded(true);
+          });
+          this.el.focus();
+          return log('update tree..', this.el);
+        };
+        setTimeout(handler, 0);
+        // Move fancytree node separatelly
+        // data.otherNode.moveTo(node, hitMode)
+
+        // Expand node as it looks better if it is expanded after drop
+        return true;
+      }
+
+    };
+
+    // Expand helps greatly when doing dnd
     TreeDnd.prototype.autoExpandMS = 400;
 
+    // Prevent focus on click
+    // When enabled will scroll to tree control on click, not really desirable
+    // Cons: breaks keyboard navigation
     TreeDnd.prototype.focusOnClick = false;
 
+    // These two are required, or view model might loop	
     TreeDnd.prototype.preventVoidMoves = true;
 
     TreeDnd.prototype.preventRecursiveMoves = true;
 
+    
+    // Whole tree data
+    // @var TreeItem[]
+
     TreeDnd.prototype.tree = null;
+
+    
+    // Node finder instance
+    // @var TreeNodeFinder
 
     TreeDnd.prototype.finder = null;
 
+    
+    // Draggable options
+
     TreeDnd.prototype.draggable = null;
+
+    
+    // @var TreeEvents
 
     TreeDnd.prototype.events = null;
 
+    
+    // Tree html element
+
     TreeDnd.el = null;
 
-    t = function(node) {
-      var childNode, children, _i, _len, _ref;
+    // Private
+    t = function(node) { // Comment to log
+      var childNode, children, j, len, ref46;
       return;
-      log("Node: " + node.title);
+      log(`Node: ${node.title}`);
       children = [];
       if (node.children && node.children.length > 0) {
-        _ref = node.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          childNode = _ref[_i];
+        ref46 = node.children;
+        for (j = 0, len = ref46.length; j < len; j++) {
+          childNode = ref46[j];
           children.push(childNode.title);
         }
-        return log("Children: " + (children.join(',')));
+        return log(`Children: ${children.join(',')}`);
       }
-    };
-
-    function TreeDnd(initialTree, element, events, options) {
-      this.events = events;
-      this.dragDrop = __bind(this.dragDrop, this);
-      this.dragEnd = __bind(this.dragEnd, this);
-      this.draggable = {};
-      this.draggable.scroll = false;
-      this.tree = {};
-      this.tree = initialTree;
-      this.finder = new TreeNodeFinder(this.tree);
-      this.el = jQuery(element);
-    }
-
-    TreeDnd.prototype.dragStart = function(node, data) {
-      return true;
-    };
-
-    TreeDnd.prototype.dragEnter = function(node, data) {
-      return true;
-    };
-
-    TreeDnd.prototype.dragEnd = function(node, data) {
-      log('drag end...');
-      return true;
-    };
-
-    TreeDnd.prototype.dragDrop = function(node, data) {
-      var ctx, current, dragged, handler, hitMode, index, parent, target, targetParent;
-      hitMode = data.hitMode;
-      dragged = data.draggable.element[0];
-      this.events.drop(node, data);
-      if (!data.otherNode) {
-        ctx = ko.contextFor(dragged);
-        current = this.events.getNode(ctx.$data);
-      } else {
-        parent = this.finder.find(data.otherNode.parent.data.id);
-        current = this.events.getNode(this.finder.find(data.otherNode.data.id));
-        if (!this.el.is(dragged)) {
-          log('From other instance...');
-          data = ko.dataFor(dragged);
-          log(data);
-          setTimeout(handler, 0);
-        }
-      }
-      target = this.finder.find(node.data.id);
-      targetParent = this.finder.find(node.parent.data.id);
-      if (parent) {
-        parent.children.remove(current);
-      }
-      this.tree.children.remove(current);
-      if (targetParent) {
-        targetParent.children.remove(current);
-      }
-      if (hitMode === 'over') {
-        target.children.push(current);
-      }
-      if (hitMode === 'before') {
-        if (targetParent) {
-          index = targetParent.children.indexOf(target);
-          targetParent.children.splice(index, 0, current);
-        } else {
-          index = this.tree.children.indexOf(target);
-          this.tree.children.splice(index, 0, current);
-        }
-      }
-      if (hitMode === 'after') {
-        if (targetParent) {
-          targetParent.children.push(current);
-        } else {
-          this.tree.children.push(current);
-        }
-      }
-      handler = (function(_this) {
-        return function(e) {
-          log(e);
-          _this.el.fancytree('option', 'source', _this.tree.children);
-          _this.el.fancytree('getRootNode').visit(function(node) {
-            return node.setExpanded(true);
-          });
-          _this.el.focus();
-          return log('update tree..', _this.el);
-        };
-      })(this);
-      setTimeout(handler, 0);
-      return true;
     };
 
     return TreeDnd;
 
-  })();
+  }).call(this);
 
   TreeDrag = (function() {
     var t;
 
+    class TreeDrag {
+      constructor(initialTree, element, events, options) {
+        this.dragEnd = this.dragEnd.bind(this);
+        this.dragDrop = this.dragDrop.bind(this);
+        this.draggable = {};
+        this.draggable.scroll = false;
+        this.tree = {};
+        this.tree = initialTree;
+        this.finder = new TreeNodeFinder(this.tree);
+        this.el = jQuery(element);
+      }
+
+      dragStart(node, data) {
+        return true;
+      }
+
+      dragEnter(node, data) {
+        return false;
+      }
+
+      dragEnd(node, data) {
+        log('drag end...');
+        return true;
+      }
+
+      dragDrop(node, data) {
+        var ctx, current, dragged, handler, hitMode, index, parent, target, targetParent;
+        return false;
+        hitMode = data.hitMode;
+        // Dragged element - either draggable or tree element
+        dragged = data.draggable.element[0];
+        if (!data.otherNode) {
+          // Drop from ourside tree
+          ctx = ko.contextFor(dragged);
+          current = ctx.$data;
+        } else {
+          // From from within tree
+          parent = this.finder.find(data.otherNode.parent.data.id);
+          current = this.finder.find(data.otherNode.data.id);
+          if (!this.el.is(dragged)) {
+            log('From other instance...');
+            // Drop from other tree instance
+            data = ko.dataFor(dragged);
+            log(data);
+            setTimeout(handler, 0);
+          }
+        }
+        target = this.finder.find(node.data.id);
+        targetParent = this.finder.find(node.parent.data.id);
+        // console.log "Parent: #{parent.title}"
+        // console.log "Current: #{current.title}"
+        // console.log "Target: #{target.title}"
+        // console.log "TargetParent: #{targetParent.title}"
+        // console.log hitMode
+
+        // Update view model
+        // Remove current element first
+        if (parent) {
+          parent.children.remove(current);
+        }
+        this.tree.children.remove(current);
+        if (targetParent) {
+          targetParent.children.remove(current);
+        }
+        // Just push at target end
+        if (hitMode === 'over') {
+          // log hitMode
+          // log "Target: #{target.title}"
+          // log "Current: #{current.title}"
+          target.children.push(current);
+        }
+        // Insert before target - at target parent
+        if (hitMode === 'before') {
+          if (targetParent) {
+            // Move over some node
+            index = targetParent.children.indexOf(target);
+            targetParent.children.splice(index, 0, current);
+          } else {
+            // Move over root node
+            index = this.tree.children.indexOf(target);
+            this.tree.children.splice(index, 0, current);
+          }
+        }
+        // console.log "indexOf: #{index} (before)"
+
+        // Simply push at the end - but at targetParent
+        if (hitMode === 'after') {
+          if (targetParent) {
+            targetParent.children.push(current);
+          } else {
+            this.tree.children.push(current);
+          }
+        }
+        // NOTE: This could possibly work, but it doesn't.
+        // This would update whole tree with new data. Some infinite recursion occurs.
+        // @handle element, valueAccessor, allBindingsAccessor
+        handler = (e) => {
+          log(e);
+          this.el.fancytree('option', 'source', this.tree.children);
+          this.el.fancytree('getRootNode').visit(function(node) {
+            return node.setExpanded(true);
+          });
+          this.el.focus();
+          return log('update tree..', this.el);
+        };
+        setTimeout(handler, 0);
+        // Move fancytree node separatelly
+        // data.otherNode.moveTo(node, hitMode)
+
+        // Expand node as it looks better if it is expanded after drop
+        return true;
+      }
+
+    };
+
+    // Prevent focus on click
+    // When enabled will scroll to tree control on click, not really desirable
+    // Cons: breaks keyboard navigation
     TreeDrag.prototype.focusOnClick = false;
+
+    
+    // Whole tree data
+    // @var TreeItem[]
 
     TreeDrag.prototype.tree = null;
 
+    
+    // Node finder instance
+    // @var TreeNodeFinder
+
     TreeDrag.prototype.finder = null;
+
+    
+    // Draggable options
 
     TreeDrag.prototype.draggable = null;
 
+    
+    // Tree html element
+
     TreeDrag.el = null;
 
-    t = function(node) {
-      var childNode, children, _i, _len, _ref;
+    // Private
+    t = function(node) { // Comment to log
+      var childNode, children, j, len, ref46;
       return;
-      log("Node: " + node.title);
+      log(`Node: ${node.title}`);
       children = [];
       if (node.children && node.children.length > 0) {
-        _ref = node.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          childNode = _ref[_i];
+        ref46 = node.children;
+        for (j = 0, len = ref46.length; j < len; j++) {
+          childNode = ref46[j];
           children.push(childNode.title);
         }
-        return log("Children: " + (children.join(',')));
+        return log(`Children: ${children.join(',')}`);
       }
-    };
-
-    function TreeDrag(initialTree, element, events, options) {
-      this.dragDrop = __bind(this.dragDrop, this);
-      this.dragEnd = __bind(this.dragEnd, this);
-      this.draggable = {};
-      this.draggable.scroll = false;
-      this.tree = {};
-      this.tree = initialTree;
-      this.finder = new TreeNodeFinder(this.tree);
-      this.el = jQuery(element);
-    }
-
-    TreeDrag.prototype.dragStart = function(node, data) {
-      return true;
-    };
-
-    TreeDrag.prototype.dragEnter = function(node, data) {
-      return false;
-    };
-
-    TreeDrag.prototype.dragEnd = function(node, data) {
-      log('drag end...');
-      return true;
-    };
-
-    TreeDrag.prototype.dragDrop = function(node, data) {
-      var ctx, current, dragged, handler, hitMode, index, parent, target, targetParent;
-      return false;
-      hitMode = data.hitMode;
-      dragged = data.draggable.element[0];
-      if (!data.otherNode) {
-        ctx = ko.contextFor(dragged);
-        current = ctx.$data;
-      } else {
-        parent = this.finder.find(data.otherNode.parent.data.id);
-        current = this.finder.find(data.otherNode.data.id);
-        if (!this.el.is(dragged)) {
-          log('From other instance...');
-          data = ko.dataFor(dragged);
-          log(data);
-          setTimeout(handler, 0);
-        }
-      }
-      target = this.finder.find(node.data.id);
-      targetParent = this.finder.find(node.parent.data.id);
-      if (parent) {
-        parent.children.remove(current);
-      }
-      this.tree.children.remove(current);
-      if (targetParent) {
-        targetParent.children.remove(current);
-      }
-      if (hitMode === 'over') {
-        target.children.push(current);
-      }
-      if (hitMode === 'before') {
-        if (targetParent) {
-          index = targetParent.children.indexOf(target);
-          targetParent.children.splice(index, 0, current);
-        } else {
-          index = this.tree.children.indexOf(target);
-          this.tree.children.splice(index, 0, current);
-        }
-      }
-      if (hitMode === 'after') {
-        if (targetParent) {
-          targetParent.children.push(current);
-        } else {
-          this.tree.children.push(current);
-        }
-      }
-      handler = (function(_this) {
-        return function(e) {
-          log(e);
-          _this.el.fancytree('option', 'source', _this.tree.children);
-          _this.el.fancytree('getRootNode').visit(function(node) {
-            return node.setExpanded(true);
-          });
-          _this.el.focus();
-          return log('update tree..', _this.el);
-        };
-      })(this);
-      setTimeout(handler, 0);
-      return true;
     };
 
     return TreeDrag;
 
-  })();
+  }).call(this);
 
   TreeEvents = (function() {
     var doEvent, finder, stop;
 
+    class TreeEvents {
+      constructor(initialTree, events1, options1) {
+        // Drop event
+        this.drop = this.drop.bind(this);
+        
+        // Handler to possibly recreate/transform node
+
+        this.getNode = this.getNode.bind(this);
+        this.handle = this.handle.bind(this);
+        this.events = events1;
+        this.options = options1;
+        finder = new TreeNodeFinder(initialTree);
+        this.handle('click');
+        this.handle('dblclick');
+        this.handle('activate');
+        this.handle('deactivate');
+      }
+
+      drop(node, data) {
+        log("Drop...");
+        log(this.events);
+        if (this.events.drop) {
+          this.dropEvent = new this.events.drop(node, data);
+          return log(this.dropEvent);
+        }
+      }
+
+      getNode(node) {
+        log("Tree event drop...");
+        log(this.dropEvent);
+        if (this.dropEvent && this.dropEvent.getNode) {
+          return this.dropEvent.getNode(node);
+        } else {
+          return node;
+        }
+      }
+
+      handle(type) {
+        if (this.events[type]) {
+          return this.options[type] = (event, data) => {
+            var model;
+            if (doEvent(data)) {
+              model = finder.find(data.node.data.id);
+              this.events[type](model, data, event);
+              return stop(event);
+            }
+          };
+        }
+      }
+
+    };
+
+    
+    // Events defined by binding
+
     TreeEvents.prototype.events = null;
+
+    
+    // Drop event is handled differently
 
     TreeEvents.prototype.dropEvent = null;
 
+    
+    // Fancy tree options
+
     TreeEvents.prototype.options = null;
+
+    // Private
+
+    // Finder instance
+    // @var TreeNodeFinder
 
     finder = null;
 
+    // Check whether should handle event
     doEvent = function(data) {
+      // For most events just do event it has no target
       if (typeof data.targetType === 'undefined') {
         return true;
       }
+      // For click and double click react only on title and icon click
       if (data.targetType === 'title') {
         return true;
       }
@@ -3585,96 +4260,70 @@
       }
     };
 
+    // Stop event propagation
     stop = function(event) {
       return event.stopPropagation();
     };
 
-    function TreeEvents(initialTree, events, options) {
-      this.events = events;
-      this.options = options;
-      this.handle = __bind(this.handle, this);
-      this.getNode = __bind(this.getNode, this);
-      this.drop = __bind(this.drop, this);
-      finder = new TreeNodeFinder(initialTree);
-      this.handle('click');
-      this.handle('dblclick');
-      this.handle('activate');
-      this.handle('deactivate');
-    }
-
-    TreeEvents.prototype.drop = function(node, data) {
-      log("Drop...");
-      log(this.events);
-      if (this.events.drop) {
-        this.dropEvent = new this.events.drop(node, data);
-        return log(this.dropEvent);
-      }
-    };
-
-    TreeEvents.prototype.getNode = function(node) {
-      log("Tree event drop...");
-      log(this.dropEvent);
-      if (this.dropEvent && this.dropEvent.getNode) {
-        return this.dropEvent.getNode(node);
-      } else {
-        return node;
-      }
-    };
-
-    TreeEvents.prototype.handle = function(type) {
-      if (this.events[type]) {
-        return this.options[type] = (function(_this) {
-          return function(event, data) {
-            var model;
-            if (doEvent(data)) {
-              model = finder.find(data.node.data.id);
-              _this.events[type](model, data, event);
-              return stop(event);
-            }
-          };
-        })(this);
-      }
-    };
-
     return TreeEvents;
 
-  })();
+  }).call(this);
 
   TreeNodeCache = (function() {
     var nodes;
 
-    nodes = {};
+    class TreeNodeCache {
+      constructor() {}
 
-    function TreeNodeCache() {}
-
-    TreeNodeCache.prototype.get = function(id) {
-      if (typeof nodes[id] === 'undefined') {
-        return false;
+      // nodes = {}
+      get(id) {
+        if (typeof nodes[id] === 'undefined') {
+          return false;
+        }
+        return nodes[id];
       }
-      return nodes[id];
+
+      set(id, val) {
+        return nodes[id] = val;
+      }
+
     };
 
-    TreeNodeCache.prototype.set = function(id, val) {
-      return nodes[id] = val;
-    };
+    nodes = {};
 
     return TreeNodeCache;
 
-  })();
+  }).call(this);
 
   TreeNodeFinder = (function() {
     var cache, findNode, trees;
 
-    cache = new TreeNodeCache;
+    class TreeNodeFinder {
+      constructor(initialTree) {
+        trees.push(initialTree);
+      }
+
+      find(id) {
+        var j, len, node, tree;
+        for (j = 0, len = trees.length; j < len; j++) {
+          tree = trees[j];
+          node = findNode(tree, id);
+          if (node) {
+            return node;
+          }
+        }
+        return false;
+      }
+
+    };
+
+    // Private
+    cache = new TreeNodeCache();
 
     trees = [];
 
-    function TreeNodeFinder(initialTree) {
-      trees.push(initialTree);
-    }
-
     findNode = function(node, id) {
-      var child, found, foundNode, _i, _len, _ref;
+      var child, found, foundNode, j, len, ref46;
       if (typeof id === 'undefined') {
         return false;
       }
@@ -3688,9 +4337,9 @@
         return node;
       }
       if (node.children && node.children.length > 0) {
-        _ref = node.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          child = _ref[_i];
+        ref46 = node.children;
+        for (j = 0, len = ref46.length; j < len; j++) {
+          child = ref46[j];
           foundNode = findNode(child, id);
           if (foundNode !== false) {
             cache.set(id, foundNode);
@@ -3701,24 +4350,72 @@
       return false;
     };
 
-    TreeNodeFinder.prototype.find = function(id) {
-      var node, tree, _i, _len;
-      for (_i = 0, _len = trees.length; _i < _len; _i++) {
-        tree = trees[_i];
-        node = findNode(tree, id);
-        if (node) {
-          return node;
-        }
-      }
-      return false;
-    };
-
     return TreeNodeFinder;
 
-  })();
+  }).call(this);
 
   TreeNodeRenderer = (function() {
     var finder;
+
+    class TreeNodeRenderer {
+      constructor(tree, options, icon1, folderIcon1) {
+        this.render = this.render.bind(this);
+        this.icon = icon1;
+        this.folderIcon = folderIcon1;
+        finder = new TreeNodeFinder(tree);
+      }
+
+      setRenderer(renderer1) {
+        this.renderer = renderer1;
+        if (typeof this.renderer.render !== 'function') {
+          return console.error("Renderer must have function `render`");
+        }
+      }
+
+      render(event, data) {
+        var html, icon, index, model, node, span, val;
+        node = data.node;
+
+        // Skip event from child nodes
+// If not skipped, double icons will appear on folder nodes
+// TODO Investigate if there is more reliable methos for this
+        for (index in data) {
+          val = data[index];
+          if (index === 'originalEvent') {
+            return;
+          }
+        }
+        
+        // Operate only on title, not whole node html
+        // This will prevent destroying expanders etc.
+        span = jQuery(node.span).find("> span.fancytree-title");
+        
+        // Use custom render
+        if (this.renderer && this.renderer.render) {
+          model = finder.find(node.data.id);
+          this.renderer.render(model, span);
+        }
+        
+        // Apply icon if applicable
+        if (this.icon || this.folderIcon) {
+          
+          // Use html here (not node.title) as it might be altered by custom renderer
+          html = span.html();
+          
+          // Check which icon to use
+          if (this.folderIcon && node.children && node.children.length) {
+            icon = this.folderIcon;
+          } else {
+            icon = this.icon;
+          }
+          
+          // Add icon tag just before title
+          // This will ensure proper dnd for responsive icon size
+          return span.html(`<i class='node-title-icon' style='background-image:url(${icon})'></i> ${html}`);
+        }
+      }
+
+    };
 
     TreeNodeRenderer.prototype.icon = '';
 
@@ -3726,62 +4423,264 @@
 
     TreeNodeRenderer.prototype.renderer = null;
 
+    
+    // Node finder instance
+    // @var TreeNodeFinder
+    // @private
+
     finder = null;
-
-    function TreeNodeRenderer(tree, options, icon, folderIcon) {
-      this.icon = icon;
-      this.folderIcon = folderIcon;
-      this.render = __bind(this.render, this);
-      finder = new TreeNodeFinder(tree);
-    }
-
-    TreeNodeRenderer.prototype.setRenderer = function(renderer) {
-      this.renderer = renderer;
-      if (typeof this.renderer.render !== 'function') {
-        return console.error("Renderer must have function `render`");
-      }
-    };
-
-    TreeNodeRenderer.prototype.render = function(event, data) {
-      var html, icon, index, model, node, span, val;
-      node = data.node;
-      for (index in data) {
-        val = data[index];
-        if (index === 'originalEvent') {
-          return;
-        }
-      }
-      span = jQuery(node.span).find("> span.fancytree-title");
-      if (this.renderer && this.renderer.render) {
-        model = finder.find(node.data.id);
-        this.renderer.render(model, span);
-      }
-      if (this.icon || this.folderIcon) {
-        html = span.html();
-        if (this.folderIcon && node.children && node.children.length) {
-          icon = this.folderIcon;
-        } else {
-          icon = this.icon;
-        }
-        return span.html("<i class='node-title-icon' style='background-image:url(" + icon + ")'></i> " + html);
-      }
-    };
 
     return TreeNodeRenderer;
 
-  })();
+  }).call(this);
 
   ValidationManager = (function() {
     var hide, show, toggle;
 
+    
+    // Validation manager.
+
+    // This class applies proper styles and messages to configured DOM elements.
+
+    class ValidationManager {
+      
+      // Initialize validation manager
+
+      // @param validators Maslosoft.Binder.BaseValidator[]
+      // @param options Maslosoft.Binder.ValidatorOptions
+
+      constructor(validators1, options1) {
+        
+        // Trigger validation and warnigs on all items
+
+        // @param element DomElement
+        // @param value mixed
+
+        // @return bool
+
+        this.validate = this.validate.bind(this);
+        
+        // Set working element. No need to call it directly, it is called by validate method.
+
+        // @param element DomElement
+
+        // @return ValidationManager
+
+        this.setElement = this.setElement.bind(this);
+        
+        // Initialize element. This sets proper state of helper elements,
+        // like error/warning messages container
+
+        // @param element DomElement
+
+        this.init = this.init.bind(this);
+        
+        // Apply validation of one validator
+
+        // @param validator Maslosoft.Binder.BaseValidator
+        // @param element DomElement
+        // @param value mixed
+
+        // @return bool
+
+        this.validateOne = this.validateOne.bind(this);
+        
+        // Apply warnings of one input
+
+        // @param validator Maslosoft.Binder.BaseValidator
+        // @param element DomElement
+        // @param value mixed
+
+        // @return ValidationManager
+
+        this.adviseOne = this.adviseOne.bind(this);
+        this.validators = validators1;
+        this.options = options1;
+      }
+
+      validate(element, value) {
+        var j, k, len, len1, ref46, ref47, validator;
+        // Set current element here, as it could be changed in some case, ie sorting
+        this.setElement(element);
+        ref46 = this.validators;
+        // Trigger all validators
+        for (j = 0, len = ref46.length; j < len; j++) {
+          validator = ref46[j];
+          if (!this.validateOne(validator, value)) {
+            return false;
+          }
+        }
+        ref47 = this.validators;
+        // Loop again for warnings, or they would be overriden
+        for (k = 0, len1 = ref47.length; k < len1; k++) {
+          validator = ref47[k];
+          // Ensure that validator handle warnings
+          if (typeof validator.getWarnings === 'function') {
+            this.adviseOne(validator, value);
+          }
+        }
+        return true;
+      }
+
+      setElement(element1) {
+        this.element = element1;
+        this.parent = jQuery(this.element).parents('.form-group')[0];
+        if (!this.parent) {
+          return this;
+        }
+        this.errors = this.parent.querySelector(this.options.errorMessages);
+        this.warnings = this.parent.querySelector(this.options.warningMessages);
+        hide(this.errors);
+        hide(this.warnings);
+        return this;
+      }
+
+      init(element) {
+        return this.setElement(element);
+      }
+
+      validateOne(validator, value) {
+        var element, errors, isValid, messages, parent, warnings;
+        // Reassign variables for local scope
+        element = this.element;
+        parent = this.parent;
+        errors = this.errors;
+        warnings = this.warnings;
+        messages = new Array();
+        validator.reset();
+        isValid = false;
+        if (validator.isValid(value)) {
+          // Apply input error styles as needed
+          if (this.options.inputError) {
+            toggle(element, this.options.inputError, false);
+          }
+          if (this.options.inputSuccess) {
+            toggle(element, this.options.inputSuccess, true);
+          }
+          // Apply parent styles as needed
+          if (parent) {
+            if (this.options.parentError) {
+              toggle(parent, this.options.parentError, false);
+            }
+            if (this.options.parentSuccess) {
+              toggle(parent, this.options.parentSuccess, true);
+            }
+          }
+          // Reset error messages
+          if (errors) {
+            hide(errors);
+            errors.innerHTML = '';
+          }
+          isValid = true;
+        } else {
+          // Errors...
+          messages = validator.getErrors();
+          // Apply input error styles as needed
+          if (this.options.inputError) {
+            toggle(element, this.options.inputError, true);
+          }
+          if (this.options.inputSuccess) {
+            toggle(element, this.options.inputSuccess, false);
+          }
+          // Apply parent styles as needed
+          if (parent) {
+            if (this.options.parentError) {
+              toggle(parent, this.options.parentError, true);
+            }
+            if (this.options.parentSuccess) {
+              toggle(parent, this.options.parentSuccess, false);
+            }
+          }
+          // Show error messages
+          if (errors && messages) {
+            show(errors);
+            errors.innerHTML = messages.join('<br />');
+          }
+          isValid = false;
+        }
+        
+        // Warnings part - this is required here to reset warnings
+
+        // Reset warnings regardless of validation result
+        // Remove input warning styles as needed
+        if (this.options.inputWarning) {
+          toggle(element, this.options.inputWarning, false);
+        }
+        // Remove parent styles as needed
+        if (parent) {
+          if (this.options.parentWarning) {
+            toggle(parent, this.options.parentWarning, false);
+          }
+        }
+        if (warnings) {
+          hide(warnings);
+          warnings.innerHTML = '';
+        }
+        return isValid;
+      }
+
+      adviseOne(validator, value) {
+        var element, errors, messages, parent, warnings;
+        // Reassign variables for local scope
+        element = this.element;
+        parent = this.parent;
+        errors = this.errors;
+        warnings = this.warnings;
+        messages = validator.getWarnings();
+        // If has warnings remove success and add warnings to any applicable element
+        if (messages.length) {
+          // Apply input warning styles as needed
+          if (this.options.inputWarning) {
+            toggle(element, this.options.inputWarning, true);
+          }
+          if (this.options.inputSuccess) {
+            toggle(element, this.options.inputSuccess, false);
+          }
+          // Apply parent styles as needed
+          if (parent) {
+            if (this.options.parentWarning) {
+              toggle(parent, this.options.parentWarning, true);
+            }
+            if (this.options.parentSuccess) {
+              toggle(parent, this.options.parentSuccess, false);
+            }
+          }
+          // Show warnings if any
+          if (warnings) {
+            show(warnings);
+            warnings.innerHTML = messages.join('<br />');
+          }
+        }
+        return this;
+      }
+
+    };
+
+    
+    // Input element
+    // @var DomElement
+
     ValidationManager.prototype.element = null;
+
+    
+    // Parent of input element
+    // @var DomElement
 
     ValidationManager.prototype.parent = null;
 
+    
+    // Errors container element
+    // @var DomElement
+
     ValidationManager.prototype.errors = null;
+
+    
+    // Warnings container element
+    // @var DomElement
 
     ValidationManager.prototype.warnings = null;
 
+    // Private
     toggle = ko.utils.toggleDomNodeCssClass;
 
     hide = function(element) {
@@ -3792,152 +4691,9 @@
       return ko.utils.toggleDomNodeCssClass(element, 'hide', false);
     };
 
-    function ValidationManager(validators, options) {
-      this.validators = validators;
-      this.options = options;
-      this.adviseOne = __bind(this.adviseOne, this);
-      this.validateOne = __bind(this.validateOne, this);
-      this.init = __bind(this.init, this);
-      this.setElement = __bind(this.setElement, this);
-      this.validate = __bind(this.validate, this);
-    }
-
-    ValidationManager.prototype.validate = function(element, value) {
-      var validator, _i, _j, _len, _len1, _ref, _ref1;
-      this.setElement(element);
-      _ref = this.validators;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        validator = _ref[_i];
-        if (!this.validateOne(validator, value)) {
-          return false;
-        }
-      }
-      _ref1 = this.validators;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        validator = _ref1[_j];
-        if (typeof validator.getWarnings === 'function') {
-          this.adviseOne(validator, value);
-        }
-      }
-      return true;
-    };
-
-    ValidationManager.prototype.setElement = function(element) {
-      this.element = element;
-      this.parent = jQuery(this.element).parents('.form-group')[0];
-      if (!this.parent) {
-        return this;
-      }
-      this.errors = this.parent.querySelector(this.options.errorMessages);
-      this.warnings = this.parent.querySelector(this.options.warningMessages);
-      hide(this.errors);
-      hide(this.warnings);
-      return this;
-    };
-
-    ValidationManager.prototype.init = function(element) {
-      return this.setElement(element);
-    };
-
-    ValidationManager.prototype.validateOne = function(validator, value) {
-      var element, errors, isValid, messages, parent, warnings;
-      element = this.element;
-      parent = this.parent;
-      errors = this.errors;
-      warnings = this.warnings;
-      messages = new Array;
-      validator.reset();
-      isValid = false;
-      if (validator.isValid(value)) {
-        if (this.options.inputError) {
-          toggle(element, this.options.inputError, false);
-        }
-        if (this.options.inputSuccess) {
-          toggle(element, this.options.inputSuccess, true);
-        }
-        if (parent) {
-          if (this.options.parentError) {
-            toggle(parent, this.options.parentError, false);
-          }
-          if (this.options.parentSuccess) {
-            toggle(parent, this.options.parentSuccess, true);
-          }
-        }
-        if (errors) {
-          hide(errors);
-          errors.innerHTML = '';
-        }
-        isValid = true;
-      } else {
-        messages = validator.getErrors();
-        if (this.options.inputError) {
-          toggle(element, this.options.inputError, true);
-        }
-        if (this.options.inputSuccess) {
-          toggle(element, this.options.inputSuccess, false);
-        }
-        if (parent) {
-          if (this.options.parentError) {
-            toggle(parent, this.options.parentError, true);
-          }
-          if (this.options.parentSuccess) {
-            toggle(parent, this.options.parentSuccess, false);
-          }
-        }
-        if (errors && messages) {
-          show(errors);
-          errors.innerHTML = messages.join('<br />');
-        }
-        isValid = false;
-      }
-      if (this.options.inputWarning) {
-        toggle(element, this.options.inputWarning, false);
-      }
-      if (parent) {
-        if (this.options.parentWarning) {
-          toggle(parent, this.options.parentWarning, false);
-        }
-      }
-      if (warnings) {
-        hide(warnings);
-        warnings.innerHTML = '';
-      }
-      return isValid;
-    };
-
-    ValidationManager.prototype.adviseOne = function(validator, value) {
-      var element, errors, messages, parent, warnings;
-      element = this.element;
-      parent = this.parent;
-      errors = this.errors;
-      warnings = this.warnings;
-      messages = validator.getWarnings();
-      if (messages.length) {
-        if (this.options.inputWarning) {
-          toggle(element, this.options.inputWarning, true);
-        }
-        if (this.options.inputSuccess) {
-          toggle(element, this.options.inputSuccess, false);
-        }
-        if (parent) {
-          if (this.options.parentWarning) {
-            toggle(parent, this.options.parentWarning, true);
-          }
-          if (this.options.parentSuccess) {
-            toggle(parent, this.options.parentSuccess, false);
-          }
-        }
-        if (warnings) {
-          show(warnings);
-          warnings.innerHTML = messages.join('<br />');
-        }
-      }
-      return this;
-    };
-
     return ValidationManager;
 
-  })();
+  }).call(this);
 
   if (!this.Maslosoft.Binder.Widgets.TreeGrid) {
     this.Maslosoft.Binder.Widgets.TreeGrid = {};
@@ -3946,57 +4702,75 @@
   Maslosoft.Binder.Widgets.TreeGrid.Dnd = (function() {
     var didDrop, dragged, draggedOver, hitMode, indicator, prevHitMode;
 
-    Dnd.prototype.grid = null;
+    class Dnd {
+      constructor(grid) {
+        var defer;
+        
+        // On drag start
 
-    Dnd.prototype.helper = null;
+        this.dragStart = this.dragStart.bind(this);
+        // data = ko.dataFor e.target
+        // console.log "Started #{data.title}"
+        this.drag = this.drag.bind(this);
+        
+        // Drop if stopped dragging without dropping
+        // This is required when dragging near top or bottom of container
 
-    indicator = null;
+        this.stop = this.stop.bind(this);
+        
+        // Drop in a normal manner, see also `stop` for edge case
 
-    draggedOver = null;
+        this.drop = this.drop.bind(this);
+        //		setTimeout dropDelay, 50
 
-    dragged = null;
+        // Handle over state to get element to be about to be dropped
+        // This is bound to dropable `over`
 
-    hitMode = null;
+        this.over = this.over.bind(this);
+        
+        // On drag over, evaluated only if entering different element or hit mode
 
-    prevHitMode = null;
+        this.dragOver = this.dragOver.bind(this);
+        
+        // Move handler for mousemove for precise position calculation
+        // * Detect over which tree element is cursor and if it's more
+        // on top/bottom edge or on center
 
-    didDrop = false;
+        this.move = this.move.bind(this);
+        
+        // Reset appropriate things on drop
 
-    function Dnd(grid) {
-      var defer;
-      this.grid = grid;
-      this.dragHelper = __bind(this.dragHelper, this);
-      this.clear = __bind(this.clear, this);
-      this.move = __bind(this.move, this);
-      this.dragOver = __bind(this.dragOver, this);
-      this.over = __bind(this.over, this);
-      this.drop = __bind(this.drop, this);
-      this.stop = __bind(this.stop, this);
-      this.drag = __bind(this.drag, this);
-      this.dragStart = __bind(this.dragStart, this);
-      if (!this.grid.config.dnd) {
-        return;
-      }
-      if (this.grid.context === 'init') {
-        ko.utils.domNodeDisposal.addDisposeCallback(this.grid.element.get(0), function() {
-          var e;
-          try {
-            if (this.grid.element) {
-              this.grid.element.draggable("destroy");
-              return this.grid.element.droppable("destroy");
+        this.clear = this.clear.bind(this);
+        
+        // Initialize drag helper
+
+        this.dragHelper = this.dragHelper.bind(this);
+        this.grid = grid;
+        
+        // DND must be explicitly enabled
+        if (!this.grid.config.dnd) {
+          return;
+        }
+        if (this.grid.context === 'init') {
+          // handle disposal
+          ko.utils.domNodeDisposal.addDisposeCallback(this.grid.element.get(0), function() {
+            var e;
+            try {
+              if (this.grid.element) {
+                this.grid.element.draggable("destroy");
+                return this.grid.element.droppable("destroy");
+              }
+            } catch (error1) {
+              e = error1;
+              return console.log(e.message);
             }
-          } catch (_error) {
-            e = _error;
-            return console.log(e.message);
-          }
-        });
-        this.grid.element.on('mousemove', '> tr', this.move);
-      }
-      if (!indicator) {
-        indicator = new Maslosoft.Binder.Widgets.TreeGrid.DropIndicator(this.grid);
-      }
-      defer = (function(_this) {
-        return function() {
+          });
+          this.grid.element.on('mousemove', '> tr', this.move);
+        }
+        if (!indicator) {
+          indicator = new Maslosoft.Binder.Widgets.TreeGrid.DropIndicator(this.grid);
+        }
+        defer = () => {
           var draggableOptions, droppableOptions;
           draggableOptions = {
             handle: '.tree-grid-drag-handle',
@@ -4007,258 +4781,480 @@
               top: 5,
               left: 5
             },
-            start: _this.dragStart,
-            drag: _this.drag,
-            stop: _this.stop,
-            helper: _this.dragHelper
+            start: this.dragStart,
+            drag: this.drag,
+            stop: this.stop,
+            helper: this.dragHelper
           };
           droppableOptions = {
             tolerance: "pointer",
-            drop: _this.drop,
-            over: _this.over
+            drop: this.drop,
+            over: this.over
           };
-          _this.grid.element.find('> tr').draggable(draggableOptions);
-          return _this.grid.element.find('> tr').droppable(droppableOptions);
+          this.grid.element.find('> tr').draggable(draggableOptions);
+          return this.grid.element.find('> tr').droppable(droppableOptions);
         };
-      })(this);
-      setTimeout(defer, 0);
-    }
+        setTimeout(defer, 0);
+      }
 
-    Dnd.prototype.dragStart = function(e) {
-      return dragged = e.target;
-    };
+      dragStart(e) {
+        return dragged = e.target;
+      }
 
-    Dnd.prototype.drag = function(e, helper) {};
+      drag(e, helper) {}
 
-    Dnd.prototype.stop = function(e, ui) {
-      if (!didDrop) {
-        return this.drop(e, ui);
+      stop(e, ui) {
+        if (!didDrop) {
+          return this.drop(e, ui);
+        }
       }
-    };
 
-    Dnd.prototype.drop = function(e, ui) {
-      var current, dropDelay, over, overParent, parentChilds, root;
-      didDrop = true;
-      if (!dragged) {
-        return this.clear();
-      }
-      if (!draggedOver) {
-        return this.clear();
-      }
-      if (!draggedOver.get(0)) {
-        return this.clear();
-      }
-      current = ko.dataFor(dragged);
-      over = ko.dataFor(draggedOver.get(0));
-      if (!this.grid.canDrop(dragged, draggedOver, hitMode)) {
-        return this.clear();
-      }
-      this.grid.freeze();
-      overParent = this.grid.getParent(over);
-      root = this.grid.getRoot();
-      if (overParent.children) {
-        parentChilds = overParent.children;
-      } else {
-        parentChilds = overParent;
-      }
-      dropDelay = (function(_this) {
-        return function() {
+      drop(e, ui) {
+        var current, dropDelay, over, overParent, parentChilds, root;
+        didDrop = true;
+        if (!dragged) {
+          return this.clear();
+        }
+        if (!draggedOver) {
+          return this.clear();
+        }
+        if (!draggedOver.get(0)) {
+          return this.clear();
+        }
+        current = ko.dataFor(dragged);
+        over = ko.dataFor(draggedOver.get(0));
+        if (!this.grid.canDrop(dragged, draggedOver, hitMode)) {
+          return this.clear();
+        }
+        this.grid.freeze();
+        overParent = this.grid.getParent(over);
+        root = this.grid.getRoot();
+        // console.log "Drop #{current.title} over #{over.title}"
+        // console.log arguments
+        //		log "CURR " + current.title
+        //		log "OVER " + over.title
+        //		log "PRNT " + overParent.title
+        //		log "HITM " + hitMode
+        if (overParent.children) {
+          // Model initialized
+          parentChilds = overParent.children;
+        } else {
+          // Array initialized
+          parentChilds = overParent;
+        }
+        dropDelay = () => {
           var index;
-          _this.grid.remove(current);
+          this.grid.remove(current);
           if (hitMode === 'over') {
+            // Most obvious case, when dragged node is directly over
+            // dropped node, insert current node as it's last child
             over.children.push(current);
           }
           if (hitMode === 'before') {
+            // Insert node before current node, this is case when
+            // insert mark is before dragged over node
             index = parentChilds.indexOf(over);
             parentChilds.splice(index, 0, current);
           }
           if (hitMode === 'after') {
+            // When node has children, then add just at beginning
+            // to match visual position of dragged node
             if (over.children.length) {
               parentChilds.splice(0, 0, current);
             } else {
+              // When not having children, it means that node is
+              // last on the level so insert as a last node
               parentChilds.push(current);
             }
           }
+          // Special case for last item. This allow adding node to top
+          // level on the end of tree. Without this, it would be
+          // impossible to move node to the end if last node is not top node.
+
+          // TODO for some reason view does not update on push
+
           if (hitMode === 'last') {
+            //				log "Delayed Drop on end of table..."
             if (root.children) {
               root.children.push(current);
             } else {
+              
+              // TODO Neither push or splice at end works!
+              // It *does* add to view model but does not update UI!
+              // However splice at beginning works properly!!!111
+
+              //					root.splice root.length, 0, current
               root.push(current);
             }
           }
-          return _this.clear();
+          return this.clear();
         };
-      })(this);
-      return dropDelay();
-    };
-
-    Dnd.prototype.over = function(e) {
-      if (e.target.tagName.toLowerCase() === 'tr') {
-        if (draggedOver !== e.target) {
-          draggedOver = jQuery(e.target);
-          return this.dragOver(e);
-        }
+        // Delay a bit to reduce flickering
+        // See also TreeGridView.thaw() - this value should be lower than that in thaw
+        return dropDelay();
       }
-    };
 
-    Dnd.prototype.dragOver = function(e) {
-      if (indicator) {
-        return indicator.precise.over(dragged, draggedOver, hitMode, indicator);
-      }
-    };
-
-    Dnd.prototype.move = function(e) {
-      var offset, pos, rel;
-      if (dragged) {
-        if (e.currentTarget === dragged) {
-          if (!draggedOver || dragged !== draggedOver.get(0)) {
-            e.target = dragged;
-            this.over(e);
+      over(e) {
+        // Don't stop propagation, just detect row
+        if (e.target.tagName.toLowerCase() === 'tr') {
+          // Limit updates to only when dragging over different items
+          if (draggedOver !== e.target) {
+            draggedOver = jQuery(e.target);
+            return this.dragOver(e);
           }
         }
       }
-      if (draggedOver) {
-        offset = draggedOver.offset();
-        pos = {};
-        pos.x = e.pageX - offset.left;
-        pos.y = e.pageY - offset.top;
-        rel = {};
-        rel.x = pos.x / draggedOver.outerWidth(true);
-        rel.y = pos.y / draggedOver.outerHeight(true);
-        hitMode = 'over';
-        if (rel.y > 0.65) {
-          hitMode = 'after';
+
+      dragOver(e) {
+        if (indicator) {
+          return indicator.precise.over(dragged, draggedOver, hitMode, indicator);
         }
-        if (rel.y <= 0.25) {
-          hitMode = 'before';
-        }
-        if (hitMode === 'after') {
-          if (this.grid.isLast(ko.dataFor(draggedOver.get(0)))) {
-            hitMode = 'last';
+      }
+
+      move(e) {
+        var offset, pos, rel;
+        if (dragged) {
+          // Dragged over itself must be handled here,
+          // as it is not evaluated on `over`
+          if (e.currentTarget === dragged) {
+            if (!draggedOver || dragged !== draggedOver.get(0)) {
+              // console.log dragged
+              e.target = dragged;
+              this.over(e);
+            }
           }
         }
-        if (prevHitMode !== hitMode) {
-          prevHitMode = hitMode;
-          e.target = draggedOver;
-          return this.dragOver(e);
+        if (draggedOver) {
+          offset = draggedOver.offset();
+          pos = {};
+          pos.x = e.pageX - offset.left;
+          pos.y = e.pageY - offset.top;
+          rel = {};
+          rel.x = pos.x / draggedOver.outerWidth(true);
+          rel.y = pos.y / draggedOver.outerHeight(true);
+          hitMode = 'over';
+          if (rel.y > 0.65) {
+            hitMode = 'after';
+          }
+          if (rel.y <= 0.25) {
+            hitMode = 'before';
+          }
+          if (hitMode === 'after') {
+            // Last elem and after - switch to last hitmode
+            if (this.grid.isLast(ko.dataFor(draggedOver.get(0)))) {
+              hitMode = 'last';
+            }
+          }
+          // Rate limiting for hit mode
+          if (prevHitMode !== hitMode) {
+            prevHitMode = hitMode;
+            e.target = draggedOver;
+            return this.dragOver(e);
+          }
         }
       }
+
+      clear() {
+        this.grid.thaw();
+        draggedOver = null;
+        dragged = null;
+        hitMode = null;
+        prevHitMode = null;
+        didDrop = false;
+        // Destroy helpers and indicators
+        if (this.helper) {
+          this.helper.hide();
+          this.helper = null;
+        }
+        if (indicator) {
+          return indicator.hide();
+        }
+      }
+
+      dragHelper(e) {
+        var cell, dropIndicator, item, tbody;
+        tbody = jQuery(e.currentTarget).parent();
+        cell = tbody.find('.tree-grid-drag-handle').parents('td').first();
+        item = cell.clone();
+        item.find('.expander .expanded').remove();
+        item.find('.expander .collapsed').remove();
+        item.find('.expander').remove();
+        item.find('.no-expander').remove();
+        dropIndicator = "<span class='drop-indicator'>&times;</span>";
+        this.helper = jQuery(`<div style='white-space:nowrap;'>${dropIndicator}${item.html()}</div>`);
+        this.helper.css("pointer-events", "none");
+        indicator.attach(this.helper.find('.drop-indicator'));
+        return this.helper;
+      }
+
     };
 
-    Dnd.prototype.clear = function() {
-      this.grid.thaw();
-      draggedOver = null;
-      dragged = null;
-      hitMode = null;
-      prevHitMode = null;
-      didDrop = false;
-      if (this.helper) {
-        this.helper.hide();
-        this.helper = null;
-      }
-      if (indicator) {
-        return indicator.hide();
-      }
-    };
+    
+    // Tree grid view instance
 
-    Dnd.prototype.dragHelper = function(e) {
-      var cell, dropIndicator, item, tbody;
-      tbody = jQuery(e.currentTarget).parent();
-      cell = tbody.find('.tree-grid-drag-handle').parents('td').first();
-      item = cell.clone();
-      item.find('.expander .expanded').remove();
-      item.find('.expander .collapsed').remove();
-      item.find('.expander').remove();
-      item.find('.no-expander').remove();
-      dropIndicator = "<span class='drop-indicator'>&times;</span>";
-      this.helper = jQuery("<div style='white-space:nowrap;'>" + dropIndicator + (item.html()) + "</div>");
-      this.helper.css("pointer-events", "none");
-      indicator.attach(this.helper.find('.drop-indicator'));
-      return this.helper;
-    };
+    // @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
+
+    Dnd.prototype.grid = null;
+
+    
+    // Drag helper
+
+    // @var jQuery element
+
+    Dnd.prototype.helper = null;
+
+    
+    // Drop indicator
+
+    // @var Maslosoft.Binder.Widgets.TreeGrid.DropIndicator
+
+    indicator = null;
+
+    
+    // Element over which currently item is dragged
+    // @var jQuery element
+
+    draggedOver = null;
+
+    
+    // Element currently dragged
+    // @var HTMLElement
+
+    dragged = null;
+
+    
+    // Hit mode
+    // @var string
+
+    hitMode = null;
+
+    
+    // Previous hit mode, this is used for rate limit of hitMode detection
+    // @var string
+
+    prevHitMode = null;
+
+    
+    // Whether drop event occured, this is required for edge cases
+    // @var boolean
+
+    didDrop = false;
 
     return Dnd;
 
-  })();
+  }).call(this);
 
   Maslosoft.Binder.Widgets.TreeGrid.DropIndicator = (function() {
+    class DropIndicator {
+      constructor(grid) {
+        this.grid = grid;
+        this.precise = new Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator(this.grid);
+      }
+
+      attach(element1) {
+        this.element = element1;
+        this.element.css({
+          'font-size': '1.5em'
+        });
+        this.element.css({
+          'width': '1em'
+        });
+        this.element.css({
+          'height': '1em'
+        });
+        this.element.css({
+          'position': 'absolute'
+        });
+        // 1/2 of font size
+        this.element.css({
+          'left': '-.75em'
+        });
+        // 1/4 of font size
+        return this.element.css({
+          'top': '-.35em'
+        });
+      }
+
+      hide() {
+        this.element.hide();
+        return this.precise.hide();
+      }
+
+      show() {
+        this.element.show();
+        return this.precise.show();
+      }
+
+      accept() {
+        this.element.html('&check;');
+        this.element.css({
+          'color': 'green'
+        });
+        return this.precise.accept();
+      }
+
+      deny() {
+        this.element.html('&times;');
+        this.element.css({
+          'color': 'red'
+        });
+        return this.precise.deny();
+      }
+
+    };
+
+    
+    // Precise indicator holder
+    // @var Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator
+
     DropIndicator.precise = null;
+
+    
+    // Indicator element instance boud to draggable
+    // @var jQuery element
 
     DropIndicator.element = null;
 
-    function DropIndicator(grid) {
-      this.grid = grid;
-      this.precise = new Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator(this.grid);
-    }
-
-    DropIndicator.prototype.attach = function(element) {
-      this.element = element;
-      this.element.css({
-        'font-size': '1.5em'
-      });
-      this.element.css({
-        'width': '1em'
-      });
-      this.element.css({
-        'height': '1em'
-      });
-      this.element.css({
-        'position': 'absolute'
-      });
-      this.element.css({
-        'left': '-.75em'
-      });
-      return this.element.css({
-        'top': '-.35em'
-      });
-    };
-
-    DropIndicator.prototype.hide = function() {
-      this.element.hide();
-      return this.precise.hide();
-    };
-
-    DropIndicator.prototype.show = function() {
-      this.element.show();
-      return this.precise.show();
-    };
-
-    DropIndicator.prototype.accept = function() {
-      this.element.html('&check;');
-      this.element.css({
-        'color': 'green'
-      });
-      return this.precise.accept();
-    };
-
-    DropIndicator.prototype.deny = function() {
-      this.element.html('&times;');
-      this.element.css({
-        'color': 'red'
-      });
-      return this.precise.deny();
-    };
-
     return DropIndicator;
 
-  })();
+  }).call(this);
 
   Maslosoft.Binder.Widgets.TreeGrid.Events = (function() {
-    Events.prototype.grid = null;
-
-    function Events(grid, context) {
-      this.grid = grid;
-      if (!this.grid.config.on) {
-        return;
+    class Events {
+      constructor(grid, context) {
+        this.grid = grid;
+        if (!this.grid.config.on) {
+          return;
+        }
       }
-    }
+
+    };
+
+    
+    // Tree grid view instance
+
+    // @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
+
+    Events.prototype.grid = null;
 
     return Events;
 
-  })();
+  }).call(this);
 
   Maslosoft.Binder.Widgets.TreeGrid.Expanders = (function() {
     var collapse, expand, initExpand;
+
+    class Expanders {
+      constructor(grid, context) {
+        this.updateExpanders = this.updateExpanders.bind(this);
+        this.handler = this.handler.bind(this);
+        // Cancel expander click event, as it reacts on mousedown
+        // however click would propagate and call action
+        this.cancelClick = this.cancelClick.bind(this);
+        this.grid = grid;
+        // Expanders explicitly disabled
+        if (this.grid.config.expanders === false) {
+          return;
+        }
+        // Initialize click handlers only on init
+        if (this.grid.context === 'init') {
+          this.grid.element.on('mousedown', '.expander', this.handler);
+          this.grid.element.on('click', '.expander', this.cancelClick);
+        }
+        if (this.grid.context === 'update') {
+          this.updateExpanders();
+        }
+      }
+
+      updateExpanders() {
+        var defer, one;
+        one = (item, data) => {
+          var hasChildren;
+          hasChildren = data.children && data.children.length;
+          if (hasChildren) {
+            item.find('.no-expander').hide();
+            item.find('.expander').show();
+            if (!item.find('.expander .collapsed').is(':visible')) {
+              return item.find('.expander .expanded').show();
+            }
+          } else {
+            item.find('.expander').hide();
+            return item.find('.no-expander').show();
+          }
+        };
+        //			item.find('.debug').html data.children.length
+        defer = () => {
+          return this.grid.visit(one);
+        };
+        //		defer()
+        return setTimeout(defer, 0);
+      }
+
+      handler(e) {
+        var current, depth, initOne, show;
+        current = ko.contextFor(e.target).$data;
+        // Expanding tree node should not call action
+        // @see https://github.com/Maslosoft/Binder/issues/33
+        e.stopPropagation();
+        e.preventDefault();
+        depth = -1;
+        show = false;
+        log(`clicked on expander ${current.title}`);
+        initOne = (item, data) => {
+          var itemDepth, manuallyToggled, showChildItems;
+          itemDepth = data._treeGrid.depth;
+          if (data === current) {
+            depth = itemDepth;
+            show = initExpand(item);
+            item.data('treegrid-manual-state', show);
+            return;
+          }
+          // Not found yet, so continue
+          // Current item should be left intact, so skip to next item
+          if (depth === -1) {
+            return;
+          }
+          // Found item on same depth, skip further changes
+          if (itemDepth === depth) {
+            depth = -1;
+            return;
+          }
+          // toggle all one depth lower
+          if (itemDepth >= depth) {
+            // TODO: Below is a scratch of logic to re-expand or re-collapse
+            if (false) {
+              // nodes that were manually toggled.
+              showChildItems = show;
+              // Manually expanded/collapsed sub nodes
+              // should have state restored
+              manuallyToggled = item.data('treegrid-manual-state');
+              if (typeof manuallyToggled !== 'undefined') {
+                console.log(manuallyToggled);
+                showChildItems = manuallyToggled;
+              }
+            }
+            if (show) {
+              item.show();
+              return expand(item);
+            } else {
+              item.hide();
+              return collapse(item);
+            }
+          }
+        };
+        return this.grid.visit(initOne);
+      }
+
+      cancelClick(e) {
+        e.stopPropagation();
+        return e.preventDefault();
+      }
+
+    };
+
+    
+    // Init expands
+    // @return boolean whether is expanded
 
     initExpand = function(item) {
       var el, show;
@@ -4275,12 +5271,18 @@
       return show;
     };
 
+    
+    // Expand expanders
+
     expand = function(item) {
       var el;
       el = item.find('.expander');
       el.find('.collapsed').hide();
       return el.find('.expanded').show();
     };
+
+    
+    // Collapse expanders
 
     collapse = function(item) {
       var el;
@@ -4289,459 +5291,473 @@
       return el.find('.collapsed').show();
     };
 
+    
+    // Tree grid view instance
+
+    // @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
+
     Expanders.prototype.grid = null;
-
-    function Expanders(grid, context) {
-      this.grid = grid;
-      this.cancelClick = __bind(this.cancelClick, this);
-      this.handler = __bind(this.handler, this);
-      this.updateExpanders = __bind(this.updateExpanders, this);
-      if (this.grid.config.expanders === false) {
-        return;
-      }
-      if (this.grid.context === 'init') {
-        this.grid.element.on('mousedown', '.expander', this.handler);
-        this.grid.element.on('click', '.expander', this.cancelClick);
-      }
-      if (this.grid.context === 'update') {
-        this.updateExpanders();
-      }
-    }
-
-    Expanders.prototype.updateExpanders = function() {
-      var defer, one;
-      one = (function(_this) {
-        return function(item, data) {
-          var hasChildren;
-          hasChildren = data.children && data.children.length;
-          if (hasChildren) {
-            item.find('.no-expander').hide();
-            item.find('.expander').show();
-            if (!item.find('.expander .collapsed').is(':visible')) {
-              return item.find('.expander .expanded').show();
-            }
-          } else {
-            item.find('.expander').hide();
-            return item.find('.no-expander').show();
-          }
-        };
-      })(this);
-      defer = (function(_this) {
-        return function() {
-          return _this.grid.visit(one);
-        };
-      })(this);
-      return setTimeout(defer, 0);
-    };
-
-    Expanders.prototype.handler = function(e) {
-      var current, depth, initOne, show;
-      current = ko.contextFor(e.target).$data;
-      e.stopPropagation();
-      e.preventDefault();
-      depth = -1;
-      show = false;
-      log("clicked on expander " + current.title);
-      initOne = (function(_this) {
-        return function(item, data) {
-          var itemDepth, manuallyToggled, showChildItems;
-          itemDepth = data._treeGrid.depth;
-          if (data === current) {
-            depth = itemDepth;
-            show = initExpand(item);
-            item.data('treegrid-manual-state', show);
-            return;
-          }
-          if (depth === -1) {
-            return;
-          }
-          if (itemDepth === depth) {
-            depth = -1;
-            return;
-          }
-          if (itemDepth >= depth) {
-            if (false) {
-              showChildItems = show;
-              manuallyToggled = item.data('treegrid-manual-state');
-              if (typeof manuallyToggled !== 'undefined') {
-                console.log(manuallyToggled);
-                showChildItems = manuallyToggled;
-              }
-            }
-            if (show) {
-              item.show();
-              return expand(item);
-            } else {
-              item.hide();
-              return collapse(item);
-            }
-          }
-        };
-      })(this);
-      return this.grid.visit(initOne);
-    };
-
-    Expanders.prototype.cancelClick = function(e) {
-      e.stopPropagation();
-      return e.preventDefault();
-    };
 
     return Expanders;
 
-  })();
+  }).call(this);
 
   Maslosoft.Binder.Widgets.TreeGrid.InsertIndicator = (function() {
     var coarse, indicator, initialized, precise;
 
+    
+    // Insert indicator
+
+    class InsertIndicator {
+      constructor(grid) {
+        this.grid = grid;
+        if (!initialized) {
+          this.create();
+          initialized = true;
+        }
+      }
+
+      hide() {
+        return indicator.hide();
+      }
+
+      show() {
+        return indicator.show();
+      }
+
+      accept() {
+        return indicator.css({
+          color: 'green'
+        });
+      }
+
+      deny() {
+        return indicator.css({
+          color: 'red'
+        });
+      }
+
+      
+      // Place over element, with hitMode param
+
+      over(dragged, draggedOver, hitMode = 'over', accepter) {
+        var left, mid, midFactor, node, nodeMid, offset, top, widthOffset;
+        this.accept();
+        accepter.accept();
+        if (hitMode === 'over') {
+          this.precise(false);
+        } else {
+          this.precise(true);
+        }
+        if (this.grid.canDrop(dragged, draggedOver, hitMode)) {
+          this.accept();
+          accepter.accept();
+        } else {
+          this.deny();
+          accepter.deny();
+        }
+        node = draggedOver.find('.tree-grid-drag-handle');
+        widthOffset = 0;
+        midFactor = 1.5;
+        offset = node.offset();
+        mid = indicator.outerHeight(true) / midFactor;
+        if (hitMode === 'over') {
+          nodeMid = node.outerHeight(true) / midFactor;
+          top = offset.top + nodeMid - mid;
+        }
+        if (hitMode === 'before') {
+          top = offset.top - mid;
+        }
+        if (hitMode === 'after') {
+          top = offset.top + node.outerHeight(true) - mid;
+        }
+        left = offset.left + widthOffset;
+        indicator.css({
+          left: left
+        });
+        indicator.css({
+          top: top
+        });
+        return this.show();
+      }
+
+      
+      // Show or hide precise indicator
+
+      precise(showPrecise = true) {
+        if (showPrecise) {
+          return precise.show();
+        } else {
+          return precise.hide();
+        }
+      }
+
+      create() {
+        indicator = jQuery(`<div class="tree-grid-insert-indicator" style="display:none;position:absolute;z-index: 10000;color:green;line-height: 1em;">
+	<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">
+		&#9654;
+	</span>
+	<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">
+		&#11835;
+	</span>
+</div>`);
+        indicator.appendTo('body');
+        coarse = indicator.find('.tree-grid-insert-indicator-coarse');
+        return precise = indicator.find('.tree-grid-insert-indicator-precise');
+      }
+
+    };
+
+    
+    // Tree grid view instance
+
+    // @var Maslosoft.Binder.Widgets.TreeGrid.TreeGridView
+
     InsertIndicator.prototype.grid = null;
+
+    
+    // @private
+    // @static
 
     initialized = false;
 
+    
+    // Indicator main wrapper
+    // @var jQuery element
+    // @private
+    // @static
+
     indicator = null;
+
+    
+    // Indicator coarse item
+    // @var jQuery element
+    // @private
+    // @static
 
     coarse = null;
 
+    
+    // Indicator precise item
+    // @var jQuery element
+    // @private
+    // @static
+
     precise = null;
-
-    function InsertIndicator(grid) {
-      this.grid = grid;
-      if (!initialized) {
-        this.create();
-        initialized = true;
-      }
-    }
-
-    InsertIndicator.prototype.hide = function() {
-      return indicator.hide();
-    };
-
-    InsertIndicator.prototype.show = function() {
-      return indicator.show();
-    };
-
-    InsertIndicator.prototype.accept = function() {
-      return indicator.css({
-        color: 'green'
-      });
-    };
-
-    InsertIndicator.prototype.deny = function() {
-      return indicator.css({
-        color: 'red'
-      });
-    };
-
-    InsertIndicator.prototype.over = function(dragged, draggedOver, hitMode, accepter) {
-      var left, mid, midFactor, node, nodeMid, offset, top, widthOffset;
-      if (hitMode == null) {
-        hitMode = 'over';
-      }
-      this.accept();
-      accepter.accept();
-      if (hitMode === 'over') {
-        this.precise(false);
-      } else {
-        this.precise(true);
-      }
-      if (this.grid.canDrop(dragged, draggedOver, hitMode)) {
-        this.accept();
-        accepter.accept();
-      } else {
-        this.deny();
-        accepter.deny();
-      }
-      node = draggedOver.find('.tree-grid-drag-handle');
-      widthOffset = 0;
-      midFactor = 1.5;
-      offset = node.offset();
-      mid = indicator.outerHeight(true) / midFactor;
-      if (hitMode === 'over') {
-        nodeMid = node.outerHeight(true) / midFactor;
-        top = offset.top + nodeMid - mid;
-      }
-      if (hitMode === 'before') {
-        top = offset.top - mid;
-      }
-      if (hitMode === 'after') {
-        top = offset.top + node.outerHeight(true) - mid;
-      }
-      left = offset.left + widthOffset;
-      indicator.css({
-        left: left
-      });
-      indicator.css({
-        top: top
-      });
-      return this.show();
-    };
-
-    InsertIndicator.prototype.precise = function(showPrecise) {
-      if (showPrecise == null) {
-        showPrecise = true;
-      }
-      if (showPrecise) {
-        return precise.show();
-      } else {
-        return precise.hide();
-      }
-    };
-
-    InsertIndicator.prototype.create = function() {
-      indicator = jQuery('<div class="tree-grid-insert-indicator" style="display:none;position:absolute;z-index: 10000;color:green;line-height: 1em;">\n	<span class="tree-grid-insert-indicator-coarse" style="font-size: 1.5em;">\n		&#9654;\n	</span>\n	<span class="tree-grid-insert-indicator-precise" style="font-size:1.4em;">\n		&#11835;\n	</span>\n</div>');
-      indicator.appendTo('body');
-      coarse = indicator.find('.tree-grid-insert-indicator-coarse');
-      return precise = indicator.find('.tree-grid-insert-indicator-precise');
-    };
 
     return InsertIndicator;
 
-  })();
+  }).call(this);
 
   Maslosoft.Binder.Widgets.TreeGrid.TreeGridView = (function() {
     var cellsStyles;
 
+    class TreeGridView {
+      constructor(element, valueAccessor = null, context1 = 'init') {
+        var j, len, plugin, ref46;
+        
+        // Visit each node starting from tree root and apply callback.
+        // Callback accepts two parameters:
+
+        // * parent - contains current element parent item, might be null
+        // * data - contains data attached to element
+
+        this.visitRecursive = this.visitRecursive.bind(this);
+        this.getParent = this.getParent.bind(this);
+        this.getRoot = this.getRoot.bind(this);
+        this.getContext = this.getContext.bind(this);
+        
+        // Check if parent have child
+
+        this.have = this.have.bind(this);
+        
+        // Check if it is last on list of table rows
+
+        this.isLast = this.isLast.bind(this);
+        
+        // Check if can actually drop on draggedOver
+
+        this.canDrop = this.canDrop.bind(this);
+        this.remove = this.remove.bind(this);
+        
+        // Set widths of table cells to strict values.
+        // This prevents flickering table when moving nodes.
+
+        this.freeze = this.freeze.bind(this);
+        
+        // Set widths of table cells back to original style, set by freeze()
+
+        this.thaw = this.thaw.bind(this);
+        //		setTimeout defer, 0
+        this.getFirstCells = this.getFirstCells.bind(this);
+        this.context = context1;
+        this.element = jQuery(element);
+        if (valueAccessor) {
+          this.config = {};
+          this.config = ko.unwrap(valueAccessor());
+          ref46 = TreeGridView.plugins;
+          for (j = 0, len = ref46.length; j < len; j++) {
+            plugin = ref46[j];
+            new plugin(this);
+          }
+        }
+      }
+
+      //			console.log data
+      init() {
+        jQuery(document).on('ajaxStart', this.freeze);
+        return jQuery(document).on('ajaxComplete', this.thaw);
+      }
+
+      dispose() {
+        jQuery(document).off('ajaxStart', this.freeze);
+        return jQuery(document).off('ajaxComplete', this.thaw);
+      }
+
+      
+      // Visit each node and apply callback.
+      // Callback accepts two parameters:
+
+      // * element - contains current row jQuery element
+      // * data - contains data attached to element
+
+      visit(callback) {
+        var data, item, items, j, len, results;
+        items = this.element.find('> tr');
+        results = [];
+        for (j = 0, len = items.length; j < len; j++) {
+          item = items[j];
+          data = ko.dataFor(item);
+          results.push(callback(jQuery(item), data));
+        }
+        return results;
+      }
+
+      visitRecursive(callback, model = null) {
+        var child, j, k, l, len, len1, len2, len3, m, ref46, ref47, results, results1;
+        if (!model) {
+          model = this.getRoot();
+          callback(null, model);
+          if (model.children && model.children.length) {
+            ref46 = model.children;
+            for (j = 0, len = ref46.length; j < len; j++) {
+              child = ref46[j];
+              callback(model, child);
+              this.visitRecursive(callback, child);
+            }
+          }
+          // Array node
+          if (model.length) {
+            results = [];
+            for (k = 0, len1 = model.length; k < len1; k++) {
+              child = model[k];
+              callback(model, child);
+              results.push(this.visitRecursive(callback, child));
+            }
+            return results;
+          }
+        } else {
+          if (model.children && model.children.length) {
+            ref47 = model.children;
+            for (l = 0, len2 = ref47.length; l < len2; l++) {
+              child = ref47[l];
+              callback(model, child);
+              this.visitRecursive(callback, child);
+            }
+          }
+          // Array node
+          if (model.length) {
+            results1 = [];
+            for (m = 0, len3 = model.length; m < len3; m++) {
+              child = model[m];
+              callback(model, child);
+              results1.push(this.visitRecursive(callback, child));
+            }
+            return results1;
+          }
+        }
+      }
+
+      getParent(model) {
+        var found, one;
+        found = null;
+        one = function(parent, data) {
+          if (data === model) {
+            return found = parent;
+          }
+        };
+        // Don't set model here to start from root
+        this.visitRecursive(one);
+        return found;
+      }
+
+      getRoot() {
+        var ctx;
+        ctx = ko.contextFor(this.element.get(0));
+        return ctx.tree;
+      }
+
+      getContext() {
+        return ko.contextFor(this.element.get(0));
+      }
+
+      have(parent, child) {
+        var found, one;
+        found = false;
+        one = function(parent, data) {
+          if (data === child) {
+            return found = true;
+          }
+        };
+        // Start from parent here
+        this.visitRecursive(one, parent);
+        return found;
+      }
+
+      isLast(model) {
+        var last, lastRow;
+        lastRow = this.element.find('> tr:last()');
+        last = ko.dataFor(lastRow.get(0));
+        if (model === last) {
+          return true;
+        }
+        return false;
+      }
+
+      canDrop(dragged, draggedOver, hitMode) {
+        var current, over;
+        current = ko.dataFor(dragged);
+        over = ko.dataFor(draggedOver.get(0));
+        //		log current.title
+        //		log over.title
+
+        // Allow adding to the end of table
+        if (hitMode === 'last') {
+          return true;
+        }
+        // Allow adding to the end of list
+        if (hitMode === 'after') {
+          return true;
+        }
+        // Forbid dropping on itself
+        if (current === over) {
+          return false;
+        }
+        // Forbid dropping on children of current node
+        if (this.have(current, over)) {
+          return false;
+        }
+        return true;
+      }
+
+      remove(model) {
+        var one;
+        one = function(parent, data) {
+          if (parent) {
+            // Model initialized
+            if (parent.children) {
+              return parent.children.remove(model);
+            } else {
+              // Array initialized
+              return parent.remove(model);
+            }
+          }
+        };
+        // Don't set model here to start from root
+        return this.visitRecursive(one);
+      }
+
+      expandAll() {}
+
+      collapseAll() {}
+
+      freeze() {
+        var $cell, cell, cells, j, len, results;
+        console.log("Freeze");
+        // Reset stored width values
+        cellsStyles = [];
+        cells = this.getFirstCells();
+        console.log(cells);
+        results = [];
+        for (j = 0, len = cells.length; j < len; j++) {
+          cell = cells[j];
+          //			log cell
+          cellsStyles.push(cell.style);
+          $cell = jQuery(cell);
+          //			log $cell.width()
+          results.push($cell.css('width', $cell.width() + 'px'));
+        }
+        return results;
+      }
+
+      thaw() {
+        var defer;
+        defer = () => {
+          var cell, cells, index, j, len, results;
+          console.log('thaw');
+          cells = this.getFirstCells();
+          results = [];
+          for (index = j = 0, len = cells.length; j < len; index = ++j) {
+            cell = cells[index];
+            results.push(cell.style = cellsStyles[index]);
+          }
+          return results;
+        };
+        // TODO setTimeout should be avoided, investigate if should be used
+        // Unfreezing takes some time...
+        // This needs to be delayed a bit or flicker will still occur
+        return defer();
+      }
+
+      getFirstCells() {
+        var cells, table;
+        table = this.element;
+        if (this.element.is('tbody')) {
+          table = this.element.parent();
+        }
+        cells = table.find('thead tr:first() th');
+        if (!cells || !cells.length) {
+          cells = table.find('tr:first() td');
+        }
+        if (!cells || !cells.length) {
+          cells = table.find('tbody tr:first() td');
+        }
+        if (!cells || !cells.length) {
+          cells = table.find('tfoot tr:first() th');
+        }
+        return cells;
+      }
+
+    };
+
+    
+    // Plugins for tree grid
+
+    // NOTE: Order of plugins *might* be important, especially for built-in plugins
+
+    // @var Object[]
+
     TreeGridView.plugins = [Maslosoft.Binder.Widgets.TreeGrid.Expanders, Maslosoft.Binder.Widgets.TreeGrid.Dnd, Maslosoft.Binder.Widgets.TreeGrid.Events];
+
+    
+    // TBODY element - root of tree
+
+    // @var jQuery element
 
     TreeGridView.prototype.element = null;
 
+    
+    // Configuration of binding
+
+    // @var Object
+
     TreeGridView.prototype.config = null;
-
-    function TreeGridView(element, valueAccessor, context) {
-      var plugin, _i, _len, _ref;
-      if (valueAccessor == null) {
-        valueAccessor = null;
-      }
-      this.context = context != null ? context : 'init';
-      this.getFirstCells = __bind(this.getFirstCells, this);
-      this.thaw = __bind(this.thaw, this);
-      this.freeze = __bind(this.freeze, this);
-      this.remove = __bind(this.remove, this);
-      this.canDrop = __bind(this.canDrop, this);
-      this.isLast = __bind(this.isLast, this);
-      this.have = __bind(this.have, this);
-      this.getContext = __bind(this.getContext, this);
-      this.getRoot = __bind(this.getRoot, this);
-      this.getParent = __bind(this.getParent, this);
-      this.visitRecursive = __bind(this.visitRecursive, this);
-      this.element = jQuery(element);
-      if (valueAccessor) {
-        this.config = {};
-        this.config = ko.unwrap(valueAccessor());
-        _ref = TreeGridView.plugins;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          plugin = _ref[_i];
-          new plugin(this);
-        }
-      }
-    }
-
-    TreeGridView.prototype.init = function() {
-      jQuery(document).on('ajaxStart', this.freeze);
-      return jQuery(document).on('ajaxComplete', this.thaw);
-    };
-
-    TreeGridView.prototype.dispose = function() {
-      jQuery(document).off('ajaxStart', this.freeze);
-      return jQuery(document).off('ajaxComplete', this.thaw);
-    };
-
-    TreeGridView.prototype.visit = function(callback) {
-      var data, item, items, _i, _len, _results;
-      items = this.element.find('> tr');
-      _results = [];
-      for (_i = 0, _len = items.length; _i < _len; _i++) {
-        item = items[_i];
-        data = ko.dataFor(item);
-        _results.push(callback(jQuery(item), data));
-      }
-      return _results;
-    };
-
-    TreeGridView.prototype.visitRecursive = function(callback, model) {
-      var child, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _results, _results1;
-      if (model == null) {
-        model = null;
-      }
-      if (!model) {
-        model = this.getRoot();
-        callback(null, model);
-        if (model.children && model.children.length) {
-          _ref = model.children;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            child = _ref[_i];
-            callback(model, child);
-            this.visitRecursive(callback, child);
-          }
-        }
-        if (model.length) {
-          _results = [];
-          for (_j = 0, _len1 = model.length; _j < _len1; _j++) {
-            child = model[_j];
-            callback(model, child);
-            _results.push(this.visitRecursive(callback, child));
-          }
-          return _results;
-        }
-      } else {
-        if (model.children && model.children.length) {
-          _ref1 = model.children;
-          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-            child = _ref1[_k];
-            callback(model, child);
-            this.visitRecursive(callback, child);
-          }
-        }
-        if (model.length) {
-          _results1 = [];
-          for (_l = 0, _len3 = model.length; _l < _len3; _l++) {
-            child = model[_l];
-            callback(model, child);
-            _results1.push(this.visitRecursive(callback, child));
-          }
-          return _results1;
-        }
-      }
-    };
-
-    TreeGridView.prototype.getParent = function(model) {
-      var found, one;
-      found = null;
-      one = function(parent, data) {
-        if (data === model) {
-          return found = parent;
-        }
-      };
-      this.visitRecursive(one);
-      return found;
-    };
-
-    TreeGridView.prototype.getRoot = function() {
-      var ctx;
-      ctx = ko.contextFor(this.element.get(0));
-      return ctx.tree;
-    };
-
-    TreeGridView.prototype.getContext = function() {
-      return ko.contextFor(this.element.get(0));
-    };
-
-    TreeGridView.prototype.have = function(parent, child) {
-      var found, one;
-      found = false;
-      one = function(parent, data) {
-        if (data === child) {
-          return found = true;
-        }
-      };
-      this.visitRecursive(one, parent);
-      return found;
-    };
-
-    TreeGridView.prototype.isLast = function(model) {
-      var last, lastRow;
-      lastRow = this.element.find('> tr:last()');
-      last = ko.dataFor(lastRow.get(0));
-      if (model === last) {
-        return true;
-      }
-      return false;
-    };
-
-    TreeGridView.prototype.canDrop = function(dragged, draggedOver, hitMode) {
-      var current, over;
-      current = ko.dataFor(dragged);
-      over = ko.dataFor(draggedOver.get(0));
-      if (hitMode === 'last') {
-        return true;
-      }
-      if (hitMode === 'after') {
-        return true;
-      }
-      if (current === over) {
-        return false;
-      }
-      if (this.have(current, over)) {
-        return false;
-      }
-      return true;
-    };
-
-    TreeGridView.prototype.remove = function(model) {
-      var one;
-      one = function(parent, data) {
-        if (parent) {
-          if (parent.children) {
-            return parent.children.remove(model);
-          } else {
-            return parent.remove(model);
-          }
-        }
-      };
-      return this.visitRecursive(one);
-    };
-
-    TreeGridView.prototype.expandAll = function() {};
-
-    TreeGridView.prototype.collapseAll = function() {};
 
     cellsStyles = [];
 
-    TreeGridView.prototype.freeze = function() {
-      var $cell, cell, cells, _i, _len, _results;
-      console.log("Freeze");
-      cellsStyles = [];
-      cells = this.getFirstCells();
-      console.log(cells);
-      _results = [];
-      for (_i = 0, _len = cells.length; _i < _len; _i++) {
-        cell = cells[_i];
-        cellsStyles.push(cell.style);
-        $cell = jQuery(cell);
-        _results.push($cell.css('width', $cell.width() + 'px'));
-      }
-      return _results;
-    };
-
-    TreeGridView.prototype.thaw = function() {
-      var defer;
-      defer = (function(_this) {
-        return function() {
-          var cell, cells, index, _i, _len, _results;
-          console.log('thaw');
-          cells = _this.getFirstCells();
-          _results = [];
-          for (index = _i = 0, _len = cells.length; _i < _len; index = ++_i) {
-            cell = cells[index];
-            _results.push(cell.style = cellsStyles[index]);
-          }
-          return _results;
-        };
-      })(this);
-      return defer();
-    };
-
-    TreeGridView.prototype.getFirstCells = function() {
-      var cells, table;
-      table = this.element;
-      if (this.element.is('tbody')) {
-        table = this.element.parent();
-      }
-      cells = table.find('thead tr:first() th');
-      if (!cells || !cells.length) {
-        cells = table.find('tr:first() td');
-      }
-      if (!cells || !cells.length) {
-        cells = table.find('tbody tr:first() td');
-      }
-      if (!cells || !cells.length) {
-        cells = table.find('tfoot tr:first() th');
-      }
-      return cells;
-    };
-
     return TreeGridView;
 
-  })();
+  }).call(this);
 
   this.Maslosoft.Ko.getType = function(type) {
     if (x && typeof x === 'object') {
@@ -4755,58 +5771,60 @@
     return typeof x;
   };
 
-  this.Maslosoft.Ko.objByName = function(name, context) {
-    var args, func, i, n, ns, part, _i, _len;
-    if (context == null) {
-      context = window;
-    }
+  this.Maslosoft.Ko.objByName = function(name, context = window) {
+    var args, func, i, j, len, n, ns, part;
     args = Array.prototype.slice.call(arguments, 2);
     ns = name.split(".");
     func = context;
     part = [];
-    for (i = _i = 0, _len = ns.length; _i < _len; i = ++_i) {
+    for (i = j = 0, len = ns.length; j < len; i = ++j) {
       n = ns[i];
       part.push(n);
       if (typeof func[n] === 'undefined') {
-        throw new Error("Name part `" + (part.join('.')) + "` not found while accesing " + name);
+        throw new Error(`Name part \`${part.join('.')}\` not found while accesing ${name}`);
       }
       func = func[n];
     }
     return func;
   };
 
-  this.Maslosoft.Ko.Track = (function() {
-    function Track() {
-      this.fromJs = __bind(this.fromJs, this);
-      this.factory = __bind(this.factory, this);
+  this.Maslosoft.Ko.Track = class Track {
+    constructor() {
+      this.factory = this.factory.bind(this);
+      this.fromJs = this.fromJs.bind(this);
     }
 
-    Track.prototype.factory = function(data) {
-      var Error, className, index, model, name, ref, value, _i, _len;
+    factory(data) {
+      var Error, className, index, j, len, model, name, ref, value;
+      // Return if falsey value
       if (!data) {
         return data;
       }
+      // Check if has prototype
       if (data._class && typeof data._class === 'string') {
+        // Convert PHP class name to js class name
         className = data._class.replace(/\\/g, '.');
         try {
           ref = Maslosoft.Ko.objByName(className);
-        } catch (_error) {
-          Error = _error;
-          console.warn("Could not resolve class name `" + className + "`");
+        } catch (error1) {
+          Error = error1;
+          console.warn(`Could not resolve class name \`${className}\``);
         }
         if (ref) {
           return new ref(data);
         } else {
-          console.warn("Class `" + className + "` not found, using default object");
+          console.warn(`Class \`${className}\` not found, using default object`);
           console.debug(data);
         }
       }
+      // Track generic object
       if (typeof data === 'object') {
         data = ko.track(data, {
           deep: true
         });
+        // Check if array (different loop used here)
         if (Array.isArray(data)) {
-          for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
+          for (index = j = 0, len = data.length; j < len; index = ++j) {
             model = data[index];
             data[index] = this.factory(model);
           }
@@ -4818,91 +5836,94 @@
         }
       }
       return data;
-    };
+    }
 
-    Track.prototype.fromJs = function(model, jsData) {
-      var name, value, _results;
-      _results = [];
+    fromJs(model, jsData) {
+      var name, results, value;
+      results = [];
       for (name in jsData) {
         value = jsData[name];
         if (typeof value === 'object') {
+          if (Array.isArray(value)) {
+            model[name] = this.factory(value);
+            continue;
+          }
           if (model[name]) {
-            _results.push(this.fromJs(model[name], value));
+            results.push(this.fromJs(model[name], value));
           } else {
-            _results.push(model[name] = this.factory(value));
+            results.push(model[name] = this.factory(value));
           }
         } else {
-          _results.push(model[name] = value);
+          results.push(model[name] = value);
         }
       }
-      return _results;
-    };
+      return results;
+    }
 
-    return Track;
+  };
 
-  })();
-
-  ko.tracker = new this.Maslosoft.Ko.Track;
+  ko.tracker = new this.Maslosoft.Ko.Track();
 
   if (!window.Proxy) {
     console.warn('Your browser does not support Proxy, will not work properly in some cases...');
-    window.Proxy = (function() {
-      function Proxy() {}
-
-      return Proxy;
-
-    })();
+    window.Proxy = class Proxy {};
   }
 
-  ModelProxyHandler = (function() {
-    function ModelProxyHandler(parent, field) {
-      this.parent = parent;
-      this.field = field;
+  ModelProxyHandler = class ModelProxyHandler {
+    constructor(parent1, field1) {
+      this.parent = parent1;
+      this.field = field1;
     }
 
-    ModelProxyHandler.prototype.set = function(target, name, value, receiver) {
+    set(target, name, value, receiver) {
       var after, before, changed;
       changed = false;
+      // Detect value change
       if (target[name] !== value) {
+        //			log "Changed: #{@parent.constructor.name}.#{@field} @ #{target.constructor.name}.#{name}"
         changed = true;
       }
+      // Detect keys change
       before = Object.keys(target).length;
       target[name] = value;
       after = Object.keys(target).length;
       if (before !== after) {
+        //			log "New key: #{@parent.constructor.name}.#{@field} @ #{target.constructor.name}.#{name}"
         changed = true;
       }
+      
+      // Notify change
       if (changed) {
         ko.valueHasMutated(this.parent, this.field);
       }
       return true;
-    };
+    }
 
-    ModelProxyHandler.prototype.deleteProperty = function(target, name) {
+    deleteProperty(target, name) {
       delete target[name];
+      // Notify change
+      //		log "Deleted: #{@parent.constructor.name}.#{@field} @ #{target.constructor.name}.#{name}"
       ko.valueHasMutated(this.parent, this.field);
       return true;
-    };
+    }
 
-    return ModelProxyHandler;
+  };
 
-  })();
-
+  // Map for concrete objects initializations
   if (WeakMap) {
     initMap = new WeakMap();
   } else {
     initMap = new Map();
   }
 
-  this.Maslosoft.Binder.Model = (function() {
-    function Model(data) {
-      var initialized, name, value;
-      if (data == null) {
-        data = null;
-      }
+  this.Maslosoft.Binder.Model = class Model {
+    constructor(data = null) {
+      var initialized, name, ref46, ref47, ref48, value;
       initialized = initMap.get(this);
-      for (name in this) {
-        value = this[name];
+      ref46 = this;
+      // Dereference first
+      for (name in ref46) {
+        value = ref46[name];
         if (isPlainObject(this[name])) {
           this[name] = {};
         }
@@ -4910,22 +5931,29 @@
           this[name] = [];
         }
       }
+      // Initialize new object
       if (!initialized) {
         initMap.set(this, true);
-        for (name in this) {
-          value = this[name];
+        ref47 = this;
+        // Reassign here is required - when using model with values from class prototype only
+        for (name in ref47) {
+          value = ref47[name];
           this[name] = ko.tracker.factory(value);
+          // Extra track of object properties.
           if (isPlainObject(this[name])) {
             this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
           }
         }
       }
+// Apply data
       for (name in data) {
         value = data[name];
         this[name] = ko.tracker.factory(value);
       }
-      for (name in this) {
-        value = this[name];
+      ref48 = this;
+      // Track plain objects always
+      for (name in ref48) {
+        value = ref48[name];
         if (isPlainObject(this[name])) {
           this[name] = new Proxy(this[name], new ModelProxyHandler(this, name));
         }
@@ -4935,10 +5963,9 @@
       });
     }
 
-    return Model;
+  };
 
-  })();
-
+  // For backward compatibility
   this.Maslosoft.Ko.Balin = this.Maslosoft.Binder;
 
   this.Maslosoft.Ko.escapeRegExp = escapeRegExp;

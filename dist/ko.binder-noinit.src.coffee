@@ -1060,27 +1060,6 @@ class @Maslosoft.Binder.CssClasses extends @Maslosoft.Binder.Base
 #
 # Enum css class handler
 #
-class @Maslosoft.Binder.CssColumnSizes extends @Maslosoft.Binder.CssColumnsBase
-
-	@columns = {
-		'xs': 'col-xs-{num}',
-		'sm': 'col-sm-{num}',
-		'md': 'col-md-{num}',
-		'lg': 'col-lg-{num}'
-	}
-
-	init: (element, valueAccessor) =>
-
-	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
-		sizes = @getValue valueAccessor
-		@applyColumns element, sizes, CssColumnSizes.columns
-
-
-
-
-#
-# Enum css class handler
-#
 class @Maslosoft.Binder.CssColumns extends @Maslosoft.Binder.CssColumnsBase
 
 	@columns = {
@@ -1103,6 +1082,27 @@ class @Maslosoft.Binder.CssColumns extends @Maslosoft.Binder.CssColumnsBase
 			sizes[size] = cols
 
 		@applyColumns element, sizes, CssColumns.columns
+
+#
+# Enum css class handler
+#
+class @Maslosoft.Binder.CssColumnSizes extends @Maslosoft.Binder.CssColumnsBase
+
+	@columns = {
+		'xs': 'col-xs-{num}',
+		'sm': 'col-sm-{num}',
+		'md': 'col-md-{num}',
+		'lg': 'col-lg-{num}'
+	}
+
+	init: (element, valueAccessor) =>
+
+	update: (element, valueAccessor, allBindingsAccessor, viewModel) =>
+		sizes = @getValue valueAccessor
+		@applyColumns element, sizes, CssColumnSizes.columns
+
+
+
 
 #
 # Data binding handler
@@ -4694,6 +4694,9 @@ class @Maslosoft.Ko.Track
 	fromJs: (model, jsData) =>
 		for name, value of jsData
 			if typeof(value) is 'object'
+				if Array.isArray value
+					model[name] = @factory value
+					continue
 				if model[name]
 					@fromJs model[name], value
 				else
@@ -4707,7 +4710,7 @@ ko.tracker = new @Maslosoft.Ko.Track
 # Model class with automatically applied knockout bindings
 #
 
-# Stub to ignore fatals
+# Stub to ignore fatal errors
 if !window.Proxy
 	console.warn 'Your browser does not support Proxy, will not work properly in some cases...'
 	class window.Proxy
