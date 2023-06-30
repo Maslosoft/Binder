@@ -53,6 +53,9 @@ class @Maslosoft.Ko.Track
 	fromJs: (model, jsData) =>
 		for name, value of jsData
 			if typeof(value) is 'object'
+				if Array.isArray value
+					model[name] = @factory value
+					continue
 				if model[name]
 					@fromJs model[name], value
 				else
